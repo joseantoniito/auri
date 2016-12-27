@@ -1,0 +1,36 @@
+<?php defined('BASEPATH') OR exit('No direct script access allowed'); ?>
+
+ERROR - 2016-12-27 03:18:04 --> 404 Page Not Found: Assets/plugins
+ERROR - 2016-12-27 03:18:57 --> 404 Page Not Found: Assets/plugins
+ERROR - 2016-12-27 03:18:59 --> 404 Page Not Found: Assets/plugins
+ERROR - 2016-12-27 03:19:00 --> 404 Page Not Found: Assets/plugins
+ERROR - 2016-12-27 03:26:08 --> 404 Page Not Found: Assets/plugins
+ERROR - 2016-12-27 03:26:09 --> 404 Page Not Found: Assets/plugins
+ERROR - 2016-12-27 03:26:09 --> 404 Page Not Found: Assets/plugins
+ERROR - 2016-12-27 03:26:27 --> 404 Page Not Found: Assets/plugins
+ERROR - 2016-12-27 03:26:28 --> 404 Page Not Found: Assets/plugins
+ERROR - 2016-12-27 03:26:28 --> 404 Page Not Found: Assets/plugins
+ERROR - 2016-12-27 03:27:40 --> 404 Page Not Found: Assets/plugins
+ERROR - 2016-12-27 03:27:40 --> 404 Page Not Found: Assets/plugins
+ERROR - 2016-12-27 03:27:40 --> 404 Page Not Found: Assets/plugins
+ERROR - 2016-12-27 03:29:06 --> 404 Page Not Found: Assets/plugins
+ERROR - 2016-12-27 03:29:06 --> 404 Page Not Found: Assets/plugins
+ERROR - 2016-12-27 03:29:08 --> 404 Page Not Found: Assets/plugins
+ERROR - 2016-12-27 03:42:19 --> 404 Page Not Found: Assets/plugins
+ERROR - 2016-12-27 03:42:19 --> 404 Page Not Found: Assets/plugins
+ERROR - 2016-12-27 03:42:23 --> 404 Page Not Found: Assets/plugins
+ERROR - 2016-12-27 03:51:16 --> 404 Page Not Found: Assets/plugins
+ERROR - 2016-12-27 03:51:17 --> 404 Page Not Found: Assets/plugins
+ERROR - 2016-12-27 03:51:18 --> 404 Page Not Found: Assets/plugins
+ERROR - 2016-12-27 03:59:29 --> 404 Page Not Found: Assets/plugins
+ERROR - 2016-12-27 03:59:30 --> 404 Page Not Found: Assets/plugins
+ERROR - 2016-12-27 03:59:31 --> 404 Page Not Found: Assets/plugins
+ERROR - 2016-12-27 04:00:19 --> 404 Page Not Found: Assets/plugins
+ERROR - 2016-12-27 04:00:21 --> 404 Page Not Found: Assets/plugins
+ERROR - 2016-12-27 04:00:22 --> 404 Page Not Found: Assets/plugins
+ERROR - 2016-12-27 04:01:34 --> 404 Page Not Found: Assets/plugins
+ERROR - 2016-12-27 04:01:36 --> 404 Page Not Found: Assets/plugins
+ERROR - 2016-12-27 04:01:37 --> 404 Page Not Found: Assets/plugins
+ERROR - 2016-12-27 04:10:05 --> 404 Page Not Found: Assets/plugins
+ERROR - 2016-12-27 04:10:07 --> 404 Page Not Found: Assets/plugins
+ERROR - 2016-12-27 04:10:10 --> 404 Page Not Found: Assets/plugins

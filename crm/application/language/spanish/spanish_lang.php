@@ -219,11 +219,14 @@ $lang['invoice_item_lowercase']                             = 'posición de fact
 $lang['invoice_items_list_description'] = 'Descripción';
 $lang['invoice_items_list_rate']        = 'Tarifa';
 $lang['invoice_items_list_tax']         = 'Impuesto';
+$lang['invoice_items_list_address']         = 'Dirección';
 
 $lang['invoice_item_add_edit_description'] = 'Descripción';
 $lang['invoice_item_add_edit_rate']        = 'Tarifa';
 $lang['invoice_item_add_edit_tax']         = 'Impuesto';
 $lang['invoice_item_add_edit_tax_select']  = 'Seleccione Impuesto';
+$lang['invoice_item_add_edit_address'] = 'Dirección';
+
 
 $lang['invoice_item_edit_heading'] = 'Editar elemento';
 $lang['invoice_item_add_heading']  = 'Agregar nuevo elemento';

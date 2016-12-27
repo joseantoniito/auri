@@ -231,12 +231,14 @@ $(function() {
             var long_description = $(button).parents('tr').find('td').eq(1).text();
             var rate = $(button).parents('tr').find('td').eq(2).text();
             var taxid = $(button).parents('tr').find('td').eq(3).find('span').data('taxid');
+            var address = $(button).parents('tr').find('td').eq(4).text();
             $('#sales_item_modal .add-title').addClass('hide');
             $('#sales_item_modal .edit-title').removeClass('hide');
             $('#sales_item_modal input[name="description"]').val(description);
             $('#sales_item_modal input[name="rate"]').val(rate);
             $('#sales_item_modal textarea').val(long_description);
             $('select[name="tax"]').selectpicker('val', taxid);
+            $('#sales_item_modal input[name="address"]').val(address);
         }
     });
 
@@ -671,6 +673,7 @@ function record_payment(id) {
 }
 // Add item to preview
 function add_item_to_preview(itemid) {
+    debugger;
     $.get(admin_url + 'invoice_items/get_item_by_id/' + itemid, function(response) {
         if (!response.taxname) {
             response.taxname = '';
@@ -682,6 +685,8 @@ function add_item_to_preview(itemid) {
             $('.main select.tax').selectpicker('val', response.taxname + '|' + response.taxrate);
         }
         $('input[name="rate"]').val(response.rate);
+        $('textarea[name="address"]').val(response.address);
+
     }, 'json');
 }
 // Add task to preview
@@ -692,6 +697,7 @@ function add_task_to_preview_as_item(task_id) {
         $('textarea[name="long_description"]').val(response.description);
         $('input[name="quantity"]').val(response.total_hours);
         $('input[name="rate"]').val(response.hourly_rate);
+        $('textarea[name="address"]').val(response.address);
         $('input[name="task_id"]').val(task_id);
     }, 'json');
 }

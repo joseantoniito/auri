@@ -5,7 +5,8 @@ $aColumns     = array(
     'description',
     'long_description',
     'tblitems.rate',
-    'tax'
+    'tax',
+    'address'
     );
 $sIndexColumn = "id";
 $sTable       = 'tblitems';
@@ -32,7 +33,8 @@ foreach ($rResult as $aRow) {
                 $aRow['taxrate'] = 0;
             }
             $_data = '<span data-toggle="tooltip" title="' . $aRow['name'] . '" data-taxid="' . $aRow['tax'] . '">' . $aRow['taxrate'] . '%' . '</span>';
-        } else if($aColumns[$i] == 'description'){
+        } 
+        else if($aColumns[$i] == 'description'){
             $_data = '<a href="#" data-toggle="modal" data-target="#sales_item_modal" data-id="'.$aRow['id'].'">'.$_data.'</a>';
         }
 

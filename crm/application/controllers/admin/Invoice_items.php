@@ -46,7 +46,8 @@ class Invoice_items extends Admin_controller
                         'message' => $message,
                         'item'=>$this->invoice_items_model->get($id),
                         ));
-                } else {
+                } 
+                else {
                     if(!has_permission('items','','edit')){
                       header('HTTP/1.0 400 Bad error');
                       echo _l('access_denied');

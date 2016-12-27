@@ -20,7 +20,7 @@
                         <?php echo render_input('rate','invoice_item_add_edit_rate','','number'); ?>
                         <?php echo render_textarea('long_description','invoice_item_long_description'); ?>
                         <div class="form-group">
-                            <label class="control-label" for="tax"><?php echo _l('invoice_item_add_edit_tax'); ?></label>
+                            <label class="control-label" for="tax"><?php echo _l('invoice_item_add_edit_tax'); ?> !!! </label>
                             <select class="selectpicker display-block" data-width="100%" name="tax" title='<?php echo _l('invoice_item_add_edit_tax_select'); ?>' data-none-selected-text="<?php echo _l('dropdown_non_selected_tex'); ?>">
                                 <option value=""></option>
                                 <?php foreach($taxes as $tax){ ?>
@@ -28,6 +28,7 @@
                                     <?php } ?>
                                 </select>
                             </div>
+                        <?php echo render_input('address','invoice_item_add_edit_address'); ?>
                         </div>
                     </div>
                 </div>

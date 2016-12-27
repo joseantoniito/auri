@@ -13,7 +13,7 @@ class Invoice_items_model extends CRM_Model
      */
     public function get($id = '')
     {
-        $this->db->select('tblitems.id as itemid,rate,taxrate,tbltaxes.id as taxid,tbltaxes.name as taxname,description,long_description');
+        $this->db->select('tblitems.id as itemid,rate,taxrate,tbltaxes.id as taxid,tbltaxes.name as taxname,description,long_description, tblitems.name, tblitems.address');
         $this->db->from('tblitems');
         $this->db->join('tbltaxes', 'tbltaxes.id = tblitems.tax', 'left');
         $this->db->order_by('description','asc');
@@ -81,7 +81,7 @@ class Invoice_items_model extends CRM_Model
      */
     public function get_all_items_ajax()
     {
-        $this->db->select('tblitems.id as itemid,rate,taxrate,tbltaxes.id as taxid,tbltaxes.name as taxname,description as label,long_description');
+        $this->db->select('tblitems.id as itemid,rate,taxrate,tbltaxes.id as taxid,tbltaxes.name as taxname,description as label,long_description, tblitems.name, tblitems.address');
         $this->db->from('tblitems');
         $this->db->join('tbltaxes', 'tbltaxes.id = tblitems.tax', 'left');
         $this->db->order_by('description','asc');

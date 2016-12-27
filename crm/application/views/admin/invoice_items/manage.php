@@ -19,6 +19,7 @@
                             _l('invoice_item_long_description'),
                             _l('invoice_items_list_rate'),
                             _l('invoice_items_list_tax'),
+                            _l('invoice_items_list_address'),
                             _l('options'),
                             ),'invoice-items'); ?>
                     </div>
