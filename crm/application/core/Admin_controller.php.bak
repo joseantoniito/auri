@@ -199,12 +199,6 @@ class Admin_controller extends CRM_Controller
             'permission' => 'surveys',
             'url' => 'surveys/survey'
         ));
-		
-		$this->perfex_base->add_quick_actions_link(array(
-            'name' => _l('new_invoice_item'),
-            'permission' => 'items',
-            'url' => 'invoice-items/invoice-item'
-        ));
 
         $tickets = array(
             'name' => _l('qa_create_ticket'),

@@ -26,6 +26,11 @@ $(window).on('load',function(){
 <script src="<?php echo base_url('assets/plugins/Chart.js/Chart.min.js'); ?>" type="text/javascript"></script>
 <script src="<?php echo base_url('assets/plugins/dropzone/min/dropzone.min.js'); ?>"></script>
 <script src="<?php echo base_url('assets/plugins/jquery.are-you-sure/jquery.are-you-sure.js'); ?>"></script>
+
+<link rel="stylesheet" href="//kendo.cdn.telerik.com/2016.1.226/styles/kendo.common-material.min.css" />
+<link rel="stylesheet" href="//kendo.cdn.telerik.com/2016.1.226/styles/kendo.material.min.css" />
+<script src="//kendo.cdn.telerik.com/2016.1.226/js/kendo.all.min.js"></script>
+
 <?php if(get_option('dropbox_app_key') != ''){ ?>
 <script type="text/javascript" src="https://www.dropbox.com/static/api/2/dropins.js" id="dropboxjs" data-app-key="<?php echo get_option('dropbox_app_key'); ?>"></script>
 <?php } ?>

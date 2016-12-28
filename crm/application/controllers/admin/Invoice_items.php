@@ -103,4 +103,81 @@ class Invoice_items extends Admin_controller
             echo json_encode($this->invoice_items_model->get_all_items_ajax());
         }
     }
+    
+    
+    public function item($id = '')
+    {
+        if (!has_permission('items', '', 'view')) {
+            access_denied('items');
+        }
+        //if ($this->input->is_ajax_request()) {
+        //    $this->perfex_base->get_table_data('mail_lists');
+        //}
+        $data['title'] = 'Unity';//_l('mail_lists');
+        $this->load->view('admin/invoice_items/invoice_item', $data);
+    }
+    
+    
+    //manage unities
+    public function get_unities($id)
+    {
+        if ($this->input->is_ajax_request()) {
+            echo json_encode($this->invoice_items_model->get_unities($id));
+        }
+    }
+    
+    public function get_unity($id)
+    {
+        if ($this->input->is_ajax_request()) {
+            $item = $this->invoice_items_model->get_unity($id);
+            //$item->long_description = nl2br($item->long_description);
+            echo json_encode($item);
+        }
+    }
+    
+    public function manage_unity()
+    {
+        if (has_permission('items','','view')) {
+            if ($this->input->post()) {
+                $data = $this->input->post();
+                if ($data['id'] == '') {
+                    if(!has_permission('items','','create')){
+                      header('HTTP/1.0 400 Bad error');
+                      echo _l('access_denied');
+                      die;
+                    }
+                    $id = $this->invoice_items_model->add_unity($data);
+                    $success = false;
+                    $message = '';
+                    if ($id) {
+                        $success = true;
+                        $message = _l('added_successfuly', _l('invoice_item'));
+                    }
+                    echo json_encode(array(
+                        'success' => $success,
+                        'message' => $message,
+                        'item'=>$this->invoice_items_model->get_unity($id),
+                        ));
+                } 
+                else {
+                    if(!has_permission('items','','edit')){
+                      header('HTTP/1.0 400 Bad error');
+                      echo _l('access_denied');
+                      die;
+                    }
+                    $success = $this->invoice_items_model->edit_unity($data);
+                    $message = '';
+                    if ($success) {
+                        $message = _l('updated_successfuly', _l('invoice_item'));
+                    }
+                    echo json_encode(array(
+                        'success' => $success,
+                        'message' => $message,
+                        ));
+                }
+            }
+        }
+    }
+
+    
 }

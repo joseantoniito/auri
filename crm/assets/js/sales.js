@@ -239,9 +239,92 @@ $(function() {
             $('#sales_item_modal textarea').val(long_description);
             $('select[name="tax"]').selectpicker('val', taxid);
             $('#sales_item_modal input[name="address"]').val(address);
+            
+            //#kendo
+            create_grid_unities(id);
         }
     });
 
+    
+    function create_grid_unities(id){
+        var itemid = 1;
+        $.get(admin_url + 'invoice_items/get_unities/' + id, function(response) {
+            console.log(response);
+            debugger;
+
+            var grid_unities = 
+                $("#grid_unities").kendoGrid({
+                    dataSource: response,
+                    columns: [
+                        {field: "status", title: "Status"},                            
+                        {field: "m2_habitables", title: "m2 Habitables"},
+                        {field: "recamaras", title: "Recámaras"},
+                        {field: "banios", title: "Baños"},
+                        {field: "precio", title: "Precio"}
+                    ]
+                }).data("kendoGrid");
+
+        }, 'json');
+    }
+    
+    var window_unity;
+    $(document).ready(function() {
+        //#kendo
+        console.log( "ready!" );
+        window_unity = 
+            $("#window_unity").kendoWindow({
+                width: "600px",
+                title: "Manage Unity",
+                visible: false,
+            }).data("kendoWindow");
+        
+        $("#btn_add_unity").on("click", function(sender){
+            debugger;
+            window_unity.center().open();
+        });
+        
+        _validate_form($('#unity_form'), {
+            address: 'required'
+        }, manage_unity);
+    });
+    
+    function edit_unity(sender){
+        debugger;
+        var id = $(sender.currentTarget).attr("_id");
+
+        $.get(admin_url + 'invoice_items/get_unity/' + id, function(response) {
+            console.log(response);
+            debugger;
+        }, 'json');
+
+        window_unity.center().open();
+    }
+    
+    function manage_unity(form) {
+        //#kendo
+        debugger;
+        var data = $(form).serialize();
+        var url = form.action;
+        $.post(url, data).done(function(response) {
+            response = JSON.parse(response);
+            if (response.success == true) {
+                if ($('body').find('.ei-template').length > 0) {
+                    $('#item_select').find('option').eq(0).after('<option data-subtext="' + response.item.long_description + '" value="' + response.item.itemid + '">' + response.item.description + '</option>');
+                    $('body').find('#item_select').selectpicker('refresh');
+                    add_item_to_preview(response.item.itemid);
+                } else {
+                    // Is general items view
+                    $('.table-invoice-items').DataTable().ajax.reload();
+                }
+                alert_float('success', response.message);
+            }
+            $('#sales_item_modal').modal('hide');
+        }).fail(function(data) {
+            alert_float('danger', data.responseText);
+        });
+        return false;
+    }
+    
     $('body').on('hidden.bs.modal', '#sales_item_modal', function(event) {
         $('#item_select').selectpicker('val', '');
     });
@@ -1434,6 +1517,8 @@ function small_table_full_view() {
 }
 
 function manage_invoice_items(form) {
+    //#kendo
+    debugger;
     var data = $(form).serialize();
     var url = form.action;
     $.post(url, data).done(function(response) {

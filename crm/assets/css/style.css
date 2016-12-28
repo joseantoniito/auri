@@ -1,5 +1,13 @@
 @import url(bs-overides.css);
 
+/*#sales_item_modal .modal-content{
+    min-width:900px;
+}*/
+
+#window_unity input.form-control{
+    width:95% !important;
+}
+
 html {
     margin: 0;
     padding: 0;

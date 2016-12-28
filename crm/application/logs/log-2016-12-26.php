@@ -22,3 +22,5 @@ ERROR - 2016-12-26 20:26:15 --> Severity: Notice --> Undefined offset: 5 F:\xamp
 ERROR - 2016-12-26 20:26:15 --> Severity: Notice --> Undefined index: tblitems.name as item_name F:\xampp\htdocs\perfex_crm\crm\application\views\admin\tables\invoice_items.php 30
 ERROR - 2016-12-26 20:26:33 --> Severity: Notice --> Undefined offset: 5 F:\xampp\htdocs\perfex_crm\crm\application\helpers\perfex_db_helper.php 660
 ERROR - 2016-12-26 20:26:33 --> Severity: Notice --> Undefined index: tblitems.name as item_name F:\xampp\htdocs\perfex_crm\crm\application\views\admin\tables\invoice_items.php 30
+ERROR - 2016-12-26 22:10:50 --> Could not find the language line "CC"
+ERROR - 2016-12-26 22:11:25 --> Could not find the language line "CC"
