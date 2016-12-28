@@ -114,6 +114,13 @@ class Invoice_items extends Admin_controller
         //    $this->perfex_base->get_table_data('mail_lists');
         //}
         $data['title'] = 'Unity';//_l('mail_lists');
+        $data['id'] = $id;
+        
+        if($id != ''){
+            $item = $this->invoice_items_model->get($id);
+            $data['item'] = $item;
+        }
+        
         $this->load->view('admin/invoice_items/invoice_item', $data);
     }
     

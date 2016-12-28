@@ -270,23 +270,61 @@ $(function() {
     var window_unity;
     $(document).ready(function() {
         //#kendo
+        debugger;
         console.log( "ready!" );
-        window_unity = 
-            $("#window_unity").kendoWindow({
-                width: "600px",
-                title: "Manage Unity",
-                visible: false,
-            }).data("kendoWindow");
+        if(window.location.href.indexOf("/admin/invoice_items/invoice_items") != -1){
+            _validate_form($('#invoice_item_form_1'), {
+                address: 'precio'
+            }, manage_invoice_item);
+        }
+        else if(window.location.href.indexOf("/admin/invoice_items/item") != -1){
+            var id = $("[name='item_id']").val()
+            if(id)
+                create_grid_unities(id);
+            
+            window_unity = 
+                $("#window_unity").kendoWindow({
+                    width: "600px",
+                    title: "Manage Unity",
+                    visible: false,
+                }).data("kendoWindow");
+
+            $("#btn_add_unity").on("click", function(sender){
+                debugger;
+                window_unity.center().open();
+            });
+
+            _validate_form($('#unity_form'), {
+                address: 'required'
+            }, manage_unity);
+        }
         
-        $("#btn_add_unity").on("click", function(sender){
-            debugger;
-            window_unity.center().open();
-        });
-        
-        _validate_form($('#unity_form'), {
-            address: 'required'
-        }, manage_unity);
     });
+    
+    function manage_invoice_item(form){
+        //#kendo todo
+        debugger;
+        var data = $(form).serialize();
+        var url = form.action;
+        $.post(url, data).done(function(response) {
+            response = JSON.parse(response);
+            if (response.success == true) {
+                if ($('body').find('.ei-template').length > 0) {
+                    $('#item_select').find('option').eq(0).after('<option data-subtext="' + response.item.long_description + '" value="' + response.item.itemid + '">' + response.item.description + '</option>');
+                    $('body').find('#item_select').selectpicker('refresh');
+                    add_item_to_preview(response.item.itemid);
+                } else {
+                    // Is general items view
+                    $('.table-invoice-items').DataTable().ajax.reload();
+                }
+                alert_float('success', response.message);
+            }
+            $('#sales_item_modal').modal('hide');
+        }).fail(function(data) {
+            alert_float('danger', data.responseText);
+        });
+        return false;
+    }
     
     function edit_unity(sender){
         debugger;
@@ -1517,7 +1555,7 @@ function small_table_full_view() {
 }
 
 function manage_invoice_items(form) {
-    //#kendo
+    //#kendo - repetido, probablemente obsoleto
     debugger;
     var data = $(form).serialize();
     var url = form.action;

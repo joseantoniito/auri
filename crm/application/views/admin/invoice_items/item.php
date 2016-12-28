@@ -12,7 +12,7 @@
             <?php echo form_hidden('itemid'); ?>
             <div class="modal-body">
                 <div class="row">
-                    <div class="col-md-5">
+                    <div class="col-md-12">
                         <div class="alert alert-warning affect-warning hide">
                             <?php echo _l('changing_items_affect_warning'); ?>
                         </div>
@@ -30,19 +30,6 @@
                             </div>
                         <?php echo render_input('address','invoice_item_add_edit_address'); ?>
                         </div>
-                    
-                    <div class="col-md-7">
-                        <div class="panel_s">
-                            <div class="panel-body _buttons">
-                                <span class="btn btn-info pull-left" 
-                                   id="btn_add_unity"><?php echo _l('new_invoice_item'); ?></span>
-                            </div>
-                        </div>
-                        
-                        <div id="grid_unities"></div>
-                        
-                        
-                    </div>
                 </div>
                 </div>
                 <div class="modal-footer">
@@ -52,23 +39,7 @@
                 </div>
             
             
-                <div id="window_unity">
-                    <?php echo form_open('admin/invoice_items/manage_unity',array('id'=>'unity_form')); ?>
-                    <?php echo form_hidden('itemid'); ?>
-                    <div class="panel_s" style="min-height:200px;">
-                        <?php echo render_input('status','invoice_item_add_edit_description'); ?>
-                        <?php echo render_input('m2_habitables','invoice_item_add_edit_description'); ?>
-                        <?php echo render_input('recamaras','invoice_item_add_edit_description'); ?>
-                        <?php echo render_input('banios','invoice_item_add_edit_description'); ?>
-                        <?php echo render_input('precio','invoice_item_add_edit_description'); ?>
-
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" ><?php echo _l('close'); ?></button>
-                        <button type="submit" class="btn btn-info"><?php echo _l('submit'); ?></button>
-                    </div>
-                    <?php echo form_close(); ?>
-                </div>
+                
             </div>
         </div>
     </div>

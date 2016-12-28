@@ -41,11 +41,14 @@ foreach ($rResult as $aRow) {
         $row[] = $_data;
     }
 
-    $options = icon_btn('#' . $aRow['id'], 'pencil-square-o', 'btn-default', array(
+    /*$options = icon_btn('#' . $aRow['id'], 'pencil-square-o', 'btn-default', array(
         'data-toggle' => 'modal',
         'data-target' => '#sales_item_modal',
         'data-id' => $aRow['id']
-        ));
+        ));*/
+    
+    $options = icon_btn('invoice_items/item/' . $aRow['id'], 'pencil-square-o', 'btn-default');
+    
     $row[]   = $options .= icon_btn('invoice_items/delete/' . $aRow['id'], 'remove', 'btn-danger _delete');
 
     $output['aaData'][] = $row;
