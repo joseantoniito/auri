@@ -186,5 +186,25 @@ class Invoice_items extends Admin_controller
         }
     }
 
+    public function delete_unity($id)
+    {
+        if (!has_permission('items','','delete')) {
+            access_denied('Invoice Items');
+        }
+
+        if (!$id) {
+            redirect(admin_url('invoice_items'));
+        }
+        $response = $this->invoice_items_model->delete_unity($id);
+        if (is_array($response) && isset($response['referenced'])) {
+            set_alert('warning', _l('is_referenced', _l('invoice_item_unity_lowercase')));
+        } else if ($response == true) {
+            set_alert('success', _l('deleted', _l('invoice_item_unity')));
+        } else {
+            set_alert('warning', _l('problem_deleting', _l('invoice_item_unity_lowercase')));
+        }
+        //redirect(admin_url('invoice_items'));
+        //todo: cambiar recursos
+    }
     
 }

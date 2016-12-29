@@ -215,6 +215,9 @@ $lang['invoice_item']                                       = 'Invoice Item';
 $lang['new_invoice_item']                                   = 'New Item';
 $lang['invoice_item_lowercase']                             = 'invoice item';
 
+$lang['invoice_item_unity']                                 = 'Invoice Item Unity';
+$lang['invoice_item_unity_lowercase']                       = 'invoice item unity';
+
 $lang['invoice_items_list_description'] = 'Description';
 $lang['invoice_items_list_rate']        = 'Rate';
 $lang['invoice_items_list_tax']         = 'Tax';

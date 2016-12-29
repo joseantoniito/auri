@@ -216,6 +216,9 @@ $lang['invoice_item']                                       = 'artículo factura
 $lang['new_invoice_item']                                   = 'Nuevo artículo';
 $lang['invoice_item_lowercase']                             = 'posición de factura';
 
+$lang['invoice_item_unity']                                 = 'unidad de artículo de factura';
+$lang['invoice_item_unity_lowercase']                       = 'posición de unidad de factura';
+
 $lang['invoice_items_list_description'] = 'Descripción';
 $lang['invoice_items_list_rate']        = 'Tarifa';
 $lang['invoice_items_list_tax']         = 'Impuesto';

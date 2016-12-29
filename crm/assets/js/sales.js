@@ -245,29 +245,9 @@ $(function() {
         }
     });
 
-    
-    function create_grid_unities(id){
-        var itemid = 1;
-        $.get(admin_url + 'invoice_items/get_unities/' + id, function(response) {
-            console.log(response);
-            debugger;
 
-            var grid_unities = 
-                $("#grid_unities").kendoGrid({
-                    dataSource: response,
-                    columns: [
-                        {field: "status", title: "Status"},                            
-                        {field: "m2_habitables", title: "m2 Habitables"},
-                        {field: "recamaras", title: "Recámaras"},
-                        {field: "banios", title: "Baños"},
-                        {field: "precio", title: "Precio"}
-                    ]
-                }).data("kendoGrid");
-
-        }, 'json');
-    }
-    
-    var window_unity;
+    var window_unity; 
+    var grid_unities;
     $(document).ready(function() {
         //#kendo
         debugger;
@@ -301,6 +281,39 @@ $(function() {
         
     });
     
+    function create_grid_unities(id){
+        var itemid = 1;
+        $.get(admin_url + 'invoice_items/get_unities/' + id, function(response) {
+            console.log(response);
+            debugger;
+
+            grid_unities = 
+                $("#grid_unities").kendoGrid({
+                    dataSource: response,
+                    columns: [
+                        {field: "status", title: "Status"},                            
+                        {field: "m2_habitables", title: "m2 Habitables"},
+                        {field: "recamaras", title: "Recámaras"},
+                        {field: "banios", title: "Baños"},
+                        {field: "precio", title: "Precio"},
+                        {field:"id", title:"Acciones", width:"100px", 
+                        template: "<a id='btn_edit_unity' _id='#:id#' class='qodef-icon-shortcode normal qodef-icon-little'><i class='qodef-icon-font-awesome fa fa-pencil-square qodef-icon-element'></i></a> <a id='btn_delete_unity' _id='#:id#' class='qodef-icon-shortcode normal qodef-icon-little' style='cursor:pointer;'> <i class='qodef-icon-font-awesome fa fa-trash qodef-icon-element'></i> </a>"}
+                    ],
+                    dataBound: function(e) {
+                        console.log("dataBound");
+                        debugger;
+                        $.each(e.sender.items(), function(index, item){
+                            $(item).find("#btn_edit_unity")
+                                .on("click", edit_unity);
+                            $(item).find("#btn_delete_unity")
+                                .on("click", delete_unity);
+                        });
+                    }
+                }).data("kendoGrid");
+
+        }, 'json');
+    }
+    
     function manage_invoice_item(form){
         //#kendo todo
         debugger;
@@ -326,16 +339,43 @@ $(function() {
         return false;
     }
     
-    function edit_unity(sender){
+    function edit_unity(event){
         debugger;
-        var id = $(sender.currentTarget).attr("_id");
+        var id = $(event.currentTarget).attr("_id");
 
         $.get(admin_url + 'invoice_items/get_unity/' + id, function(response) {
             console.log(response);
+            
+            //todo
+            $("#status").val(response.status);
+            $("#m2_habitables").val(response.m2_habitables);
+            $("#recamaras").val(response.recamaras);
+            $("#banios").val(response.banios);
+            $("#precio").val(response.precio);
+            
             debugger;
         }, 'json');
 
         window_unity.center().open();
+    }
+    
+    function delete_unity(event){
+        //todo
+        debugger;
+        var id = $(event.currentTarget).attr("_id");
+
+        $.get(admin_url + 'invoice_items/get_unity/' + id, function(response) {
+            console.log(response);
+            
+            //todo
+            $("#status").val(response.status);
+            $("#m2_habitables").val(response.m2_habitables);
+            $("#recamaras").val(response.recamaras);
+            $("#banios").val(response.banios);
+            $("#precio").val(response.precio);
+            
+            debugger;
+        }, 'json');
     }
     
     function manage_unity(form) {
@@ -346,7 +386,12 @@ $(function() {
         $.post(url, data).done(function(response) {
             response = JSON.parse(response);
             if (response.success == true) {
-                if ($('body').find('.ei-template').length > 0) {
+                
+                //grid_unities.
+                
+                alert_float('success', response.message);
+                
+                /*if ($('body').find('.ei-template').length > 0) {
                     $('#item_select').find('option').eq(0).after('<option data-subtext="' + response.item.long_description + '" value="' + response.item.itemid + '">' + response.item.description + '</option>');
                     $('body').find('#item_select').selectpicker('refresh');
                     add_item_to_preview(response.item.itemid);
@@ -354,7 +399,7 @@ $(function() {
                     // Is general items view
                     $('.table-invoice-items').DataTable().ajax.reload();
                 }
-                alert_float('success', response.message);
+                alert_float('success', response.message);*/
             }
             $('#sales_item_modal').modal('hide');
         }).fail(function(data) {
