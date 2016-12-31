@@ -14,8 +14,8 @@
                             <?php echo form_open('admin/invoice_items/manage',array('id'=>'invoice_item_form_1')); ?>
                                 
                                 <?php echo form_hidden('itemid',$id); ?>
-                                <?php $value=( isset($item) ? $item->description : ''); ?>
-                                <?php echo render_input( 'description', 'description',$value); ?>
+                                <?php $value=( isset($item) ? $item->m2_habitables : ''); ?>
+                                <?php echo render_input( 'm2_habitables', 'm2_habitables',$value); ?>
                                 <?php $value=( isset($item) ? $item->rate : ''); ?>
                                 <?php echo render_input( 'rate', 'rate',$value); ?>
                                 <?php $value=( isset($item) ? $item->long_description : ''); ?>

@@ -1,0 +1,18 @@
+/*#sales_item_modal .modal-content{
+    min-width:900px;
+}*/
+
+#window_unity{
+    display: none;
+}
+
+#window_unity input.form-control{
+    width:95% !important;
+}
+
+.border-b-grey{
+    border-bottom: 1px solid #f0f0f0;
+}
+.border-t-grey{
+    border-top: 1px solid #f0f0f0;
+}

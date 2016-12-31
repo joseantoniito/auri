@@ -96,4 +96,9 @@ if($alertclass != ''){
     </script>
     <?php } ?>
 
+<link rel="stylesheet" href="//kendo.cdn.telerik.com/2016.1.226/styles/kendo.common-material.min.css" />
+<link rel="stylesheet" href="//kendo.cdn.telerik.com/2016.1.226/styles/kendo.material.min.css" />
+<script src="//kendo.cdn.telerik.com/2016.1.226/js/kendo.all.min.js"></script>
+<?php echo app_script('assets/js','items.js'); ?>
+<?php echo app_stylesheet('assets/css','custom-style.css'); ?>
 
