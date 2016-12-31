@@ -250,12 +250,10 @@ $(function() {
     var grid_unities;
     $(document).ready(function() {
         //#kendo
-        debugger;
+         
         console.log( "ready!" );
         if(window.location.href.indexOf("/admin/invoice_items/invoice_items") != -1){
-            _validate_form($('#invoice_item_form_1'), {
-                address: 'precio'
-            }, manage_invoice_item);
+            
         }
         else if(window.location.href.indexOf("/admin/invoice_items/item") != -1){
             var id = $("[name='item_id']").val()
@@ -270,13 +268,17 @@ $(function() {
                 }).data("kendoWindow");
 
             $("#btn_add_unity").on("click", function(sender){
-                debugger;
+                 
                 window_unity.center().open();
             });
 
             _validate_form($('#unity_form'), {
                 address: 'required'
             }, manage_unity);
+            
+            _validate_form($('#invoice_item_form_1'), {
+                precio: 'required'
+            }, manage_invoice_item);
         }
         
     });
@@ -285,7 +287,7 @@ $(function() {
         var itemid = 1;
         $.get(admin_url + 'invoice_items/get_unities/' + id, function(response) {
             console.log(response);
-            debugger;
+             
 
             grid_unities = 
                 $("#grid_unities").kendoGrid({
@@ -301,7 +303,7 @@ $(function() {
                     ],
                     dataBound: function(e) {
                         console.log("dataBound");
-                        debugger;
+                         
                         $.each(e.sender.items(), function(index, item){
                             $(item).find("#btn_edit_unity")
                                 .on("click", edit_unity);
@@ -316,8 +318,9 @@ $(function() {
     
     function manage_invoice_item(form){
         //#kendo todo
-        debugger;
+         
         var data = $(form).serialize();
+        data += "&tax=''";
         var url = form.action;
         $.post(url, data).done(function(response) {
             response = JSON.parse(response);
@@ -328,11 +331,11 @@ $(function() {
                     add_item_to_preview(response.item.itemid);
                 } else {
                     // Is general items view
-                    $('.table-invoice-items').DataTable().ajax.reload();
+                    //$('.table-invoice-items').DataTable().ajax.reload();
                 }
                 alert_float('success', response.message);
             }
-            $('#sales_item_modal').modal('hide');
+            //$('#sales_item_modal').modal('hide');
         }).fail(function(data) {
             alert_float('danger', data.responseText);
         });
@@ -340,20 +343,21 @@ $(function() {
     }
     
     function edit_unity(event){
-        debugger;
+         
         var id = $(event.currentTarget).attr("_id");
 
         $.get(admin_url + 'invoice_items/get_unity/' + id, function(response) {
             console.log(response);
             
             //todo
+            $("[name='unity_id']").val(id);
             $("#status").val(response.status);
             $("#m2_habitables").val(response.m2_habitables);
             $("#recamaras").val(response.recamaras);
             $("#banios").val(response.banios);
             $("#precio").val(response.precio);
             
-            debugger;
+             
         }, 'json');
 
         window_unity.center().open();
@@ -361,33 +365,29 @@ $(function() {
     
     function delete_unity(event){
         //todo
-        debugger;
+         
         var id = $(event.currentTarget).attr("_id");
 
-        $.get(admin_url + 'invoice_items/get_unity/' + id, function(response) {
+        $.get(admin_url + 'invoice_items/delete_unity/' + id, function(response) {
             console.log(response);
             
-            //todo
-            $("#status").val(response.status);
-            $("#m2_habitables").val(response.m2_habitables);
-            $("#recamaras").val(response.recamaras);
-            $("#banios").val(response.banios);
-            $("#precio").val(response.precio);
             
-            debugger;
+             
         }, 'json');
     }
     
     function manage_unity(form) {
         //#kendo
-        debugger;
+         
         var data = $(form).serialize();
+        data = data.replace("item_id", "id_item");
+        data = data.replace("unity_id", "id");
         var url = form.action;
         $.post(url, data).done(function(response) {
             response = JSON.parse(response);
             if (response.success == true) {
-                
-                //grid_unities.
+                 
+                refresh_grid_unities(response);
                 
                 alert_float('success', response.message);
                 
@@ -406,6 +406,28 @@ $(function() {
             alert_float('danger', data.responseText);
         });
         return false;
+    }
+    
+    function refresh_grid_unities(response){
+        debugger;
+        console.log(grid_unities);
+        
+        var data = grid_unities.dataSource.data();
+        var indexItem;
+        var itemInGrid = $.grep(data, function(item, index){ 
+            var ok = item.id == response.item.id;
+            if(ok) indexItem = index;
+            return ok;
+        });
+        
+        if(!indexItem){
+            data.push(response.item);
+        }
+        else{
+            data.splice(indexItem, 1, response.item);
+        }
+        grid_unities.dataSource.data(data);
+        window_unity.close();
     }
     
     $('body').on('hidden.bs.modal', '#sales_item_modal', function(event) {
@@ -839,7 +861,7 @@ function record_payment(id) {
 }
 // Add item to preview
 function add_item_to_preview(itemid) {
-    debugger;
+     
     $.get(admin_url + 'invoice_items/get_item_by_id/' + itemid, function(response) {
         if (!response.taxname) {
             response.taxname = '';
@@ -1601,7 +1623,7 @@ function small_table_full_view() {
 
 function manage_invoice_items(form) {
     //#kendo - repetido, probablemente obsoleto
-    debugger;
+     
     var data = $(form).serialize();
     var url = form.action;
     $.post(url, data).done(function(response) {

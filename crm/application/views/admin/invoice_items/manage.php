@@ -7,7 +7,7 @@
             <?php if(has_permission('items','','create')){ ?>
                 <div class="panel_s">
                     <div class="panel-body _buttons">
-                        <a href="#" class="btn btn-info pull-left" data-toggle="modal" data-target="#sales_item_modal"><?php echo _l('new_invoice_item'); ?></a>
+                        <a href="invoice_items/item" class="btn btn-info pull-left" ><?php echo _l('new_invoice_item'); ?></a>
                     </div>
                 </div>
                 <?php } ?>

@@ -52,6 +52,7 @@
                         <div id="window_unity">
                             <?php echo form_open('admin/invoice_items/manage_unity',array('id'=>'unity_form')); ?>
                             <?php echo form_hidden( 'item_id',$id); ?>
+                            <?php echo form_hidden( 'unity_id', ''); ?>
                             <div class="panel_s" style="min-height:200px;">
                                 <?php echo render_input('status','status'); ?>
                                 <?php echo render_input('m2_habitables','m2_habitables'); ?>

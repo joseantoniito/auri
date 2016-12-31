@@ -4,6 +4,10 @@
     min-width:900px;
 }*/
 
+#window_unity{
+    display: none;
+}
+
 #window_unity input.form-control{
     width:95% !important;
 }

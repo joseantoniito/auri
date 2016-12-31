@@ -180,6 +180,7 @@ class Invoice_items extends Admin_controller
                     echo json_encode(array(
                         'success' => $success,
                         'message' => $message,
+                        'item'=>$this->invoice_items_model->get_unity($data['id']),
                         ));
                 }
             }

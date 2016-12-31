@@ -38,13 +38,13 @@ define('APP_ENC_KEY','996757f426acf0440cdc58e9cc4ef7be');
 /* Database credentials - Auto added on install */
 
 /* The hostname of your database server. */
-define('APP_DB_HOSTNAME','localhost');
+define('APP_DB_HOSTNAME','192.185.16.192');
 /* The username used to connect to the database */
-define('APP_DB_USERNAME','auri_perfex_crm');
+define('APP_DB_USERNAME','rafaq5_auri_perf');
 /* The password used to connect to the database */
 define('APP_DB_PASSWORD','wujtRLWFyd4qezhc');
 /* The name of the database you want to connect to */
-define('APP_DB_NAME','auri_perfex_crm');
+define('APP_DB_NAME','rafaq5_auri_perfex_crm');
 
 /* Session Handler */
 
