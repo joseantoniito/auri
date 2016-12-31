@@ -10,7 +10,8 @@ $additionalSelect = array(
     'name',
     'groupid',
     'articleid',
-
+    'slug',
+    'staff_article'
     );
 $join             = array(
     'LEFT JOIN tblknowledgebasegroups ON tblknowledgebasegroups.groupid = tblknowledgebase.articlegroup'
@@ -42,18 +43,27 @@ foreach ($rResult as $aRow) {
         if ($aColumns[$i] == 'articlegroup') {
             $_data =  $aRow['name'];
         } else if($aColumns[$i] == 'subject'){
-            $_data = '<a href="'.admin_url('knowledge_base/article/'.$aRow['articleid']).'">'.$_data.'</a>';
-        }
+            if($aRow['staff_article'] == 1){
+                $_data = '<a href="'.admin_url('knowledge_base/view/'.$aRow['slug']).'">'.$_data.'</a>';
+            } else {
+               $_data = '<a href="'.site_url('clients/knowledge_base/'.$aRow['slug']).'">'.$_data.'</a>';
+           }
+           if($aRow['staff_article'] == 1){
+                $_data .= '<span class="label label-default pull-right">'._l('internal_article').'</span>';
+           }
+       }
 
-        $row[] = $_data;
-    }
-    $options = '';
+       $row[] = $_data;
+   }
+   $options = '';
+   if(has_permission('knowledge_base','','edit')){
     $options .= icon_btn('knowledge_base/article/' . $aRow['articleid'], 'pencil-square-o');
-    if(has_permission('knowledge_base','','delete')){
-        $options .= icon_btn('knowledge_base/delete_article/' . $aRow['articleid'], 'remove', 'btn-danger _delete');
-    }
+}
+if(has_permission('knowledge_base','','delete')){
+    $options .= icon_btn('knowledge_base/delete_article/' . $aRow['articleid'], 'remove', 'btn-danger _delete');
+}
 
-    $row[] = $options;
+$row[] = $options;
 
-    $output['aaData'][] = $row;
+$output['aaData'][] = $row;
 }

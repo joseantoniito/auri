@@ -297,6 +297,10 @@ class Contracts_model extends CRM_Model
             if(is_client_logged_in()){
                 $total_rows_where['client'] = get_client_user_id();
                 $total_rows_where['not_visible_to_client'] = 0;
+            } else {
+                if(!has_permission('contracts','','view')){
+                    $total_rows_where['addedfrom'] = get_staff_user_id();
+                }
             }
             $total_rows = total_rows('tblcontracts', $total_rows_where);
             if($total_rows == 0 && is_client_logged_in()){continue;}
@@ -328,13 +332,20 @@ class Contracts_model extends CRM_Model
         $types  = $this->get_contract_types();
         foreach ($types as $type) {
             array_push($labels, $type['name']);
-            $total = sum_from_table('tblcontracts', array(
+
+            $where = array(
                 'where' => array(
                     'contract_type' => $type['id'],
                     'trash' => 0
                 ),
                 'field' => 'contract_value'
-            ));
+            );
+
+            if(!has_permission('contracts','','view')){
+                $where['where']['addedfrom'] = get_staff_user_id();
+            }
+
+            $total = sum_from_table('tblcontracts', $where);
             if($total == null){
                 $total = 0;
             }
@@ -366,6 +377,7 @@ class Contracts_model extends CRM_Model
         $data['new_end_date']   = to_sql_date($data['new_end_date']);
         $data['date_renewed']   = date('Y-m-d H:i:s');
         $data['renewed_by']     = get_staff_full_name(get_staff_user_id());
+        $data['renewed_by_staff_id']     = get_staff_user_id();
         if (!is_date($data['new_end_date'])) {
             unset($data['new_end_date']);
         }

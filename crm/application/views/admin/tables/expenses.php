@@ -8,7 +8,7 @@ $aColumns      = array(
     'file_name',
     'date',
     'project_id',
-    'tblexpenses.clientid',
+    'CASE company WHEN "" THEN (SELECT CONCAT(firstname, " ", lastname) FROM tblcontacts WHERE userid = tblclients.userid and is_primary = 1) ELSE company END as company',
     'invoiceid',
     'reference_no',
     'paymentmode',
@@ -39,13 +39,16 @@ include_once(APPPATH.'views/admin/tables/includes/expenses_filter.php');
 if (is_numeric($clientid)) {
     array_push($where,'AND tblexpenses.clientid=' . $clientid);
 }
+
+if(!has_permission('expenses','','view')){
+    array_push($where,'AND tblexpenses.addedfrom='.get_staff_user_id());
+}
 $sIndexColumn = "id";
 $sTable       = 'tblexpenses';
 $result       = data_tables_init($aColumns, $sIndexColumn, $sTable, $join, $where, array(
     'tblexpensescategories.name as category_name',
-    'tblexpenses.id',
-    'company',
     'billable',
+    'tblexpenses.clientid',
     'currency',
     'tax',
     'tblprojects.name as project_name',
@@ -66,9 +69,9 @@ foreach ($rResult as $aRow) {
             $_data = '<span class="label label-default inline-block">'.$_data.'</span>';
         } else if ($aColumns[$i] == 'category') {
             if (is_numeric($clientid)) {
-                $_data = '<a href="' . admin_url('expenses/list_expenses/' . $aRow['id']) . '">' . $aRow['category_name'] . '</a>';
+                $_data = '<a href="' . admin_url('expenses/list_expenses/' . $aRow['tblexpenses.id']) . '">' . $aRow['category_name'] . '</a>';
             } else {
-                $_data = '<a href="#" onclick="init_expense(' . $aRow['id'] . ');return false;">' . $aRow['category_name'] . '</a>';
+                $_data = '<a href="#" onclick="init_expense(' . $aRow['tblexpenses.id'] . ');return false;">' . $aRow['category_name'] . '</a>';
             }
             if ($aRow['billable'] == 1) {
                 if ($aRow['invoiceid'] == NULL) {
@@ -78,7 +81,7 @@ foreach ($rResult as $aRow) {
                         'id' => $aRow['invoiceid'],
                         'status' => 2
                     )) > 0) {
-                        $_data .= '<br /><p class="text-success">' . _l('expense_list_billed') . '</p>';
+                        $_data .= '<p class="text-success">' . _l('expense_list_billed') . '</p>';
                     } else {
                         $_data .= '<p class="text-success">' . _l('expense_list_invoice') . '</p>';
                     }
@@ -91,8 +94,8 @@ foreach ($rResult as $aRow) {
                 $total += ($total / 100 * $_tax->taxrate);
             }
             $_data = format_money($total, $this->_instance->currencies_model->get($aRow['currency'])->symbol);
-        } else if ($aColumns[$i] == 'tblexpenses.clientid') {
-            $_data = '<a href="' . admin_url('clients/client/' . $aRow['tblexpenses.clientid']) . '">' . $aRow['company'] . '</a>';
+        } else if ($i == 7) {
+            $_data = '<a href="' . admin_url('clients/client/' . $aRow['clientid']) . '">' . $aRow['company'] . '</a>';
         } else if ($aColumns[$i] == 'paymentmode') {
             $_data = '';
             if ($aRow['paymentmode'] != '0' && !empty($aRow['paymentmode'])) {

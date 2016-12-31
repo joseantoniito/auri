@@ -1,11 +1,11 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed'); ?>
 
-ERROR - 2016-12-30 17:50:59 --> Could not find the language line "description"
-ERROR - 2016-12-30 17:50:59 --> Could not find the language line "rate"
-ERROR - 2016-12-30 17:50:59 --> Could not find the language line "long_description"
-ERROR - 2016-12-30 17:50:59 --> Could not find the language line "address"
-ERROR - 2016-12-30 17:50:59 --> Could not find the language line "status"
-ERROR - 2016-12-30 17:50:59 --> Could not find the language line "m2_habitables"
-ERROR - 2016-12-30 17:50:59 --> Could not find the language line "recamaras"
-ERROR - 2016-12-30 17:50:59 --> Could not find the language line "banios"
-ERROR - 2016-12-30 17:50:59 --> Could not find the language line "precio"
+ERROR - 2016-12-30 11:41:50 --> Could not find the language line "Qualification"
+ERROR - 2016-12-30 11:42:00 --> Could not find the language line "CC"
+ERROR - 2016-12-30 11:43:38 --> Could not find the language line "CC"
+ERROR - 2016-12-30 11:54:23 --> Severity: Notice --> Trying to get property of non-object /home3/rafaq5/public_html/auri/crm/application/models/Surveys_model.php 29
+ERROR - 2016-12-30 11:54:23 --> Severity: Notice --> Trying to get property of non-object /home3/rafaq5/public_html/auri/crm/application/models/Surveys_model.php 30
+ERROR - 2016-12-30 11:54:23 --> Severity: Notice --> Trying to get property of non-object /home3/rafaq5/public_html/auri/crm/application/models/Surveys_model.php 31
+ERROR - 2016-12-30 11:54:23 --> Severity: Notice --> Trying to get property of non-object /home3/rafaq5/public_html/auri/crm/application/models/Surveys_model.php 31
+ERROR - 2016-12-30 13:06:46 --> Query error: Duplicate column name 'description' - Invalid query: ALTER TABLE `tblleads` ADD `description` TEXT NULL AFTER `company`;
+ERROR - 2016-12-30 13:07:50 --> Query error: Duplicate column name 'description' - Invalid query: ALTER TABLE `tblleads` ADD `description` TEXT NULL AFTER `company`;

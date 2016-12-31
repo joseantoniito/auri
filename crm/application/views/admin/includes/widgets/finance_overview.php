@@ -1,10 +1,10 @@
-  <?php  if(has_permission('invoices','','view') || has_permission('proposals','','view') || has_permission('estimates','','view')){ ?>
+  <?php  if(has_permission('invoices','','view') || has_permission('proposals','','view') || has_permission('estimates','','view') || has_permission('estimates','','view_own') || has_permission('proposals','','view_own') || has_permission('invoices','','view_own')){ ?>
    <div class="finance-summary">
     <div class="panel_s">
      <div class="panel-body">
       <div class="row home-summary">
-       <?php if(has_permission('invoices','','view')){
-          $total_invoices = total_rows('tblinvoices','status NOT IN(5)');
+       <?php if(has_permission('invoices','','view') || has_permission('invoices','','view_own')){
+          $total_invoices = total_rows('tblinvoices','status NOT IN(5)'.(!has_permission('invoices','','view') ? ' AND addedfrom='.get_staff_user_id() : ''));
         ?>
         <div class="col-md-6 col-lg-4 col-sm-6">
          <div class="row">
@@ -14,7 +14,7 @@
          </div>
          <?php $percent_data = get_invoices_percent_by_status(6,$total_invoices); ?>
          <div class="col-md-12 text-stats-wrapper">
-           <a href="<?php echo admin_url('invoices/list_invoices?status=6'); ?>" class="text-muted mbot10 inline-block">
+           <a href="<?php echo admin_url('invoices/list_invoices?status=6'); ?>" class="text-muted mbot15 inline-block">
              <span class="_total bold"><?php echo $percent_data['total_by_status']; ?></span> <?php echo format_invoice_status(6,'',false); ?>
            </a>
          </div>
@@ -27,7 +27,7 @@
         </div>
         <?php $percent_data = get_invoices_percent_by_status('not_sent',$total_invoices); ?>
         <div class="col-md-12 text-stats-wrapper">
-          <a href="<?php echo admin_url('invoices/list_invoices?filter=not_sent'); ?>" class="text-muted inline-block mbot10">
+          <a href="<?php echo admin_url('invoices/list_invoices?filter=not_sent'); ?>" class="text-muted inline-block mbot15">
            <span class="_total bold"><?php echo $percent_data['total_by_status']; ?></span> <?php echo _l('not_sent_indicator'); ?>
          </a>
        </div>
@@ -40,7 +40,7 @@
       </div>
       <?php $percent_data = get_invoices_percent_by_status(1,$total_invoices); ?>
       <div class="col-md-12 text-stats-wrapper">
-       <a href="<?php echo admin_url('invoices/list_invoices?status=1'); ?>" class="text-danger mbot10 inline-block">
+       <a href="<?php echo admin_url('invoices/list_invoices?status=1'); ?>" class="text-danger mbot15 inline-block">
          <span class="_total bold"><?php echo $percent_data['total_by_status']; ?></span> <?php echo format_invoice_status(1,'',false); ?>
        </a>
      </div>
@@ -53,7 +53,7 @@
     </div>
     <?php $percent_data = get_invoices_percent_by_status(3,$total_invoices); ?>
     <div class="col-md-12 text-stats-wrapper">
-     <a href="<?php echo admin_url('invoices/list_invoices?status=3'); ?>" class="text-warning mbot10 inline-block">
+     <a href="<?php echo admin_url('invoices/list_invoices?status=3'); ?>" class="text-warning mbot15 inline-block">
       <span class="_total bold"><?php echo $percent_data['total_by_status']; ?></span> <?php echo format_invoice_status(3,'',false); ?>
     </a>
   </div>
@@ -66,7 +66,7 @@
  </div>
  <?php $percent_data = get_invoices_percent_by_status(4,$total_invoices); ?>
  <div class="col-md-12 text-stats-wrapper">
-   <a href="<?php echo admin_url('invoices/list_invoices?status=4'); ?>" class="text-warning mbot10 inline-block">
+   <a href="<?php echo admin_url('invoices/list_invoices?status=4'); ?>" class="text-warning mbot15 inline-block">
     <span class="_total bold"><?php echo $percent_data['total_by_status']; ?></span> <?php echo format_invoice_status(4,'',false); ?>
   </a>
 </div>
@@ -79,7 +79,7 @@
 </div>
 <?php $percent_data = get_invoices_percent_by_status(2,$total_invoices); ?>
 <div class="col-md-12 text-stats-wrapper">
-  <a href="<?php echo admin_url('invoices/list_invoices?status=2'); ?>" class="text-success mbot10 inline-block">
+  <a href="<?php echo admin_url('invoices/list_invoices?status=2'); ?>" class="text-success mbot15 inline-block">
    <span class="_total bold"><?php echo $percent_data['total_by_status']; ?></span> <?php echo format_invoice_status(2,'',false); ?>
  </a>
 </div>
@@ -93,7 +93,7 @@
 </div>
 </div>
 <?php } ?>
-<?php if(has_permission('estimates','','view')){ ?>
+<?php if(has_permission('estimates','','view') || has_permission('estimates','','view_own')){ ?>
  <div class="col-md-6 col-lg-4 col-sm-6">
   <div class="row">
    <div class="col-md-12 text-stats-wrapper">
@@ -111,7 +111,7 @@
     $percent_data = get_estimates_percent_by_status($status);
     ?>
     <div class="col-md-12 text-stats-wrapper">
-     <a href="<?php echo $url; ?>" class="text-<?php echo estimate_status_color_class($status,true); ?> mbot10 inline-block">
+     <a href="<?php echo $url; ?>" class="text-<?php echo estimate_status_color_class($status,true); ?> mbot15 inline-block">
       <span class="_total bold"><?php echo $percent_data['total_by_status']; ?></span>
     </span> <?php echo format_estimate_status($status,'',false); ?>
   </a>
@@ -127,7 +127,7 @@
 </div>
 </div>
 <?php } ?>
-<?php if(has_permission('proposals','','view')){ ?>
+<?php if(has_permission('proposals','','view') || has_permission('proposals','','view_own')){ ?>
  <div class="col-md-12 col-sm-6 col-lg-4">
   <div class="row">
    <div class="col-md-12 text-stats-wrapper">
@@ -141,7 +141,7 @@
     $percent_data = get_proposals_percent_by_status($status);
     ?>
     <div class="col-md-12 text-stats-wrapper">
-      <a href="<?php echo $url; ?>" class="text-<?php echo proposal_status_color_class($status,true); ?> mbot10 inline-block">
+      <a href="<?php echo $url; ?>" class="text-<?php echo proposal_status_color_class($status,true); ?> mbot15 inline-block">
         <span class="_total bold"><?php echo $percent_data['total_by_status']; ?></span> <?php echo format_proposal_status($status,'',false); ?>
       </a>
     </div>
@@ -158,7 +158,7 @@
 </div>
 <?php } ?>
 </div>
-<?php if(has_permission('invoices','','view')){ ?>
+<?php if(has_permission('invoices','','view') || has_permission('invoices','','view_own')){ ?>
   <hr />
   <div id="invoices_total"></div>
   <?php } ?>

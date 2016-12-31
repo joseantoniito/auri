@@ -1,9 +1,9 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
-$aColumns = array('tblcontracts.id','subject', 'client', 'contract_type', 'datestart','dateend');
+$aColumns = array('tblcontracts.id','subject', 'CASE company WHEN "" THEN (SELECT CONCAT(firstname, " ", lastname) FROM tblcontacts WHERE userid = tblclients.userid and is_primary = 1) ELSE company END as company', 'contract_type', 'datestart','dateend');
 $sIndexColumn = "id";
 $sTable = 'tblcontracts';
-$additionalSelect = array('company','tblcontracts.id','tblcontracttypes.name','trash');
+$additionalSelect = array('tblcontracts.id','tblcontracttypes.name','trash','client');
 $join = array(
     'LEFT JOIN tblclients ON tblclients.userid = tblcontracts.client',
     'LEFT JOIN tblcontracttypes ON tblcontracttypes.id = tblcontracts.contract_type'
@@ -77,6 +77,10 @@ if(is_numeric($clientid)){
    array_push($where,'AND client='.$clientid);
 }
 
+if(!has_permission('contracts','','view')){
+    array_push($where,'AND addedfrom='.get_staff_user_id());
+}
+
 // Fix for big queries. Some hosting have max_join_limit
 if(count($custom_fields) > 4){
     @$this->_instance->db->query('SET SQL_BIG_SELECTS=1');
@@ -97,7 +101,7 @@ foreach ( $rResult as $aRow )
         } else {
             $_data = $aRow[ $aColumns[$i] ];
         }
-        if($aColumns[$i] == 'client'){
+        if($i == 2){
             $_data = '<a href="'.admin_url('clients/client/'.$aRow['client']).'">'. $aRow['company'] . '</a>';
         } else if($aColumns[$i] == 'dateend' || $aColumns[$i] == 'datestart'){
             $_data = _d($_data);

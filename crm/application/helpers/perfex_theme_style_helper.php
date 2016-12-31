@@ -1,5 +1,5 @@
 <?php
-
+defined('BASEPATH') OR exit('No direct script access allowed');
 function get_styling_areas($type = 'admin')
 {
     $areas = array(
@@ -28,7 +28,13 @@ function get_styling_areas($type = 'admin')
             array(
                 'name' => 'Main Menu/Setup Active Item Background Color',
                 'id'=>'admin-menu-active-item',
-                'target' => '.admin #side-menu li.active > a,.admin #setup-menu li.active > a',
+                'target' => '
+                .admin #side-menu li.active > a,
+                .admin #setup-menu li.active > a,
+                #side-menu.nav > li > a:hover,
+                #side-menu.nav > li > a:focus,
+                #setup-menu > li > a:hover,
+                #setup-menu > li > a:focus',
                 'css' => 'background',
                 'additional_selectors' => ''
             ),

@@ -13,6 +13,8 @@
     <a href="<?php echo admin_url('departments'); ?>" class="mbot30 display-block"><?php echo _l('setup_calendar_by_departments'); ?></a>
     <?php echo render_input('settings[google_calendar_main_calendar]','settings_gcal_main_calendar_id',get_option('google_calendar_main_calendar'),'text',array('data-toggle'=>'tooltip','title'=>'settings_gcal_main_calendar_id_help')); ?>
     <hr />
+      <?php echo render_input('settings[calendar_events_limit]','calendar_events_limit',get_option('calendar_events_limit'),'number'); ?>
+    <hr />
     <label><?php echo _l('calendar_first_day'); ?></label>
     <select name="settings[calendar_first_day]" class="selectpicker" data-width="100%">
       <?php

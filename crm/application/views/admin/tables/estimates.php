@@ -6,7 +6,7 @@ $aColumns = array(
     'total',
     'total_tax',
     'YEAR(date)',
-    'company',
+    'CASE company WHEN "" THEN (SELECT CONCAT(firstname, " ", lastname) FROM tblcontacts WHERE userid = tblclients.userid and is_primary = 1) ELSE company END as company',
     'project_id',
     'date',
     'expirydate',
@@ -39,6 +39,9 @@ $filter = array();
 
 if($this->_instance->input->post('not_sent')){
     array_push($filter, 'OR (sent= 0 AND tblestimates.status NOT IN (2,3,4))');
+}
+if($this->_instance->input->post('invoiced')){
+    array_push($filter, 'OR invoiceid IS NOT NULL');
 }
 $statuses = $this->_instance->estimates_model->get_statuses();
 $_statuses = array();
@@ -85,12 +88,14 @@ if($this->_instance->input->post('project_id')){
     array_push($where,'AND project_id='.$this->_instance->input->post('project_id'));
 }
 
+if(!has_permission('estimates','','view')){
+    array_push($where,'AND tblestimates.addedfrom='.get_staff_user_id());
+}
 
 $sIndexColumn = "id";
 $sTable       = 'tblestimates';
 $result       = data_tables_init($aColumns, $sIndexColumn, $sTable, $join, $where, array(
     'tblestimates.id',
-    'company',
     'tblestimates.clientid',
     'symbol',
     'total',
@@ -119,7 +124,7 @@ foreach ($rResult as $aRow) {
          }
      } else if ($aColumns[$i] == 'date') {
         $__data = _d($_data);
-    } else if ($aColumns[$i] == 'company') {
+    } else if ($i == 4) {
         $__data = '<a href="' . admin_url('clients/client/' . $aRow['clientid']) . '">' . $aRow['company'] . '</a><br />';
     } else if ($aColumns[$i] == 'expirydate') {
         $__data = _d($_data);

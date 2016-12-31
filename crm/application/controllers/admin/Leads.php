@@ -136,7 +136,8 @@ class Leads extends Admin_controller
                     $data['lead_locked'] = true;
                 }
             }
-            $data['members'] = $this->staff_model->get('', 1);
+            $data['members'] = $this->staff_model->get('', 1,array('is_not_staff'=>0));
+
             if ($lead) {
                 $reminder_data = $this->load->view('admin/includes/modals/reminder', array(
                     'id' => $lead->id,
@@ -158,6 +159,189 @@ class Leads extends Admin_controller
             'data' => $this->load->view('admin/leads/lead', $data, TRUE),
             'reminder_data' => $reminder_data
         ));
+    }
+
+    public function save_form_data(){
+        $data = $this->input->post(NULL,NULL);
+        $this->db->where('id',$data['id']);
+        $this->db->update('tblwebtolead',array('form_data'=>$data['formData']));
+        if($this->db->affected_rows() > 0){
+            echo json_encode(array('success'=>true,'message'=>_l('updated_successfuly', _l('web_to_lead_form'))));
+        } else {
+            echo json_encode(array('success'=>false));
+        }
+    }
+
+    public function form($id = ''){
+        if(!is_admin()){
+            access_denied('Web To Lead Access');
+        }
+        if($this->input->post()){
+            if($id == ''){
+                $data = $this->input->post();
+                $id = $this->leads_model->add_form($data);
+                if($id){
+                    set_alert('success', _l('added_successfuly', _l('web_to_lead_form')));
+                    redirect(admin_url('leads/form/'.$id));
+                }
+            } else {
+                $success = $this->leads_model->update_form($id,$this->input->post());
+                if($success){
+                    set_alert('success', _l('updated_successfuly', _l('web_to_lead_form')));
+                }
+                redirect(admin_url('leads/form/'.$id));
+            }
+        }
+
+        $data['formData'] = array();
+        $custom_fields = get_custom_fields('leads');
+        $cfields = array();
+        $data['title'] = _l('web_to_lead');
+
+        if($id != ''){
+            $data['form'] = $this->leads_model->get_form(array('id'=>$id));
+            $data['title'] = $data['form']->name . ' - ' ._l('web_to_lead_form');
+            $data['formData'] = $data['form']->form_data;
+        }
+
+        foreach($custom_fields as $f){
+            $_field_object = new stdClass();
+            $type = $f['type'];
+            $className = 'form-control';
+
+            if($f['type'] == 'colorpicker'){
+                $type = 'color';
+            } else if($f['type'] == 'date_picker'){
+                $type = 'date';
+            } else if($f['type'] == 'checkbox'){
+                $type = 'checkbox-group';
+                $className = '';
+            } else if($f['type'] == 'input'){
+                $type = 'text';
+            }
+
+            $field_array = array(
+                'type'=>$type,
+                'label'=>$f['name'],
+                'className'=>$className,
+                'name'=>'form-cf-'.$f['id']
+                );
+
+            if($f['required'] == 1){
+                $field_array['required'] = true;
+            }
+
+            if($f['type'] == 'checkbox' || $f['type'] == 'select'){
+                $field_array['values'] = array();
+                $options = explode(',',$f['options']);
+                // leave first field blank
+                 if($f['type'] == 'select'){
+                      array_push($field_array['values'],array(
+                                'label'=>'',
+                                'value'=>'',
+                                'selected'=>false
+                            ));
+                }
+                foreach($options as $option){
+                    $option = trim($option);
+                    if($option != ''){
+                        array_push($field_array['values'],array(
+                                'label'=>$option,
+                                'value'=>$option,
+                                'selected'=>false
+                            ));
+                    }
+                }
+
+            }
+
+            $_field_object->label = $f['name'];
+            $_field_object->name = 'form-cf-'.$f['id'];
+            $_field_object->fields = array();
+            $_field_object->fields[] = $field_array;
+            $cfields[] = $_field_object;
+        }
+
+        $this->load->model('staff_model');
+        $this->load->model('roles_model');
+        $data['roles']    = $this->roles_model->get();
+        $data['sources']  = $this->leads_model->get_source();
+        $data['statuses'] = $this->leads_model->get_status();
+
+        $data['members'] = $this->staff_model->get('', 1,array('is_not_staff'=>0));
+
+        $data['languages'] = $this->perfex_base->get_available_languages();
+        $data['cfields'] = $cfields;
+        $data['form_builder_assets'] = true;
+
+        $db_fields = array();
+        $fields = array('name','title','email','phonenumber','company','address','city','state','country','zip','description','website');
+        $className = 'form-control';
+
+        foreach($fields as $f){
+            $_field_object = new stdClass();
+            $type = 'text';
+
+            if($f == 'email'){
+                $type = 'email';
+            } else if($f == 'description'){
+                $type = 'textarea';
+            }
+
+            if($f == 'name'){
+                $label = _l('lead_add_edit_name');
+            } else if($f == 'email'){
+                $label = _l('lead_add_edit_email');
+            } else if($f == 'phonenumber'){
+                $label = _l('lead_add_edit_phonenumber');
+            } else {
+                $label = _l('lead_'.$f);
+            }
+
+            $field_array = array(
+                'type'=>$type,
+                'label'=>$label,
+                'className'=>$className,
+                'name'=>$f
+                );
+
+            if($f == 'name'){
+              $field_array['required'] = true;
+            }
+
+        $_field_object->label = $label;
+        $_field_object->name = $f;
+        $_field_object->fields = array();
+        $_field_object->fields[] = $field_array;
+        $db_fields[] = $_field_object;
+        }
+        $data['db_fields'] = $db_fields;
+        $this->load->view('admin/leads/formbuilder',$data);
+    }
+
+    public function forms($id = ''){
+       if(!is_admin()){
+            access_denied('Web To Lead Access');
+        }
+
+        if($this->input->is_ajax_request()){
+            $this->perfex_base->get_table_data('web_to_lead');
+        }
+
+        $data['title'] = _l('web_to_lead');
+        $this->load->view('admin/leads/forms',$data);
+    }
+    public function delete_form($id){
+        if(!is_admin()){
+            access_denied('Web To Lead Access');
+        }
+
+        $success = $this->leads_model->delete_form($id);
+        if($success){
+            set_alert('success',_l('deleted',_l('web_to_lead_form')));
+        }
+
+        redirect(admin_url('leads/forms'));
     }
 
     public function update_all_proposal_emails_linked_to_lead($id)
@@ -689,7 +873,7 @@ class Leads extends Admin_controller
         $data['sources']  = $this->leads_model->get_source();
         $data['statuses'] = $this->leads_model->get_status();
 
-        $data['members'] = $this->staff_model->get('', 1);
+        $data['members'] = $this->staff_model->get('', 1,array('is_not_staff'=>0));
         $data['title']   = _l('leads_email_integration');
         $data['mail']    = $this->leads_model->get_email_integration();
         $this->load->view('admin/leads/email_integration', $data);

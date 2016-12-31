@@ -1,4 +1,5 @@
 <?php
+defined('BASEPATH') OR exit('No direct script access allowed');
 function client_have_transactions($id){
     $total_transactions = 0;
     $total_transactions += total_rows('tblinvoices',array('clientid'=>$id));
@@ -21,6 +22,22 @@ function is_primary_contact($contact_id = ''){
     }
 
     return false;
+}
+function is_empty_customer_company($id){
+    $CI = &get_instance();
+    $CI->db->select('company');
+    $CI->db->from('tblclients');
+    $CI->db->where('userid',$id);
+    $row = $CI->db->get()->row();
+    if($row){
+        if($row->company == ''){
+            return true;
+        }
+
+        return false;
+    }
+
+    return true;
 }
 /**
  * Check if field is used in table
@@ -54,13 +71,14 @@ function add_views_tracking($rel_type,$rel_id){
                 return false;
             }
         }
+        }
+
         $CI->db->insert('tblviewstracking',array(
             'rel_id'=>$rel_id,
             'rel_type'=>$rel_type,
             'date'=>date('Y-m-d H:i:s'),
             'view_ip'=>$CI->input->ip_address()));
 
-    }
 }
 function get_views_tracking($rel_type,$rel_id){
     $CI =& get_instance();
@@ -205,14 +223,19 @@ function get_contact_full_name($userid = '')
     }
 
 }
-function get_company_name($userid){
+/**
+ * This function currently is used in search for contact, ticket add for contacts and ticket edit for contacts
+ * @param  [type] $userid [description]
+ * @return [type]         [description]
+ */
+function get_company_name($userid, $prevent_empty_company = TRUE){
     $_userid = get_client_user_id();
     if ($userid !== '') {
         $_userid = $userid;
     }
     $CI =& get_instance();
     $CI->db->where('userid', $_userid);
-    $client = $CI->db->select('company')->from('tblclients')->get()->row();
+    $client = $CI->db->select(($prevent_empty_company == false ? 'CASE company WHEN "" THEN (SELECT CONCAT(firstname, " ", lastname) FROM tblcontacts WHERE userid = tblclients.userid and is_primary = 1) ELSE company END as company' : 'company'))->from('tblclients')->get()->row();
     if($client){
         return $client->company;
     } else {
@@ -766,53 +789,112 @@ function prefixed_table_fields_wildcard($table, $alias, $field)
     }
     return implode(", ", $prefixed);
 }
+function prefixed_table_fields_array($table)
+{
+    $CI = &get_instance();
+    $fields = $CI->db->list_fields($table);
+    $i = 0;
+    foreach($fields as $f){
+        $fields[$i] = $table.'.'.$f;
+        $i++;
+    }
+    return $fields;
+}
+
 function get_relation_data($type, $rel_id = '', $connection_type = '', $connection_id = '')
 {
     $CI =& get_instance();
+    $q = '';
+    if($CI->input->post('q')){
+        $q = $CI->input->post('q');
+        $q = trim($q);
+    }
     $data = array();
     if ($type == 'customer' || $type == 'customers') {
         $CI->load->model('clients_model');
-        $where_clients = 'active=1';
+
+        $where_clients = 'tblclients.active=1';
 
         if($connection_id != ''){
             if($connection_type == 'proposal'){
                 $where_clients = 'CASE
-                WHEN userid NOT IN(SELECT rel_id FROM tblproposals WHERE id='.$connection_id.' AND rel_type="customer") THEN active=1
+                WHEN tblclients.userid NOT IN(SELECT rel_id FROM tblproposals WHERE id='.$connection_id.' AND rel_type="customer") THEN tblclients.active=1
                 ELSE 1=1
                 END';
             } else if($connection_type == 'task'){
                 $where_clients = 'CASE
-                WHEN userid NOT IN(SELECT rel_id FROM tblstafftasks WHERE id='.$connection_id.' AND rel_type="customer") THEN active=1
+                WHEN tblclients.userid NOT IN(SELECT rel_id FROM tblstafftasks WHERE id='.$connection_id.' AND rel_type="customer") THEN tblclients.active=1
                 ELSE 1=1
                 END';
             }
         }
 
+        if($q){
+            $where_clients .= ' AND (company LIKE "%'.$q.'%" OR CONCAT(firstname, " ", lastname) LIKE "%'.$q.'%")';
+        }
+
         $data = $CI->clients_model->get($rel_id,$where_clients);
 
     } else if ($type == 'invoice') {
-        $CI->load->model('invoices_model');
+
+        if($rel_id != ''){
+            $CI->load->model('invoices_model');
         $data = $CI->invoices_model->get($rel_id);
+    } else {
+        $search = $CI->misc_model->_search_invoices($q);
+        $data = $search['result'];
+    }
     } else if ($type == 'estimate') {
-        $CI->load->model('estimates_model');
-        $data = $CI->estimates_model->get($rel_id);
+        if($rel_id != ''){
+            $CI->load->model('estimates_model');
+            $data = $CI->estimates_model->get($rel_id);
+        } else {
+            $search = $CI->misc_model->_search_estimates($q);
+            $data = $search['result'];
+        }
     } else if ($type == 'contract' || $type == 'contracts') {
         $CI->load->model('contracts_model');
-        $data = $CI->contracts_model->get($rel_id);
+
+        if($rel_id != ''){
+            $CI->load->model('contracts_model');
+            $data = $CI->contracts_model->get($rel_id);
+        } else {
+            $search = $CI->misc_model->_search_contracts($q);
+            $data = $search['result'];
+        }
     } else if ($type == 'ticket') {
-        $CI->load->model('tickets_model');
-        $data = $CI->tickets_model->get($rel_id);
+        if($rel_id != ''){
+            $CI->load->model('tickets_model');
+            $data = $CI->tickets_model->get($rel_id);
+        } else {
+            $search = $CI->misc_model->_search_tickets($q);
+            $data = $search['result'];
+        }
     } else if ($type == 'expense' || $type == 'expenses') {
-        $CI->load->model('expenses_model');
-        $data = $CI->expenses_model->get($rel_id);
+        if($rel_id != ''){
+            $CI->load->model('expenses_model');
+            $data = $CI->expenses_model->get($rel_id);
+        } else {
+            $search = $CI->misc_model->_search_expenses($q);
+            $data = $search['result'];
+        }
     } else if ($type == 'lead' || $type == 'leads') {
-        $CI->load->model('leads_model');
-        $data = $CI->leads_model->get($rel_id, array(
-            'junk' => 0
-        ));
+
+        if($rel_id != ''){
+            $CI->load->model('leads_model');
+            $data = $CI->leads_model->get($rel_id);
+        } else {
+            $search = $CI->misc_model->_search_leads($q,0,array('junk'=>0));
+            $data = $search['result'];
+        }
     } else if ($type == 'proposal') {
-        $CI->load->model('proposals_model');
-        $data = $CI->proposals_model->get($rel_id);
+         if($rel_id != ''){
+            $CI->load->model('proposals_model');
+            $data = $CI->proposals_model->get($rel_id);
+        } else {
+            $search = $CI->misc_model->_search_proposals($q);
+            $data = $search['result'];
+        }
     } else if ($type == 'tasks') {
         $CI->load->model('tasks_model');
         $data = $CI->tasks_model->get($rel_id);
@@ -820,19 +902,27 @@ function get_relation_data($type, $rel_id = '', $connection_type = '', $connecti
         $CI->load->model('staff_model');
         $data = $CI->staff_model->get($rel_id);
     } else if ($type == 'project') {
-        $CI->load->model('projects_model');
-        $data = $CI->projects_model->get($rel_id);
+        if($rel_id != ''){
+            $CI->load->model('projects_model');
+            $data = $CI->projects_model->get($rel_id);
+        } else {
+            $search = $CI->misc_model->_search_projects($q);
+            $data = $search['result'];
+        }
     }
     return $data;
 }
 function get_relation_values($relation, $type)
 {
     if ($relation == '') {
-        return array('name'=>'','id'=>'','link'=>'');
+        return array('name'=>'','id'=>'','link'=>'','addedfrom'=>0);
     }
+
+    $addedfrom = 0;
     $name = '';
     $id   = '';
     $link = '';
+
     if ($type == 'customer' || $type == 'customers') {
         if (is_array($relation)) {
             $id   = $relation['userid'];
@@ -846,36 +936,44 @@ function get_relation_values($relation, $type)
         if (is_array($relation)) {
             $id   = $relation['id'];
             $name = format_invoice_number($id);
+            $addedfrom = $relation['addedfrom'];
         } else {
             $id   = $relation->id;
             $name = format_invoice_number($id);
+            $addedfrom = $relation->addedfrom;
         }
         $link = admin_url('invoices/list_invoices/' . $id);
     } else if ($type == 'estimate') {
         if (is_array($relation)) {
-            $id   = $relation['id'];
+            $id   = $relation['estimateid'];
             $name = format_estimate_number($id);
+            $addedfrom = $relation['addedfrom'];
         } else {
             $id   = $relation->id;
             $name = format_estimate_number($id);
+            $addedfrom = $relation->addedfrom;
         }
         $link = admin_url('estimates/list_estimates/' . $id);
     } else if ($type == 'contract' || $type == 'contracts') {
         if (is_array($relation)) {
             $id   = $relation['id'];
             $name = $relation['subject'];
+            $addedfrom = $relation['addedfrom'];
         } else {
             $id   = $relation->id;
             $name = $relation->subject;
+            $addedfrom = $relation->addedfrom;
         }
         $link = admin_url('contracts/contract/' . $id);
     } else if ($type == 'ticket') {
         if (is_array($relation)) {
             $id   = $relation['ticketid'];
             $name = '#' . $relation['ticketid'];
+            $name .= ' - ' . $relation['subject'];
         } else {
             $id   = $relation->ticketid;
             $name = '#' . $relation->ticketid;
+            $name .= ' - ' . $relation->subject;
         }
         $name = _l('ticket') . ' ' . $name;
         $link = admin_url('tickets/ticket/' . $id);
@@ -883,6 +981,7 @@ function get_relation_values($relation, $type)
         if (is_array($relation)) {
             $id   = $relation['expenseid'];
             $name = $relation['category_name'] . ' - ' . _format_number($relation['amount']);
+            $addedfrom = $relation['addedfrom'];
 
             if(!empty($relation['expense_name'])){
                 $name .= ' ('.$relation['expense_name'].')';
@@ -890,7 +989,7 @@ function get_relation_values($relation, $type)
         } else {
             $id   = $relation->expenseid;
             $name = $relation->category_name . ' - ' . _format_number($relation->amount);
-
+            $addedfrom = $relation->addedfrom;
             if(!empty($relation->expense_name)){
                 $name .= ' ('.$relation->expense_name.')';
             }
@@ -914,16 +1013,25 @@ function get_relation_values($relation, $type)
     } else if ($type == 'proposal') {
         if (is_array($relation)) {
             $id   = $relation['id'];
-            $name = $relation['subject'];
+            $name = format_proposal_number($id);
+            $addedfrom = $relation['addedfrom'];
+            if(!empty($relation['subject'])){
+                $name .= ' - ' . $relation['subject'];
+            }
         } else {
             $id   = $relation->id;
-            $name = $relation->subject;
+            $name = format_proposal_number($id);
+            $addedfrom = $relation->addedfrom;
+            if(!empty($relation->subject)){
+                $name .= ' - ' . $relation->subject;
+            }
         }
         $link = admin_url('proposals/proposal/' . $id);
     } else if ($type == 'tasks') {
         if (is_array($relation)) {
             $id   = $relation['id'];
             $name = $relation['name'];
+
         } else {
             $id   = $relation->id;
             $name = $relation->name;
@@ -951,7 +1059,8 @@ function get_relation_values($relation, $type)
     return array(
         'name' => $name,
         'id' => $id,
-        'link' => $link
+        'link' => $link,
+        'addedfrom'=>$addedfrom
     );
 }
 /**
@@ -959,17 +1068,20 @@ function get_relation_values($relation, $type)
  * @param  boolean $include_inactive inactive groups all articles if passed true
  * @return array
  */
-function get_all_knowledge_base_articles_grouped()
+function get_all_knowledge_base_articles_grouped($only_customers = true)
 {
     $CI =& get_instance();
     $CI->load->model('knowledge_base_model');
     $groups = $CI->knowledge_base_model->get_kbg('', 1);
     $i      = 0;
     foreach ($groups as $group) {
-        $CI->db->select('slug,subject,description,tblknowledgebase.active as active_article,articlegroup,articleid');
+        $CI->db->select('slug,subject,description,tblknowledgebase.active as active_article,articlegroup,articleid,staff_article');
         $CI->db->from('tblknowledgebase');
         $CI->db->where('articlegroup', $group['groupid']);
         $CI->db->where('active',1);
+        if($only_customers == true){
+            $CI->db->where('staff_article',0);
+        }
         $CI->db->order_by('article_order', 'asc');
         $articles = $CI->db->get()->result_array();
         if (count($articles) == 0) {
@@ -992,41 +1104,20 @@ function get_announcements_for_user($staff = true)
     if (!is_logged_in()) {
         return array();
     }
+
     $CI =& get_instance();
-    $CI->db->select('firstname,lastname,announcementid,name,message,showtousers,showtostaff,showname,tblannouncements.dateadded,tblannouncements.userid')->join('tblstaff', 'tblstaff.staffid = tblannouncements.userid', 'left')->from('tblannouncements');
-    $announcements = $CI->db->get()->result_array();
-    $i             = 0;
-    foreach ($announcements as $annoucement) {
-        if ($staff == true) {
-            if ($annoucement['showtostaff'] != 1) {
-                unset($announcements[$i]);
-            }
-        } else {
-            if ($annoucement['showtousers'] != 1) {
-                unset($announcements[$i]);
-            }
-        }
-        $i++;
-    }
-    // Refresh array keys
-    $announcements = array_values($announcements);
-    if ($staff == true) {
-        $userid = get_staff_user_id();
+    $CI->db->select();
+
+    if($staff == true){
+        $CI->db->where('announcementid NOT IN (SELECT announcementid FROM tbldismissedannouncements WHERE staff=1 AND userid = '.get_staff_user_id().') AND showtostaff = 1');
     } else {
-        $userid = get_contact_user_id();
-    }
-    $i = 0;
-    foreach ($announcements as $announcement) {
-        $CI->db->where('announcementid', $announcement['announcementid']);
-        $CI->db->where('staff', $staff);
-        $CI->db->where('userid', $userid);
-        $dismissed = $CI->db->get('tbldismissedannouncements')->row();
-        if ($dismissed) {
-            unset($announcements[$i]);
+        if(!is_client_logged_in()){
+            return array();
         }
-        $i++;
+        $CI->db->where('announcementid NOT IN (SELECT announcementid FROM tbldismissedannouncements WHERE staff=0 AND userid = '.get_contact_user_id().') AND showtousers = 1');
     }
-    return $announcements;
+
+    return $CI->db->get('tblannouncements')->result_array();
 }
 /**
  * Helper function to get text question answers

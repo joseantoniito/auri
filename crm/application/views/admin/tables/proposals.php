@@ -57,8 +57,14 @@ foreach($years as $year){
 if(count($_years) > 0){
     array_push($filter,'AND YEAR(date) IN ('.implode(', ',$_years).')');
 }
+
 if(count($filter) > 0){
     array_push($where,'AND ('.prepare_dt_filter($filter).')');
+}
+
+
+if(!has_permission('proposals','','view')){
+  array_push($where,'AND addedfrom='.get_staff_user_id());
 }
 
 $join = array();

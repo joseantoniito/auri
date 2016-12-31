@@ -44,6 +44,7 @@ class Estimates_model extends CRM_Model
             }
             return $estimate;
         }
+        $this->db->order_by('number,YEAR(date)', 'desc');
         return $this->db->get()->result_array();
     }
     public function get_statuses()
@@ -60,22 +61,34 @@ class Estimates_model extends CRM_Model
         $fields_client = $this->db->list_fields('tblclients');
         $fields_estimates = $this->db->list_fields('tblestimates');
 
-        $this->db->select('tblestimates.id,status,invoiceid,company,total,currency,symbol,date,expirydate,clientid');
+        $has_permission_view = has_permission('estimates','','view');
+
+        $this->db->select('tblestimates.id,status,invoiceid,CASE company WHEN "" THEN (SELECT CONCAT(firstname, " ", lastname) FROM tblcontacts WHERE userid = tblclients.userid and is_primary = 1) ELSE company END as company,total,currency,symbol,date,expirydate,clientid');
         $this->db->from('tblestimates');
         $this->db->join('tblclients','tblclients.userid = tblestimates.clientid');
         $this->db->join('tblcurrencies','tblestimates.currency = tblcurrencies.id');
         $this->db->where('status', $status);
-
+        if(!$has_permission_view){
+            $this->db->where('addedfrom',get_staff_user_id());
+        }
         if ($search != '') {
-             $this->db->like('company',$search);
-             foreach($fields_client as $field){
-                 if($field != 'company'){
-                    $this->db->or_like('tblclients.'.$field,$search);
-                 }
-             }
-             foreach($fields_estimates as $field){
-                 $this->db->or_like('tblestimates.'.$field,$search);
-             }
+            $where = '(';
+            $i = 0;
+            foreach($fields_client as $f){
+                $where .= 'tblclients.'.$f . ' LIKE "%'.$search.'%"';
+                $where .= ' OR ';
+                $i++;
+            }
+            $i = 0;
+            foreach($fields_estimates as $f){
+                $where .= 'tblestimates.'.$f . ' LIKE "%'.$search.'%"';
+                $where .= ' OR ';
+
+                $i++;
+            }
+            $where = substr($where,0,-4);
+            $where .= ')';
+            $this->db->where($where);
          }
 
         if (isset($sort['sort_by']) && $sort['sort_by'] && isset($sort['sort']) && $sort['sort']) {
@@ -156,6 +169,7 @@ class Estimates_model extends CRM_Model
         $modes      = $this->payment_modes_model->get('',array('expenses_only !='=>1));
         $temp_modes = array();
         foreach ($modes as $mode) {
+            if($mode['selected_by_default'] == 0){continue;}
             $temp_modes[] = $mode['id'];
         }
         $new_invoice_data['allowed_payment_modes'] = $temp_modes;
@@ -165,6 +179,7 @@ class Estimates_model extends CRM_Model
             $new_invoice_data['newitems'][$key]['description']      = $item['description'];
             $new_invoice_data['newitems'][$key]['long_description'] = $item['long_description'];
             $new_invoice_data['newitems'][$key]['qty']              = $item['qty'];
+            $new_invoice_data['newitems'][$key]['unit']              = $item['unit'];
             $new_invoice_data['newitems'][$key]['taxname']          = array();
             $taxes                                                  = get_estimate_item_taxes($item['id']);
             foreach ($taxes as $tax) {
@@ -178,6 +193,13 @@ class Estimates_model extends CRM_Model
         $this->load->model('invoices_model');
         $id = $this->invoices_model->add($new_invoice_data);
         if ($id) {
+            // Customer accepted the estimate and is auto converted to invoice
+            if(!is_staff_logged_in()){
+                $this->db->where('rel_type','invoice');
+                $this->db->where('rel_id',$id);
+                $this->db->delete('tblsalesactivity');
+                $this->invoices_model->log_invoice_activity($id,'invoice_activity_auto_converted_from_estimate',true,serialize(array('<a href="'.admin_url('estimates/list_estimates/'.$_estimate->id).'">'.format_estimate_number($_estimate->id).'</a>')));
+            }
         // For all cases update addefrom and sale agent from the invoice
         // May happen staff is not logged in and these values to be 0
         $this->db->where('id',$id);
@@ -247,6 +269,7 @@ class Estimates_model extends CRM_Model
             $new_estimate_data['newitems'][$key]['description']      = $item['description'];
             $new_estimate_data['newitems'][$key]['long_description'] = clear_textarea_breaks($item['long_description']);
             $new_estimate_data['newitems'][$key]['qty']              = $item['qty'];
+            $new_estimate_data['newitems'][$key]['unit']              = $item['unit'];
             $new_estimate_data['newitems'][$key]['taxname']          = array();
             $taxes                                                   = get_estimate_item_taxes($item['id']);
             foreach ($taxes as $tax) {
@@ -297,6 +320,7 @@ class Estimates_model extends CRM_Model
 
 
 
+
         $symbol = $this->currencies_model->get_currency_symbol($currencyid);
         $where = '';
         if (isset($data['customer_id']) && $data['customer_id'] != ''){
@@ -305,6 +329,10 @@ class Estimates_model extends CRM_Model
 
         if (isset($data['project_id']) && $data['project_id'] != '') {
             $where .= ' AND project_id='.$data['project_id'];
+        }
+
+        if(!has_permission('estimates','','view')){
+            $where .= ' AND addedfrom='.get_staff_user_id();
         }
         $sql    = 'SELECT';
         foreach ($statuses as $estimate_status) {
@@ -468,7 +496,8 @@ class Estimates_model extends CRM_Model
                         'rate' => number_format($item['rate'], 2, '.', ''),
                         'rel_id' => $insert_id,
                         'rel_type'=>'estimate',
-                        'item_order' => $item['order']
+                        'item_order' => $item['order'],
+                        'unit' => $item['unit']
                     ));
                     $itemid = $this->db->insert_id();
                     if ($itemid) {
@@ -642,7 +671,8 @@ class Estimates_model extends CRM_Model
                 $original_item    = $this->get_estimate_item($estimate_item_id);
                 $this->db->where('id', $estimate_item_id);
                 $this->db->update('tblitems_in', array(
-                    'item_order' => $item['order']
+                    'item_order' => $item['order'],
+                    'unit'=>$item['unit']
                 ));
                 if ($this->db->affected_rows() > 0) {
                     $affectedRows++;
@@ -753,7 +783,8 @@ class Estimates_model extends CRM_Model
                     'rate' => number_format($item['rate'], 2, '.', ''),
                     'rel_id' => $id,
                     'rel_type'=>'estimate',
-                    'item_order' => $item['order']
+                    'item_order' => $item['order'],
+                    'unit' => $item['unit'],
                 ));
                 $new_item_added = $this->db->insert_id();
                 if ($new_item_added) {
@@ -785,9 +816,6 @@ class Estimates_model extends CRM_Model
     }
     public function mark_action_status($action, $id, $client = false)
     {
-        if(is_staff_logged_in()){
-            $client = false;
-        }
         $this->db->where('id', $id);
         $this->db->update('tblestimates', array(
             'status' => $action
@@ -1142,8 +1170,18 @@ class Estimates_model extends CRM_Model
         $emails_sent = array();
         $send        = false;
         $sent_to     = $this->input->post('sent_to');
-        if (is_array($sent_to)) {
+        $status_now = $estimate->status;
+        $status_auto_updated = false;
+        if (is_array($sent_to) && count($sent_to) > 0) {
             $i = 0;
+
+            // Auto update status to sent in case when user sends the estimate is with status draft
+            if($status_now == 1){
+                $this->db->where('id',$estimate->id);
+                $this->db->update('tblestimates',array('status'=>2));
+                $status_auto_updated = true;
+            }
+
             foreach ($sent_to as $contact_id) {
                 if ($contact_id != '') {
                     if ($attachpdf) {
@@ -1191,6 +1229,12 @@ class Estimates_model extends CRM_Model
         if ($send) {
             $this->set_estimate_sent($id, $emails_sent);
             return true;
+        } else {
+            if($status_auto_updated){
+                // Estimate not send to customer but the status was previously updated to sent now we need to revert back to draft
+                $this->db->where('id',$estimate->id);
+                $this->db->update('tblestimates',array('status'=>1));
+            }
         }
 
         return false;

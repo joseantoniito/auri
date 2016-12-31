@@ -4,6 +4,7 @@ class Roles_model extends CRM_Model
 {
      private $perm_statements = array(
         'view',
+        'view_own',
         'edit',
         'create',
         'delete',
@@ -23,6 +24,11 @@ class Roles_model extends CRM_Model
         if (isset($data['view'])) {
             $permissions['view'] = $data['view'];
             unset($data['view']);
+        }
+
+        if (isset($data['view_own'])) {
+            $permissions['view_own'] = $data['view_own'];
+            unset($data['view_own']);
         }
         if (isset($data['edit'])) {
             $permissions['edit'] = $data['edit'];
@@ -48,6 +54,7 @@ class Roles_model extends CRM_Model
                 'permissionid'=>$permission['permissionid'],
                 'roleid'=>$insert_id,
                 'can_view'=>0,
+                'can_view_own'=>0,
                 'can_edit'=>0,
                 'can_create'=>0,
                 'can_delete'=>0,
@@ -86,6 +93,11 @@ class Roles_model extends CRM_Model
         if (isset($data['view'])) {
             $permissions['view'] = $data['view'];
             unset($data['view']);
+        }
+
+        if (isset($data['view_own'])) {
+            $permissions['view_own'] = $data['view_own'];
+            unset($data['view_own']);
         }
         if (isset($data['edit'])) {
             $permissions['edit'] = $data['edit'];

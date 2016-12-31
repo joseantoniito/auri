@@ -48,7 +48,17 @@
          });
      });
 
-     $('.article_useful_buttons button').on('click', function(e) {
+    // Add are you sure on all delete links (onclick is not included here)
+    $('body').on('click', '._delete', function(e) {
+        var r = confirm(confirm_action_prompt);
+        if (r == true) {
+            return true;
+        } else {
+            return false;
+        }
+    });
+
+    $('.article_useful_buttons button').on('click', function(e) {
          e.preventDefault();
          var data = {};
          data.answer = $(this).data('answer');
@@ -168,3 +178,17 @@ function init_color_pickers() {
      }
      return false;
  }
+
+// Generate float alert
+function alert_float(type, message) {
+    var aId, el;
+    aId = $('body').find('float-alert').length;
+    aId++;
+    aId = 'alert_float_' + aId;
+    el = $('<div id="' + aId + '" class="float-alert animated fadeInRight col-xs-11 col-sm-4 alert alert-' + type + '"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><span class="fa fa-bell-o" data-notify="icon"></span><span class="alert-title">' + message + '</span></div>');
+    $('body').append(el);
+
+    setTimeout(function() {
+        $('#' + aId).hide('fast', function(){ $('#' + aId).remove(); });
+    }, 4000);
+}

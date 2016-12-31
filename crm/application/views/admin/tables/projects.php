@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-$aColumns = array('tblprojects.id','name', 'clientid', 'start_date', 'deadline','(SELECT GROUP_CONCAT(staff_id SEPARATOR ",") FROM tblprojectmembers WHERE project_id=tblprojects.id) as members','status');
+$aColumns = array('tblprojects.id','name', 'CASE company WHEN "" THEN (SELECT CONCAT(firstname, " ", lastname) FROM tblcontacts WHERE userid = tblclients.userid and is_primary = 1) ELSE company END as company', 'start_date', 'deadline','(SELECT GROUP_CONCAT(staff_id SEPARATOR ",") FROM tblprojectmembers WHERE project_id=tblprojects.id) as members','status');
 
 if(has_permission('projects','','create') || has_permission('projects','','edit')){
   array_push($aColumns,'billing_type');
@@ -10,7 +10,7 @@ if(has_permission('projects','','create') || has_permission('projects','','edit'
 $sIndexColumn = "id";
 $sTable = 'tblprojects';
 
-$additionalSelect = array('company');
+$additionalSelect = array('clientid');
 $join = array(
   'JOIN tblclients ON tblclients.userid = tblprojects.clientid',
   );
@@ -72,7 +72,7 @@ foreach ( $rResult as $aRow )
     }
     if($aColumns[$i] == 'tblprojects.id'){
       $_data = '<span class="label label-default inline-block">'.$_data.'</span>';
-    } else if($aColumns[$i] == 'clientid'){
+    } else if($i == 2){
       $_data = '<a href="'.admin_url('clients/client/'.$aRow['clientid']).'">'. $aRow['company'] . '</a>';
     } else if($aColumns[$i] == 'start_date' || $aColumns[$i] == 'deadline' || $aColumns[$i] == 'project_created'){
       $_data = _d($_data);

@@ -81,7 +81,7 @@ class Download extends CI_Controller
                         die();
                     }
                 } else {
-                    if (!has_permission('contracts','','view')) {
+                    if (!has_permission('contracts','','view') && !has_permission('contracts','','view_own')) {
                         access_denied('contracts');
                     }
                 }

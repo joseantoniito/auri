@@ -1,9 +1,7 @@
 <?php init_head(); ?>
 <div id="wrapper" class="customer_profile">
  <div class="content">
-
    <div class="row">
-    <?php include_once(APPPATH . 'views/admin/includes/alerts.php'); ?>
     <div class="col-md-12">
     <?php if(isset($client) && $client->active == 0){ ?>
     <div class="alert alert-warning">
@@ -23,16 +21,17 @@
    </div>
    <?php } ?>
    </div>
+   <?php if(isset($client)){ ?>
    <div class="col-md-3">
      <div class="panel_s">
        <div class="panel-body">
-        <?php if(isset($client) && (has_permission('customers','','create') || has_permission('customers','','delete'))){ ?>
+        <?php if(has_permission('customers','','delete')){ ?>
         <div class="btn-group pull-left mright10">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <span class="caret"></span>
           </a>
           <ul class="dropdown-menu dropdown-menu-left">
-            <?php if(has_permission('customers','','create')){ ?>
+            <?php if(is_admin()){ ?>
             <li>
               <a href="<?php echo admin_url('clients/login_as_client/'.$client->userid); ?>" target="_blank">
                 <i class="fa fa-share-square-o"></i> <?php echo _l('login_as_client'); ?>
@@ -53,7 +52,8 @@
       </div>
     </div>
   </div>
-  <div class="col-md-9">
+  <?php } ?>
+  <div class="col-md-<?php if(isset($client)){echo 9;} else {echo 12;} ?>">
    <div class="panel_s">
      <div class="panel-body">
       <?php if(isset($client)){ ?>
@@ -84,7 +84,7 @@
  var longitude = '<?php echo $client->longitude; ?>';
  var marker = '<?php echo $client->company; ?>';
 </script>
-<script src="<?php echo base_url('assets/js/map.js'); ?>"></script>
+<?php echo app_script('assets/js','map.js'); ?>
 <script async defer src="https://maps.googleapis.com/maps/api/js?key=<?php echo $google_api_key; ?>&callback=initMap"></script>
 <?php } ?>
 <?php $this->load->view('admin/clients/client_js'); ?>

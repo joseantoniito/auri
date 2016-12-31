@@ -350,8 +350,8 @@ fieldset[disabled] .btn-danger.active {
 .pagination > .active > a:focus,
 .pagination > .active > span:focus {
     color: #ffffff;
-    background-color: #28b8da;
-    border-color: #28b8da;
+    background-color: #03a9f4;
+    border-color: #03a9f4;
 }
 .pagination > .disabled > span,
 .pagination > .disabled > span:hover,

@@ -24,6 +24,9 @@ class Leads_model extends CRM_Model
             $this->db->where('tblleads.id', $id);
             $lead = $this->db->get('tblleads')->row();
             if ($lead) {
+                if($lead->from_form_id != 0){
+                    $lead->form_data = $this->get_form(array('id'=>$lead->from_form_id));
+                }
                 $lead->attachments = $this->get_lead_attachments($id);
             }
 
@@ -97,6 +100,7 @@ class Leads_model extends CRM_Model
         }
 
         unset($data['custom_contact_date']);
+        $data['description'] = nl2br($data['description']);
         $data['dateadded'] = date('Y-m-d H:i:s');
         $data['addedfrom'] = get_staff_user_id();
         $data              = do_action('before_lead_added', $data);
@@ -118,28 +122,60 @@ class Leads_model extends CRM_Model
         }
         return false;
     }
-    public function lead_assigned_member_notification($lead_id, $assigned)
+    public function lead_assigned_member_notification($lead_id, $assigned,$integration = false)
     {
-        if ((!empty($assigned) && $assigned != 0) && $assigned != get_staff_user_id()) {
+        if ((!empty($assigned) && $assigned != 0)) {
+            if($integration == false){
+                if($assigned == get_staff_user_id()){
+                    return false;
+                }
+            }
             $name = $this->db->select('name')->from('tblleads')->where('id', $lead_id)->get()->row()->name;
-            add_notification(array(
-                'description' => 'not_assigned_lead_to_you',
+
+            $notification_data = array(
+                'description' => ($integration == FALSE) ? 'not_assigned_lead_to_you' : 'not_lead_assigned_from_form',
                 'touserid' => $assigned,
                 'link' => '#leadid=' . $lead_id,
                 'additional_data' => serialize(array(
                     get_staff_full_name(get_staff_user_id()),
                     $name
                 ))
-            ));
+            );
+
+            if($integration != false){
+                $notification_data['fromcompany'] = 1;
+            }
+
+            add_notification($notification_data);
+
+            $this->db->where('staffid',$assigned);
+            $email = $this->db->get('tblstaff')->row()->email;
+
+            $this->load->model('emails_model');
+            $merge_fields = array();
+            $merge_fields = array_merge($merge_fields, get_lead_merge_fields($lead_id));
+            //$this->emails_model->send_email_template('new-lead-assigned', $email, $merge_fields);
+
             $this->db->where('id', $lead_id);
             $this->db->update('tblleads', array(
                 'dateassigned' => date('Y-m-d')
             ));
 
-            $this->log_lead_activity($lead_id, 'not_lead_activity_assigned_to', false, serialize(array(
+
+            $not_additional_data = array(
                 get_staff_full_name(),
                 '<a href="' . admin_url('profile/' . $assigned) . '" target="_blank">' . get_staff_full_name($assigned) . '</a>'
-            )));
+            );
+
+            if($integration == TRUE){
+                unset($not_additional_data[0]);
+                array_values(($not_additional_data));
+            }
+
+            $not_additional_data = serialize($not_additional_data);
+
+            $not_desc = ($integration == FALSE ? 'not_lead_activity_assigned_to' : 'not_lead_activity_assigned_from_form');
+            $this->log_lead_activity($lead_id, $not_desc, $integration, $not_additional_data);
         }
     }
     /**
@@ -183,6 +219,8 @@ class Leads_model extends CRM_Model
         if(!isset($data['country']) || isset($data['country']) && $data['country'] == ''){
             $data['country'] = 0;
         }
+
+        $data['description'] = nl2br($data['description']);
 
         if(isset($data['lastcontact']) && $data['lastcontact'] == '' || isset($data['lastcontact']) && $data['lastcontact'] == NULL){
             $data['lastcontact'] = NULL;
@@ -427,14 +465,20 @@ class Leads_model extends CRM_Model
         $this->db->order_by('dateadded', 'DESC');
         return $this->db->get('tblfiles')->result_array();
     }
-    public function add_attachment_to_database($lead_id, $attachment, $external = false)
+    public function add_attachment_to_database($lead_id, $attachment, $external = false, $form_activity = false)
     {
 
         $this->misc_model->add_attachment_to_database($lead_id, 'lead', $attachment, $external);
 
-        $this->leads_model->log_lead_activity($lead_id, 'not_lead_activity_added_attachment');
-        $lead = $this->get($lead_id);
+        if($form_activity == false){
+            $this->leads_model->log_lead_activity($lead_id, 'not_lead_activity_added_attachment');
+        } else {
+            $this->leads_model->log_lead_activity($lead_id, 'not_lead_activity_log_attachment',true,serialize(array($form_activity)));
+        }
 
+        // No notification when attachment is imported from web to lead form
+        if($form_activity == false){
+          $lead = $this->get($lead_id);
         $not_user_ids = array();
         if ($lead->addedfrom != get_staff_user_id()) {
             array_push($not_user_ids, $lead->addedfrom);
@@ -442,15 +486,17 @@ class Leads_model extends CRM_Model
         if ($lead->assigned != get_staff_user_id() && $lead->assigned != 0) {
             array_push($not_user_ids, $lead->assigned);
         }
-        foreach ($not_user_ids as $uid) {
-            add_notification(array(
-                'description' => 'not_lead_added_attachment',
-                'touserid' => $uid,
-                'link' => '#leadid=' . $lead_id,
-                'additional_data' => serialize(array(
-                    $lead->name
-                ))
-            ));
+
+            foreach ($not_user_ids as $uid) {
+                add_notification(array(
+                    'description' => 'not_lead_added_attachment',
+                    'touserid' => $uid,
+                    'link' => '#leadid=' . $lead_id,
+                    'additional_data' => serialize(array(
+                        $lead->name
+                    ))
+                ));
+            }
         }
     }
     /**
@@ -538,7 +584,7 @@ class Leads_model extends CRM_Model
     {
         $current = $this->get_source($id);
         // Check if is already using in table
-        if (is_reference_in_table('source', 'tblleads', $id) || is_reference_in_table('lead_source', 'tblleadsemailintegration', $id)) {
+        if (is_reference_in_table('source', 'tblleads', $id) || is_reference_in_table('lead_source', 'tblleadsintegration', $id)) {
             return array(
                 'referenced' => true
             );
@@ -603,7 +649,7 @@ class Leads_model extends CRM_Model
     {
         $current = $this->get_status($id);
         // Check if is already using in table
-        if (is_reference_in_table('status', 'tblleads', $id) || is_reference_in_table('lead_status', 'tblleadsemailintegration', $id)) {
+        if (is_reference_in_table('status', 'tblleads', $id) || is_reference_in_table('lead_status', 'tblleadsintegration', $id)) {
             return array(
                 'referenced' => true
             );
@@ -724,7 +770,7 @@ class Leads_model extends CRM_Model
     public function get_email_integration()
     {
         $this->db->where('id', 1);
-        return $this->db->get('tblleadsemailintegration')->row();
+        return $this->db->get('tblleadsintegration')->row();
     }
     /**
      * Get lead imported email activity
@@ -745,13 +791,17 @@ class Leads_model extends CRM_Model
     public function update_email_integration($data)
     {
         $this->db->where('id', 1);
-        $original_settings = $this->db->get('tblleadsemailintegration')->row();
+        $original_settings = $this->db->get('tblleadsintegration')->row();
 
         $this->db->where('id', 1);
         if (isset($data['active'])) {
             $data['active'] = 1;
         } else {
             $data['active'] = 0;
+        }
+
+        if($data['responsible'] == ''){
+            $data['responsible'] = 0;
         }
 
         if (isset($data['delete_after_import'])) {
@@ -824,7 +874,7 @@ class Leads_model extends CRM_Model
             }
         }
 
-        $this->db->update('tblleadsemailintegration', $data);
+        $this->db->update('tblleadsintegration', $data);
         if ($this->db->affected_rows() > 0) {
             return true;
         }
@@ -846,5 +896,134 @@ class Leads_model extends CRM_Model
                 'statusorder' => $status[1]
             ));
         }
+    }
+    public function get_form($where){
+        $this->db->where($where);
+        return $this->db->get('tblwebtolead')->row();
+    }
+    public function add_form($data){
+
+        $data = $this->_do_lead_web_to_form_responsibles($data);
+        $data['success_submit_msg'] = nl2br($data['success_submit_msg']);
+        $data['form_key'] = md5(rand() . microtime());
+        // Check if the key exists
+        $this->db->where('form_key', $data['form_key']);
+        $exists = $this->db->get('tblwebtolead')->row();
+        if ($exists) {
+            $data['form_key'] = md5(rand() . microtime());
+        }
+
+        if(isset($data['create_task_on_duplicate'])){
+            $data['create_task_on_duplicate'] = 1;
+        } else {
+            $data['create_task_on_duplicate'] = 0;
+        }
+
+        if(isset($data['allow_duplicate'])){
+            $data['allow_duplicate'] = 1;
+            $data['track_duplicate_field'] ='';
+            $data['track_duplicate_field_and'] ='';
+            $data['create_task_on_duplicate'] = 0;
+        } else {
+            $data['allow_duplicate'] =0;
+        }
+
+        $data['dateadded'] = date('Y-m-d H:i:s');
+
+        $this->db->insert('tblwebtolead',$data);
+        $insert_id = $this->db->insert_id();
+        if($insert_id){
+            logActivity('New Web to Lead Form Added ['.$data['name'].']');
+            return $insert_id;
+        }
+
+        return false;
+
+    }
+    public function update_form($id,$data){
+        $data = $this->_do_lead_web_to_form_responsibles($data);
+        $data['success_submit_msg'] = nl2br($data['success_submit_msg']);
+
+          if(isset($data['create_task_on_duplicate'])){
+            $data['create_task_on_duplicate'] = 1;
+        } else {
+            $data['create_task_on_duplicate'] = 0;
+        }
+
+        if(isset($data['allow_duplicate'])){
+            $data['allow_duplicate'] = 1;
+            $data['track_duplicate_field'] ='';
+            $data['track_duplicate_field_and'] ='';
+            $data['create_task_on_duplicate'] = 0;
+        } else {
+            $data['allow_duplicate'] = 0;
+        }
+
+        $this->db->where('id',$id);
+        $this->db->update('tblwebtolead',$data);
+        return ($this->db->affected_rows() > 0 ? true : false);
+    }
+
+    public function delete_form($id){
+        $this->db->where('id',$id);
+        $this->db->delete('tblwebtolead');
+
+        $this->db->where('from_form_id',$id);
+        $this->db->update('tblleads',array('from_form_id'=>0));
+
+        if($this->db->affected_rows() > 0){
+            logActivity('Lead Form Deleted ['.$id.']');
+            return true;
+        }
+
+        return false;
+    }
+
+    private function _do_lead_web_to_form_responsibles($data){
+
+         if (isset($data['notify_lead_imported'])) {
+            $data['notify_lead_imported'] = 1;
+        } else {
+            $data['notify_lead_imported'] = 0;
+        }
+
+        if($data['responsible'] == ''){
+            $data['responsible'] = 0;
+        }
+        if ($data['notify_lead_imported'] != 0) {
+            if ($data['notify_type'] == 'specific_staff') {
+                if (isset($data['notify_ids_staff'])) {
+                    $data['notify_ids'] = serialize($data['notify_ids_staff']);
+                    unset($data['notify_ids_staff']);
+                } else {
+                    $data['notify_ids'] = serialize(array());
+                    unset($data['notify_ids_staff']);
+                }
+                if (isset($data['notify_ids_roles'])) {
+                    unset($data['notify_ids_roles']);
+                }
+            } else {
+                if (isset($data['notify_ids_roles'])) {
+                    $data['notify_ids'] = serialize($data['notify_ids_roles']);
+                    unset($data['notify_ids_roles']);
+                } else {
+                    $data['notify_ids'] = serialize(array());
+                    unset($data['notify_ids_roles']);
+                }
+                if (isset($data['notify_ids_staff'])) {
+                    unset($data['notify_ids_staff']);
+                }
+            }
+        } else {
+            $data['notify_ids']  = serialize(array());
+            $data['notify_type'] = NULL;
+            if (isset($data['notify_ids_staff'])) {
+                unset($data['notify_ids_staff']);
+            }
+            if (isset($data['notify_ids_roles'])) {
+                unset($data['notify_ids_roles']);
+            }
+        }
+        return $data;
     }
 }

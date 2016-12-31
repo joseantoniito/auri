@@ -3,7 +3,7 @@
       <div class="row">
         <div class="col-md-12 task-name">
           <a href="#" onclick="init_task_modal(<?php echo $task['id']; ?>);return false;">
-            <h5 class="bold"><?php echo $task['name']; ?></h5>
+            <span class="inline-block full-width mtop10 mbot10"><?php echo $task['name']; ?></span>
           </a>
         </div>
         <div class="col-md-6 text-muted">

@@ -36,7 +36,9 @@ class Misc extends Admin_controller
             } else {
                 $rel_id = '';
             }
-            init_relation_options($data, $type, $rel_id);
+            echo json_encode(init_relation_options($data,$type,$rel_id));
+            die;
+           // init_relation_options($data, $type, $rel_id);
         }
     }
     public function delete_sale_activity($id){

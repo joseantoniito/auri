@@ -7,35 +7,6 @@ class Tickets_model extends CRM_Model
     {
         parent::__construct();
     }
-    public function pipe_decode_string($string)
-    {
-        if ($pos = strpos($string, "=?") === false) {
-            return $string;
-        }
-        $newresult = NULL;
-        while (!($pos === false)) {
-            $newresult .= substr($string, 0, $pos);
-            $string   = substr($string, $pos + 2, strlen($string));
-            $intpos   = strpos($string, "?");
-            $charset  = substr($string, 0, $intpos);
-            $enctype  = strtolower(substr($string, $intpos + 1, 1));
-            $string   = substr($string, $intpos + 3, strlen($string));
-            $endpos   = strpos($string, "?=");
-            $mystring = substr($string, 0, $endpos);
-            $string   = substr($string, $endpos + 2, strlen($string));
-            if ($enctype == "q") {
-                $mystring = quoted_printable_decode(str_replace("_", " ", $mystring));
-            } else {
-                if ($enctype == "b") {
-                    $mystring = base64_decode($mystring);
-                }
-            }
-            $newresult .= $mystring;
-            $pos = strpos($string, "=?");
-        }
-        $result = $newresult . $string;
-        return $result;
-    }
     public function insert_piped_ticket($data)
     {
         if (get_option('email_piping_enabled') == 0) {
@@ -53,12 +24,8 @@ class Tickets_model extends CRM_Model
         $name         = $data['fromname'];
         $email        = $data['email'];
         $to           = $data['to'];
-        $decodestring = $subject . "##||-MESSAGESPLIT-||##" . $message;
-        $decodestring = $this->pipe_decode_string($decodestring);
-        $decodestring = explode("##||-MESSAGESPLIT-||##", $decodestring);
-        $subject      = $decodestring[0];
-        $message      = $decodestring[1];
-        $raw_message  = $message;
+        $subject      = $subject;
+        $message      = $message;
         $mailstatus   = false;
         $spam_filters = $this->db->get('tblticketsspamcontrol')->result_array();
         foreach ($spam_filters as $filter) {

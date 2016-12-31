@@ -1,4 +1,5 @@
 <?php
+defined('BASEPATH') OR exit('No direct script access allowed');
 
 function _perfex_upload_error($error){
     $phpFileUploadErrors = array(
@@ -212,21 +213,23 @@ function handle_contract_attachment($id)
  * @param  mixed $leadid
  * @return boolean
  */
-function handle_lead_attachments($leadid)
+function handle_lead_attachments($leadid,$index_name = 'file', $form_activity = false)
 {
 
-    if(isset($_FILES['file']) && _perfex_upload_error($_FILES['file']['error'])){
+   if(isset($_FILES[$index_name]) && empty($_FILES[$index_name]['name']) && $form_activity){return;}
+
+    if(isset($_FILES[$index_name]) && _perfex_upload_error($_FILES[$index_name]['error'])){
         header('HTTP/1.0 400 Bad error');
-        echo _perfex_upload_error($_FILES['file']['error']);
+        echo _perfex_upload_error($_FILES[$index_name]['error']);
         die;
     }
 
     $CI =& get_instance();
-    if (isset($_FILES['file']['name']) && $_FILES['file']['name'] != '') {
+    if (isset($_FILES[$index_name]['name']) && $_FILES[$index_name]['name'] != '') {
         do_action('before_upload_lead_attachment',$leadid);
         $path        = get_upload_path_by_type('lead') . $leadid . '/';
         // Get the temp file path
-        $tmpFilePath = $_FILES['file']['tmp_name'];
+        $tmpFilePath = $_FILES[$index_name]['tmp_name'];
         // Make sure we have a filepath
         if (!empty($tmpFilePath) && $tmpFilePath != '') {
             // Setup our new file path
@@ -234,7 +237,17 @@ function handle_lead_attachments($leadid)
                 mkdir($path);
                 fopen($path . 'index.html', 'w');
             }
-            $filename    = unique_filename($path, $_FILES["file"]["name"]);
+
+            $path_parts         = pathinfo($_FILES[$index_name]["name"]);
+            $extension          = $path_parts['extension'];
+            $extension = strtolower($extension);
+            $allowed_extensions = explode(',', get_option('allowed_files'));
+                // Check for all cases if this extension is allowed
+            if (!in_array('.'.$extension, $allowed_extensions)) {
+                return false;
+            }
+
+            $filename    = unique_filename($path, $_FILES[$index_name]["name"]);
             $newFilePath = $path . $filename;
             // Upload the file into the company uploads dir
             if (move_uploaded_file($tmpFilePath, $newFilePath)) {
@@ -243,12 +256,9 @@ function handle_lead_attachments($leadid)
                 $data = array();
                 $data[] = array(
                     'file_name' => $filename,
-                    'filetype' => $_FILES["file"]["type"],
+                    'filetype' => $_FILES[$index_name]["type"],
                     );
-
-                $CI->leads_model->add_attachment_to_database($leadid,$data);
-
-
+                $CI->leads_model->add_attachment_to_database($leadid,$data,false,$form_activity);
                 return true;
             }
         }
@@ -261,37 +271,37 @@ function handle_lead_attachments($leadid)
  * @param  mixed $taskid
  * @return mixed           false if no attachment || array uploaded attachments
  */
-function handle_tasks_attachments($taskid)
+function handle_tasks_attachments($taskid,$index_name = 'file',$form_activity = false)
 {
 
-     if(isset($_FILES['file']) && _perfex_upload_error($_FILES['file']['error'])){
+   if(isset($_FILES[$index_name]) && empty($_FILES[$index_name]['name']) && $form_activity){return;}
+
+     if(isset($_FILES[$index_name]) && _perfex_upload_error($_FILES[$index_name]['error'])){
         header('HTTP/1.0 400 Bad error');
-        echo _perfex_upload_error($_FILES['file']['error']);
+        echo _perfex_upload_error($_FILES[$index_name]['error']);
         die;
     }
 
     $path           = get_upload_path_by_type('task') . $taskid . '/';
     $uploaded_files = array();
-    if (isset($_FILES['file']['name']) && $_FILES['file']['name'] != '') {
+    if (isset($_FILES[$index_name]['name']) && $_FILES[$index_name]['name'] != '') {
         do_action('before_upload_task_attachment',$taskid);
         // Get the temp file path
-        $tmpFilePath = $_FILES['file']['tmp_name'];
+        $tmpFilePath = $_FILES[$index_name]['tmp_name'];
         // Make sure we have a filepath
         if (!empty($tmpFilePath) && $tmpFilePath != '') {
             // Setup our new file path
-
-
             if (!file_exists($path)) {
                 mkdir($path);
                 fopen($path . 'index.html', 'w');
             }
-              $filename    = unique_filename($path, $_FILES["file"]["name"]);
+              $filename    = unique_filename($path, $_FILES[$index_name]["name"]);
                $newFilePath = $path . $filename;
             // Upload the file into the temp dir
             if (move_uploaded_file($tmpFilePath, $newFilePath)) {
                 array_push($uploaded_files, array(
                     'file_name' => $filename,
-                    'filetype' => $_FILES["file"]["type"]
+                    'filetype' => $_FILES[$index_name]["type"]
                 ));
             }
         }
@@ -380,7 +390,7 @@ function handle_sales_attachments($rel_id,$rel_type)
  * @param  mixed $clientid Client ID to add attachments
  * @return array  - Result values
  */
-function handle_client_attachments_upload($id)
+function handle_client_attachments_upload($id,$customer_upload = false)
 {
     $path = get_upload_path_by_type('customer') . $id . '/';
     $CI =& get_instance();
@@ -404,6 +414,12 @@ function handle_client_attachments_upload($id)
                     'file_name'=>$filename,
                     'filetype'=>$_FILES["file"]["type"],
                     );
+
+                if($customer_upload == TRUE){
+                    $attachment[0]['staffid'] = 0;
+                    $attachment[0]['contact_id'] = get_contact_user_id();
+                    $attachment['visible_to_customer'] = 1;
+                }
 
                 $CI->misc_model->add_attachment_to_database($id,'customer',$attachment);
             }

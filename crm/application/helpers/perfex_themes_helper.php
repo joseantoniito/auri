@@ -1,4 +1,5 @@
 <?php
+defined('BASEPATH') OR exit('No direct script access allowed');
 /**
  * Get current template assets url
  * @return string Assets url
@@ -6,6 +7,10 @@
 function template_assets_url()
 {
     return base_url('assets/themes/' . get_option('clients_default_theme')) . '/';
+}
+function template_assets_path()
+{
+    return 'assets/themes/' . get_option('clients_default_theme');
 }
 /**
  * Current theme view part

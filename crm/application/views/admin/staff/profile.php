@@ -2,13 +2,14 @@
 <div id="wrapper">
     <div class="content">
         <div class="row">
-            <?php include_once(APPPATH . 'views/admin/includes/alerts.php'); ?>
             <div class="col-md-7">
                 <div class="panel_s">
-                    <div class="panel-heading">
-                        <?php echo $title; ?>
-                    </div>
+
                     <div class="panel-body">
+                    <h4 class="bold no-margin font-medium">
+                         <?php echo $title; ?>
+                    </h4>
+                    <hr />
                         <?php echo form_open_multipart($this->uri->uri_string(),array('id'=>'staff_profile_table','autocomplete'=>'off')); ?>
                         <?php if($_staff->profile_image == NULL){ ?>
                         <div class="form-group">
@@ -103,10 +104,12 @@
            </div>
            <div class="col-md-5">
             <div class="panel_s">
-                <div class="panel-heading">
-                    <?php echo _l('staff_edit_profile_change_your_password'); ?>
-                </div>
+
                 <div class="panel-body">
+                 <h4 class="bold no-margin font-medium">
+                    <?php echo _l('staff_edit_profile_change_your_password'); ?>
+                 </h4>
+                 <hr />
                     <?php echo form_open('admin/staff/change_password_profile',array('id'=>'staff_password_change_form')); ?>
                     <div class="form-group">
                         <label for="oldpassword" class="control-label"><?php echo _l('staff_edit_profile_change_old_password'); ?></label>

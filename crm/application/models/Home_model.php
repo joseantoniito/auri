@@ -49,7 +49,7 @@ class Home_model extends CRM_Model
     {
 
         $all_payments = array();
-
+        $has_permission_payments_view = has_permission('payments','','view');
         $this->db->select('amount,tblinvoicepaymentrecords.date');
         $this->db->from('tblinvoicepaymentrecords');
         $this->db->join('tblinvoices', 'tblinvoices.id = tblinvoicepaymentrecords.invoiceid');
@@ -58,10 +58,13 @@ class Home_model extends CRM_Model
         if ($currency != 'undefined') {
             $this->db->where('currency', $currency);
         }
+
+        if(!$has_permission_payments_view){
+            $this->db->where('invoiceid IN (SELECT id FROM tblinvoices WHERE addedfrom=' . get_staff_user_id() . ')');
+        }
+
         // Current week
         $all_payments[] = $this->db->get()->result_array();
-
-
         $this->db->select('amount,tblinvoicepaymentrecords.date');
         $this->db->from('tblinvoicepaymentrecords');
         $this->db->join('tblinvoices', 'tblinvoices.id = tblinvoicepaymentrecords.invoiceid');

@@ -11,26 +11,26 @@
       </a>
    </li>
    <?php if(isset($client)) { ?>
-   <?php if(has_permission('invoices','','view')) { ?>
+   <?php if(has_permission('invoices','','view') || has_permission('invoices','','view_own')) { ?>
     <li><a href="<?php echo admin_url('clients/client/'.$client->userid.'?group=invoices'); ?>" data-group="invoices"><?php echo _l( 'client_invoices_tab'); ?></a></li>
    <?php } ?>
 
-    <?php if(has_permission('payments','','view')) { ?>
+    <?php if(has_permission('payments','','view') || has_permission('invoices','','view_own')) { ?>
     <li><a href="<?php echo admin_url('clients/client/'.$client->userid.'?group=payments'); ?>" data-group="payments"><?php echo _l( 'client_payments_tab'); ?></a></li>
    <?php } ?>
 
-    <?php if(has_permission('proposals','','view')) { ?>
+    <?php if(has_permission('proposals','','view') || has_permission('proposals','','view_own')) { ?>
     <li><a href="<?php echo admin_url('clients/client/'.$client->userid.'?group=proposals'); ?>" data-group="proposals"><?php echo _l( 'proposals'); ?></a></li>
    <?php } ?>
 
-     <?php if(has_permission('estimates','','view')) { ?>
+     <?php if(has_permission('estimates','','view') || has_permission('estimates','','view_own')) { ?>
     <li><a href="<?php echo admin_url('clients/client/'.$client->userid.'?group=estimates'); ?>" data-group="estimates"><?php echo _l( 'estimates'); ?></a></li>
    <?php } ?>
 
-   <?php if(has_permission('expenses','','view')){ ?>
+   <?php if(has_permission('expenses','','view') || has_permission('expenses','','view_own')){ ?>
    <li><a href="<?php echo admin_url('clients/client/'.$client->userid.'?group=expenses'); ?>" data-group="expenses"><?php echo _l( 'client_expenses_tab'); ?></a></li>
    <?php } ?>
-   <?php if(has_permission('contracts','','view')){ ?>
+   <?php if(has_permission('contracts','','view') || has_permission('contracts','','view_own')){ ?>
       <li><a href="<?php echo admin_url('clients/client/'.$client->userid.'?group=contracts'); ?>" data-group="contracts"><?php echo _l( 'contracts_invoices_tab'); ?></a></li>
    <?php } ?>
    <li>

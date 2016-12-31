@@ -48,6 +48,12 @@ class Stripe_gateway
                 'label' => 'settings_paymentmethod_currencies',
                 'default_value' => 'USD,CAD'
             ),
+             array(
+                'name' => 'paymentmethod_' . $this->id . '_default_selected',
+                'type' => 'yes_no',
+                'default_value' => 1,
+                'label' => 'settings_paymentmethod_default_selected_on_invoice'
+            ),
             array(
                 'name' => 'paymentmethod_' . $this->id . '_test_mode_enabled',
                 'type' => 'yes_no',
@@ -112,6 +118,7 @@ function add_stripe_online_mode($modes)
         'id' => $CI->stripe_gateway->get_id(),
         'name' => get_option('paymentmethod_' . $CI->stripe_gateway->get_id() . '_label'),
         'description' => '',
+        'selected_by_default'=>get_option('paymentmethod_' . $CI->stripe_gateway->get_id() . '_default_selected'),
         'active' => get_option('paymentmethod_' . $CI->stripe_gateway->get_id() . '_active')
     );
     return $modes;

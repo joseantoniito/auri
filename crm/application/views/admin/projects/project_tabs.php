@@ -5,7 +5,7 @@
     <li>
         <a data-group="project_tasks" href="<?php echo admin_url('projects/view/'.$project->id.'?group=project_tasks'); ?>" role="tab"><i class="fa fa-check-circle" aria-hidden="true"></i> <?php echo _l('tasks'); ?></a>
     </li>
-     <li>
+    <li>
         <a data-group="project_timesheets" href="<?php echo admin_url('projects/view/'.$project->id.'?group=project_timesheets'); ?>" role="tab"><i class="fa fa-clock-o" aria-hidden="true"></i> <?php echo _l('project_timesheets'); ?></a>
     </li>
     <li>
@@ -14,7 +14,7 @@
     <li>
         <a data-group="project_files" href="<?php echo admin_url('projects/view/'.$project->id.'?group=project_files'); ?>" role="tab"><i class="fa fa-files-o" aria-hidden="true"></i> <?php echo _l('project_files'); ?></a>
     </li>
-     <li>
+    <li>
         <a data-group="project_discussions" href="<?php echo admin_url('projects/view/'.$project->id.'?group=project_discussions'); ?>" role="tab"><i class="fa fa-commenting" aria-hidden="true"></i> <?php echo _l('project_discussions'); ?></a>
     </li>
     <li>
@@ -27,19 +27,19 @@
     </li>
     <?php } ?>
 
-    <?php if(has_permission('estimates','','view')){ ?>
+    <?php if(has_permission('estimates','','view') || has_permission('estimates','','view_own')){ ?>
     <li>
         <a data-group="project_estimates" href="<?php echo admin_url('projects/view/'.$project->id.'?group=project_estimates'); ?>" role="tab"><i class="fa fa-sun-o" aria-hidden="true"></i> <?php echo _l('estimates'); ?></a>
     </li>
     <?php } ?>
 
-    <?php if(has_permission('invoices','','view')){ ?>
+    <?php if(has_permission('invoices','','view') || has_permission('invoices','','view_own')){ ?>
     <li>
         <a data-group="project_invoices" href="<?php echo admin_url('projects/view/'.$project->id.'?group=project_invoices'); ?>" role="tab"><i class="fa fa-sun-o" aria-hidden="true"></i> <?php echo _l('project_invoices'); ?></a>
     </li>
     <?php } ?>
 
-    <?php if(has_permission( 'expenses','','create') || has_permission('expenses','','view')){ ?>
+    <?php if(has_permission( 'expenses','','create') || has_permission('expenses','','view_own')){ ?>
     <li>
         <a data-group="project_expenses" href="<?php echo admin_url('projects/view/'.$project->id.'?group=project_expenses'); ?>" role="tab"><i class="fa fa-sort-amount-asc" aria-hidden="true"></i> <?php echo _l('project_expenses'); ?></a>
     </li>
@@ -47,7 +47,7 @@
     <li>
         <a data-group="project_notes" href="<?php echo admin_url('projects/view/'.$project->id.'?group=project_notes'); ?>" role="tab"><i class="fa fa-clock-o" aria-hidden="true"></i> <?php echo _l('project_notes'); ?></a>
     </li>
-     <?php if(has_permission('projects','','create')){ ?>
+    <?php if(has_permission('projects','','create')){ ?>
     <li>
         <a data-group="project_activity" href="<?php echo admin_url('projects/view/'.$project->id.'?group=project_activity'); ?>" role="tab"><i class="fa fa-exclamation" aria-hidden="true"></i> <?php echo _l('project_activity'); ?></a>
     </li>

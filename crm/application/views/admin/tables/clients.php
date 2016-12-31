@@ -115,7 +115,6 @@ if (count($custom_fields) > 4) {
 }
 
 $result  = data_tables_init($aColumns, $sIndexColumn, $sTable, $join, $where, array(
-    'company',
     'tblclients.userid',
     'firstname',
     'lastname',
@@ -146,7 +145,11 @@ foreach ($rResult as $aRow) {
             }
         }
         else if ($aColumns[$i] == 'company') {
+            if($aRow['company'] == ''){
+                $aRow['company'] = _l('no_company_view_profile');
+            }
             $_data = '<a href="' . admin_url('clients/client/' . $aRow['userid']) . '">' . $aRow['company'] . '</a>';
+
         } else if ($aColumns[$i] == 'phonenumber') {
             $_data = '<a href="tel:' . $_data . '">' . $_data . '</a>';
         } else if ($aColumns[$i] == $aColumns[3]) {
@@ -161,7 +164,7 @@ foreach ($rResult as $aRow) {
             }
 
             $_data = '';
-            $_data .= '<div class="onoffswitch">
+            $_data .= '<div class="onoffswitch" data-toggle="tooltip" data-title="'._l('customer_active_inactive_help').'">
             <input type="checkbox" data-switch-url="'.ADMIN_URL.'/clients/change_client_status" name="onoffswitch" class="onoffswitch-checkbox" id="'.$aRow['userid'].'" data-id="'.$aRow['userid'].'" ' . $checked . '>
             <label class="onoffswitch-label" for="'.$aRow['userid'].'"></label>
         </div>';

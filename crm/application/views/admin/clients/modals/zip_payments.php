@@ -14,7 +14,7 @@
                             if($client->company != ''){
                                 $file_name = slug_it($client->company);
                             } else {
-                                $file_name = slug_it($client->firstname . ' ' .$client->lastname);
+                                $file_name = slug_it(get_primary_contact_user_id($client->userid));
                             }
                             ?>
                         <?php

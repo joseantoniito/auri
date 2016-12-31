@@ -10,7 +10,7 @@ class Contracts extends Admin_controller
     /* List all contracts */
     public function index($clientid = false)
     {
-        if (!has_permission('contracts', '', 'view')) {
+        if (!has_permission('contracts', '', 'view') && !has_permission('contracts', '', 'view_own')) {
             access_denied('contracts');
         }
         if ($this->input->is_ajax_request()) {
@@ -28,9 +28,6 @@ class Contracts extends Admin_controller
     /* Edit contract or add new contract */
     public function contract($id = '')
     {
-        if (!has_permission('contracts', '', 'view')) {
-            access_denied('contracts');
-        }
         if ($this->input->post()) {
             if ($id == '') {
                 if (!has_permission('contracts', '', 'create')) {
@@ -57,7 +54,7 @@ class Contracts extends Admin_controller
         } else {
             $data['contract']                 = $this->contracts_model->get($id, array(), true);
             $data['contract_renewal_history'] = $this->contracts_model->get_contract_renewal_history($id);
-            if (!$data['contract']) {
+            if (!$data['contract'] || (!has_permission('contracts','','view') && $data['contract']->addedfrom != get_staff_user_id())) {
                 blank_page(_l('contract_not_found'));
             }
             $contract_merge_fields  = get_available_merge_fields();
@@ -104,10 +101,10 @@ class Contracts extends Admin_controller
         $data['base_currency'] = $this->currencies_model->get_base_currency();
         $data['types']         = $this->contracts_model->get_contract_types();
 
-        $where_clients = 'active=1';
+        $where_clients = 'tblclients.active=1';
 
         if(!has_permission('customers','','view')) {
-            $where_clients .= ' AND userid IN (SELECT customer_id FROM tblcustomeradmins WHERE staff_id='.get_staff_user_id().')';
+            $where_clients .= ' AND tblclients.userid IN (SELECT customer_id FROM tblcustomeradmins WHERE staff_id='.get_staff_user_id().')';
         }
 
         $data['clients']    = $this->clients_model->get('',$where_clients);
@@ -123,7 +120,7 @@ class Contracts extends Admin_controller
     }
     public function pdf($id)
     {
-        if (!has_permission('contracts', '', 'view')) {
+        if (!has_permission('contracts', '', 'view') && !has_permission('contracts', '', 'view_own')) {
             access_denied('contracts');
         }
         if (!$id) {
@@ -139,7 +136,7 @@ class Contracts extends Admin_controller
     }
     public function send_to_email($id)
     {
-        if (!has_permission('contracts', '', 'view')) {
+        if (!has_permission('contracts', '', 'view') && !has_permission('contracts', '', 'view_own')) {
             access_denied('contracts');
         }
         $success = $this->contracts_model->send_contract_to_client($id, $this->input->post('attach_pdf'),$this->input->post('cc'));
@@ -152,9 +149,15 @@ class Contracts extends Admin_controller
     }
     public function save_contract_data()
     {
-        if (!has_permission('contracts', '', 'edit')) {
-            access_denied('contracts');
+        if (!has_permission('contracts', '', 'edit') && !has_permission('contracts','','create')) {
+          header('HTTP/1.0 400 Bad error');
+          echo json_encode(array(
+            'success' => false,
+            'message' => _l('access_denied')
+            ));
+          die;
         }
+
         $success = false;
         $message = '';
         if ($this->input->post('content')) {
@@ -175,7 +178,7 @@ class Contracts extends Admin_controller
     }
     public function renew()
     {
-        if (!has_permission('contracts', '', 'create')) {
+        if (!has_permission('contracts', '', 'create') && !has_permission('contracts','','edit')) {
             access_denied('contracts');
         }
         if ($this->input->post()) {
@@ -191,9 +194,6 @@ class Contracts extends Admin_controller
     }
     public function delete_renewal($renewal_id, $contractid)
     {
-        if (!has_permission('contracts', '', 'delete')) {
-            access_denied('contracts');
-        }
         $success = $this->contracts_model->delete_renewal($renewal_id, $contractid);
         if ($success) {
             set_alert('success', _l('contract_renewal_deleted'));
@@ -284,12 +284,6 @@ class Contracts extends Admin_controller
     }
     public function add_contract_attachment($id)
     {
-        if (!has_permission('contracts', '', 'create') && !has_permission('contracts','','edit')) {
-            // access_denied
-            header('HTTP/1.0 400 Bad error');
-            echo _l('access_denied');
-            die;
-        }
         handle_contract_attachment($id);
     }
     public function add_external_attachment(){
@@ -299,15 +293,11 @@ class Contracts extends Admin_controller
     }
     public function delete_contract_attachment($attachment_id)
     {
-        if (!has_permission('contracts', '', 'delete')) {
+        $file = $this->misc_model->get_file($attachment_id);
+        if($file->staffid == get_staff_user_id() || is_admin()){
             echo json_encode(array(
-                'success' => false,
-                'message' => _l('access_denied')
+                'success' => $this->contracts_model->delete_contract_attachment($attachment_id)
             ));
-            die;
         }
-        echo json_encode(array(
-            'success' => $this->contracts_model->delete_contract_attachment($attachment_id)
-        ));
     }
 }

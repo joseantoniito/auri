@@ -17,7 +17,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 |
 */
 
-define('APP_BASE_URL','http://localhost/perfex_crm/crm/');
+define('APP_BASE_URL','');
 
 /*
 |--------------------------------------------------------------------------
@@ -33,18 +33,18 @@ define('APP_BASE_URL','http://localhost/perfex_crm/crm/');
 | Auto updated added on install
 */
 
-define('APP_ENC_KEY','996757f426acf0440cdc58e9cc4ef7be');
+define('APP_ENC_KEY','');
 
 /* Database credentials - Auto added on install */
 
 /* The hostname of your database server. */
 define('APP_DB_HOSTNAME','localhost');
 /* The username used to connect to the database */
-define('APP_DB_USERNAME','auri_perfex_crm');
+define('APP_DB_USERNAME','');
 /* The password used to connect to the database */
-define('APP_DB_PASSWORD','wujtRLWFyd4qezhc');
+define('APP_DB_PASSWORD','');
 /* The name of the database you want to connect to */
-define('APP_DB_NAME','auri_perfex_crm');
+define('APP_DB_NAME','');
 
 /* Session Handler */
 

@@ -3,7 +3,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class Projects_model extends CRM_Model
 {
     private $project_settings;
-    private $project_statuses = array(1,2,3,4);
+    private $project_statuses = array(1, 2, 3, 4);
     function __construct()
     {
         parent::__construct();
@@ -23,17 +23,20 @@ class Projects_model extends CRM_Model
             'view_gantt',
             'view_timesheets',
             'view_activity_log',
-            'view_team_members',
+            'view_team_members'
         );
         $this->project_settings = do_action('project_settings', $project_settings);
     }
-    public function get_project_statuses(){
+    public function get_project_statuses()
+    {
         return $this->project_statuses;
     }
-    public function get_distinct_tasks_timesheets_staff($project_id){
-        return $this->db->query('SELECT DISTINCT staff_id FROM tbltaskstimers LEFT JOIN tblstafftasks ON tblstafftasks.id = tbltaskstimers.task_id WHERE rel_type="project" AND rel_id='.$project_id)->result_array();
+    public function get_distinct_tasks_timesheets_staff($project_id)
+    {
+        return $this->db->query('SELECT DISTINCT staff_id FROM tbltaskstimers LEFT JOIN tblstafftasks ON tblstafftasks.id = tbltaskstimers.task_id WHERE rel_type="project" AND rel_id=' . $project_id)->result_array();
     }
-    public function get_most_used_billing_type(){
+    public function get_most_used_billing_type()
+    {
         return $this->db->query("SELECT billing_type, COUNT(*) AS total_usage
                 FROM tblprojects
                 GROUP BY billing_type
@@ -57,16 +60,20 @@ class Projects_model extends CRM_Model
         }
         return $timers_found;
     }
-    public function pin_action($id){
-        if(total_rows('tblpinnedprojects',array('staff_id'=>get_staff_user_id(),'project_id'=>$id)) == 0){
-            $this->db->insert('tblpinnedprojects',array(
-                'staff_id'=>get_staff_user_id(),
-                'project_id'=>$id,
-                ));
+    public function pin_action($id)
+    {
+        if (total_rows('tblpinnedprojects', array(
+            'staff_id' => get_staff_user_id(),
+            'project_id' => $id
+        )) == 0) {
+            $this->db->insert('tblpinnedprojects', array(
+                'staff_id' => get_staff_user_id(),
+                'project_id' => $id
+            ));
             return true;
         } else {
-            $this->db->where('project_id',$id);
-            $this->db->where('staff_id',get_staff_user_id());
+            $this->db->where('project_id', $id);
+            $this->db->where('staff_id', get_staff_user_id());
             $this->db->delete('tblpinnedprojects');
             return true;
         }
@@ -89,33 +96,34 @@ class Projects_model extends CRM_Model
         if ($project->status == 4) {
             return 100;
         }
-        if($project->progress_from_tasks == 1){
+        if ($project->progress_from_tasks == 1) {
             return $this->calc_progress_by_tasks($id);
         } else {
             return $project->progress;
         }
     }
-    public function calc_progress_by_tasks($id){
-      $project = $this->get($id);
-      $total_project_tasks  = total_rows('tblstafftasks', array(
-        'rel_type' => 'project',
-        'rel_id' => $id
+    public function calc_progress_by_tasks($id)
+    {
+        $project              = $this->get($id);
+        $total_project_tasks  = total_rows('tblstafftasks', array(
+            'rel_type' => 'project',
+            'rel_id' => $id
         ));
-      $total_finished_tasks = total_rows('tblstafftasks', array(
-        'rel_type' => 'project',
-        'rel_id' => $id,
-        'status' => 5
+        $total_finished_tasks = total_rows('tblstafftasks', array(
+            'rel_type' => 'project',
+            'rel_id' => $id,
+            'status' => 5
         ));
-      $percent              = 0;
-      if ($total_finished_tasks >= floatval($total_project_tasks)) {
-        $percent = 100;
-    } else {
-        if ($total_project_tasks !== 0) {
-            $percent = number_format(($total_finished_tasks * 100) / $total_project_tasks, 2);
+        $percent              = 0;
+        if ($total_finished_tasks >= floatval($total_project_tasks)) {
+            $percent = 100;
+        } else {
+            if ($total_project_tasks !== 0) {
+                $percent = number_format(($total_finished_tasks * 100) / $total_project_tasks, 2);
+            }
         }
+        return $percent;
     }
-    return $percent;
-}
     public function get_last_project_settings()
     {
         $this->db->select('id');
@@ -144,13 +152,16 @@ class Projects_model extends CRM_Model
                     $project->settings->{$setting['name']} = $setting['value'];
                 }
                 // IN case any settings missing add them and set default 0 to prevent errors
-                foreach($this->project_settings as $setting){
-                    if(total_rows('tblprojectsettings',array('name'=>$setting,'project_id'=>$id)) == 0){
-                        $this->db->insert('tblprojectsettings',array(
-                            'project_id'=>$id,
-                            'name'=>$setting,
-                            'value'=>0,
-                            ));
+                foreach ($this->project_settings as $setting) {
+                    if (total_rows('tblprojectsettings', array(
+                        'name' => $setting,
+                        'project_id' => $id
+                    )) == 0) {
+                        $this->db->insert('tblprojectsettings', array(
+                            'project_id' => $id,
+                            'name' => $setting,
+                            'value' => 0
+                        ));
                     }
                 }
                 $project->client_data = new StdClass();
@@ -164,7 +175,7 @@ class Projects_model extends CRM_Model
     public function calculate_total_by_project_hourly_rate($seconds, $hourly_rate)
     {
         $hours       = seconds_to_time_format($seconds);
-        $decimal       = sec2qty($seconds);
+        $decimal     = sec2qty($seconds);
         $total_money = 0;
         $total_money += ($decimal * $hourly_rate);
         return array(
@@ -187,7 +198,7 @@ class Projects_model extends CRM_Model
             'total_seconds' => $_total_seconds
         );
     }
-    public function get_tasks($id, $where = array(),$apply_restrictions = false)
+    public function get_tasks($id, $where = array(), $apply_restrictions = false)
     {
         if (is_client_logged_in()) {
             $this->db->where('visible_to_client', 1);
@@ -199,20 +210,20 @@ class Projects_model extends CRM_Model
 
         $this->db->where($where);
         $tasks = $this->db->get('tblstafftasks')->result_array();
-        if($apply_restrictions == true){
-            $has_permission = has_permission('tasks','','view');
-            $i = 0;
-            foreach($tasks as $task){
-                if(!is_client_logged_in() && !$has_permission){
-                    if(get_option('show_all_tasks_for_project_member') == 0){
-                        if(!$this->tasks_model->is_task_assignee(get_staff_user_id(),$task['id']) && !$this->tasks_model->is_task_follower(get_staff_user_id(),$task['id']) && $task['is_public'] != 1 && $task['addedfrom'] != get_staff_user_id()){
+        if ($apply_restrictions == true) {
+            $has_permission = has_permission('tasks', '', 'view');
+            $i              = 0;
+            foreach ($tasks as $task) {
+                if (!is_client_logged_in() && !$has_permission) {
+                    if (get_option('show_all_tasks_for_project_member') == 0) {
+                        if (!$this->tasks_model->is_task_assignee(get_staff_user_id(), $task['id']) && !$this->tasks_model->is_task_follower(get_staff_user_id(), $task['id']) && $task['is_public'] != 1 && $task['addedfrom'] != get_staff_user_id()) {
                             unset($tasks[$i]);
                         }
-                        }
                     }
-                    $i++;
                 }
+                $i++;
             }
+        }
 
         $tasks = array_values($tasks);
         return $tasks;
@@ -225,26 +236,28 @@ class Projects_model extends CRM_Model
         $this->db->where('project_id', $project_id);
         return $this->db->get('tblprojectfiles')->result_array();
     }
-    public function get_file($id,$project_id = false){
+    public function get_file($id, $project_id = false)
+    {
 
         if (is_client_logged_in()) {
             $this->db->where('visible_to_customer', 1);
         }
-        $this->db->where('id',$id);
+        $this->db->where('id', $id);
         $file = $this->db->get('tblprojectfiles')->row();
 
-       if($file && $project_id){
-         if($file->project_id != $project_id){
-            return false;
+        if ($file && $project_id) {
+            if ($file->project_id != $project_id) {
+                return false;
+            }
         }
-       }
 
         return $file;
     }
-    public function update_file_data($data){
-        $this->db->where('id',$data['id']);
+    public function update_file_data($data)
+    {
+        $this->db->where('id', $data['id']);
         unset($data['id']);
-        $this->db->update('tblprojectfiles',$data);
+        $this->db->update('tblprojectfiles', $data);
     }
     public function change_file_visibility($id, $visible)
     {
@@ -262,23 +275,23 @@ class Projects_model extends CRM_Model
     }
     public function remove_file($id)
     {
-        $id = do_action('before_remove_project_file',$id);
+        $id = do_action('before_remove_project_file', $id);
 
         $this->db->where('id', $id);
         $file = $this->db->get('tblprojectfiles')->row();
         if ($file) {
-            if(file_exists(get_upload_path_by_type('project') . $file->project_id . '/' . $file->file_name)){
+            if (file_exists(get_upload_path_by_type('project') . $file->project_id . '/' . $file->file_name)) {
                 if (unlink(get_upload_path_by_type('project') . $file->project_id . '/' . $file->file_name)) {
                     $this->db->where('id', $id);
                     $this->db->delete('tblprojectfiles');
                     $this->log_activity($file->project_id, 'project_activity_project_file_removed', $file->file_name, $file->visible_to_customer);
 
                     // Delete discussion comments
-                    $this->_delete_discussion_comments($id,'file');
+                    $this->_delete_discussion_comments($id, 'file');
 
                 }
             }
-            if(is_dir(get_upload_path_by_type('project') . $file->project_id)){
+            if (is_dir(get_upload_path_by_type('project') . $file->project_id)) {
                 // Check if no attachments left, so we can delete the folder also
                 $other_attachments = list_files(get_upload_path_by_type('project') . $file->project_id);
                 if (count($other_attachments) == 0) {
@@ -293,100 +306,108 @@ class Projects_model extends CRM_Model
     {
         $this->load->model('tasks_model');
         $type_data = array();
-        if($type == 'milestones'){
+        if ($type == 'milestones') {
             $type_data[] = array(
-                'name'=>_l('milestones_uncategorized'),
-                'id'=>0,
-                );
+                'name' => _l('milestones_uncategorized'),
+                'id' => 0
+            );
             $_milestones = $this->get_milestones($project_id);
-            foreach($_milestones as $m){
+            foreach ($_milestones as $m) {
                 $type_data[] = $m;
             }
-        } else if($type == 'members') {
+        } else if ($type == 'members') {
             $type_data[] = array(
-                'name'=>_l('task_list_not_assigned'),
-                'staff_id'=>0,
-                );
-            $_members = $this->get_project_members($project_id);
-            foreach($_members as $m){
+                'name' => _l('task_list_not_assigned'),
+                'staff_id' => 0
+            );
+            $_members    = $this->get_project_members($project_id);
+            foreach ($_members as $m) {
                 $type_data[] = $m;
             }
         } else {
             $statuses = $this->tasks_model->get_statuses();
-            foreach($statuses as $status){
+            foreach ($statuses as $status) {
                 $type_data[] = $status;
             }
         }
 
-        $gantt_data = array();
-        $has_permission = has_permission('tasks','','view');
-          foreach($type_data as $data){
-            if($type == 'milestones'){
-                $tasks      = $this->get_tasks($project_id,array('milestone'=>$data['id']),true);
-                $name = $data['name'];
-            } else if($type == 'members') {
-                if($data['staff_id'] != 0){
-                    $tasks      = $this->get_tasks($project_id,'id IN (SELECT taskid FROM tblstafftaskassignees WHERE staffid='.$data['staff_id'].')',true);
-                    $name = get_staff_full_name($data['staff_id']);
+        $gantt_data     = array();
+        $has_permission = has_permission('tasks', '', 'view');
+        foreach ($type_data as $data) {
+            if ($type == 'milestones') {
+                $tasks = $this->get_tasks($project_id, array(
+                    'milestone' => $data['id']
+                ), true);
+                $name  = $data['name'];
+            } else if ($type == 'members') {
+                if ($data['staff_id'] != 0) {
+                    $tasks = $this->get_tasks($project_id, 'id IN (SELECT taskid FROM tblstafftaskassignees WHERE staffid=' . $data['staff_id'] . ')', true);
+                    $name  = get_staff_full_name($data['staff_id']);
                 } else {
-                    $tasks      = $this->get_tasks($project_id,'id NOT IN (SELECT taskid FROM tblstafftaskassignees)',true);
-                    $name = $data['name'];
+                    $tasks = $this->get_tasks($project_id, 'id NOT IN (SELECT taskid FROM tblstafftaskassignees)', true);
+                    $name  = $data['name'];
                 }
             } else {
-                $tasks = $this->get_tasks($project_id,array('status'=>$data),true);
-                $name = format_task_Status($data,false,true);
+                $tasks = $this->get_tasks($project_id, array(
+                    'status' => $data
+                ), true);
+                $name  = format_task_Status($data, false, true);
             }
 
-            if(count($tasks) > 0){
-                $data  = array();
-                $data['values']        = array();
-                $values = array();
-                $data['desc'] = $tasks[0]['name'];
-                $data['name']          = $name;
-                $class = '';
+            if (count($tasks) > 0) {
+                $data           = array();
+                $data['values'] = array();
+                $values         = array();
+                $data['desc']   = $tasks[0]['name'];
+                $data['name']   = $name;
+                $class          = '';
                 if ($tasks[0]['status'] == 5) {
                     $class = 'line-throught';
                 }
 
-                $values['from']        = strftime('%Y/%m/%d',strtotime($tasks[0]['startdate']));
-                $values['to']          = strftime('%Y/%m/%d',strtotime($tasks[0]['duedate']));
-                $values['desc']        = _l('task_total_logged_time') . ' ' . seconds_to_time_format($this->tasks_model->calc_task_total_time($tasks[0]['id']));
-                $values['label']       = $tasks[0]['name'];
-                if($tasks[0]['duedate'] && date('Y-m-d') > $tasks[0]['duedate'] && $tasks[0]['status'] != 5){
-                   $values['customClass']       = 'ganttRed';
-                   } else if($tasks[0]['status'] == 5){
-                    $values['label']       = ' <i class="fa fa-check"></i> '. $values['label'];
-                    $values['customClass']       = 'ganttGreen';
+                $values['from']  = strftime('%Y/%m/%d', strtotime($tasks[0]['startdate']));
+                $values['to']    = strftime('%Y/%m/%d', strtotime($tasks[0]['duedate']));
+                $values['desc']  = _l('task_total_logged_time') . ' ' . seconds_to_time_format($this->tasks_model->calc_task_total_time($tasks[0]['id']));
+                $values['label'] = $tasks[0]['name'];
+                if ($tasks[0]['duedate'] && date('Y-m-d') > $tasks[0]['duedate'] && $tasks[0]['status'] != 5) {
+                    $values['customClass'] = 'ganttRed';
+                } else if ($tasks[0]['status'] == 5) {
+                    $values['label']       = ' <i class="fa fa-check"></i> ' . $values['label'];
+                    $values['customClass'] = 'ganttGreen';
                 }
-                $values['dataObj'] = array('task_id'=>$tasks[0]['id']);
-                $data['values'][]      = $values;
-                $gantt_data[]          = $data;
+                $values['dataObj'] = array(
+                    'task_id' => $tasks[0]['id']
+                );
+                $data['values'][]  = $values;
+                $gantt_data[]      = $data;
                 unset($tasks[0]);
                 foreach ($tasks as $task) {
-                    $data  = array();
-                    $data['values']        = array();
-                    $values = array();
-                    $class = '';
+                    $data           = array();
+                    $data['values'] = array();
+                    $values         = array();
+                    $class          = '';
                     if ($task['status'] == 5) {
                         $class = 'line-throught';
                     }
                     $data['desc'] = $task['name'];
                     $data['name'] = '';
 
-                    $values['from']        = strftime('%Y/%m/%d',strtotime($task['startdate']));
-                    $values['to']          = strftime('%Y/%m/%d',strtotime($task['duedate']));
-                    $values['desc']        = _l('task_total_logged_time') . ' ' . seconds_to_time_format($this->tasks_model->calc_task_total_time($task['id']));
-                    $values['label']       = $task['name'];
-                    if($task['duedate'] && date('Y-m-d') > $task['duedate'] && $task['status'] != 5){
-                         $values['customClass']       = 'ganttRed';
-                    } else if($task['status'] == 5){
-                        $values['label']       = ' <i class="fa fa-check"></i> '. $values['label'];
-                        $values['customClass']       = 'ganttGreen';
+                    $values['from']  = strftime('%Y/%m/%d', strtotime($task['startdate']));
+                    $values['to']    = strftime('%Y/%m/%d', strtotime($task['duedate']));
+                    $values['desc']  = _l('task_total_logged_time') . ' ' . seconds_to_time_format($this->tasks_model->calc_task_total_time($task['id']));
+                    $values['label'] = $task['name'];
+                    if ($task['duedate'] && date('Y-m-d') > $task['duedate'] && $task['status'] != 5) {
+                        $values['customClass'] = 'ganttRed';
+                    } else if ($task['status'] == 5) {
+                        $values['label']       = ' <i class="fa fa-check"></i> ' . $values['label'];
+                        $values['customClass'] = 'ganttGreen';
                     }
 
-                    $values['dataObj'] = array('task_id'=>$task['id']);
-                    $data['values'][]      = $values;
-                    $gantt_data[]          = $data;
+                    $values['dataObj'] = array(
+                        'task_id' => $task['id']
+                    );
+                    $data['values'][]  = $values;
+                    $gantt_data[]      = $data;
                 }
             }
         }
@@ -430,7 +451,7 @@ class Projects_model extends CRM_Model
         $data['datecreated'] = date('Y-m-d');
         $data['description'] = nl2br($data['description']);
 
-        if(isset($data['description_visible_to_customer'])){
+        if (isset($data['description_visible_to_customer'])) {
             $data['description_visible_to_customer'] = 1;
         } else {
             $data['description_visible_to_customer'] = 0;
@@ -455,11 +476,11 @@ class Projects_model extends CRM_Model
     public function update_milestone($data, $id)
     {
         $this->db->where('id', $id);
-        $milestone        = $this->db->get('tblmilestones')->row();
-        $data['due_date'] = to_sql_date($data['due_date']);
+        $milestone           = $this->db->get('tblmilestones')->row();
+        $data['due_date']    = to_sql_date($data['due_date']);
         $data['description'] = nl2br($data['description']);
 
-        if(isset($data['description_visible_to_customer'])){
+        if (isset($data['description_visible_to_customer'])) {
             $data['description_visible_to_customer'] = 1;
         } else {
             $data['description_visible_to_customer'] = 0;
@@ -480,19 +501,27 @@ class Projects_model extends CRM_Model
         }
         return false;
     }
-    public function update_task_milestone($data){
+    public function update_task_milestone($data)
+    {
 
-        $this->db->where('id',$data['task_id']);
-        $this->db->update('tblstafftasks',array('milestone'=>$data['milestone_id']));
+        $this->db->where('id', $data['task_id']);
+        $this->db->update('tblstafftasks', array(
+            'milestone' => $data['milestone_id']
+        ));
 
-        foreach($data['order'] as $order){
-            $this->db->where('id',$order[0]);
-            $this->db->update('tblstafftasks',array('milestone_order'=>$order[1]));
+        foreach ($data['order'] as $order) {
+            $this->db->where('id', $order[0]);
+            $this->db->update('tblstafftasks', array(
+                'milestone_order' => $order[1]
+            ));
         }
     }
-    public function update_milestone_color($data){
-        $this->db->where('id',$data['milestone_id']);
-        $this->db->update('tblmilestones',array('color'=>$data['color']));
+    public function update_milestone_color($data)
+    {
+        $this->db->where('id', $data['milestone_id']);
+        $this->db->update('tblmilestones', array(
+            'color' => $data['color']
+        ));
     }
     public function delete_milestone($id)
     {
@@ -519,11 +548,11 @@ class Projects_model extends CRM_Model
     }
     public function add($data)
     {
-        if(isset($data['notify_project_members_status_change'])){
+        if (isset($data['notify_project_members_status_change'])) {
             unset($data['notify_project_members_status_change']);
         }
         $send_created_email = false;
-        if(isset($data['send_created_email'])){
+        if (isset($data['send_created_email'])) {
             unset($data['send_created_email']);
             $send_created_email = true;
         }
@@ -535,7 +564,7 @@ class Projects_model extends CRM_Model
             $custom_fields = $data['custom_fields'];
             unset($data['custom_fields']);
         }
-        if(isset($data['progress_from_tasks'])){
+        if (isset($data['progress_from_tasks'])) {
             $data['progress_from_tasks'] = 1;
         } else {
             $data['progress_from_tasks'] = 0;
@@ -558,7 +587,7 @@ class Projects_model extends CRM_Model
 
         $data['addedfrom'] = get_staff_user_id();
 
-        $data = do_action('before_add_project',$data);
+        $data = do_action('before_add_project', $data);
         $this->db->insert('tblprojects', $data);
         $insert_id = $this->db->insert_id();
         if ($insert_id) {
@@ -597,10 +626,10 @@ class Projects_model extends CRM_Model
                 }
             }
             $this->log_activity($insert_id, 'project_activity_created');
-            if($send_created_email == true){
+            if ($send_created_email == true) {
                 $this->send_created_email($insert_id);
             }
-            do_action('after_add_project',$insert_id);
+            do_action('after_add_project', $insert_id);
             logActivity('New Project Created [ID: ' . $insert_id . ']');
             return $insert_id;
         }
@@ -610,14 +639,14 @@ class Projects_model extends CRM_Model
     {
 
         $send_created_email = false;
-        if(isset($data['send_created_email'])){
+        if (isset($data['send_created_email'])) {
             unset($data['send_created_email']);
             $send_created_email = true;
         }
 
         $original_project = $this->get($id);
 
-        if(isset($data['notify_project_members_status_change'])){
+        if (isset($data['notify_project_members_status_change'])) {
             $notify_project_members_status_change = true;
             unset($data['notify_project_members_status_change']);
         }
@@ -654,7 +683,7 @@ class Projects_model extends CRM_Model
             }
         }
 
-        if(isset($data['progress_from_tasks'])){
+        if (isset($data['progress_from_tasks'])) {
             $data['progress_from_tasks'] = 1;
         } else {
             $data['progress_from_tasks'] = 0;
@@ -694,9 +723,9 @@ class Projects_model extends CRM_Model
         }
 
         $_data['data'] = $data;
-        $_data['id'] = $id;
+        $_data['id']   = $id;
 
-        $_data = do_action('before_update_project',$_data);
+        $_data = do_action('before_update_project', $_data);
 
         $data = $_data['data'];
 
@@ -711,8 +740,8 @@ class Projects_model extends CRM_Model
             $affectedRows++;
         }
 
-        if($send_created_email == true){
-              if($this->send_created_email($id)){
+        if ($send_created_email == true) {
+            if ($this->send_created_email($id)) {
                 $affectedRows++;
             }
         }
@@ -720,38 +749,41 @@ class Projects_model extends CRM_Model
             $this->log_activity($id, 'project_activity_updated');
             logActivity('Project Updated [ID: ' . $id . ']');
 
-            if($original_project->status != $data['status']){
+            if ($original_project->status != $data['status']) {
                 // Give space this log to be on top
                 sleep(1);
-                if($data['status'] == 4){
+                if ($data['status'] == 4) {
                     $this->log_activity($id, 'project_marked_as_finished');
                 } else {
-                    $this->log_activity($id,'project_status_updated','<b><lang>project_status_'.$data['status'].'</lang></b>');
+                    $this->log_activity($id, 'project_status_updated', '<b><lang>project_status_' . $data['status'] . '</lang></b>');
                 }
 
-                if(isset($notify_project_members_status_change)){
-                    $this->_notify_project_members_status_change($id,$original_project->status,$data['status']);
+                if (isset($notify_project_members_status_change)) {
+                    $this->_notify_project_members_status_change($id, $original_project->status, $data['status']);
                 }
             }
-            do_action('after_update_project',$id);
+            do_action('after_update_project', $id);
             return true;
         }
         return false;
     }
-    public function send_created_email($id){
+    public function send_created_email($id)
+    {
 
         $this->db->select('clientid');
-        $this->db->where('id',$id);
+        $this->db->where('id', $id);
         $clientid = $this->db->get('tblprojects')->row()->clientid;
 
-        $sent = false;
-        $contacts       = $this->clients_model->get_contacts($clientid);
+        $sent     = false;
+        $contacts = $this->clients_model->get_contacts($clientid);
         $this->load->model('emails_model');
-         foreach ($contacts as $contact) {
+        foreach ($contacts as $contact) {
             if (has_contact_permission('projects', $contact['id'])) {
                 $merge_fields = array();
                 $merge_fields = array_merge($merge_fields, get_client_contact_merge_fields($clientid, $contact['id']));
-                $merge_fields = array_merge($merge_fields, get_project_merge_fields($id,array('customer_template'=>true)));
+                $merge_fields = array_merge($merge_fields, get_project_merge_fields($id, array(
+                    'customer_template' => true
+                )));
                 if ($this->emails_model->send_email_template('assigned-to-project', $contact['email'], $merge_fields)) {
                     $send = true;
                 }
@@ -759,20 +791,21 @@ class Projects_model extends CRM_Model
         }
         return $sent;
     }
-    public function mark_as($data){
+    public function mark_as($data)
+    {
         $this->db->select('status');
-        $this->db->where('id',$data['project_id']);
+        $this->db->where('id', $data['project_id']);
         $old_status = $this->db->get('tblprojects')->row()->status;
 
-        $this->db->where('id',$data['project_id']);
-        $this->db->update('tblprojects',array(
-            'status'=>$data['status_id']
-            ));
-        if($this->db->affected_rows() > 0){
-            if($data['notify_project_members_status_change'] == 1){
-                $this->_notify_project_members_status_change($data['project_id'],$old_status,$data['status_id']);
+        $this->db->where('id', $data['project_id']);
+        $this->db->update('tblprojects', array(
+            'status' => $data['status_id']
+        ));
+        if ($this->db->affected_rows() > 0) {
+            if ($data['notify_project_members_status_change'] == 1) {
+                $this->_notify_project_members_status_change($data['project_id'], $old_status, $data['status_id']);
             }
-            if($data['mark_all_tasks_as_completed'] == 1){
+            if ($data['mark_all_tasks_as_completed'] == 1) {
                 $this->_mark_all_project_tasks_as_completed($data['project_id']);
             }
 
@@ -782,34 +815,39 @@ class Projects_model extends CRM_Model
 
         return false;
     }
-    private function _notify_project_members_status_change($id,$old_status,$new_status){
-          $members = $this->get_project_members($id);
-          foreach($members as $member){
-            if($member['staff_id'] != get_staff_user_id()){
-              add_notification(array(
-                'fromuserid' => get_staff_user_id(),
-                'description' => 'not_project_status_updated',
-                'link' => 'projects/view/' . $id ,
-                'touserid' => $member['staff_id'],
-                'additional_data'=>serialize(array('<lang>project_status_'.$old_status.'</lang>','<lang>project_status_'.$new_status.'</lang>')),
+    private function _notify_project_members_status_change($id, $old_status, $new_status)
+    {
+        $members = $this->get_project_members($id);
+        foreach ($members as $member) {
+            if ($member['staff_id'] != get_staff_user_id()) {
+                add_notification(array(
+                    'fromuserid' => get_staff_user_id(),
+                    'description' => 'not_project_status_updated',
+                    'link' => 'projects/view/' . $id,
+                    'touserid' => $member['staff_id'],
+                    'additional_data' => serialize(array(
+                        '<lang>project_status_' . $old_status . '</lang>',
+                        '<lang>project_status_' . $new_status . '</lang>'
+                    ))
                 ));
-          }
-      }
+            }
+        }
     }
-    private function _mark_all_project_tasks_as_completed($id){
+    private function _mark_all_project_tasks_as_completed($id)
+    {
         $this->db->where('rel_type', 'project');
         $this->db->where('rel_id', $id);
         $this->db->update('tblstafftasks', array(
             'status' => 5,
             'datefinished' => date('Y-m-d H:i:s')
-            ));
+        ));
         $tasks = $this->get_tasks($id);
         foreach ($tasks as $task) {
             $this->db->where('task_id', $task['id']);
             $this->db->where('end_time IS NULL');
             $this->db->update('tbltaskstimers', array(
                 'end_time' => time()
-                ));
+            ));
         }
         $this->log_activity($id, 'project_activity_marked_all_tasks_as_complete');
     }
@@ -822,7 +860,7 @@ class Projects_model extends CRM_Model
 
         $new_project_members_to_receive_email = array();
         $this->db->select('name');
-        $this->db->where('id',$id);
+        $this->db->where('id', $id);
         $project_name = $this->db->get('tblprojects')->row()->name;
 
         $project_members_in = $this->get_project_members($id);
@@ -835,8 +873,8 @@ class Projects_model extends CRM_Model
                         $this->db->delete('tblprojectmembers');
                         if ($this->db->affected_rows() > 0) {
 
-                            $this->db->where('staff_id',$project_member['staff_id']);
-                            $this->db->where('project_id',$id);
+                            $this->db->where('staff_id', $project_member['staff_id']);
+                            $this->db->where('project_id', $id);
                             $this->db->delete('tblpinnedprojects');
 
                             $this->log_activity($id, 'project_activity_removed_team_member', get_staff_full_name($project_member['staff_id']));
@@ -866,15 +904,17 @@ class Projects_model extends CRM_Model
                             'staff_id' => $staff_id
                         ));
                         if ($this->db->affected_rows() > 0) {
-                            if($staff_id != get_staff_user_id()){
+                            if ($staff_id != get_staff_user_id()) {
                                 add_notification(array(
                                     'fromuserid' => get_staff_user_id(),
                                     'description' => 'not_staff_added_as_project_member',
-                                    'link' => 'projects/view/' . $id ,
+                                    'link' => 'projects/view/' . $id,
                                     'touserid' => $staff_id,
-                                    'additional_data'=>serialize(array($project_name)),
-                                    ));
-                                array_push($new_project_members_to_receive_email,$staff_id);
+                                    'additional_data' => serialize(array(
+                                        $project_name
+                                    ))
+                                ));
+                                array_push($new_project_members_to_receive_email, $staff_id);
                             }
 
 
@@ -895,16 +935,18 @@ class Projects_model extends CRM_Model
                         'staff_id' => $staff_id
                     ));
                     if ($this->db->affected_rows() > 0) {
-                        if($staff_id != get_staff_user_id()){
-                     add_notification(array(
-                        'fromuserid' => get_staff_user_id(),
-                        'description' => 'not_staff_added_as_project_member',
-                        'link' => 'projects/view/' . $id ,
-                        'touserid' => $staff_id,
-                        'additional_data'=>serialize(array($project_name)),
-                        ));
-                     array_push($new_project_members_to_receive_email,$staff_id);
-                 }
+                        if ($staff_id != get_staff_user_id()) {
+                            add_notification(array(
+                                'fromuserid' => get_staff_user_id(),
+                                'description' => 'not_staff_added_as_project_member',
+                                'link' => 'projects/view/' . $id,
+                                'touserid' => $staff_id,
+                                'additional_data' => serialize(array(
+                                    $project_name
+                                ))
+                            ));
+                            array_push($new_project_members_to_receive_email, $staff_id);
+                        }
                         $this->log_activity($id, 'project_activity_added_team_member', get_staff_full_name($staff_id));
                         $affectedRows++;
                     }
@@ -912,15 +954,15 @@ class Projects_model extends CRM_Model
             }
         }
 
-        if(count($new_project_members_to_receive_email) > 0){
+        if (count($new_project_members_to_receive_email) > 0) {
             $this->load->model('emails_model');
             $all_members = $this->get_project_members($id);
-            foreach($all_members as $data){
-                if(in_array($data['staff_id'],$new_project_members_to_receive_email)){
+            foreach ($all_members as $data) {
+                if (in_array($data['staff_id'], $new_project_members_to_receive_email)) {
                     $merge_fields = array();
                     $merge_fields = array_merge($merge_fields, get_staff_merge_fields($data['staff_id']));
                     $merge_fields = array_merge($merge_fields, get_project_merge_fields($id));
-                    $this->emails_model->send_email_template('staff-added-as-project-member',$data['email'],$merge_fields);
+                    $this->emails_model->send_email_template('staff-added-as-project-member', $data['email'], $merge_fields);
                 }
             }
         }
@@ -943,8 +985,11 @@ class Projects_model extends CRM_Model
         }
         return false;
     }
-    public function get_projects_for_ticket($client_id){
-          return $this->get('',array('clientid'=>$client_id));
+    public function get_projects_for_ticket($client_id)
+    {
+        return $this->get('', array(
+            'clientid' => $client_id
+        ));
     }
     public function get_project_settings($project_id)
     {
@@ -952,8 +997,9 @@ class Projects_model extends CRM_Model
         return $this->db->get('tblprojectsettings')->result_array();
     }
     public function get_project_members($id)
-    {   $this->db->select('email,project_id,staff_id');
-        $this->db->join('tblstaff','tblstaff.staffid=tblprojectmembers.staff_id');
+    {
+        $this->db->select('email,project_id,staff_id');
+        $this->db->join('tblstaff', 'tblstaff.staffid=tblprojectmembers.staff_id');
         $this->db->where('project_id', $id);
         return $this->db->get('tblprojectmembers')->result_array();
     }
@@ -1049,19 +1095,19 @@ class Projects_model extends CRM_Model
             }
             $comment->profile_picture_url = staff_profile_image_url($comment->staff_id);
         }
-        $comment->created =  (strtotime($comment->created) * 1000);
-        if(!empty($comment->modified)){
-            $comment->modified =  (strtotime($comment->modified) * 1000);
+        $comment->created = (strtotime($comment->created) * 1000);
+        if (!empty($comment->modified)) {
+            $comment->modified = (strtotime($comment->modified) * 1000);
         }
         if (!is_null($comment->file_name)) {
             $comment->file_url = site_url('uploads/discussions/' . $comment->discussion_id . '/' . $comment->file_name);
         }
         return $comment;
     }
-    public function get_discussion_comments($id,$type)
+    public function get_discussion_comments($id, $type)
     {
         $this->db->where('discussion_id', $id);
-        $this->db->where('discussion_type',$type);
+        $this->db->where('discussion_type', $type);
         $comments = $this->db->get('tblprojectdiscussioncomments')->result_array();
         $i        = 0;
         foreach ($comments as $comment) {
@@ -1101,8 +1147,8 @@ class Projects_model extends CRM_Model
                 $comments[$i]['file_url'] = site_url('uploads/discussions/' . $id . '/' . $comment['file_name']);
             }
             $comments[$i]['created'] = (strtotime($comment['created']) * 1000);
-            if(!empty($comment['modified'])){
-                $comments[$i]['modified'] =  (strtotime($comment['modified']) * 1000);
+            if (!empty($comment['modified'])) {
+                $comments[$i]['modified'] = (strtotime($comment['modified']) * 1000);
             }
             $i++;
         }
@@ -1124,10 +1170,10 @@ class Projects_model extends CRM_Model
         }
         return $discussions;
     }
-    public function add_discussion_comment($data, $discussion_id,$type)
+    public function add_discussion_comment($data, $discussion_id, $type)
     {
-        $discussion             = $this->get_discussion($discussion_id);
-        $_data['discussion_id'] = $discussion_id;
+        $discussion               = $this->get_discussion($discussion_id);
+        $_data['discussion_id']   = $discussion_id;
         $_data['discussion_type'] = $type;
         if (isset($data['content'])) {
             $_data['content'] = $data['content'];
@@ -1137,60 +1183,65 @@ class Projects_model extends CRM_Model
         }
         if (is_client_logged_in()) {
             $_data['contact_id'] = get_contact_user_id();
-            $_data['fullname']  = get_contact_full_name($_data['contact_id']);
+            $_data['fullname']   = get_contact_full_name($_data['contact_id']);
             $_data['staff_id']   = 0;
         } else {
             $_data['contact_id'] = 0;
             $_data['staff_id']   = get_staff_user_id();
-            $_data['fullname']  = get_staff_full_name($_data['staff_id']);
+            $_data['fullname']   = get_staff_full_name($_data['staff_id']);
         }
         $_data            = handle_project_discussion_comment_attachments($discussion_id, $data, $_data);
         $_data['created'] = date('Y-m-d H:i:s');
         $this->db->insert('tblprojectdiscussioncomments', $_data);
         $insert_id = $this->db->insert_id();
         if ($insert_id) {
-            if($type == 'regular'){
+            if ($type == 'regular') {
                 $discussion = $this->get_discussion($discussion_id);
-                $not_link = 'projects/view/' . $discussion->project_id . '?group=project_discussions&discussion_id=' . $discussion_id;
+                $not_link   = 'projects/view/' . $discussion->project_id . '?group=project_discussions&discussion_id=' . $discussion_id;
             } else {
-                $discussion = $this->get_file($discussion_id);
-                $not_link = 'projects/view/'.$discussion->project_id.'?group=project_files&file_id='.$discussion_id;
+                $discussion                   = $this->get_file($discussion_id);
+                $not_link                     = 'projects/view/' . $discussion->project_id . '?group=project_files&file_id=' . $discussion_id;
                 $discussion->show_to_customer = $discussion->visible_to_customer;
             }
 
-            $this->send_project_email_template(
-                $discussion->project_id,
-                'new-project-discussion-comment-to-staff',
-                'new-project-discussion-comment-to-customer',
-                $discussion->show_to_customer,
-                array(
-                    'staff'=>array('discussion_id'=>$discussion_id,'discussion_comment_id'=>$insert_id,'discussion_type'=>$type),
-                    'customers'=>array('customer_template'=>true,'discussion_id'=>$discussion_id,'discussion_comment_id'=>$insert_id,'discussion_type'=>$type),
-                    )
-                );
+            $this->send_project_email_template($discussion->project_id, 'new-project-discussion-comment-to-staff', 'new-project-discussion-comment-to-customer', $discussion->show_to_customer, array(
+                'staff' => array(
+                    'discussion_id' => $discussion_id,
+                    'discussion_comment_id' => $insert_id,
+                    'discussion_type' => $type
+                ),
+                'customers' => array(
+                    'customer_template' => true,
+                    'discussion_id' => $discussion_id,
+                    'discussion_comment_id' => $insert_id,
+                    'discussion_type' => $type
+                )
+            ));
 
 
-               $this->log_activity($discussion->project_id, 'project_activity_commented_on_discussion', $discussion->subject,$discussion->show_to_customer);
+            $this->log_activity($discussion->project_id, 'project_activity_commented_on_discussion', $discussion->subject, $discussion->show_to_customer);
 
-               $notification_data = array(
-                     'description'=>'not_commented_on_project_discussion',
-                     'link'=>$not_link,
-                     );
+            $notification_data = array(
+                'description' => 'not_commented_on_project_discussion',
+                'link' => $not_link
+            );
 
-                if(is_client_logged_in()){
-                    $notification_data['fromclientid'] = get_contact_user_id();
-                } else {
-                    $notification_data['fromuserid'] = get_staff_user_id();
-                }
+            if (is_client_logged_in()) {
+                $notification_data['fromclientid'] = get_contact_user_id();
+            } else {
+                $notification_data['fromuserid'] = get_staff_user_id();
+            }
 
             $members = $this->get_project_members($discussion->project_id);
-             foreach($members as $member){
-                    if($member['staff_id'] == get_staff_user_id() && !is_client_logged_in()){continue;}
-                    $notification_data['touserid'] = $member['staff_id'];
-                    add_notification($notification_data);
+            foreach ($members as $member) {
+                if ($member['staff_id'] == get_staff_user_id() && !is_client_logged_in()) {
+                    continue;
                 }
+                $notification_data['touserid'] = $member['staff_id'];
+                add_notification($notification_data);
+            }
 
-            $this->_update_discussion_last_activity($discussion_id,$type);
+            $this->_update_discussion_last_activity($discussion_id, $type);
             return $this->get_discussion_comment($insert_id);
         }
         return false;
@@ -1201,10 +1252,10 @@ class Projects_model extends CRM_Model
         $this->db->where('id', $data['id']);
         $this->db->update('tblprojectdiscussioncomments', array(
             'modified' => date('Y-m-d H:i:s'),
-            'content' => nl2br($data['content'])
+            'content' =>$data['content']
         ));
         if ($this->db->affected_rows() > 0) {
-            $this->_update_discussion_last_activity($comment->discussion_id,$comment->discussion_type);
+            $this->_update_discussion_last_activity($comment->discussion_id, $comment->discussion_type);
         }
         return $this->get_discussion_comment($data['id']);
     }
@@ -1217,19 +1268,19 @@ class Projects_model extends CRM_Model
             $this->delete_discussion_comment_attachment($comment->file_name, $comment->discussion_id);
 
             $additional_data = '';
-            if($comment->discussion_type == 'regular'){
-                $discussion      = $this->get_discussion($comment->discussion_id);
-                $not = 'project_activity_deleted_discussion_comment';
+            if ($comment->discussion_type == 'regular') {
+                $discussion = $this->get_discussion($comment->discussion_id);
+                $not        = 'project_activity_deleted_discussion_comment';
                 $additional_data .= $discussion->subject . '<br />' . $comment->content;
             } else {
-                $discussion      = $this->get_file($comment->discussion_id);
-                $not = 'project_activity_deleted_file_discussion_comment';
+                $discussion = $this->get_file($comment->discussion_id);
+                $not        = 'project_activity_deleted_file_discussion_comment';
                 $additional_data .= $discussion->subject . '<br />' . $comment->content;
             }
 
             if (!is_null($comment->file_name)) {
-                    $additional_data .= $comment->file_name;
-                }
+                $additional_data .= $comment->file_name;
+            }
             $this->log_activity($discussion->project_id, $not, $additional_data);
         }
         $this->db->where('parent', $id);
@@ -1237,7 +1288,7 @@ class Projects_model extends CRM_Model
             'parent' => NULL
         ));
         if ($this->db->affected_rows() > 0) {
-            $this->_update_discussion_last_activity($comment->discussion_id,$comment->discussion_type);
+            $this->_update_discussion_last_activity($comment->discussion_id, $comment->discussion_type);
         }
         return true;
     }
@@ -1278,33 +1329,36 @@ class Projects_model extends CRM_Model
         $insert_id = $this->db->insert_id();
         if ($insert_id) {
 
-          $members = $this->get_project_members($data['project_id']);
-          $notification_data = array(
-           'description'=>'not_created_new_project_discussion',
-           'link'=>'projects/view/' . $data['project_id'] . '?group=project_discussions&discussion_id=' . $insert_id,
-           );
+            $members           = $this->get_project_members($data['project_id']);
+            $notification_data = array(
+                'description' => 'not_created_new_project_discussion',
+                'link' => 'projects/view/' . $data['project_id'] . '?group=project_discussions&discussion_id=' . $insert_id
+            );
 
-            if(is_client_logged_in()){
+            if (is_client_logged_in()) {
                 $notification_data['fromclientid'] = get_contact_user_id();
             } else {
                 $notification_data['fromuserid'] = get_staff_user_id();
             }
 
-            foreach($members as $member){
-                if($member['staff_id'] == get_staff_user_id() && !is_client_logged_in()){continue;}
+            foreach ($members as $member) {
+                if ($member['staff_id'] == get_staff_user_id() && !is_client_logged_in()) {
+                    continue;
+                }
                 $notification_data['touserid'] = $member['staff_id'];
                 add_notification($notification_data);
             }
-            $this->send_project_email_template(
-                $data['project_id'],
-                'new-project-discussion-created-to-staff',
-                'new-project-discussion-created-to-customer',
-                $data['show_to_customer'],
-                array(
-                    'staff'=>array('discussion_id'=>$insert_id,'discussion_type'=>'regular'),
-                    'customers'=>array('customer_template'=>true,'discussion_id'=>$insert_id,'discussion_type'=>'regular')
-                    )
-                );
+            $this->send_project_email_template($data['project_id'], 'new-project-discussion-created-to-staff', 'new-project-discussion-created-to-customer', $data['show_to_customer'], array(
+                'staff' => array(
+                    'discussion_id' => $insert_id,
+                    'discussion_type' => 'regular'
+                ),
+                'customers' => array(
+                    'customer_template' => true,
+                    'discussion_id' => $insert_id,
+                    'discussion_type' => 'regular'
+                )
+            ));
             $this->log_activity($data['project_id'], 'project_activity_created_discussion', $data['subject'], $data['show_to_customer']);
             return $insert_id;
         }
@@ -1333,7 +1387,7 @@ class Projects_model extends CRM_Model
         $this->db->delete('tblprojectdiscussions');
         if ($this->db->affected_rows() > 0) {
             $this->log_activity($discussion->project_id, 'project_activity_deleted_discussion', $discussion->subject, $discussion->show_to_customer);
-            $this->_delete_discussion_comments($id,'regular');
+            $this->_delete_discussion_comments($id, 'regular');
             return true;
         }
         return false;
@@ -1353,12 +1407,12 @@ class Projects_model extends CRM_Model
         }
         unset($_new_data['id']);
 
-        $_new_data['start_date']      = to_sql_date($data['start_date']);
+        $_new_data['start_date'] = to_sql_date($data['start_date']);
 
-        if($_new_data['start_date'] > date('Y-m-d')){
-            $_new_data['status']       = 1;
+        if ($_new_data['start_date'] > date('Y-m-d')) {
+            $_new_data['status'] = 1;
         } else {
-            $_new_data['status']       = 2;
+            $_new_data['status'] = 2;
         }
 
         $_new_data['deadline']        = to_sql_date($data['deadline']);
@@ -1388,7 +1442,11 @@ class Projects_model extends CRM_Model
                         $copy_task_data['copy_task_checklist_items'] = 'true';
                     }
                     $copy_task_data['copy_from'] = $task['id'];
-                    $task_id = $this->tasks_model->copy($copy_task_data,array('rel_id'=>$id,'rel_type'=>'project','last_recurring_date'=>NULL));
+                    $task_id                     = $this->tasks_model->copy($copy_task_data, array(
+                        'rel_id' => $id,
+                        'rel_type' => 'project',
+                        'last_recurring_date' => NULL
+                    ));
                     if ($task_id) {
                         array_push($added_tasks, $task_id);
                     }
@@ -1407,11 +1465,11 @@ class Projects_model extends CRM_Model
                         'name' => $milestone['name'],
                         'project_id' => $id,
                         'milestone_order' => $milestone['milestone_order'],
-                        'description_visible_to_customer'=>$milestone['description_visible_to_customer'],
-                        'description'=>$milestone['description'],
+                        'description_visible_to_customer' => $milestone['description_visible_to_customer'],
+                        'description' => $milestone['description'],
                         'due_date' => $due_date,
                         'datecreated' => date('Y-m-d'),
-                        'color'=>$milestone['color'],
+                        'color' => $milestone['color']
                     ));
 
                     $milestone_id = $this->db->insert_id();
@@ -1457,12 +1515,14 @@ class Projects_model extends CRM_Model
                 }
             }
             if (isset($data['members'])) {
-                $members = $this->get_project_members($project_id);
+                $members  = $this->get_project_members($project_id);
                 $_members = array();
                 foreach ($members as $member) {
-                    array_push($_members,$member['staff_id']);
+                    array_push($_members, $member['staff_id']);
                 }
-                $this->add_edit_members(array('project_members'=>$_members),$id);
+                $this->add_edit_members(array(
+                    'project_members' => $_members
+                ), $id);
             }
 
             $this->log_activity($id, 'project_activity_created');
@@ -1520,9 +1580,9 @@ class Projects_model extends CRM_Model
             $this->db->delete('tblprojectmembers');
             $this->db->where('project_id', $project_id);
             $this->db->delete('tblprojectnotes');
-            $this->db->where('project_id', $project_id);
-            $this->db->delete('tblprojectsettings');
 
+            $this->db->where('project_id', $project_id);
+            $this->db->delete('tblmilestones');
 
             // Delete the custom field values
             $this->db->where('relid', $project_id);
@@ -1533,7 +1593,7 @@ class Projects_model extends CRM_Model
             $this->db->where('project_id', $project_id);
             $discussions = $this->db->get('tblprojectdiscussions')->result_array();
             foreach ($discussions as $discussion) {
-                $discussion_comments = $this->get_discussion_comments($discussion['id'],'regular');
+                $discussion_comments = $this->get_discussion_comments($discussion['id'], 'regular');
                 foreach ($discussion_comments as $comment) {
                     $this->delete_discussion_comment_attachment($comment['file_name'], $discussion['id']);
                 }
@@ -1550,22 +1610,31 @@ class Projects_model extends CRM_Model
             foreach ($tasks as $task) {
                 $this->tasks_model->delete_task($task['id'], false);
             }
+
             $this->db->where('project_id', $project_id);
             $this->db->delete('tblprojectactivity');
 
-            $this->db->where('project_id',$project_id);
-            $this->db->update('tblexpenses',array('project_id'=>0));
+            $this->db->where('project_id', $project_id);
+            $this->db->update('tblexpenses', array(
+                'project_id' => 0
+            ));
 
-            $this->db->where('project_id',$project_id);
-            $this->db->update('tblinvoices',array('project_id'=>0));
+            $this->db->where('project_id', $project_id);
+            $this->db->update('tblinvoices', array(
+                'project_id' => 0
+            ));
 
-            $this->db->where('project_id',$project_id);
-            $this->db->update('tblestimates',array('project_id'=>0));
+            $this->db->where('project_id', $project_id);
+            $this->db->update('tblestimates', array(
+                'project_id' => 0
+            ));
 
-            $this->db->where('project_id',$project_id);
-            $this->db->update('tbltickets',array('project_id'=>0));
+            $this->db->where('project_id', $project_id);
+            $this->db->update('tbltickets', array(
+                'project_id' => 0
+            ));
 
-            $this->db->where('project_id',$project_id);
+            $this->db->where('project_id', $project_id);
             $this->db->delete('tblpinnedprojects');
 
             logActivity('Project Deleted [ID: ' . $project_id . ', Name: ' . $project->name . ']');
@@ -1639,12 +1708,13 @@ class Projects_model extends CRM_Model
         $this->db->insert('tblprojectactivity', $data);
     }
 
-    public function send_project_email_template($project_id,$staff_template,$customer_template,$action_visible_to_customer,$additional_data = array()){
-        if(count($additional_data) == 0){
+    public function send_project_email_template($project_id, $staff_template, $customer_template, $action_visible_to_customer, $additional_data = array())
+    {
+        if (count($additional_data) == 0) {
             $additional_data['customers'] = array();
-            $additional_data['staff'] = array();
-        } else if(count($additional_data) == 1){
-            if(!isset($additional_data['staff'])){
+            $additional_data['staff']     = array();
+        } else if (count($additional_data) == 1) {
+            if (!isset($additional_data['staff'])) {
                 $additional_data['staff'] = array();
             } else {
                 $additional_data['customers'] = array();
@@ -1655,94 +1725,116 @@ class Projects_model extends CRM_Model
         $members = $this->get_project_members($project_id);
 
         $this->load->model('emails_model');
-        foreach($members as $member){
-            if(is_staff_logged_in()){
-                if($member['staff_id'] == get_staff_user_id()){continue;}
+        foreach ($members as $member) {
+            if (is_staff_logged_in()) {
+                if ($member['staff_id'] == get_staff_user_id()) {
+                    continue;
+                }
             }
             $merge_fields = array();
             $merge_fields = array_merge($merge_fields, get_staff_merge_fields($member['staff_id']));
-            $merge_fields = array_merge($merge_fields, get_project_merge_fields($project->id,$additional_data['staff']));
-            $this->emails_model->send_email_template($staff_template,$member['email'],$merge_fields);
+            $merge_fields = array_merge($merge_fields, get_project_merge_fields($project->id, $additional_data['staff']));
+            $this->emails_model->send_email_template($staff_template, $member['email'], $merge_fields);
         }
-        if($action_visible_to_customer == 1){
-            $contacts    = $this->clients_model->get_contacts($project->clientid);
+        if ($action_visible_to_customer == 1) {
+            $contacts = $this->clients_model->get_contacts($project->clientid);
             foreach ($contacts as $contact) {
-                if(is_client_logged_in()){
-                    if($contact['id'] == get_contact_user_id()){continue;}
+                if (is_client_logged_in()) {
+                    if ($contact['id'] == get_contact_user_id()) {
+                        continue;
+                    }
                 }
                 if (has_contact_permission('projects', $contact['id'])) {
                     $merge_fields = array();
-                    $merge_fields = array_merge($merge_fields, get_client_contact_merge_fields($project->clientid,$contact['id']));
-                    $merge_fields = array_merge($merge_fields, get_project_merge_fields($project->id,$additional_data['customers']));
-                    $this->emails_model->send_email_template($customer_template,$contact['email'],$merge_fields);
+                    $merge_fields = array_merge($merge_fields, get_client_contact_merge_fields($project->clientid, $contact['id']));
+                    $merge_fields = array_merge($merge_fields, get_project_merge_fields($project->id, $additional_data['customers']));
+                    $this->emails_model->send_email_template($customer_template, $contact['email'], $merge_fields);
                 }
             }
         }
     }
-    private function _get_project_billing_data($id){
+    private function _get_project_billing_data($id)
+    {
         $this->db->select('billing_type,project_rate_per_hour');
-        $this->db->where('id',$id);
+        $this->db->where('id', $id);
         return $this->db->get('tblprojects')->row();
     }
 
-    public function total_logged_time_by_billing_type($id,$conditions = array()){
+    public function total_logged_time_by_billing_type($id, $conditions = array())
+    {
         $project_data = $this->_get_project_billing_data($id);
-        $data = array();
-        if($project_data->billing_type == 2){
-            $seconds = $this->total_logged_time($id);
-            $data = $this->projects_model->calculate_total_by_project_hourly_rate($seconds,$project_data->project_rate_per_hour);
+        $data         = array();
+        if ($project_data->billing_type == 2) {
+            $seconds             = $this->total_logged_time($id);
+            $data                = $this->projects_model->calculate_total_by_project_hourly_rate($seconds, $project_data->project_rate_per_hour);
             $data['logged_time'] = $data['hours'];
-        } else if($project_data->billing_type == 3){
+        } else if ($project_data->billing_type == 3) {
             $data = $this->_get_data_total_logged_time($id);
         }
         return $data;
     }
-    public function data_billable_time($id){
-        return $this->_get_data_total_logged_time($id,array('billable'=>1));
+    public function data_billable_time($id)
+    {
+        return $this->_get_data_total_logged_time($id, array(
+            'billable' => 1
+        ));
     }
-    public function data_billed_time($id){
-        return $this->_get_data_total_logged_time($id,array('billable'=>1,'billed'=>1));
+    public function data_billed_time($id)
+    {
+        return $this->_get_data_total_logged_time($id, array(
+            'billable' => 1,
+            'billed' => 1
+        ));
     }
-    public function data_unbilled_time($id){
-        return $this->_get_data_total_logged_time($id,array('billable'=>1,'billed'=>0));
+    public function data_unbilled_time($id)
+    {
+        return $this->_get_data_total_logged_time($id, array(
+            'billable' => 1,
+            'billed' => 0
+        ));
     }
-    private function _delete_discussion_comments($id,$type){
-          $this->db->where('discussion_id', $id);
-          $this->db->where('discussion_type', $type);
-          $comments = $this->db->get('tblprojectdiscussioncomments')->result_array();
-          foreach ($comments as $comment) {
+    private function _delete_discussion_comments($id, $type)
+    {
+        $this->db->where('discussion_id', $id);
+        $this->db->where('discussion_type', $type);
+        $comments = $this->db->get('tblprojectdiscussioncomments')->result_array();
+        foreach ($comments as $comment) {
             $this->delete_discussion_comment_attachment($comment['file_name'], $id);
         }
         $this->db->where('discussion_id', $id);
         $this->db->where('discussion_type', $type);
         $this->db->delete('tblprojectdiscussioncomments');
     }
-  private function _get_data_total_logged_time($id,$conditions = array()){
+    private function _get_data_total_logged_time($id, $conditions = array())
+    {
 
         $project_data = $this->_get_project_billing_data($id);
-        $tasks = $this->get_tasks($id,$conditions);
+        $tasks        = $this->get_tasks($id, $conditions);
 
-        if($project_data->billing_type == 3){
-            $data = $this->calculate_total_by_task_hourly_rate($tasks);
+        if ($project_data->billing_type == 3) {
+            $data                = $this->calculate_total_by_task_hourly_rate($tasks);
             $data['logged_time'] = seconds_to_time_format($data['total_seconds']);
-        } else if($project_data->billing_type == 2){
+        } else if ($project_data->billing_type == 2) {
             $seconds = 0;
-            foreach($tasks as $task){
-                  $seconds += $this->tasks_model->calc_task_total_time($task['id']);
+            foreach ($tasks as $task) {
+                $seconds += $this->tasks_model->calc_task_total_time($task['id']);
             }
-            $data = $this->calculate_total_by_project_hourly_rate($seconds,$project_data->project_rate_per_hour);
+            $data                = $this->calculate_total_by_project_hourly_rate($seconds, $project_data->project_rate_per_hour);
             $data['logged_time'] = $data['hours'];
         }
 
         return $data;
     }
-    private function _update_discussion_last_activity($id,$type){
-        if($type == 'file'){
+    private function _update_discussion_last_activity($id, $type)
+    {
+        if ($type == 'file') {
             $table = 'tblprojectfiles';
-        } else if($type == 'regular'){
+        } else if ($type == 'regular') {
             $table = 'tblprojectdiscussions';
         }
-        $this->db->where('id',$id);
-        $this->db->update($table,array('last_activity'=>date('Y-m-d H:i:s')));
+        $this->db->where('id', $id);
+        $this->db->update($table, array(
+            'last_activity' => date('Y-m-d H:i:s')
+        ));
     }
 }

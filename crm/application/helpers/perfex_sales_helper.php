@@ -1,4 +1,5 @@
 <?php
+defined('BASEPATH') OR exit('No direct script access allowed');
 // Since Version 1.0.1
 /**
  * Check if company using invoice with different currencies
@@ -249,6 +250,7 @@ function mutiple_taxes_found_for_item($taxes){
  */
 function format_invoice_status($status, $classes = '', $label = true)
 {
+    $id = $status;
     $label_class = get_invoice_status_label($status);
     if ($status == 1) {
         $status      = _l('invoice_status_unpaid');
@@ -265,7 +267,7 @@ function format_invoice_status($status, $classes = '', $label = true)
         $status = _l('invoice_status_draft');
     }
     if ($label == true) {
-        return '<span class="label label-' . $label_class . ' ' . $classes . ' s-status">' . $status . '</span>';
+        return '<span class="label label-' . $label_class . ' ' . $classes . ' s-status invoice-status-'.$id.'">' . $status . '</span>';
     } else {
         return $status;
     }
@@ -299,16 +301,17 @@ function get_invoice_status_label($status){
  * @return mixed
  */
 function format_estimate_status($status, $classes = '', $label = true)
-{
+{   $id = $status;
     $label_class = estimate_status_color_class($status);
     $status = estimate_status_by_id($status);
     if ($label == true) {
-        return '<span class="label label-' . $label_class . ' ' . $classes . ' s-status">' . $status . '</span>';
+        return '<span class="label label-' . $label_class . ' ' . $classes . ' s-status estimate-status-'.$id.'">' . $status . '</span>';
     } else {
         return $status;
     }
 }
 function estimate_status_by_id($id){
+    $status = '';
     if ($id == 1) {
         $status      = _l('estimate_status_draft');
     } else if ($id == 2) {
@@ -330,6 +333,7 @@ function estimate_status_by_id($id){
     return $status;
 }
 function estimate_status_color_class($id,$replace_default_by_muted = false){
+    $class = '';
     if ($id == 1) {
         $class = 'default';
         if($replace_default_by_muted == true){
@@ -377,7 +381,7 @@ function proposal_status_color_class($id,$replace_default_by_muted = false){
     return $class;
 }
 function format_proposal_status($status, $classes = '', $label = true)
-{
+{   $id = $status;
         if ($status == 1) {
             $status      = _l('proposal_status_open');
             $label_class = 'default';
@@ -399,7 +403,7 @@ function format_proposal_status($status, $classes = '', $label = true)
         }
 
     if ($label == true) {
-        return '<span class="label label-' . $label_class . ' ' . $classes . ' s-status">' . $status . '</span>';
+        return '<span class="label label-' . $label_class . ' ' . $classes . ' s-status proposal-status-'.$id.'">' . $status . '</span>';
     } else {
         return $status;
     }
@@ -826,6 +830,7 @@ function invoice_pdf($invoice, $tag = '')
     $invoice_number = format_invoice_number($invoice->id);
     $font_name = get_option('pdf_font');
     $font_size = get_option('pdf_font_size');
+
     if($font_size == ''){
         $font_size = 10;
     }
@@ -837,12 +842,13 @@ function invoice_pdf($invoice, $tag = '')
     $pdf            = new Pdf($formatArray['orientation'], 'mm', $formatArray['format'], true, 'UTF-8', false);
 
     $pdf->SetTitle($invoice_number);
-    $CI->pdf->SetMargins(PDF_MARGIN_LEFT, 26, PDF_MARGIN_RIGHT);
-    $CI->pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
-    $CI->pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+    $CI->pdf->SetMargins(PDF_MARGIN_LEFT, 25, PDF_MARGIN_RIGHT);
+
     $CI->pdf->SetAutoPageBreak(TRUE, 30);
+
     $pdf->SetAuthor(get_option('company'));
     $pdf->SetFont($font_name, '', $font_size);
+    $pdf->setImageScale(1.53);
     $pdf->setJPEGQuality(100);
     $pdf->AddPage($formatArray['orientation'],$formatArray['format']);
 
@@ -859,7 +865,7 @@ function invoice_pdf($invoice, $tag = '')
     } else {
         include(APPPATH . 'views/themes/' . active_clients_theme() . '/views/invoicepdf.php');
     }
-    return $pdf;
+    return do_action('invoice_pdf_generated',$pdf);
 }
 
 /**
@@ -876,6 +882,7 @@ function estimate_pdf($estimate, $tag = '')
     $estimate_number = format_estimate_number($estimate->id);
     $font_name = get_option('pdf_font');
     $font_size = get_option('pdf_font_size');
+
     if($font_size == ''){
         $font_size = 10;
     }
@@ -884,10 +891,9 @@ function estimate_pdf($estimate, $tag = '')
     $pdf            = new Pdf($formatArray['orientation'], 'mm', $formatArray['format'], true, 'UTF-8', false);
 
     $pdf->SetTitle($estimate_number);
-    $CI->pdf->SetMargins(PDF_MARGIN_LEFT, 26, PDF_MARGIN_RIGHT);
-    $CI->pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
-    $CI->pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+    $CI->pdf->SetMargins(PDF_MARGIN_LEFT, 25, PDF_MARGIN_RIGHT);
     $CI->pdf->SetAutoPageBreak(TRUE, 30);
+    $pdf->setImageScale(1.53);
     $pdf->SetAuthor(get_option('company'));
     $pdf->SetFont($font_name, '', $font_size);
     $pdf->setJPEGQuality(100);
@@ -905,17 +911,17 @@ function estimate_pdf($estimate, $tag = '')
     } else {
         include(APPPATH . 'views/themes/' . active_clients_theme() . '/views/estimatepdf.php');
     }
-    return $pdf;
+    return do_action('estimate_pdf_generated',$pdf);
 }
-function proposal_pdf($proposal)
+function proposal_pdf($proposal,$tag = '')
 {
     $CI =& get_instance();
+
     if ($proposal->rel_id != NULL && $proposal->rel_type == 'customer') {
         load_pdf_language($proposal->rel_id);
     }
 
     $CI->load->library('pdf');
-
 
     $number_word_lang_rel_id = 'unknown';
     if($proposal->rel_type == 'customer'){
@@ -936,9 +942,8 @@ function proposal_pdf($proposal)
 
     $proposal_url = site_url('viewproposal/'.$proposal->id.'/'.$proposal->hash);
     $number = format_proposal_number($proposal->id);
-    $CI->pdf->SetMargins(PDF_MARGIN_LEFT, 26, PDF_MARGIN_RIGHT);
-    $CI->pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
-    $CI->pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+    $CI->pdf->SetMargins(PDF_MARGIN_LEFT, 25, PDF_MARGIN_RIGHT);
+
     $pdf->setImageScale(1.53);
     $pdf->SetAutoPageBreak(TRUE,15);
     $pdf->setJPEGQuality(100);
@@ -960,19 +965,25 @@ function proposal_pdf($proposal)
     }
     # Dont remove these lines - important for the PDF layout
     // Add <br /> tag and wrap over div element every image to prevent overlaping over text
-    $proposal->content = preg_replace('/(<img[^>]+>(?:<\/img>)?)/i', '<br><br><div>$1</div><br><br>', $proposal->content);
+    $proposal->content = preg_replace('/(<img[^>]+>(?:<\/img>)?)/i', '<div>$1</div>', $proposal->content);
     // Add cellpadding to all tables inside the html
     $proposal->content = preg_replace('/(<table\b[^><]*)>/i', '$1 cellpadding="4">', $proposal->content);
     // Remove white spaces cased by the html editor ex. <td>  item</td>
     $proposal->content = preg_replace('/[\t\n\r\0\x0B]/', '', $proposal->content);
     $proposal->content = preg_replace('/([\s])\1+/', ' ', $proposal->content);
 
+    // Tcpdf does not support float css we need to adjust this here
+    $proposal->content = str_replace('float: right', 'text-align: right', $proposal->content);
+    $proposal->content = str_replace('float: left', 'text-align: left', $proposal->content);
+    // Image center
+    $proposal->content = str_replace('margin-left: auto; margin-right: auto;','text-align:center;', $proposal->content);
+
     if (file_exists(APPPATH . 'views/themes/' . active_clients_theme() . '/views/my_proposalpdf.php')) {
         include(APPPATH . 'views/themes/' . active_clients_theme() . '/views/my_proposalpdf.php');
     } else {
         include(APPPATH . 'views/themes/' . active_clients_theme() . '/views/proposalpdf.php');
     }
-    return $pdf;
+    return do_action('proposal_pdf_generated',$pdf);
 }
 /**
  * Generate contract pdf
@@ -992,11 +1003,10 @@ function contract_pdf($contract)
     if ($font_size == '') {
         $font_size = 10;
     }
-    $CI->pdf->SetMargins(PDF_MARGIN_LEFT, 26, PDF_MARGIN_RIGHT);
-    $CI->pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
-    $CI->pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+    $CI->pdf->SetMargins(PDF_MARGIN_LEFT, 25, PDF_MARGIN_RIGHT);
+
     $CI->pdf->SetAutoPageBreak(TRUE, 15);
-    $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+    $pdf->setImageScale(1.53);
     $pdf->SetAuthor(get_option('company'));
     $pdf->SetFont($font_name, '', $font_size);
     $pdf->AddPage($formatArray['orientation'],$formatArray['format']);
@@ -1007,18 +1017,25 @@ function contract_pdf($contract)
     }
     # Dont remove these lines - important for the PDF layout
     // Add <br /> tag and wrap over div element every image to prevent overlaping over text
-    $contract->content = preg_replace('/(<img[^>]+>(?:<\/img>)?)/i', '<br><br><div>$1</div><br><br>', $contract->content);
+    $contract->content = preg_replace('/(<img[^>]+>(?:<\/img>)?)/i', '<div>$1</div>', $contract->content);
     // Add cellpadding to all tables inside the html
     $contract->content = preg_replace('/(<table\b[^><]*)>/i', '$1 cellpadding="4">', $contract->content);
     // Remove white spaces cased by the html editor ex. <td>  item</td>
     $contract->content = preg_replace('/[\t\n\r\0\x0B]/', '', $contract->content);
     $contract->content = preg_replace('/([\s])\1+/', ' ', $contract->content);
+
+    // Tcpdf does not support float css we need to adjust this here
+    $contract->content = str_replace('float: right', 'text-align: right', $contract->content);
+    $contract->content = str_replace('float: left', 'text-align: left', $contract->content);
+    // Image center
+    $contract->content = str_replace('margin-left: auto; margin-right: auto;','text-align:center;', $contract->content);
+
     if (file_exists(APPPATH . 'views/themes/' . active_clients_theme() . '/views/my_contractpdf.php')) {
         include(APPPATH . 'views/themes/' . active_clients_theme() . '/views/my_contractpdf.php');
     } else {
         include(APPPATH . 'views/themes/' . active_clients_theme() . '/views/contractpdf.php');
     }
-    return $pdf;
+    return do_action('contract_pdf_generated',$pdf);
 }
 /**
  * Generate payment pdf
@@ -1037,16 +1054,16 @@ function payment_pdf($payment, $tag = '')
 
     $font_name = get_option('pdf_font');
     $font_size = get_option('pdf_font_size');
+
     if($font_size == ''){
         $font_size = 10;
     }
 
     $swap = get_option('swap_pdf_info');
     $pdf->SetTitle(_l('payment') . ' #' . $payment->paymentid);
-    $CI->pdf->SetMargins(PDF_MARGIN_LEFT, 26, PDF_MARGIN_RIGHT);
-    $CI->pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
-    $CI->pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+    $CI->pdf->SetMargins(PDF_MARGIN_LEFT, 25, PDF_MARGIN_RIGHT);
     $CI->pdf->SetAutoPageBreak(TRUE, 30);
+    $pdf->setImageScale(1.53);
     $pdf->setJPEGQuality(100);
     $pdf->SetAuthor(get_option('company'));
     $pdf->SetFont($font_name, '', $font_size);
@@ -1062,22 +1079,34 @@ function payment_pdf($payment, $tag = '')
     } else {
         include(APPPATH . 'views/themes/' . active_clients_theme() . '/views/paymentpdf.php');
     }
-    return $pdf;
+    return do_action('payment_pdf_generated',$pdf);
 }
 
 function get_estimates_percent_by_status($status,$total_estimates = ''){
+
+    $has_permission_view = has_permission('estimates','','view');
+
     if(!is_numeric($total_estimates)){
-        $total_estimates = total_rows('tblestimates');
+        $where_total = array();
+        if(!$has_permission_view){
+            $where_total['addedfrom'] = get_staff_user_id();
+         }
+        $total_estimates = total_rows('tblestimates',$where_total);
     }
+
     $data = array();
     $total_by_status = 0;
 
     if(!is_numeric($status)){
         if($status == 'not_sent'){
-           $total_by_status = total_rows('tblestimates','sent=0 AND status NOT IN(2,3,4)');
+           $total_by_status = total_rows('tblestimates','sent=0 AND status NOT IN(2,3,4)' . (!$has_permission_view ? ' AND addedfrom='.get_staff_user_id() : ''));
         }
     } else {
-        $total_by_status = total_rows('tblestimates',array('status'=>$status));
+        $where = array('status'=>$status);
+        if(!$has_permission_view){
+            $where = array_merge($where,array('addedfrom'=>get_staff_user_id()));
+        }
+        $total_by_status = total_rows('tblestimates',$where);
     }
 
     $percent = ($total_estimates > 0 ? number_format(($total_by_status * 100) / $total_estimates,2) : 0);
@@ -1087,12 +1116,23 @@ function get_estimates_percent_by_status($status,$total_estimates = ''){
     return $data;
 }
 function get_proposals_percent_by_status($status,$total_proposals = ''){
+
+    $has_permission_view = has_permission('proposals','','view');
+
     if(!is_numeric($total_proposals)){
-        $total_proposals = total_rows('tblproposals');
+        $where_total = array();
+        if(!$has_permission_view){
+            $where_total['addedfrom'] = get_staff_user_id();
+         }
+        $total_proposals = total_rows('tblproposals',$where_total);
     }
     $data = array();
     $total_by_status = 0;
-    $total_by_status = total_rows('tblproposals',array('status'=>$status));
+    $where = array('status'=>$status);
+    if(!$has_permission_view){
+        $where = array_merge($where,array('addedfrom'=>get_staff_user_id()));
+    }
+    $total_by_status = total_rows('tblproposals',$where);
 
     $percent = ($total_proposals  > 0 ? number_format(($total_by_status * 100) / $total_proposals  ,2) : 0);
 
@@ -1103,17 +1143,24 @@ function get_proposals_percent_by_status($status,$total_proposals = ''){
 }
 /* This function does not work with cancelled status */
 function get_invoices_percent_by_status($status,$total_invoices = ''){
+
+    $has_permission_view = has_permission('invoices','','view');
+
     if(!is_numeric($total_invoices)){
-        $total_invoices = total_rows('tblinvoices','status NOT IN(5)');
+        $where_total = 'status NOT IN(5)';
+        if(!$has_permission_view){
+            $where_total.= ' AND addedfrom='.get_staff_user_id();
+        }
+        $total_invoices = total_rows('tblinvoices',$where_total);
     }
     $data = array();
     $total_by_status = 0;
     if(!is_numeric($status)){
         if($status == 'not_sent'){
-           $total_by_status = total_rows('tblinvoices','sent=0 AND status NOT IN(2,5)');
+           $total_by_status = total_rows('tblinvoices','sent=0 AND status NOT IN(2,5)'.(!$has_permission_view ? ' AND addedfrom='.get_staff_user_id() : ''));
         }
     } else {
-        $total_by_status = total_rows('tblinvoices','status = ' . $status .' AND status NOT IN(5)');
+        $total_by_status = total_rows('tblinvoices','status = ' . $status .' AND status NOT IN(5)'.(!$has_permission_view ? ' AND addedfrom='.get_staff_user_id() : ''));
     }
     $percent = ($total_invoices  > 0 ? number_format(($total_by_status * 100) / $total_invoices  ,2) : 0);
     $data['total_by_status'] = $total_by_status;

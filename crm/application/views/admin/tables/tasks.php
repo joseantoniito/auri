@@ -29,6 +29,7 @@ $join          = array();
 $custom_fields = get_custom_fields('tasks', array(
     'show_on_table' => 1
 ));
+
 $i             = 0;
 foreach ($custom_fields as $field) {
     $select_as = 'cvalue_' . $i;
@@ -94,7 +95,7 @@ foreach ($rResult as $aRow) {
                     $this->_instance->db->where('id', $aRow['rel_id']);
                     $client = $this->_instance->db->get('tblprojects')->row();
                     if ($client) {
-                        $this->_instance->db->select('company');
+                        $this->_instance->db->select('CASE company WHEN "" THEN (SELECT CONCAT(firstname, " ", lastname) FROM tblcontacts WHERE userid = tblclients.userid and is_primary = 1) ELSE company END as company');
                         $this->_instance->db->where('userid', $client->clientid);
                         $company = $this->_instance->db->get('tblclients')->row();
                         if ($company) {

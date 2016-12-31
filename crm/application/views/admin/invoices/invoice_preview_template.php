@@ -1,7 +1,7 @@
 <?php if(count($invoices_to_merge) > 0){ ?>
 <div class="panel_s no-padding">
    <div class="panel-body">
-      <h4 class="bold no-margin text-success"><?php echo _l('invoices_available_for_merging'); ?></h4>
+      <h4 class="no-margin text-success"><?php echo _l('invoices_available_for_merging'); ?></h4>
       <hr />
       <?php foreach($invoices_to_merge as $_inv){ ?>
       <p>
@@ -28,6 +28,13 @@
                   <?php echo _l('invoice'); ?>
                </a>
             </li>
+           <?php if($invoice->recurring > 0) { ?>
+            <li role="presentation">
+               <a href="#tab_child_invoices" aria-controls="tab_child_invoices" role="tab" data-toggle="tab">
+                  <?php echo _l('child_invoices'); ?>
+               </a>
+            </li>
+            <?php } ?>
             <li role="presentation">
                <a href="#tab_tasks" aria-controls="tab_tasks" role="tab" data-toggle="tab">
                   <?php echo _l('tasks'); ?>
@@ -43,11 +50,16 @@
                   <?php echo _l('estimate_reminders'); ?>
                </a>
             </li>
+
             <li role="presentation">
                <a href="#tab_views" aria-controls="tab_views" role="tab" data-toggle="tab">
                   <?php echo _l('view_tracking'); ?>
                </a>
             </li>
+              <li role="presentation">
+           <a href="#" onclick="small_table_full_view(); return false;" data-placement="left" data-toggle="tooltip" data-title="<?php echo _l('toggle_full_view'); ?>" class="toggle_view">
+            <i class="fa fa-expand"></i></a>
+         </li>
          </ul>
          <div class="row">
             <div class="col-md-3">
@@ -116,7 +128,7 @@
                   </ul>
                </div>
                <?php if(has_permission('payments','','create') && $invoice->total > 0){ ?>
-               <a href="#" onclick="record_payment(<?php echo $invoice->id; ?>); return false;"  class="mleft10 pull-right btn btn-info<?php if($invoice->status == 2 || $invoice->status == 5){echo ' disabled';} ?>"><?php echo _l('invoice_record_payment'); ?></a>
+               <a href="#" onclick="record_payment(<?php echo $invoice->id; ?>); return false;"  class="mleft10 pull-right btn btn-success<?php if($invoice->status == 2 || $invoice->status == 5){echo ' disabled';} ?>"><?php echo _l('invoice_record_payment'); ?></a>
                <?php } ?>
             </div>
          </div>
@@ -133,14 +145,39 @@
             <?php } ?>
             <?php if($invoice->status == 3 || $invoice->status == 4){
                if(date('Y-m-d') > date('Y-m-d',strtotime(to_sql_date($invoice->duedate)))){
-                  echo '<p class="text-danger">'._l('invoice_is_overdue',floor((abs(time() - strtotime(to_sql_date($invoice->duedate))))/(60*60*24))).'</p>';
+                  echo '<p class="text-danger no-margin">'._l('invoice_is_overdue',floor((abs(time() - strtotime(to_sql_date($invoice->duedate))))/(60*60*24))).'</p>';
                }
             } ?>
             <div id="invoice-preview">
                <div class="row">
+                <?php
+                if($invoice->recurring > 0 || $invoice->is_recurring_from != NULL) {
+                    $recurring_invoice = $invoice;
+                    $next_recurring_date_compare = $recurring_invoice->date;
+                    if($recurring_invoice->last_recurring_date){
+                      $next_recurring_date_compare = $recurring_invoice->last_recurring_date;
+                    }
+                    if($invoice->is_recurring_from != NULL){
+                        $recurring_invoice = $this->invoices_model->get($invoice->is_recurring_from);
+                        $next_recurring_date_compare = $recurring_invoice->last_recurring_date;
+                    }
+                    if ($recurring_invoice->custom_recurring == 0) {
+                        $recurring_invoice->recurring_type = 'MONTH';
+                    }
+                    $next_date = date('Y-m-d', strtotime('+' . $recurring_invoice->recurring . ' ' . strtoupper($recurring_invoice->recurring_type),strtotime($next_recurring_date_compare)));
+                ?>
+                <div class="col-md-12">
+                  <h4 class="font-medium text-success"><?php echo _l('next_invoice_date',$next_date); ?>
+                    <?php
+                     if($invoice->is_recurring_from != NULL){ ?>
+                    <?php echo '<br /><small class="text-muted">'._l('invoice_recurring_from','<a href="#" onclick="init_invoice('.$invoice->is_recurring_from.');return false;">'.format_invoice_number($invoice->is_recurring_from).'</small></a>'); ?>
+                    <?php } ?>
+                  </h4>
+                </div>
+                <?php } ?>
                   <?php if($invoice->project_id != 0){ ?>
                   <div class="col-md-12">
-                     <h4 class="font-medium text-muted bold"><?php echo _l('related_to_project',array(
+                     <h4 class="font-medium no-mtop"><?php echo _l('related_to_project',array(
                         _l('invoice_lowercase'),
                         _l('project_lowercase'),
                         '<a href="'.admin_url('projects/view/'.$invoice->project_id).'" target="_blank">' . $invoice->project_data->name . '</a>',
@@ -155,6 +192,9 @@
                            <?php echo get_option('invoice_company_city'); ?>, <?php echo get_option('invoice_company_country_code'); ?> <?php echo get_option('invoice_company_postal_code'); ?><br>
                            <?php if(get_option('invoice_company_phonenumber') != ''){ ?>
                            <?php echo get_option('invoice_company_phonenumber'); ?><br />
+                           <?php } ?>
+                           <?php if(get_option('company_vat') != ''){ ?>
+                           <?php echo _l('company_vat_number').': '. get_option('company_vat'); ?><br />
                            <?php } ?>
                            <?php
                               // check for company custom fields
@@ -262,7 +302,7 @@
                    </thead>
                    <tbody>
                      <?php
-                        $items_data = get_table_items_html_and_taxes($invoice->items,'invoice',true);
+                        $items_data = get_table_items_and_taxes($invoice->items,'invoice',true);
                         $taxes = $items_data['taxes'];
                         echo $items_data['html'];
                      ?>
@@ -363,7 +403,7 @@
                }
                ?>
                <a href="#" data-toggle="tooltip" onclick="toggle_file_visibility(<?php echo $attachment['id']; ?>,<?php echo $invoice->id; ?>,this); return false;" data-title="<?php echo $tooltip; ?>"><i class="fa <?php echo $icon; ?>" aria-hidden="true"></i></a>
-               <?php if($attachment['staffid'] == get_staff_user_id() || has_permission('invoices','','delete')){ ?>
+               <?php if($attachment['staffid'] == get_staff_user_id() || is_admin()){ ?>
                <a href="#" class="text-danger" onclick="delete_invoice_attachment(<?php echo $attachment['id']; ?>); return false;"><i class="fa fa-times"></i></a>
                <?php } ?>
             </div>
@@ -397,7 +437,7 @@
          </div>
       </div>
    </div>
-   <div role="tabpanel" class="tab-pane ptop10" id="tab_tasks">
+   <div role="tabpanel" class="tab-pane" id="tab_tasks">
       <?php init_relation_tasks_table(array('data-new-rel-id'=>$invoice->id,'data-new-rel-type'=>'invoice')); ?>
    </div>
    <div role="tabpanel" class="tab-pane" id="tab_reminders">
@@ -406,6 +446,30 @@
       <?php render_datatable(array( _l( 'reminder_description'), _l( 'reminder_date'), _l( 'reminder_staff'), _l( 'reminder_is_notified'), _l( 'options'), ), 'reminders'); ?>
       <?php $this->load->view('admin/includes/modals/reminder',array('id'=>$invoice->id,'name'=>'invoice','members'=>$members,'reminder_title'=>_l('invoice_set_reminder_title'))); ?>
    </div>
+   <?php if($invoice->recurring > 0){ ?>
+   <div role="tabpanel" class="tab-pane" id="tab_child_invoices">
+     <?php if(count($invoice_recurring_invoices)){ ?>
+     <p class="mtop30 bold"><?php echo _l('invoice_add_edit_recuring_invoices_from_invoice'); ?></p>
+     <br />
+     <ul class="list-group">
+       <?php foreach($invoice_recurring_invoices as $recurring){ ?>
+       <li class="list-group-item">
+         <a href="#" onclick="init_invoice(<?php echo $recurring->id; ?>); return false;" target="_blank"><?php echo format_invoice_number($recurring->id); ?>
+           <span class="pull-right bold"><?php echo format_money($recurring->total,$recurring->symbol); ?></span>
+         </a>
+         <br />
+         <span class="inline-block mtop10">
+          <?php echo '<span class="bold">'._d($recurring->date).'</span>'; ?><br />
+          <?php echo format_invoice_status($recurring->status,'',false); ?>
+        </span>
+      </li>
+      <?php } ?>
+    </ul>
+    <?php } else { ?>
+    <p><?php echo _l('no_child_found',_l('invoices')); ?></p>
+    <?php } ?>
+  </div>
+   <?php } ?>
    <div role="tabpanel" class="tab-pane ptop10" id="tab_activity">
       <div class="row">
          <div class="col-md-12">
@@ -441,10 +505,13 @@
                         $i++;
                      }
                   }
-                  $_formated_activity = $activity['full_name'] . ' - ' . _l($activity['description'],$additional_data);
-                  if($_custom_data !== false){
-                   $_formated_activity .= ' - ' .$_custom_data;
-                }
+                  $_formated_activity = _l($activity['description'],$additional_data);
+                   if($_custom_data !== false){
+                     $_formated_activity .= ' - ' .$_custom_data;
+                  }
+                  if(!empty($activity['full_name'])){
+                    $_formated_activity = $activity['full_name'] . ' - ' . $_formated_activity;
+                  }
                 echo $_formated_activity;
                 if(is_admin()){
                   echo '<a href="#" class="pull-right text-danger" onclick="delete_sale_activity('.$activity['id'].'); return false;"><i class="fa fa-remove"></i></a>';

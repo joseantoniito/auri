@@ -87,9 +87,13 @@ class Utilities_model extends CRM_Model
     {
         $is_admin                 = is_admin();
         $has_permission_invoices  = has_permission('invoices', '', 'view');
+        $has_permission_invoices_own  = has_permission('invoices', '', 'view_own');
         $has_permission_estimates = has_permission('estimates', '', 'view');
+        $has_permission_estimates_own = has_permission('estimates', '', 'view_own');
         $has_permission_contracts = has_permission('contracts', '', 'view');
+        $has_permission_contracts_own = has_permission('contracts', '', 'view_own');
         $has_permission_proposals = has_permission('proposals', '', 'view');
+        $has_permission_proposals_own = has_permission('proposals', '', 'view_own');
         $data                     = array();
 
         $client_data = false;
@@ -114,10 +118,14 @@ class Utilities_model extends CRM_Model
                     $this->db->where('status !=',6);
                 }
 
+            }  else {
+                if(!$has_permission_invoices){
+                    $this->db->where('addedfrom',get_staff_user_id());
+                }
             }
             $invoices = $this->db->get()->result_array();
             foreach ($invoices as $invoice) {
-                if (!$has_permission_invoices && !$client_data) {
+                if (!$has_permission_invoices && !$has_permission_invoices_own && !$client_data) {
                     continue;
                 } else if($client_data && !$has_contact_permission_invoices){
                     continue;
@@ -125,7 +133,7 @@ class Utilities_model extends CRM_Model
 
                 $rel_showcase = '';
                 if(!$client_data){
-                    $this->db->select('company');
+                    $this->db->select('CASE company WHEN "" THEN (SELECT CONCAT(firstname, " ", lastname) FROM tblcontacts WHERE userid = tblclients.userid and is_primary = 1) ELSE company END as company');
                     $this->db->where('userid',$invoice['clientid']);
                     $rel_showcase = ' ('.$this->db->get('tblclients')->row()->company.')';
                 }
@@ -135,10 +143,10 @@ class Utilities_model extends CRM_Model
                 $invoice['title']    = $number;
                 $invoice['color']    = get_option('calendar_invoice_color');
                 if(!$client_data){
-                $invoice['url']      = admin_url('invoices/list_invoices/' . $invoice['id']);
-            } else {
-                $invoice['url']      = site_url('viewinvoice/' . $invoice['id'] . '/' . $invoice['hash']);
-            }
+                 $invoice['url']      = admin_url('invoices/list_invoices/' . $invoice['id']);
+                } else {
+                  $invoice['url']      = site_url('viewinvoice/' . $invoice['id'] . '/' . $invoice['hash']);
+                }
              array_push($data, $invoice);
             }
         }
@@ -148,6 +156,8 @@ class Utilities_model extends CRM_Model
             $this->db->where('status !=', 3);
             $this->db->where('status !=', 4);
             $this->db->where('expirydate IS NOT NULL');
+
+
            // $this->db->where('(expirydate BETWEEN "' . $this->input->get('start') . '" AND "' . $this->input->get('end') . '")');
 
             if($client_data){
@@ -156,12 +166,16 @@ class Utilities_model extends CRM_Model
                 if(get_option('exclude_estimate_from_client_area_with_draft_status') == 1){
                     $this->db->where('status !=',1);
                 }
+            } else {
+                if(!$has_permission_estimates){
+                    $this->db->where('addedfrom',get_staff_user_id());
+                }
             }
 
             $estimates = $this->db->get()->result_array();
             foreach ($estimates as $estimate) {
 
-                if (!$has_permission_estimates && !$client_data) {
+                if (!$has_permission_estimates && !$has_permission_estimates_own && !$client_data) {
                     continue;
                 } else if($client_data && !$has_contact_permission_estimates){
                     continue;
@@ -169,7 +183,7 @@ class Utilities_model extends CRM_Model
 
                 $rel_showcase = '';
                 if(!$client_data){
-                    $this->db->select('company');
+                    $this->db->select('CASE company WHEN "" THEN (SELECT CONCAT(firstname, " ", lastname) FROM tblcontacts WHERE userid = tblclients.userid and is_primary = 1) ELSE company END as company');
                     $this->db->where('userid',$estimate['clientid']);
                     $rel_showcase = ' ('.$this->db->get('tblclients')->row()->company.')';
                 }
@@ -197,12 +211,16 @@ class Utilities_model extends CRM_Model
             if($client_data){
                 $this->db->where('rel_type','customer');
                 $this->db->where('rel_id',$contact_id);
+            } else {
+                if(!$has_permission_proposals){
+                    $this->db->where('addedfrom',get_staff_user_id());
+                }
             }
 
             $proposals = $this->db->get()->result_array();
             foreach ($proposals as $proposal) {
 
-                if (!$has_permission_proposals && !$client_data) {
+                if (!$has_permission_proposals && !$has_permission_proposals_own && !$client_data) {
                     continue;
                 } else if($client_data && !$has_contact_permission_proposals){
                     continue;
@@ -317,15 +335,20 @@ class Utilities_model extends CRM_Model
         if($client_data){
             $this->db->where('client',$client_id);
             $this->db->where('not_visible_to_client',0);
+        } else {
+            if(!$has_permission_contracts){
+                $this->db->where('addedfrom',get_staff_user_id());
+            }
         }
        // $this->db->where('(dateend > "' . date('Y-m-d') . '" AND dateend IS NOT NULL AND dateend BETWEEN "' . $this->input->get('start') . '" AND "' . $this->input->get('end') . '")');
         $this->db->where('dateend > "' . date('Y-m-d') . '" AND dateend IS NOT NULL');
         $this->db->or_where('datestart >"' . date('Y-m-d') . '"');
 
         $contracts = $this->db->get()->result_array();
+
         foreach ($contracts as $contract) {
 
-            if (!$has_permission_contracts && !$client_data) {
+            if (!$has_permission_contracts && !$has_permission_contracts_own && !$client_data) {
                 continue;
             } else if($client_data && !$has_contact_permission_contracts){
                 continue;
@@ -333,7 +356,7 @@ class Utilities_model extends CRM_Model
 
             $rel_showcase = '';
             if(!$client_data){
-                $this->db->select('company');
+                $this->db->select('CASE company WHEN "" THEN (SELECT CONCAT(firstname, " ", lastname) FROM tblcontacts WHERE userid = tblclients.userid and is_primary = 1) ELSE company END as company');
                 $this->db->where('userid',$contract['client']);
                 $rel_showcase = ' ('.$this->db->get('tblclients')->row()->company.')';
             }
@@ -378,7 +401,7 @@ class Utilities_model extends CRM_Model
                 if (!$this->projects_model->is_member($project['id'])) {
                     continue;
                 }
-                $this->db->select('company');
+                $this->db->select('CASE company WHEN "" THEN (SELECT CONCAT(firstname, " ", lastname) FROM tblcontacts WHERE userid = tblclients.userid and is_primary = 1) ELSE company END as company');
                 $this->db->where('userid',$project['clientid']);
                 $rel_showcase = ' ('.$this->db->get('tblclients')->row()->company.')';
             } else {

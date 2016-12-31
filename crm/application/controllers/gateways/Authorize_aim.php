@@ -82,155 +82,155 @@ class Authorize_aim extends CI_Controller
 
 public function get_html($data = array()){
   ob_start(); ?>
-  <!DOCTYPE html>
-  <html lang="en">
-  <head>
+ <!DOCTYPE html>
+<html lang="en">
+   <head>
       <meta charset="utf-8">
       <meta http-equiv="X-UA-Compatible" content="IE=edge">
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
       <title>
-        <?php echo _l('payment_for_invoice') . ' ' . format_invoice_number($data['invoice']->id); ?>
-    </title>
-    <link href="<?php echo base_url(); ?>assets/css/reset.css" rel="stylesheet">
-    <!-- Bootstrap -->
-    <link href="<?php echo base_url(); ?>assets/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <link href='<?php echo base_url(); ?>assets/plugins/open-sans-fontface/open-sans.css' rel='stylesheet' type='text/css'>
-    <link href="<?php echo template_assets_url(); ?>css/style.css" rel="stylesheet">
-    <style>
-        .text-danger {
-          color: #fc2d42;
-      }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="col-md-8 col-md-offset-2">
-      <div class="row">
-        <div class="panel_s">
-        <div class="panel-heading">
-            <?php echo _l('payment_for_invoice'); ?> <a href="<?php echo site_url('viewinvoice/'. $data['invoice']->id . '/' . $data['invoice']->hash); ?>" target="_blank"><?php echo format_invoice_number($data['invoice']->id); ?></a>
-        </div>
-        <div class="panel-body">
-            <p><span class="bold"><?php echo _l('payment_total',format_money($data['total'],$data['invoice']->symbol)); ?></span></p>
-            <?php echo form_open(site_url('gateways/authorize_aim/complete_purchase'),array('novalidate'=>true,'id'=>'authorize_form')); ?>
-            <?php echo form_hidden('invoiceid',$data['invoice']->id); ?>
-            <?php echo form_hidden('total',$data['total']); ?>
-            <div>
-              <div class="form-group">
-                <label class="control-label">
-                  <?php echo _l('payment_credit_card_number'); ?>
-              </label>
-              <input class="form-control" name="ccNo" id="ccNo" type="text" autocomplete="off" required />
-          </div>
-      </div>
-      <div>
-          <div class="row">
-             <div class="form-group">
-              <div class="col-md-12">
-                  <label class="control-label">
-                    <?php echo _l('payment_credit_card_expiration_date'); ?> (MM/YYYY)
-                </label>
+         <?php echo _l('payment_for_invoice') . ' ' . format_invoice_number($data['invoice']->id); ?>
+      </title>
+      <?php echo app_stylesheet('assets/css','reset.css'); ?>
+      <!-- Bootstrap -->
+      <link href="<?php echo base_url(); ?>assets/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+      <link href='<?php echo base_url('assets/plugins/roboto/roboto.css'); ?>' rel='stylesheet'>
+      <?php echo app_stylesheet(template_assets_path().'/css','style.css'); ?>
+      <style>
+         .text-danger {
+         color: #fc2d42;
+         }
+      </style>
+   </head>
+   <body>
+      <div class="container">
+         <div class="col-md-8 col-md-offset-2 mtop30">
+            <div class="row">
+               <div class="panel_s">
+                  <div class="panel-body">
+                     <h4 class="bold no-margin font-medium">
+                        <?php echo _l('payment_for_invoice'); ?> <a href="<?php echo site_url('viewinvoice/'. $data['invoice']->id . '/' . $data['invoice']->hash); ?>"><?php echo format_invoice_number($data['invoice']->id); ?></a>
+                     </h4>
+                     <hr />
+                     <p><span class="bold"><?php echo _l('payment_total',format_money($data['total'],$data['invoice']->symbol)); ?></span></p>
+                     <?php echo form_open(site_url('gateways/authorize_aim/complete_purchase'),array('novalidate'=>true,'id'=>'authorize_form')); ?>
+                     <?php echo form_hidden('invoiceid',$data['invoice']->id); ?>
+                     <?php echo form_hidden('total',$data['total']); ?>
+                     <div>
+                        <div class="form-group">
+                           <label class="control-label">
+                           <?php echo _l('payment_credit_card_number'); ?>
+                           </label>
+                           <input class="form-control" name="ccNo" id="ccNo" type="text" autocomplete="off" required />
+                        </div>
+                     </div>
+                     <div>
+                        <div class="row">
+                           <div class="form-group">
+                              <div class="col-md-12">
+                                 <label class="control-label">
+                                 <?php echo _l('payment_credit_card_expiration_date'); ?> (MM/YYYY)
+                                 </label>
+                              </div>
+                              <div class="col-md-6">
+                                 <input class="form-control" name="expMonth" id="expMonth" type="number" maxlength="2" required />
+                              </div>
+                              <div class="col-md-6">
+                                 <input class="form-control" name="expYear" id="expYear" type="number" maxlength="4" required />
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                     <div>
+                        <div class="form-group mtop15">
+                           <label class="control-label">
+                           CVC
+                           </label>
+                           <input class="form-control" name="cvv" id="cvv" type="text" autocomplete="off" required />
+                        </div>
+                        <p class="bold"><?php echo _l('billing_address'); ?></p>
+                        <div class="form-group">
+                           <label class="control-label">
+                           <?php echo _l('payment_cardholder_name'); ?>
+                           </label>
+                           <input type="text" name="billingName" class="form-control" value="<?php echo $data['billing_name']; ?>" required>
+                        </div>
+                        <div class="row">
+                           <div class="col-md-12">
+                              <div class="form-group">
+                                 <label class="control-label">
+                                 <?php echo _l('billing_address'); ?>
+                                 </label>
+                                 <input type="text" name="billingAddress1" class="form-control" required value="<?php echo $data['invoice']->billing_street; ?>">
+                              </div>
+                           </div>
+                           <div class="clearfix"></div>
+                           <div class="col-md-6">
+                              <div class="form-group">
+                                 <label class="control-label">
+                                 <?php echo _l('billing_city'); ?>
+                                 </label>
+                                 <input type="text" name="billingCity" class="form-control" required value="<?php echo $data['invoice']->billing_city; ?>">
+                              </div>
+                           </div>
+                           <div class="col-md-6">
+                              <div class="form-group">
+                                 <label class="control-label">
+                                 <?php echo _l('billing_state'); ?>
+                                 </label>
+                                 <input type="text" name="billingState" class="form-control" value="<?php echo $data['invoice']->billing_state; ?>">
+                              </div>
+                           </div>
+                           <div class="clearfix"></div>
+                           <div class="col-md-6">
+                              <div class="form-group">
+                                 <label class="control-label">
+                                 <?php echo _l('billing_country'); ?>
+                                 </label>
+                                 <select name="billingCountry" class="form-control" required>
+                                    <option value=""></option>
+                                    <?php foreach(get_all_countries() as $country){
+                                       $selected = '';
+                                       if($data['invoice']->billing_country == $country['country_id']){
+                                         $selected = 'selected';
+                                       }
+                                       echo '<option '.$selected.' value="'.$country['iso3'].'">'.$country['short_name'].'</option>';
+                                       }
+                                       ?>
+                                 </select>
+                              </div>
+                           </div>
+                           <div class="col-md-6">
+                              <div class="form-group">
+                                 <label class="control-label">
+                                 <?php echo _l('billing_zip'); ?>
+                                 </label>
+                                 <input type="text" name="billingPostcode" class="form-control" value="<?php echo $data['invoice']->billing_zip; ?>">
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                     <input type="submit" class="btn btn-info" value="<?php echo _l('submit_payment'); ?>" />
+                     </form>
+                  </div>
+               </div>
             </div>
-            <div class="col-md-6">
-            <input class="form-control" name="expMonth" id="expMonth" type="number" maxlength="2" required />
-          </div>
-          <div class="col-md-6">
-             <input class="form-control" name="expYear" id="expYear" type="number" maxlength="4" required />
          </div>
-     </div>
- </div>
-</div>
-<div>
- <div class="form-group mtop15">
-  <label class="control-label">
-    CVC
-</label>
-<input class="form-control" name="cvv" id="cvv" type="text" autocomplete="off" required />
-</div>
-<p class="bold"><?php echo _l('billing_address'); ?></p>
-<div class="form-group">
-<label class="control-label">
-    <?php echo _l('payment_cardholder_name'); ?>
-</label>
-<input type="text" name="billingName" class="form-control" value="<?php echo $data['billing_name']; ?>" required>
-</div>
-<div class="row">
-  <div class="col-md-12">
-   <div class="form-group">
-    <label class="control-label">
-      <?php echo _l('billing_address'); ?>
-  </label>
-  <input type="text" name="billingAddress1" class="form-control" required value="<?php echo $data['invoice']->billing_street; ?>">
-</div>
-</div>
-
-<div class="clearfix"></div>
-<div class="col-md-6">
-    <div class="form-group">
-      <label class="control-label">
-       <?php echo _l('billing_city'); ?>
-   </label>
-   <input type="text" name="billingCity" class="form-control" required value="<?php echo $data['invoice']->billing_city; ?>">
-</div>
-</div>
-<div class="col-md-6">
-  <div class="form-group">
-    <label class="control-label">
-      <?php echo _l('billing_state'); ?>
-  </label>
-  <input type="text" name="billingState" class="form-control" value="<?php echo $data['invoice']->billing_state; ?>">
-</div>
-</div>
-<div class="clearfix"></div>
-<div class="col-md-6">
-  <div class="form-group">
-    <label class="control-label">
-      <?php echo _l('billing_country'); ?>
-  </label>
-  <select name="billingCountry" class="form-control" required>
-      <option value=""></option>
-      <?php foreach(get_all_countries() as $country){
-        $selected = '';
-        if($data['invoice']->billing_country == $country['country_id']){
-          $selected = 'selected';
-      }
-      echo '<option '.$selected.' value="'.$country['iso3'].'">'.$country['short_name'].'</option>';
-  }
-  ?>
-</select>
-</div>
-</div>
-<div class="col-md-6">
-  <div class="form-group">
-    <label class="control-label">
-      <?php echo _l('billing_zip'); ?>
-  </label>
-  <input type="text" name="billingPostcode" class="form-control" value="<?php echo $data['invoice']->billing_zip; ?>">
-</div>
-</div>
-</div>
-</div>
-<input type="submit" class="btn btn-info" value="<?php echo _l('submit_payment'); ?>" />
-</form>
-</div>
-</div>
-</div>
-</div>
-</div>
-<script src="<?php echo base_url(); ?>assets/plugins/jquery/jquery.min.js"></script>
-<script src="<?php echo base_url(); ?>assets/plugins/bootstrap/js/bootstrap.min.js"></script>
-<script src="<?php echo base_url('assets/plugins/jquery-validation/jquery.validate.min.js'); ?>"></script>
-<script>
-  $.validator.setDefaults({
-    errorElement: 'span',
-    errorClass: 'text-danger',
-});
-  $(function(){
-    $('#authorize_form').validate();
-});
-</script>
-</body>
+      </div>
+      <script src="<?php echo base_url(); ?>assets/plugins/jquery/jquery.min.js"></script>
+      <script src="<?php echo base_url(); ?>assets/plugins/bootstrap/js/bootstrap.min.js"></script>
+      <script src="<?php echo base_url('assets/plugins/jquery-validation/jquery.validate.min.js'); ?>"></script>
+      <script>
+         $.validator.setDefaults({
+           errorElement: 'span',
+           errorClass: 'text-danger',
+         });
+         $(function(){
+           $('#authorize_form').validate();
+         });
+      </script>
+   </body>
 </html>
 <?php
 $contents = ob_get_contents();

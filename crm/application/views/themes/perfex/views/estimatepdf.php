@@ -50,6 +50,7 @@ if(get_option('show_status_on_pdf_ei') == 1){
     <tbody>
         <tr>
             <td></td>
+            <td></td>
             <td style="background-color:rgb('.$bg_status.');color:#fff;">'.mb_strtoupper($status_name,'UTF-8') .'</td>
         </tr>
     </tbody>
@@ -75,6 +76,9 @@ $estimate_info .= get_option('invoice_company_country_code') . ' ';
 $estimate_info .= get_option('invoice_company_postal_code') . ' ';
 if(get_option('invoice_company_phonenumber') != ''){
     $estimate_info .= '<br />'.get_option('invoice_company_phonenumber');
+}
+if(get_option('company_vat') != ''){
+    $estimate_info .= '<br />'.get_option('company_vat');
 }
 // check for company custom fields
 $custom_company_fields = get_company_custom_fields();
@@ -180,7 +184,7 @@ $tblhtml = '<table width="100%" bgcolor="#fff" cellspacing="0" cellpadding="5" b
 
 $tblhtml .= '<tbody>';
 
-$items_data = get_table_items_pdf_and_taxes($estimate->items,'estimate');
+$items_data = get_table_items_and_taxes($estimate->items,'estimate');
 $tblhtml .= $items_data['html'];
 $taxes = $items_data['taxes'];
 

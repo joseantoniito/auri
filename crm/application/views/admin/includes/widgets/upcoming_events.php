@@ -15,7 +15,7 @@
                            <span class="text-success pull-right"><?php echo _l('home_public_event'); ?></span>
                            <?php } ?>
                            <div class="clearfix"></div>
-                           <h5 class="event-title"><a href="#" onclick="view_event(<?php echo $event['eventid']; ?>); return false;"><?php echo $event['title']; ?></a></h5>
+                           <p class="event-title"><a href="#" onclick="view_event(<?php echo $event['eventid']; ?>); return false;"><?php echo $event['title']; ?></a></p>
                            <p class="text-muted no-margin"><?php echo $event['description']; ?></p>
                            <?php if($event['userid'] != get_staff_user_id()){ ?>
                               <small class="display-block valign mtop5"><?php echo _l('home_event_added_by'); ?> <a href="<?php echo admin_url('profile/'.$event['userid']); ?>"><?php echo staff_profile_image($event['userid'],array('staff-profile-xs-image')); ?> <?php echo get_staff_full_name($event['userid']); ?></a></small>

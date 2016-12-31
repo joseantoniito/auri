@@ -1,59 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <?php if(get_option('favicon') != ''){ ?>
-        <link href="<?php echo base_url('uploads/company/'.get_option('favicon')); ?>" rel="shortcut icon">
-        <?php } ?>
-        <title><?php if (isset($title)){ echo $title; } else { echo get_option('companyname'); } ?></title>
-        <link href="<?php echo base_url('assets/css/reset.css'); ?>" rel="stylesheet">
-        <link href="<?php echo base_url('assets/plugins/bootstrap/css/bootstrap.min.css'); ?>" rel="stylesheet">
-        <?php if(is_rtl()){ ?>
-        <link href="<?php echo base_url('assets/plugins/bootstrap-arabic/css/bootstrap-arabic.min.css'); ?>" rel="stylesheet">
-        <?php } ?>
-        <link href="<?php echo base_url('assets/plugins/jquery-ui/jquery-ui.min.css'); ?>" rel="stylesheet">
-        <link href='<?php echo base_url('assets/plugins/open-sans-fontface/open-sans.css'); ?>' rel='stylesheet'>
-        <link href="<?php echo base_url('assets/plugins/font-awesome/css/font-awesome.min.css'); ?>" rel="stylesheet">
-        <link href="<?php echo base_url('assets/plugins/datatables/datatables.min.css'); ?>" rel="stylesheet">
-        <link href="<?php echo base_url('assets/plugins/bootstrap-select/css/bootstrap-select.min.css'); ?>" rel="stylesheet">
-        <link href="<?php echo base_url('assets/plugins/datetimepicker/jquery.datetimepicker.min.css'); ?>" rel="stylesheet">
-        <link href="<?php echo base_url('assets/plugins/animate.css/animate.min.css'); ?>" rel="stylesheet">
-        <link href="<?php echo base_url('assets/plugins/dropzone/min/dropzone.min.css'); ?>" rel='stylesheet'>
-        <?php if(isset($calendar_assets)){ ?>
-        <link href='<?php echo base_url('assets/plugins/fullcalendar/fullcalendar.min.css'); ?>' rel='stylesheet' />
-        <?php } ?>
-        <?php if(isset($lightbox_assets)){ ?>
-        <link id="lightbox-css" href='<?php echo base_url('assets/plugins/lightbox/css/lightbox.min.css'); ?>' rel='stylesheet' />
-        <?php } ?>
-        <?php if(isset($projects_assets)){ ?>
-        <link href='<?php echo base_url('assets/plugins/jquery-comments/css/jquery-comments.css'); ?>' rel='stylesheet' />
-        <link href='<?php echo base_url('assets/plugins/gantt/css/style.css'); ?>' rel='stylesheet' />
-        <?php } ?>
-        <?php if(isset($media_assets)){ ?>
-        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo base_url('assets/plugins/elFinder/css/elfinder.min.css'); ?>">
-        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo base_url('assets/plugins/elFinder/themes/windows-10/css/theme.css'); ?>">
-        <?php } ?>
-        <link rel="stylesheet" type="text/css" href="<?php echo base_url('assets/plugins/bootstrap-colorpicker/css/bootstrap-colorpicker.min.css'); ?>">
-        <link href="<?php echo base_url('assets/css/style.css'); ?>" rel="stylesheet">
-        <?php if(file_exists(FCPATH.'assets/css/custom.css')){ ?>
-        <link href="<?php echo base_url('assets/css/custom.css'); ?>" rel="stylesheet">
-        <?php } ?>
-        <?php $isRTL = (is_rtl() ? 'true' : 'false'); ?>
-        <?php
-        if($isRTL == 'true'){
-            echo '
-            <style>
-            div.dataTables_wrapper {
-                direction: rtl;
-            }
-           </style>';
-         }
-         ?>
-        <?php render_custom_styles(array('general','tabs','buttons','admin','modals')); ?>
-        <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <?php if(get_option('favicon') != ''){ ?>
+    <link href="<?php echo base_url('uploads/company/'.get_option('favicon')); ?>" rel="shortcut icon">
+    <?php } ?>
+    <title><?php if (isset($title)){ echo $title; } else { echo get_option('companyname'); } ?></title>
+    <?php echo app_stylesheet('assets/css','reset.css'); ?>
+    <link href='<?php echo base_url('assets/plugins/roboto/roboto.css'); ?>' rel='stylesheet'>
+    <link href="<?php echo base_url('assets/plugins/bootstrap/css/bootstrap.min.css'); ?>" rel="stylesheet">
+    <?php if(is_rtl()){ ?>
+    <link href="<?php echo base_url('assets/plugins/bootstrap-arabic/css/bootstrap-arabic.min.css'); ?>" rel="stylesheet">
+    <?php } ?>
+    <link href="<?php echo base_url('assets/plugins/jquery-ui/jquery-ui.min.css'); ?>" rel="stylesheet">
+    <link href="<?php echo base_url('assets/plugins/font-awesome/css/font-awesome.min.css'); ?>" rel="stylesheet">
+    <link href="<?php echo base_url('assets/plugins/datatables/datatables.min.css'); ?>" rel="stylesheet">
+    <link href="<?php echo base_url('assets/plugins/datetimepicker/jquery.datetimepicker.min.css'); ?>" rel="stylesheet">
+    <link href="<?php echo base_url('assets/plugins/animate.css/animate.min.css'); ?>" rel="stylesheet">
+    <?php if(isset($calendar_assets)){ ?>
+    <link href='<?php echo base_url('assets/plugins/fullcalendar/fullcalendar.min.css'); ?>' rel='stylesheet' />
+    <?php } ?>
+    <?php if(isset($lightbox_assets)){ ?>
+    <link id="lightbox-css" href='<?php echo base_url('assets/plugins/lightbox/css/lightbox.min.css'); ?>' rel='stylesheet' />
+    <?php } ?>
+    <?php if(isset($form_builder_assets)){ ?>
+    <link href='<?php echo base_url('assets/plugins/form-builder/form-builder.min.css'); ?>' rel='stylesheet' />
+    <?php } ?>
+    <?php if(isset($projects_assets)){ ?>
+    <link href='<?php echo base_url('assets/plugins/jquery-comments/css/jquery-comments.css'); ?>' rel='stylesheet' />
+    <link href='<?php echo base_url('assets/plugins/gantt/css/style.css'); ?>' rel='stylesheet' />
+    <?php } ?>
+    <?php if(isset($media_assets)){ ?>
+    <link rel="stylesheet" type="text/css" media="screen" href="<?php echo base_url('assets/plugins/elFinder/css/elfinder.min.css'); ?>">
+    <link rel="stylesheet" type="text/css" media="screen" href="<?php echo base_url('assets/plugins/elFinder/themes/windows-10/css/theme.css'); ?>">
+    <?php } ?>
+    <?php echo app_stylesheet('assets/css','style.css'); ?>
+    <?php if(file_exists(FCPATH.'assets/css/custom.css')){ ?>
+    <link href="<?php echo base_url('assets/css/custom.css'); ?>" rel="stylesheet">
+    <?php } ?>
+    <?php $isRTL = (is_rtl() ? 'true' : 'false'); ?>
+    <?php render_custom_styles(array('general','tabs','buttons','admin','modals')); ?>
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
         <!--[if lt IE 9]>
         <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
         <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -66,7 +56,7 @@
             var locale = '<?php echo $locale; ?>';
             var isRTL = '<?php echo $isRTL; ?>';
             var tinymce_lang = '<?php echo $tinymce_lang; ?>';
-            var months_json = '<?php echo json_encode(array(_l('January'),_l('February'),_l('March'),_l('April'),_l('May'),_l('June'),_l('July'),_l('August'),_l('September'),_l('October'),_l('November'),_l('December'))); ?>';
+            var months_json = '<?php echo json_encode(array(htmlentities(_l('January')),htmlentities(_l('February')),htmlentities(_l('March')),htmlentities(_l('April')),htmlentities(_l('May')),htmlentities(_l('June')),htmlentities(_l('July')),htmlentities(_l('August')),htmlentities(_l('September')),htmlentities(_l('October')),htmlentities(_l('November')),htmlentities(_l('December')))); ?>';
             var _table_api,taskid,task_tracking_stats_data,taskAttachmentDropzone,leadAttachmentsDropzone,newsFeedDropzone,autocheck_notifications_timer_id = 0;
         </script>
     </head>

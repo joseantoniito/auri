@@ -4,18 +4,21 @@
     <div class="row">
       <div class="col-md-12">
         <h4 class="bold pipeline-heading">
-          <a href="#" onclick="proposal_pipeline_open(<?php echo $proposal['id']; ?>); return false;"><?php echo $proposal['subject']; ?></a>
+          <a href="#" data-toggle="tooltip" data-title="<?php echo $proposal['subject']; ?>" onclick="proposal_pipeline_open(<?php echo $proposal['id']; ?>); return false;"><?php echo format_proposal_number($proposal['id']); ?></a>
+          <?php if(has_permission('estimates','','edit')){ ?>
           <a href="<?php echo admin_url('proposals/proposal/'.$proposal['id']); ?>" target="_blank" class="pull-right"><small><i class="fa fa-pencil-square-o" aria-hidden="true"></i></small></a>
+          <?php } ?>
         </h4>
-        <h5 class="bold">
+        <span class="mbot10 inline-block full-width">
           <?php
+
           if($proposal['rel_type'] == 'lead'){
-            echo '<a href="#" onclick="init_lead('.$proposal['rel_id'].'); return false;" data-toggle="tooltip" data-title="'._l('lead').'">'.$proposal['proposal_to'].'</a><br />';
+            echo '<a href="#" onclick="init_lead('.$proposal['rel_id'].'); return false;" data-toggle="tooltip" data-title="'._l('lead').'">' .$proposal['proposal_to'].'</a><br />';
           } else if($proposal['rel_type'] == 'customer'){
-            echo '<a href="'.admin_url('clients/client/'.$proposal['rel_id']).'" data-toggle="tooltip" data-title="'._l('client').'">'.$proposal['proposal_to'].'</a><br />';
+            echo '<a href="'.admin_url('clients/client/'.$proposal['rel_id']).'" data-toggle="tooltip" data-title="'._l('client').'">' .$proposal['proposal_to'].'</a><br />';
           }
           ?>
-        </h5>
+        </span>
       </div>
       <div class="col-md-12">
         <div class="row">

@@ -1,19 +1,20 @@
 <?php include_once(APPPATH.'views/admin/includes/helpers_bottom.php'); ?>
 <?php do_action('before_js_scripts_render'); ?>
 <script src="<?php echo base_url('assets/plugins/jquery/jquery.min.js'); ?>"></script>
-<?php if(ENVIRONMENT !== 'production'){ ?>
+<?php if(ENVIRONMENT !== 'production' || isset($jquery_migrate_assets)){ ?>
 <script src="<?php echo base_url('assets/plugins/jquery/jquery-migrate.js'); ?>"></script>
 <?php } ?>
 <script>
-$(window).on('load',function(){
-    init_btn_with_tooltips();
-});
+    $(window).on('load',function(){
+        init_btn_with_tooltips();
+    });
 </script>
 <script src="<?php echo base_url('assets/plugins/jquery-ui/jquery-ui.min.js'); ?>"></script>
 <script src="<?php echo base_url('assets/plugins/bootstrap/js/bootstrap.min.js'); ?>"></script>
 <script src="<?php echo base_url('assets/plugins/metisMenu/metisMenu.min.js'); ?>"></script>
 <script src="<?php echo base_url('assets/plugins/datatables/datatables.min.js'); ?>"></script>
 <script src="<?php echo base_url('assets/plugins/bootstrap-select/js/bootstrap-select.min.js'); ?>"></script>
+<script src="<?php echo base_url('assets/plugins/bootstrap-select-ajax/js/ajax-bootstrap-select.min.js'); ?>"></script>
 <script src="<?php echo base_url('assets/plugins/tinymce/tinymce.min.js'); ?>"></script>
 <script src="<?php echo base_url('assets/plugins/jquery-validation/jquery.validate.min.js'); ?>"></script>
 <?php if(file_exists(FCPATH.'assets/plugins/jquery-validation/localization/messages_'.$locale.'.min.js')){ ?>
@@ -26,16 +27,15 @@ $(window).on('load',function(){
 <script src="<?php echo base_url('assets/plugins/Chart.js/Chart.min.js'); ?>" type="text/javascript"></script>
 <script src="<?php echo base_url('assets/plugins/dropzone/min/dropzone.min.js'); ?>"></script>
 <script src="<?php echo base_url('assets/plugins/jquery.are-you-sure/jquery.are-you-sure.js'); ?>"></script>
-
-<link rel="stylesheet" href="//kendo.cdn.telerik.com/2016.1.226/styles/kendo.common-material.min.css" />
-<link rel="stylesheet" href="//kendo.cdn.telerik.com/2016.1.226/styles/kendo.material.min.css" />
-<script src="//kendo.cdn.telerik.com/2016.1.226/js/kendo.all.min.js"></script>
-
 <?php if(get_option('dropbox_app_key') != ''){ ?>
 <script type="text/javascript" src="https://www.dropbox.com/static/api/2/dropins.js" id="dropboxjs" data-app-key="<?php echo get_option('dropbox_app_key'); ?>"></script>
 <?php } ?>
 <?php if(isset($lightbox_assets)){ ?>
 <script id="lightbox-js" src="<?php echo base_url('assets/plugins/lightbox/js/lightbox.min.js'); ?>"></script>
+<?php } ?>
+<?php if(isset($form_builder_assets)){ ?>
+<script src="<?php echo base_url('assets/plugins/form-builder/form-builder.js'); ?>"></script>
+<script src="<?php echo base_url('assets/plugins/form-builder/form-render.min.js'); ?>"></script>
 <?php } ?>
 <?php if(isset($media_assets)){ ?>
 <script src="<?php echo base_url('assets/plugins/elFinder/js/elfinder.min.js'); ?>"></script>
@@ -57,14 +57,43 @@ $(window).on('load',function(){
 <?php if(isset($calendar_assets)){ ?>
 <script src="<?php echo base_url('assets/plugins/fullcalendar/fullcalendar.min.js'); ?>"></script>
 <?php if(get_option('google_api_key') != ''){ ?>
-<script src="<?php echo base_url('assets/plugins/fullcalendar/gcal.js'); ?>"></script>
+<script src="<?php echo base_url('assets/plugins/fullcalendar/gcal.min.js'); ?>"></script>
 <?php } ?>
 <?php if(file_exists(FCPATH.'assets/plugins/fullcalendar/locale/'.$locale.'.js')){ ?>
 <script src="<?php echo base_url('assets/plugins/fullcalendar/locale/'.$locale.'.js'); ?>"></script>
 <?php } ?>
-<script src="<?php echo base_url('assets/js/calendar.js'); ?>"></script>
+<?php echo app_script('assets/js','calendar.js'); ?>
 <?php } ?>
-<script src="<?php echo base_url('assets/js/sales.js'); ?>"></script>
-<script src="<?php echo base_url('assets/js/tasks.js'); ?>"></script>
-<script src="<?php echo base_url('assets/js/main.js'); ?>"></script>
+<?php echo app_script('assets/js','sales.js'); ?>
+<?php echo app_script('assets/js','main.js'); ?>
 <?php do_action('after_js_scripts_render'); ?>
+<?php
+$alertclass = "";
+if($this->session->flashdata('message-success')){
+    $alertclass = "success";
+} else if ($this->session->flashdata('message-warning')){
+    $alertclass = "warning";
+} else if ($this->session->flashdata('message-info')){
+    $alertclass = "info";
+} else if ($this->session->flashdata('message-danger')){
+    $alertclass = "danger";
+}
+if($alertclass != ''){
+    $alert_message = '';
+    $alert = $this->session->flashdata('message-'.$alertclass);
+    if(is_array($alert)){
+        foreach($alert as $alert_data){
+            $alert_message.= '<span>'.$alert_data . '</span><br />';
+        }
+    } else {
+        $alert_message .= $alert;
+    }
+    ?>
+    <script>
+        $(function(){
+            alert_float('<?php echo $alertclass; ?>','<?php echo $alert_message; ?>');
+        });
+    </script>
+    <?php } ?>
+
+

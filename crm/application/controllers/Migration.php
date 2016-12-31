@@ -14,11 +14,13 @@ class Migration extends CI_Controller
                 echo '<h1>You need to pass old base url in the url like: ' . site_url('migration/make?old_base_url=http://myoldbaseurl.com/') . '</h1>';
                 die;
             }
+
             $old_url = $this->input->get('old_base_url');
             $new_url = $this->config->item('base_url');
             if (!endsWith($old_url, '/')) {
                 $old_url = $old_url . '/';
             }
+
             $tables       = array(
                 array(
                     'table' => 'tblnotifications',

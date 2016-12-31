@@ -1,6 +1,6 @@
 <?php if(isset($contracts_by_type_chart)){ ?>
 <script>
-var contracts_by_type = '<?php echo $contracts_by_type_chart; ?>';
+    var contracts_by_type = '<?php echo $contracts_by_type_chart; ?>';
 </script>
 <?php } ?>
 <script src="<?php echo base_url('assets/plugins/bootstrap/js/bootstrap.min.js'); ?>"></script>
@@ -13,7 +13,7 @@ var contracts_by_type = '<?php echo $contracts_by_type_chart; ?>';
 <script src="<?php echo base_url('assets/plugins/datetimepicker/jquery.datetimepicker.full.min.js'); ?>"></script>
 <script src="<?php echo base_url('assets/plugins/Chart.js/Chart.min.js'); ?>" type="text/javascript"></script>
 <script src="<?php echo base_url('assets/plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.min.js'); ?>"></script>
-<script src="<?php echo template_assets_url(); ?>js/global.js"></script>
+<?php echo app_script(template_assets_path().'/js','global.js'); ?>
 <?php if(is_client_logged_in()){ ?>
 <script src="<?php echo base_url('assets/plugins/dropzone/min/dropzone.min.js'); ?>"></script>
 <script src="<?php echo base_url('assets/plugins/moment/moment-with-locales.min.js'); ?>"></script>
@@ -29,10 +29,39 @@ var contracts_by_type = '<?php echo $contracts_by_type_chart; ?>';
 <?php if(file_exists(FCPATH.'assets/plugins/fullcalendar/locale/'.$locale.'.js')){ ?>
 <script src="<?php echo base_url('assets/plugins/fullcalendar/locale/'.$locale.'.js'); ?>"></script>
 <?php } ?>
-<script src="<?php echo template_assets_url(); ?>js/clients.js"></script>
-<script src="<?php echo template_assets_url(); ?>js/client-report.js"></script>
+<?php echo app_script(template_assets_path().'/js','clients.js'); ?>
+<?php echo app_script(template_assets_path().'/js','client-report.js'); ?>
 <?php } ?>
 <?php
-    // DONT REMOVE THIS LINE
-    do_action('customers_after_js_scripts_load');
+// DONT REMOVE THIS LINE
+do_action('customers_after_js_scripts_load');
 ?>
+<?php
+$alertclass = "";
+if($this->session->flashdata('message-success')){
+    $alertclass = "success";
+} else if ($this->session->flashdata('message-warning')){
+    $alertclass = "warning";
+} else if ($this->session->flashdata('message-info')){
+    $alertclass = "info";
+} else if ($this->session->flashdata('message-danger')){
+    $alertclass = "danger";
+}
+if($alertclass != ''){
+    $alert_message = '';
+    $alert = $this->session->flashdata('message-'.$alertclass);
+    if(is_array($alert)){
+        foreach($alert as $alert_data){
+            $alert_message.= '<span>'.$alert_data . '</span><br />';
+        }
+    } else {
+        $alert_message .= $alert;
+    }
+    ?>
+    <script>
+        $(function(){
+            alert_float('<?php echo $alertclass; ?>','<?php echo $alert_message; ?>');
+        });
+    </script>
+    <?php } ?>
+

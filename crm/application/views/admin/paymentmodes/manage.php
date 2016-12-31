@@ -2,7 +2,6 @@
 <div id="wrapper">
 	<div class="content">
 		<div class="row">
-			<?php include_once(APPPATH . 'views/admin/includes/alerts.php'); ?>
 			<div class="col-md-12">
 				<div class="panel_s">
 					<div class="panel-body _buttons">
@@ -11,7 +10,8 @@
 				</div>
 				<div class="panel_s">
 					<div class="panel-body">
-						<p class="text-warning"><?php echo _l('payment_modes_add_edit_announcement'); ?></p>
+						<p class="text-warning mtop5"><?php echo _l('payment_modes_add_edit_announcement'); ?></p>
+						<hr />
 						<div class="clearfix"></div>
 						<?php render_datatable(array(
 							_l('payment_modes_dt_name'),
@@ -49,6 +49,10 @@
 							<div class="checkbox checkbox-primary">
 								<input type="checkbox" name="show_on_pdf" id="show_on_pdf">
 								<label for="show_on_pdf"><?php echo _l('show_on_invoice_on_pdf',_l('payment_mode_add_edit_description')); ?></label>
+							</div>
+							<div class="checkbox checkbox-primary">
+								<input type="checkbox" name="selected_by_default" id="selected_by_default">
+								<label for="selected_by_default"><?php echo _l('settings_paymentmethod_default_selected_on_invoice'); ?></label>
 							</div>
 							<hr />
 							<div class="checkbox checkbox-primary pm-available-to">
@@ -109,6 +113,7 @@
 			var button = $(event.relatedTarget)
 			var id = button.data('id');
 			var expenses_only = button.data('expenses-only');
+			var selected_by_default = button.data('default-selected');
 			var invoices_only = button.data('invoices-only');
 			var show_on_pdf = button.data('show-on-pdf');
 			$('#payment_mode_modal input').val('');
@@ -116,6 +121,7 @@
 			$('#payment_mode_modal input[name="expenses_only"]').prop('checked', false).prop('disabled',false);
 			$('#payment_mode_modal input[name="invoices_only"]').prop('checked', false).prop('disabled',false);
 			$('#payment_mode_modal input[name="show_on_pdf"]').prop('checked', false);
+			$('#payment_mode_modal input[name="selected_by_default"]').prop('checked', false);
 			$('#payment_mode_modal textarea[name="description"]').val('');
 			$('#payment_mode_modal .add-title').removeClass('hide');
 			$('#payment_mode_modal .edit-title').addClass('hide');
@@ -129,6 +135,7 @@
 				$('#payment_mode_modal input[name="expenses_only"]').prop('checked', expenses_only).change();
 				$('#payment_mode_modal input[name="invoices_only"]').prop('checked', invoices_only).change();
 				$('#payment_mode_modal input[name="show_on_pdf"]').prop('checked', show_on_pdf);
+				$('#payment_mode_modal input[name="selected_by_default"]').prop('checked', selected_by_default);
 				$('#payment_mode_modal .add-title').addClass('hide');
 				$('#payment_mode_modal .edit-title').removeClass('hide');
 				$('#payment_mode_modal input[name="name"]').val(name);

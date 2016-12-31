@@ -3,7 +3,6 @@
 	<div class="content">
 		<?php echo form_open_multipart($this->uri->uri_string(),array('id'=>'new_ticket_form')); ?>
 		<div class="row">
-			<?php include_once(APPPATH . 'views/admin/includes/alerts.php'); ?>
 			<div class="col-md-12">
 				<div class="panel_s">
 					<div class="panel-body">
@@ -32,7 +31,7 @@
 									</div>
 									</div>
 									<?php echo render_input('cc','CC'); ?>
-									<?php echo render_select('department',$departments,array('departmentid','name'),'ticket_settings_departments'); ?>
+									<?php echo render_select('department',$departments,array('departmentid','name'),'ticket_settings_departments',(count($departments) == 1) ? $departments[0]['departmentid'] : ''); ?>
 								</div>
 								<div class="col-md-6">
 									<?php $priorities['callback_translate'] = 'ticket_priority_translate';
@@ -102,7 +101,7 @@
 																	<div class="input-group">
 																		<input type="file" class="form-control ignore-validation" name="attachments[]" accept="<?php echo get_ticket_form_accepted_mimes(); ?>">
 																		<span class="input-group-btn">
-																			<button class="btn btn-success add_more_attachments" type="button"><i class="fa fa-plus"></i></button>
+																			<button class="btn btn-success add_more_attachments p7" type="button"><i class="fa fa-plus"></i></button>
 																		</span>
 																	</div>
 																</div>
@@ -122,7 +121,7 @@
 								</div>
 							</div>
 							<?php init_tail(); ?>
-							<script src="<?php echo base_url(); ?>assets/js/tickets.js"></script>
+							<?php echo app_script('assets/js','tickets.js'); ?>
 							<script>
 								$.validator.setDefaults({ignore: ".ignore-validation"});
 								$(function(){

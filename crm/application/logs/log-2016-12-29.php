@@ -76,10 +76,14 @@ ERROR - 2016-12-29 03:04:23 --> 404 Page Not Found: Assets/plugins
 ERROR - 2016-12-29 03:09:24 --> 404 Page Not Found: Assets/plugins
 ERROR - 2016-12-29 03:09:24 --> 404 Page Not Found: Assets/plugins
 ERROR - 2016-12-29 03:09:32 --> 404 Page Not Found: Assets/plugins
-ERROR - 2016-12-29 03:16:08 --> 404 Page Not Found: Assets/plugins
-ERROR - 2016-12-29 03:16:12 --> 404 Page Not Found: Assets/plugins
-ERROR - 2016-12-29 03:16:12 --> 404 Page Not Found: Assets/plugins
-ERROR - 2016-12-29 04:57:38 --> 404 Page Not Found: Assets/plugins
-ERROR - 2016-12-29 04:57:40 --> 404 Page Not Found: Assets/plugins
-ERROR - 2016-12-29 04:57:43 --> 404 Page Not Found: Assets/plugins
-ERROR - 2016-12-29 22:25:09 --> Severity: Error --> Class CI_Session_database_driver contains 1 abstract method and must therefore be declared abstract or implement the remaining methods (SessionHandlerInterface::open) F:\xampp\htdocs\perfex_crm\crm\system\libraries\Session\drivers\Session_database_driver.php 49
+ERROR - 2016-12-29 09:27:22 --> Could not find the language line "Qualification"
+ERROR - 2016-12-29 10:03:20 --> Could not find the language line "Qualification"
+ERROR - 2016-12-29 10:03:49 --> Could not find the language line "Qualification"
+ERROR - 2016-12-29 10:20:17 --> Could not find the language line "CC"
+ERROR - 2016-12-29 10:21:17 --> Could not find the language line "CC"
+ERROR - 2016-12-29 10:22:26 --> Could not find the language line "Qualification"
+ERROR - 2016-12-29 10:23:32 --> Could not find the language line "Qualification"
+ERROR - 2016-12-29 10:26:18 --> Could not find the language line "CC"
+ERROR - 2016-12-29 10:27:50 --> Could not find the language line "CC"
+ERROR - 2016-12-29 10:29:09 --> Could not find the language line "CC"
+ERROR - 2016-12-29 10:30:20 --> Could not find the language line "CC"

@@ -7,7 +7,7 @@
     <label class="onoffswitch-label" for="pf_visible_to_customer"></label>
 </div>
 <div class="clearfix mtop25"></div>
-<div class="container-fluid">
+
     <div class="table-responsive">
         <table class="table dt-table" data-order-col="6" data-order-type="desc">
             <thead>
@@ -83,7 +83,7 @@
                     <?php } ?>
                 </tbody>
             </table>
-        </div>
+
     </div>
     <div id="project_file_data"></div>
     <?php include_once(APPPATH . 'views/admin/clients/modals/send_file_modal.php'); ?>

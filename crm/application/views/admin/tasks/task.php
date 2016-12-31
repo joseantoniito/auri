@@ -27,7 +27,6 @@
                 $rel_type = $task->rel_type;
               }
               ?>
-              <?php echo form_hidden('task_rel_id',$rel_id); ?>
               <div class="clearfix"></div>
               <?php } ?>
               <?php
@@ -55,10 +54,15 @@
               <?php $value = (isset($task) ? $task->hourly_rate : 0); ?>
               <?php echo render_input('hourly_rate','task_hourly_rate',$value); ?>
             </div>
-            <div class="project-details<?php if($rel_type != 'project' && $rel_id == ''){echo ' hide';} ?>">
+            <div class="project-details<?php if($rel_type != 'project'){echo ' hide';} ?>">
               <div class="form-group">
                 <label for="milestone"><?php echo _l('task_milestone'); ?></label>
-                <select name="milestone" id="milestone" class="selectpicker" data-width="100%" data-none-selected-text="<?php echo _l('dropdown_non_selected_tex'); ?>"></select>
+                <select name="milestone" id="milestone" class="selectpicker" data-width="100%" data-none-selected-text="<?php echo _l('dropdown_non_selected_tex'); ?>">
+                <option value=""></option>
+                  <?php foreach($milestones as $milestone){ ?>
+                    <option value="<?php echo $milestone['id']; ?>" <?php if(isset($task) && $task->milestone == $milestone['id']){echo 'selected'; } ?>><?php echo $milestone['name']; ?></option>
+                  <?php } ?>
+                </select>
               </div>
             </div>
             <div class="row">
@@ -149,23 +153,32 @@
           </select>
         </div>
       </div>
-      <div class="col-md-6 label-margin">
-        <div class="form-group hide" id="rel_id_wrapper">
-          <select name="rel_id" id="rel_id" class="selectpicker" data-width="100%" data-live-search="true" data-none-selected-text="<?php echo _l('dropdown_non_selected_tex'); ?>"></select>
+      <div class="col-md-6">
+        <div class="form-group<?php if($rel_id == ''){echo ' hide';} ?>" id="rel_id_wrapper">
+        <label for="rel_id" class="control-label"><span class="rel_id_label"></span></label>
+        <div id="rel_id_select">
+          <select name="rel_id" id="rel_id" class="selectpicker" data-width="100%" data-live-search="true" data-none-selected-text="<?php echo _l('dropdown_non_selected_tex'); ?>">
+          <?php if($rel_id != '' && $rel_type != ''){
+            $rel_data = get_relation_data($rel_type,$rel_id);
+            $rel_val = get_relation_values($rel_data,$rel_type);
+            echo '<option value="'.$rel_val['id'].'">'.$rel_val['name'].'</option>';
+          } ?>
+        </select>
         </div>
       </div>
     </div>
-    <?php if(isset($task) && $task->status == 5 && (has_permission('create') || has_permission('edit'))){
-      echo render_datetime_input('datefinished','task_finished',_dt($task->datefinished));
-    }
-    ?>
-    <?php $rel_id_custom_field = (isset($task) ? $task->id : false); ?>
-    <?php echo render_custom_fields('tasks',$rel_id_custom_field); ?>
-    <hr />
-    <p class="bold"><?php echo _l('task_add_edit_description'); ?></p>
-    <?php $contents = ''; if(isset($task)){$contents = $task->description;} ?>
-    <?php echo render_textarea('description','',$contents,array('data-task-ae-editor'=>true),array(),'','tinymce-task'); ?>
   </div>
+  <?php if(isset($task) && $task->status == 5 && (has_permission('create') || has_permission('edit'))){
+    echo render_datetime_input('datefinished','task_finished',_dt($task->datefinished));
+  }
+  ?>
+  <?php $rel_id_custom_field = (isset($task) ? $task->id : false); ?>
+  <?php echo render_custom_fields('tasks',$rel_id_custom_field); ?>
+  <hr />
+  <p class="bold"><?php echo _l('task_add_edit_description'); ?></p>
+  <?php $contents = ''; if(isset($task)){$contents = $task->description;} ?>
+  <?php echo render_textarea('description','',$contents,array('data-task-ae-editor'=>true),array(),'','tinymce-task'); ?>
+</div>
 </div>
 </div>
 <div class="modal-footer">
@@ -176,107 +189,148 @@
 </div>
 <?php echo form_close(); ?>
 <script>
-  var _milestone_selected_data;
-  _milestone_selected_data = undefined;
-  $(function(){
-    _validate_form($('#task-form'), {
-      name: 'required',
-      startdate: 'required'
-    },task_form_handler);
-    init_relation_data();
-    $('select[name="rel_type"]').on('change', function() {
-      init_relation_data();
-    });
-    init_datepicker();
-    init_color_pickers();
-    init_selectpicker();
+ var _rel_id = $('#rel_id'),
+ _rel_type = $('#rel_type'),
+ _rel_id_wrapper = $('#rel_id_wrapper'),
+ data = {};
 
-    init_editor('.tinymce-task',{height:200});
-    $('#rel_id').on('change',function(){
-     var rel_id = $(this).val();
-     if(rel_id != ''){
-       var rel_type = $('select[name="rel_type"]').val();
-       if(rel_type == 'project'){
-         $.get(admin_url + 'projects/get_rel_project_data/'+rel_id+'/'+taskid,function(project){
-           $("select[name='milestone']").html(project.milestones);
-           if(typeof(_milestone_selected_data) != 'undefined'){
-            $("select[name='milestone']").val(_milestone_selected_data.id);
-            $('input[name="duedate"]').val(_milestone_selected_data.due_date)
-          }
-          $("select[name='milestone']").selectpicker('refresh');
-          if(project.billing_type == 3){
-           $('.task-hours').addClass('project-task-hours');
-         } else {
-           $('.task-hours').removeClass('project-task-hours');
-         }
-         init_project_details(rel_type,project.allow_to_view_tasks);
-       },'json');
-       }
-     }
-   });
+ var _milestone_selected_data;
+ _milestone_selected_data = undefined;
+
+ $(function(){
+  $( "body" )
+    .off( "change", "#rel_id" );
+
+  _validate_form($('#task-form'), {
+    name: 'required',
+    startdate: 'required'
+  },task_form_handler);
+
+  $('.rel_id_label').html(_rel_type.find('option:selected').text());
+  _rel_type.on('change', function() {
+   var clonedSelect = _rel_id.html('').clone();
+   _rel_id.selectpicker('destroy').remove();
+   _rel_id = clonedSelect;
+   $('#rel_id_select').append(clonedSelect);
+   $('.rel_id_label').html(_rel_type.find('option:selected').text());
+
+   task_rel_select();
+    if($(this).val() != ''){
+      _rel_id_wrapper.removeClass('hide');
+    } else {
+      _rel_id_wrapper.addClass('hide');
+    }
   });
 
-  <?php if(isset($_milestone_selected_data)){ ?>
-    _milestone_selected_data = '<?php echo json_encode($_milestone_selected_data); ?>';
-    _milestone_selected_data = JSON.parse(_milestone_selected_data);
+  init_datepicker();
+  init_color_pickers();
+  init_selectpicker();
+  task_rel_select();
+  init_editor('.tinymce-task',{height:200});
+
+  $('body').on('change','#rel_id',function(){
+   if($(this).val() != ''){
+     if(_rel_type.val() == 'project'){
+       $.get(admin_url + 'projects/get_rel_project_data/'+$(this).val()+'/'+taskid,function(project){
+         $("select[name='milestone']").html(project.milestones);
+         if(typeof(_milestone_selected_data) != 'undefined'){
+          $("select[name='milestone']").val(_milestone_selected_data.id);
+          $('input[name="duedate"]').val(_milestone_selected_data.due_date)
+        }
+        $("select[name='milestone']").selectpicker('refresh');
+        if(project.billing_type == 3){
+         $('.task-hours').addClass('project-task-hours');
+       } else {
+         $('.task-hours').removeClass('project-task-hours');
+       }
+       init_project_details(_rel_type.val(),project.allow_to_view_tasks);
+     },'json');
+     }
+   }
+ });
+
+   <?php if(!isset($task) && $rel_id != ''){ ?>
+    _rel_id.change();
     <?php } ?>
-    function init_relation_data(data) {
-      var data = {};
-      var task_rel_id = $('input[name="task_rel_id"]');
-      var type = $('select[name="rel_type"]');
-      data.type = type.val();
-      init_project_details(data.type);
-      if (task_rel_id.length > 0) {
-        if (data.type == '') {
-          return;
-        } else {
-          $('#rel_id_wrapper').removeClass('hide');
-          data.rel_id = task_rel_id.val();
+
+});
+
+ <?php if(isset($_milestone_selected_data)){ ?>
+  _milestone_selected_data = '<?php echo json_encode($_milestone_selected_data); ?>';
+  _milestone_selected_data = JSON.parse(_milestone_selected_data);
+  <?php } ?>
+
+  function task_rel_select(){
+    var options = {
+      ajax: {
+        url: admin_url + 'misc/get_relation_data',
+        data: function () {
+          data.q = '{{{q}}}';
+          data.type = _rel_type.val();
+          data.rel_id = _rel_id.val();
+          <?php if(isset($task)){ ?>
+           data.connection_type = 'task';
+           data.connection_id = '<?php echo $task->id; ?>';
+           <?php } ?>
+           return data;
+         }
+       },
+       locale: {
+        emptyTitle: '<?php echo htmlentities(_l('search_ajax_empty')); ?>',
+        statusInitialized: '<?php echo htmlentities(_l('search_ajax_initialized')); ?>',
+        statusSearching:'<?php echo htmlentities(_l('search_ajax_searching')); ?>',
+        statusNoResults:'<?php echo htmlentities(_l('not_results_found')); ?>',
+        searchPlaceholder:'<?php echo htmlentities(_l('search_ajax_placeholder')); ?>',
+        currentlySelected:'<?php echo htmlentities(_l('currently_selected')); ?>',
+      },
+      requestDelay:500,
+      cache:false,
+      preprocessData: function(processData){
+        var bs_data = [];
+        var len = processData.length;
+        for(var i = 0; i < len; i++){
+          var curr = processData[i];
+          var _temp = {
+            'value': curr.id,
+            'text': curr.name,
+          };
+          bs_data.push(_temp);
         }
-      } else {
-        if (data.type == '') {
-          $('#rel_id_wrapper').addClass('hide');
-          return;
-        } else {
-          $('#rel_id_wrapper').removeClass('hide');
-        }
-      }
-      var task_is_edit = $('input[name="task_is_edit"]');
-      if(task_is_edit.length > 0){
-        data.connection_type = 'task';
-        data.connection_id = task_is_edit.val();
-      }
-      $.post(admin_url + 'misc/get_relation_data', data).done(function(response) {
-        $('#rel_id').html(response);
-        $('#rel_id').selectpicker('refresh');
-        $('#rel_id').change();
-      });
+        return bs_data;
+      },
+      preserveSelectedPosition:'after',
+      preserveSelected:true
     }
-    function init_project_details(type,tasks_visible_to_customer){
-      var wrap = $('.non-project-details');
-      var wrap_task_hours = $('.task-hours');
-      if(type == 'project'){
-        if(wrap_task_hours.hasClass('project-task-hours') == true){
-          wrap_task_hours.removeClass('hide');
-        } else {
-          wrap_task_hours.addClass('hide');
-        }
-        wrap.addClass('hide');
-        $('.project-details').removeClass('hide');
-      } else {
+    _rel_id
+    .selectpicker()
+    .ajaxSelectPicker(options)
+  }
+
+  function init_project_details(type,tasks_visible_to_customer){
+    var wrap = $('.non-project-details');
+    var wrap_task_hours = $('.task-hours');
+    if(type == 'project'){
+      if(wrap_task_hours.hasClass('project-task-hours') == true){
         wrap_task_hours.removeClass('hide');
-        wrap.removeClass('hide');
-        $('.project-details').addClass('hide');
-        $('.task-visible-to-customer').addClass('hide').prop('checked',false);
+      } else {
+        wrap_task_hours.addClass('hide');
       }
-      if(typeof(tasks_visible_to_customer) != 'undefined'){
-        if(tasks_visible_to_customer == 1){
-          $('.task-visible-to-customer').removeClass('hide');
-          $('.task-visible-to-customer input').prop('checked',true);
-        } else {
-          $('.task-visible-to-customer').addClass('hide')
-          $('.task-visible-to-customer input').prop('checked',false);
-        }
+      wrap.addClass('hide');
+      $('.project-details').removeClass('hide');
+    } else {
+      wrap_task_hours.removeClass('hide');
+      wrap.removeClass('hide');
+      $('.project-details').addClass('hide');
+      $('.task-visible-to-customer').addClass('hide').prop('checked',false);
+    }
+    if(typeof(tasks_visible_to_customer) != 'undefined'){
+      if(tasks_visible_to_customer == 1){
+        $('.task-visible-to-customer').removeClass('hide');
+        $('.task-visible-to-customer input').prop('checked',true);
+      } else {
+        $('.task-visible-to-customer').addClass('hide')
+        $('.task-visible-to-customer input').prop('checked',false);
       }
     }
-  </script>
+  }
+</script>

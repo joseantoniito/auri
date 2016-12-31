@@ -1,9 +1,8 @@
          <div class="col-md-12">
           <div class="panel_s">
            <div class="panel-body _buttons">
-            <?php if(has_permission('estimates','','create')){
-             $this->load->view('admin/estimates/estimates_top_stats');
-           } ?>
+            <?php $this->load->view('admin/estimates/estimates_top_stats');
+           ?>
            <?php if(has_permission('estimates','','create')){ ?>
            <a href="<?php echo admin_url('estimates/estimate'); ?>" class="btn btn-info pull-left new new-estimate-btn"><?php echo _l('create_new_estimate'); ?></a>
            <?php } ?>
@@ -23,6 +22,11 @@
               <li class="<?php if($this->input->get('filter') == 'not_sent'){echo 'active'; } ?>">
                 <a href="#" data-cview="not_sent" onclick="dt_custom_view('not_sent','.table-estimates','not_sent'); return false;">
                   <?php echo _l('not_sent_indicator'); ?>
+                </a>
+              </li>
+              <li>
+                <a href="#" data-cview="invoiced" onclick="dt_custom_view('invoiced','.table-estimates','invoiced'); return false;">
+                  <?php echo _l('estimate_invoiced'); ?>
                 </a>
               </li>
               <li class="divider"></li>
@@ -61,9 +65,7 @@
           </ul>
         </div>
         <a href="#" class="btn btn-default btn-with-tooltip toggle-small-view hidden-xs" onclick="toggle_small_view('.table-estimates','#estimate'); return false;" data-toggle="tooltip" title="<?php echo _l('estimates_toggle_table_tooltip'); ?>"><i class="fa fa-angle-double-left"></i></a>
-        <?php if(has_permission('estimates','','create')){ ?>
-        <a href="#" class="btn btn-default btn-with-tooltip estimates-total" onclick="slideToggle('#stats-top'); init_estimates_total(truetrue); return false;" data-toggle="tooltip" title="<?php echo _l('view_stats_tooltip'); ?>"><i class="fa fa-bar-chart"></i></a>
-        <?php } ?>
+        <a href="#" class="btn btn-default btn-with-tooltip estimates-total" onclick="slideToggle('#stats-top'); init_estimates_total(true,true); return false;" data-toggle="tooltip" title="<?php echo _l('view_stats_tooltip'); ?>"><i class="fa fa-bar-chart"></i></a>
       </div>
     </div>
   </div>
@@ -94,7 +96,7 @@
     </div>
   </div>
 </div>
-<div class="col-md-7">
+<div class="col-md-7 small-table-right-col">
   <div id="estimate" class="hide">
   </div>
 </div>

@@ -1,18 +1,32 @@
 <div class="panel_s">
     <div class="panel-body">
-        <h4 class="bold no-margin text-muted"><?php echo _l('customer_profile_files'); ?></h4>
+        <h4 class="no-margin"><?php echo _l('customer_profile_files'); ?></h4>
     </div>
 </div>
 <div class="panel_s">
-   <div class="panel-body">
+ <div class="panel-body">
+
+     <?php echo form_open_multipart(site_url('clients/upload_files'),array('class'=>'dropzone','id'=>'files-upload')); ?>
+     <input type="file" name="file" multiple class="hide"/>
+     <?php echo form_close(); ?>
+     <?php if(get_option('dropbox_app_key') != ''){ ?>
+     <div class="text-right mtop15 mbot15">
+        <div id="dropbox-chooser-files"></div>
+    </div>
+    <?php } ?>
+
     <?php if(count($files) == 0){ ?>
-    <p class="bold no-margin"><?php echo _l('no_files_found'); ?></p>
+    <p class="no-margin"><?php echo _l('no_files_found'); ?></p>
     <?php } else { ?>
     <div class="table-responsive">
         <table class="table dt-table" data-order-col="1" data-order-type="desc">
-           <thead>
+         <thead>
             <tr>
                 <th><?php echo _l('customer_attachments_file'); ?></th>
+                <th><?php echo _l('file_date_uploaded'); ?></th>
+                <?php if(get_option('allow_contact_to_delete_files') == 1){ ?>
+                <th><?php echo _l('options'); ?></th>
+                <?php } ?>
             </tr>
         </thead>
         <tbody>
@@ -40,7 +54,9 @@
                 ?>
                 <a href="<?php echo $attachment_url; ?>" class="display-block mbot5">
                     <?php if($is_image){ ?>
-                    <img src="<?php echo $img_url; ?>">
+                    <div class="table-image">
+                        <img src="<?php echo $img_url; ?>">
+                    </div>
                     <?php } else { ?>
                     <i class="<?php echo get_mime_class($file['filetype']); ?>"></i> <?php echo $file['file_name']; ?>
                     <?php } ?>
@@ -51,6 +67,12 @@
                 }
                 ?>
             </td>
+            <td data-order="<?php echo $file['dateadded']; ?>"><?php echo _dt($file['dateadded']); ?></td>
+            <?php if(get_option('allow_contact_to_delete_files') == 1 && $file['contact_id'] == get_contact_user_id()){ ?>
+            <td>
+                <a href="<?php echo site_url('clients/delete_file/'.$file['id'].'/general'); ?>" class="btn btn-danger btn-icon _delete"><i class="fa fa-remove"></i></a>
+            </td>
+            <?php } ?>
         </tr>
         <?php } ?>
     </tbody>

@@ -94,8 +94,9 @@ class Settings_model extends CRM_Model
                 $affectedRows++;
             }
         }
+
         // Contact permission default none
-        if(!in_array('default_contact_permissions',$all_settings_looped) && isset($all_settings_looped['customer_settings'])){
+        if(!in_array('default_contact_permissions',$all_settings_looped) && in_array('customer_settings',$all_settings_looped)){
             $this->db->where('name', 'default_contact_permissions');
             $this->db->update('tbloptions', array(
                 'value' => serialize(array())

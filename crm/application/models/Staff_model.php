@@ -4,6 +4,7 @@ class Staff_model extends CRM_Model
 {
     private $perm_statements = array(
         'view',
+        'view_own',
         'edit',
         'create',
         'delete',
@@ -73,6 +74,9 @@ class Staff_model extends CRM_Model
         $this->db->where('staffid',$id);
         $this->db->update('tblfiles',array('staffid'=>$transfer_data_to));
 
+        $this->db->where('renewed_by_staff_id',$id);
+        $this->db->update('tblcontractrenewals',array('renewed_by_staff_id'=>$transfer_data_to));
+
         $this->db->where('addedfrom',$id);
         $this->db->update('tbltaskchecklists',array('addedfrom'=>$transfer_data_to));
 
@@ -101,10 +105,32 @@ class Staff_model extends CRM_Model
         $this->db->update('tblstafftaskassignees',array('assigned_from'=>$transfer_data_to));
 
         $this->db->where('responsible',$id);
-        $this->db->update('tblleadsemailintegration',array('responsible'=>$transfer_data_to));
+        $this->db->update('tblleadsintegration',array('responsible'=>$transfer_data_to));
+
+        $this->db->where('responsible',$id);
+        $this->db->update('tblwebtolead',array('responsible'=>$transfer_data_to));
+
+        $this->db->where('notify_type','specific_staff');
+        $webtolead = $this->db->get('tblwebtolead')->result_array();
+
+        foreach($webtolead as $form){
+         if(!empty($form['notify_ids'])){
+             $staff = unserialize($form['notify_ids']);
+             if(is_array($staff)){
+                if(in_array($id, $staff)){
+                    if(($key = array_search($id, $staff)) !== false) {
+                        unset($staff[$key]);
+                        $staff = serialize(array_values($staff));
+                        $this->db->where('id',$form['id']);
+                        $this->db->update('tblwebtolead',array('notify_ids'=>$staff));
+                    }
+                }
+            }
+            }
+        }
 
         $this->db->where('id',1);
-        $leads_email_integration = $this->db->get('tblleadsemailintegration')->row();
+        $leads_email_integration = $this->db->get('tblleadsintegration')->row();
 
         if($leads_email_integration->notify_type == 'specific_staff'){
             if(!empty($leads_email_integration->notify_ids)){
@@ -115,7 +141,7 @@ class Staff_model extends CRM_Model
                             unset($staff[$key]);
                             $staff = serialize(array_values($staff));
                             $this->db->where('id',1);
-                            $this->db->update('tblleadsemailintegration',array('notify_ids'=>$staff));
+                            $this->db->update('tblleadsintegration',array('notify_ids'=>$staff));
                         }
                     }
                  }
@@ -249,6 +275,10 @@ class Staff_model extends CRM_Model
             $permissions['view'] = $data['view'];
             unset($data['view']);
         }
+        if (isset($data['view_own'])) {
+            $permissions['view_own'] = $data['view_own'];
+            unset($data['view_own']);
+        }
         if (isset($data['edit'])) {
             $permissions['edit'] = $data['edit'];
             unset($data['edit']);
@@ -303,6 +333,7 @@ class Staff_model extends CRM_Model
                 'permissionid'=>$permission['permissionid'],
                 'staffid'=>$staffid,
                 'can_view'=>0,
+                'can_view_own'=>0,
                 'can_edit'=>0,
                 'can_create'=>0,
                 'can_delete'=>0,
@@ -383,6 +414,11 @@ class Staff_model extends CRM_Model
         if (isset($data['view'])) {
             $permissions['view'] = $data['view'];
             unset($data['view']);
+        }
+
+        if (isset($data['view_own'])) {
+            $permissions['view_own'] = $data['view_own'];
+            unset($data['view_own']);
         }
         if (isset($data['edit'])) {
             $permissions['edit'] = $data['edit'];

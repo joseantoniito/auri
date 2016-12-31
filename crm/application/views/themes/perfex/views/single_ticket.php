@@ -9,25 +9,25 @@
             <div class="panel-body">
                 <div class="row">
                     <div class="col-md-12">
-                        <h3 class="bold">
+                        <h4>
                             #<?php echo $ticket->ticketid; ?> - <?php echo $ticket->subject; ?>
-                        </h3>
+                        </h4>
                         <hr />
-                        <p class="bold">
-                            <?php echo _l('clients_ticket_single_department', $ticket->department_name); ?>
+                        <p>
+                            <?php echo _l('clients_ticket_single_department', '<span class="pull-right bold">'.$ticket->department_name.'</span>'); ?>
                         </p>
                         <hr />
-                        <p class="bold">
-                            <?php echo _l('clients_ticket_single_submited',_dt($ticket->date)); ?>
+                        <p>
+                            <?php echo _l('clients_ticket_single_submited','<span class="pull-right bold">'._dt($ticket->date).'</span>'); ?>
                         </p>
                         <hr />
                         <div class="row">
-                            <div class="col-md-4 bold">
+                            <div class="col-md-4">
                                 <?php echo _l('clients_ticket_single_status'); ?>
                             </div>
                             <div class="col-md-8">
                                 <div class="ticket-status-inline">
-                                    <span class="label" style="background:<?php echo $ticket->statuscolor; ?>">
+                                    <span class="label pull-right bold" style="background:<?php echo $ticket->statuscolor; ?>">
                                         <?php echo ticket_status_translate($ticket->ticketstatusid); ?>
                                         <?php if(get_option('allow_customer_to_change_ticket_status') == 1){ ?>
                                         <i class="fa fa-pencil-square-o pointer toggle-change-ticket-status"></i></span>
@@ -52,14 +52,14 @@
                                     </div>
                                 </div>
                                 <hr />
-                                <p class="bold">
-                                    <?php echo _l('clients_ticket_single_priority',ticket_priority_translate($ticket->priorityid)); ?>
+                                <p>
+                                    <?php echo _l('clients_ticket_single_priority','<span class="pull-right bold">'.ticket_priority_translate($ticket->priorityid).'</span>'); ?>
                                 </p>
                                 <?php
                                 $custom_fields = get_custom_fields('tickets',array('show_on_client_portal'=>1));
                                 foreach($custom_fields as $field){ ?>
                                 <hr />
-                                <p class="bold"><?php echo $field['name']; ?>: <?php echo get_custom_field_value($ticket->ticketid,$field['id'],'tickets'); ?></p>
+                                <p class="bold"><?php echo $field['name']; ?>: <span class="pull-right bold"><?php echo get_custom_field_value($ticket->ticketid,$field['id'],'tickets'); ?></span></p>
                                 <?php } ?>
                             </div>
                         </div>

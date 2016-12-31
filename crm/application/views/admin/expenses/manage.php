@@ -2,7 +2,6 @@
 <div id="wrapper">
    <div class="content">
       <div class="row">
-         <?php include_once(APPPATH . 'views/admin/includes/alerts.php'); ?>
          <div class="col-md-12">
             <div class="panel_s">
                <div class="panel-body _buttons">
@@ -47,7 +46,7 @@
                      </div>
                   </div>
                </div>
-               <div class="col-md-7">
+               <div class="col-md-7 small-table-right-col">
                   <div id="expense" class="hide">
                   </div>
                </div>
@@ -102,7 +101,7 @@
            $.each($('._hidden_inputs._filters input'),function(){
                Expenses_ServerParams[$(this).attr('name')] = '[name="'+$(this).attr('name')+'"]';
            });
-           initDataTable('.table-expenses', window.location.href, 'undefined', 'undefined', Expenses_ServerParams, [4, 'DESC']).column(0).visible(false, false).columns.adjust();
+           initDataTable('.table-expenses', window.location.href, 'undefined', 'undefined', Expenses_ServerParams, [5, 'DESC']).column(0).visible(false, false).columns.adjust();
            init_expense();
 
           $('body').on('click','#expense_confirm_convert',function(){

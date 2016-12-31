@@ -3,7 +3,6 @@
   <?php echo form_hidden('project_id',$project->id) ?>
   <div class="content">
     <div class="row">
-      <?php include_once(APPPATH . 'views/admin/includes/alerts.php'); ?>
       <div class="col-md-12">
         <?php if($this->projects_model->timers_started_for_project($project->id) && (has_permission('projects','','create') || has_permission('projects','','edit')) && $project->status == 1){ ?>
         <div class="alert alert-warning">
@@ -29,10 +28,8 @@
                </h3>
              </div>
              <div class="col-md-4 text-right">
-              <?php
+            <?php
               $invoice_func = 'pre_invoice_project';
-
-
             ?>
             <?php if(has_permission('invoices','','create')){ ?>
             <a href="#" onclick="<?php echo $invoice_func; ?>(<?php echo $project->id; ?>); return false;" class="btn btn-info<?php if($project->client_data->active == 0){echo ' disabled';} ?>"><?php echo _l('invoice_project'); ?></a>
@@ -122,7 +119,7 @@ echo form_hidden('project_percent',$percent);
 <?php $this->load->view('admin/projects/_mark_tasks_finished'); ?>
 <?php init_tail(); ?>
 <?php $discussion_lang = get_project_discussions_language_array(); ?>
-<script src="<?php echo base_url('assets/js/projects.js'); ?>"></script>
+<?php echo app_script('assets/js','projects.js'); ?>
 <!-- For invoices table -->
 <script>
   taskid = '<?php echo $this->input->get('taskid'); ?>';

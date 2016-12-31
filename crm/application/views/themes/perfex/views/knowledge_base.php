@@ -1,16 +1,15 @@
 <div class="panel_s">
 	<div class="panel-body">
-		<h4 class="bold no-margin text-muted"><?php echo _l('clients_knowledge_base'); ?></h4>
+		<h4 class="no-margin"><?php echo _l('clients_knowledge_base'); ?></h4>
 	</div>
 </div>
 <div class="panel_s">
 	<div class="panel-body">
 		<?php $groups = get_all_knowledge_base_articles_grouped();
 		if(count($groups) == 0){ ?>
-		<h4><?php echo _l('clients_knowledge_base_articles_not_found'); ?></h4>
+		<p class="no-margin"><?php echo _l('clients_knowledge_base_articles_not_found'); ?></p>
 		<?php } ?>
 		<?php if(!$this->input->get('groupid')){ ?>
-
 		<?php foreach($groups as $group){ ?>
 		<div class="col-md-12">
 			<div class="article_group_wrapper">

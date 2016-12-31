@@ -8,13 +8,14 @@
     <div id="dropbox-chooser"></div>
 </div>
 <div class="attachments">
-    <div class="container-fluid">
+
         <div class="table-responsive mtop25">
-            <table class="table dt-table">
+            <table class="table dt-table" data-order-col="2" data-order-type="desc">
                 <thead>
                     <tr>
                         <th><?php echo _l('customer_attachments_file'); ?></th>
                         <th><?php echo _l('customer_attachments_show_in_customers_area'); ?></th>
+                        <th><?php echo _l('file_date_uploaded'); ?></th>
                         <th><?php echo _l('options'); ?></th>
                     </tr>
                 </thead>
@@ -52,10 +53,10 @@
                             ?>
                             <tr>
                                 <td>
-                                   <?php
-                                   $path = $upload_path . $_att[$key_indicator] . '/' . $_att['file_name'];
-                                   $is_image = false;
-                                   if(!isset($_att['external'])) {
+                                 <?php
+                                 $path = $upload_path . $_att[$key_indicator] . '/' . $_att['file_name'];
+                                 $is_image = false;
+                                 if(!isset($_att['external'])) {
                                     $attachment_url = $url . $_att[$download_indicator];
                                     $is_image = is_image($path);
                                     $img_url = site_url('download/preview_image?path='.$path.'&type='.$_att['filetype']);
@@ -75,24 +76,25 @@
                                 <a href="<?php if($is_image){ echo $img_url; } else {echo $attachment_url; } ?>"<?php if($is_image){ ?> data-lightbox="customer-profile" <?php } ?> class="display-block mbot5">
                                     <?php if($is_image){ ?>
                                     <div class="table-image">
-                                         <img src="<?php echo $img_url; ?>">
-                                    </div>
-                                    <?php } else { ?>
-                                    <i class="<?php echo get_mime_class($_att['filetype']); ?>"></i> <?php echo $_att['file_name']; ?>
-                                    <?php } ?>
+                                       <img src="<?php echo $img_url; ?>">
+                                   </div>
+                                   <?php } else { ?>
+                                   <i class="<?php echo get_mime_class($_att['filetype']); ?>"></i> <?php echo $_att['file_name']; ?>
+                                   <?php } ?>
 
-                                </a>
-                                <?php if($is_image){
-                                    echo '</div>';
-                                }
-                                ?>
-                            </td>
-                            <td>
+                               </a>
+                               <?php if($is_image){
+                                echo '</div>';
+                            }
+                            ?>
+                        </td>
+                        <td>
                             <div class="onoffswitch"<?php if($type != 'customer'){?> data-toggle="tooltip" data-title="<?php echo _l('customer_attachments_show_notice'); ?>" <?php } ?>>
-                            <input type="checkbox" <?php if($type != 'customer'){echo 'disabled';} ?> id="<?php echo $_att['id']; ?>" data-id="<?php echo $_att['id']; ?>" class="onoffswitch-checkbox" data-switch-url="<?php echo ADMIN_URL; ?>/misc/toggle_file_visibility" <?php if(isset($_att['visible_to_customer']) && $_att['visible_to_customer'] == 1){echo 'checked';} ?>>
+                                <input type="checkbox" <?php if($type != 'customer'){echo 'disabled';} ?> id="<?php echo $_att['id']; ?>" data-id="<?php echo $_att['id']; ?>" class="onoffswitch-checkbox" data-switch-url="<?php echo ADMIN_URL; ?>/misc/toggle_file_visibility" <?php if(isset($_att['visible_to_customer']) && $_att['visible_to_customer'] == 1){echo 'checked';} ?>>
                                 <label class="onoffswitch-label" for="<?php echo $_att['id']; ?>"></label>
                             </div>
                         </td>
+                        <td data-order="<?php echo $_att['dateadded']; ?>"><?php echo _dt($_att['dateadded']); ?></td>
                         <td>
                             <?php if(!isset($_att['external'])){ ?>
                             <button type="button" data-toggle="modal" data-file-name="<?php echo $_att['file_name']; ?>" data-filetype="<?php echo $_att['filetype']; ?>" data-path="<?php echo $path; ?>" data-target="#send_file" class="btn btn-info btn-icon"><i class="fa fa-envelope"></i></button>
@@ -107,7 +109,7 @@
                 </tbody>
             </table>
         </div>
-    </div>
+
 </div>
 <?php
 include_once(APPPATH . 'views/admin/clients/modals/send_file_modal.php');

@@ -15,7 +15,7 @@ class Payments extends Admin_controller
     /* List all invoice paments */
     public function list_payments($clientid = false)
     {
-        if (!has_permission('payments', '', 'view')) {
+        if (!has_permission('payments', '', 'view') && !has_permission('invoices', '', 'view_own')) {
             access_denied('payments');
         }
 
@@ -30,6 +30,10 @@ class Payments extends Admin_controller
     /* Update payment data */
     public function payment($id = '')
     {
+        if (!has_permission('payments', '', 'view') && !has_permission('invoices', '', 'view_own')) {
+            access_denied('payments');
+        }
+
         if (!$id) {
             redirect(admin_url('payments'));
         }
@@ -68,7 +72,7 @@ class Payments extends Admin_controller
      */
     public function pdf($id)
     {
-        if (!has_permission('payments', '', 'view')) {
+        if (!has_permission('payments', '', 'view') && !has_permission('invoices', '', 'view_own')) {
             access_denied('View Payment');
         }
         $payment = $this->payments_model->get($id);

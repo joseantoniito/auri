@@ -1,6 +1,6 @@
     <div class="panel_s">
       <div class="panel-body">
-        <h4 class="bold no-margin text-muted"><?php echo _l('proposals'); ?></h4>
+        <h4 class="no-margin"><?php echo _l('proposals'); ?></h4>
       </div>
     </div>
     <div class="panel_s">

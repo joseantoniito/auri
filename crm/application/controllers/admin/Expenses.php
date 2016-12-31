@@ -13,7 +13,7 @@ class Expenses extends Admin_controller
     }
     public function list_expenses($id = '', $clientid = '')
     {
-        if (!has_permission('expenses', '', 'view')) {
+        if (!has_permission('expenses', '', 'view') && !has_permission('expenses', '', 'view_own')) {
             access_denied('expenses');
         }
         if ($this->input->is_ajax_request()) {
@@ -34,9 +34,6 @@ class Expenses extends Admin_controller
     }
     public function expense($id = '')
     {
-        if (!has_permission('expenses', '', 'view')) {
-            access_denied('expenses');
-        }
         if ($this->input->post()) {
             if ($id == '') {
                 if (!has_permission('expenses', '', 'create')) {
@@ -82,6 +79,11 @@ class Expenses extends Admin_controller
             $title = _l('add_new', _l('expense_lowercase'));
         } else {
             $data['expense'] = $this->expenses_model->get($id);
+
+            if(!$data['expense'] || (!has_permission('expenses','','view') && $data['expense']->addedfrom != get_staff_user_id())){
+                blank_page(_l('expense_not_found'));
+            }
+
             $title           = _l('edit', _l('expense_lowercase'));
         }
 
@@ -96,20 +98,39 @@ class Expenses extends Admin_controller
         $this->load->model('currencies_model');
         $this->load->model('projects_model');
 
-        $where_clients = 'active=1';
+        $where_clients = 'tblclients.active=1';
 
         if(!has_permission('customers','','view')) {
-            $where_clients .= ' AND userid IN (SELECT customer_id FROM tblcustomeradmins WHERE staff_id='.get_staff_user_id().')';
+            $where_clients .= ' AND tblclients.userid IN (SELECT customer_id FROM tblcustomeradmins WHERE staff_id='.get_staff_user_id().')';
         }
 
         $data['customers']    = $this->clients_model->get('',$where_clients);
-        if($id != ''){
+        if($id != '' && $data['expense']->clientid != 0){
             if(total_rows('tblclients',array('active'=>0,'userid'=>$data['expense']->clientid)) > 0
                 || (total_rows('tblcustomeradmins',array('staff_id'=>get_staff_user_id(),'customer_id'=>$data['expense']->clientid)) == 0 && !has_permission('customers','','view'))){
                 $data['customers'][] = $this->clients_model->get($data['expense']->clientid,array(),'row_array');
             }
         }
 
+
+        $data['projects'] = array();
+        if(isset($data['expense']) && $data['expense']->clientid != 0 || isset($data['customer_id'])){
+            $where = '';
+            $where_customer_id = (isset($data['customer_id']) ? $data['customer_id'] : $data['expense']->clientid);
+            $where .= 'clientid='.$where_customer_id;
+            if(!has_permission('projects','','view')){
+                  $where.= ' AND id IN(SELECT project_id from tblprojectmembers WHERE staff_id='.get_staff_user_id().')';
+            }
+
+            $data['projects'] = $this->projects_model->get('', $where);
+
+            if($id != '' && $data['expense']->project_id != 0){
+                if(total_rows('tblprojectmembers',array('staff_id'=>get_staff_user_id(),'project_id'=>$data['expense']->project_id)) == 0 && !has_permission('projects','','view')){
+                    $this->db->where('id',$data['expense']->project_id);
+                    $data['projects'][] = $this->db->get('tblprojects')->row_array();
+                }
+            }
+        }
 
         $data['taxes']         = $this->taxes_model->get();
         $data['categories']    = $this->expenses_model->get_category();
@@ -119,9 +140,6 @@ class Expenses extends Admin_controller
         $this->load->view('admin/expenses/expense', $data);
     }
     function get_expenses_total(){
-        if (!has_permission('expenses', '', 'view')) {
-            access_denied('expenses');
-        }
         if ($this->input->post()) {
             $data['totals'] = $this->expenses_model->get_expenses_total($this->input->post());
             if($data['totals']['currency_switcher']== true){
@@ -200,11 +218,17 @@ class Expenses extends Admin_controller
     }
     public function get_expense_data_ajax($id)
     {
-        if (!has_permission('expenses', '', 'view')) {
+        if (!has_permission('expenses', '', 'view') && !has_permission('expenses','','view_own')) {
             echo _l('access_denied');
             die;
         }
         $expense               = $this->expenses_model->get($id);
+
+         if(!$expense || (!has_permission('expenses','','view') && $expense->addedfrom != get_staff_user_id())){
+                echo _l('expense_not_found');
+                die;
+            }
+
         $data['expense']       = $expense;
         if ($expense->billable == 1) {
             if ($expense->invoiceid !== NULL) {
@@ -212,16 +236,28 @@ class Expenses extends Admin_controller
                 $data['invoice'] = $this->invoices_model->get($expense->invoiceid);
             }
         }
+
+        $data['child_expenses'] = $this->expenses_model->get_child_expenses($id);
         $this->load->model('staff_model');
         $data['members'] = $this->staff_model->get('',1);
         $this->load->view('admin/expenses/expense_preview_template', $data);
     }
     public function get_customer_change_data($customer_id = ''){
         $this->load->model('projects_model');
-        $where = array();
+
+        $where = '';
         if($customer_id != ''){
-            $where['clientid'] = $customer_id;
+            $where = 'clientid='.$customer_id;
         }
+
+        if(!has_permission('projects','','view') && $customer_id != ''){
+            $where.= ' AND id IN(SELECT project_id from tblprojectmembers WHERE staff_id='.get_staff_user_id().')';
+        }
+
+        if($where == ''){
+            $where = array();
+        }
+
         echo json_encode(array('projects'=>$this->projects_model->get('', $where),'client_currency'=>$this->clients_model->get_customer_default_currency($customer_id)));
     }
     public function categories()
@@ -277,12 +313,6 @@ class Expenses extends Admin_controller
     }
     public function add_expense_attachment($id)
     {
-        if (!has_permission('expenses', '', 'edit') || !has_permission('expenses', '', 'create')) {
-            // access_denied
-            header('HTTP/1.0 400 Bad error');
-            echo _l('access_denied');
-            die;
-        }
         handle_expense_attachments($id);
         echo json_encode(array(
             'url' => admin_url('expenses/list_expenses/' . $id)
@@ -290,19 +320,25 @@ class Expenses extends Admin_controller
     }
     public function delete_expense_attachment($id, $preview = '')
     {
-        if (!has_permission('expenses', '', 'delete')) {
-            access_denied('expenses');
-        }
-        $success = $this->expenses_model->delete_expense_attachment($id);
-        if ($success) {
-            set_alert('success', _l('deleted', _l('expense_receipt')));
+        $this->db->where('rel_id', $id);
+        $this->db->where('rel_type', 'expense');
+        $file = $this->db->get('tblfiles')->row();
+
+        if($file->staffid == get_staff_user_id() || is_admin()){
+
+            $success = $this->expenses_model->delete_expense_attachment($id);
+            if ($success) {
+                set_alert('success', _l('deleted', _l('expense_receipt')));
+            } else {
+                set_alert('warning', _l('problem_deleting', _l('expense_receipt_lowercase')));
+            }
+            if ($preview == '') {
+                redirect(admin_url('expenses/expense/' . $id));
+            } else {
+                redirect(admin_url('expenses/list_expenses/' . $id));
+            }
         } else {
-            set_alert('warning', _l('problem_deleting', _l('expense_receipt_lowercase')));
-        }
-        if ($preview == '') {
-            redirect(admin_url('expenses/expense/' . $id));
-        } else {
-            redirect(admin_url('expenses/list_expenses/' . $id));
-        }
-    }
+           access_denied('expenses');
+       }
+   }
 }

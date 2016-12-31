@@ -8,11 +8,11 @@
   <title>
     <?php echo get_option('companyname'); ?> - Authentication
   </title>
-  <link href="<?php echo base_url(); ?>assets/css/reset.css" rel="stylesheet">
+  <?php echo app_stylesheet('assets/css','reset.css'); ?>
   <!-- Bootstrap -->
   <link href="<?php echo base_url('assets/plugins/bootstrap/css/bootstrap.min.css'); ?>" rel="stylesheet">
-  <link href='<?php echo base_url('assets/plugins/open-sans-fontface/open-sans.css'); ?>' rel='stylesheet' type='text/css'>
-  <link href="<?php echo base_url(); ?>assets/css/authentication.css" rel="stylesheet">
+  <link href='<?php echo base_url('assets/plugins/roboto/roboto.css'); ?>' rel='stylesheet'>
+  <?php echo app_stylesheet('assets/css','authentication.css'); ?>
   <?php if(get_option('recaptcha_secret_key') != '' && get_option('recaptcha_site_key') != '' && is_connected('google.com')){ ?>
        <script src='https://www.google.com/recaptcha/api.js'></script>
   <?php } ?>

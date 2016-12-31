@@ -9,7 +9,6 @@ $(function(){
     });
 
     $('.survey-customer-groups input').on('change',function(){
-        console.log('test')
         if($('.survey-customer-groups input:checked').length > 0){
             $('#ml_customers_all').prop('checked',false);
         }
@@ -87,6 +86,9 @@ function add_survey_question(type, surveyid) {
         question_area += '</li>';
         $('#survey_questions').append(question_area);
         $("#survey_questions").sortable('refresh');
+        $('html,body').animate({
+                scrollTop: $("#survey_questions li:last-child").offset().top},
+                'slow');
         update_questions_order();
     });
 }

@@ -120,7 +120,7 @@
          _table_api.column(4).visible(false, false).columns.adjust();
      }
      initDataTable('.table-reminders', admin_url + 'misc/get_reminders/' + customer_id + '/' + 'customer', [4], [4]);
-     _table_api = initDataTable('.table-expenses-single-client', admin_url + 'expenses/list_expenses/false/' + customer_id, 'undefined', 'undefined', 'undefined', [4, 'DESC']);
+     _table_api = initDataTable('.table-expenses-single-client', admin_url + 'expenses/list_expenses/false/' + customer_id, 'undefined', 'undefined', 'undefined', [5, 'DESC']);
 
      if (_table_api) {
          _table_api.column(0).visible(false, false).columns.adjust();
@@ -137,13 +137,16 @@
          _table_api.column(0).visible(false, false).columns.adjust();
          _table_api.column(2).visible(false, false).columns.adjust();
      }
-     _validate_form($('.client-form'), {
-         company: 'required',
-     });
 
      // Save button not hidden if passed from url ?tab= we need to re-click again
      if (tab_active) {
          $('body').find('.nav-tabs [href="#' + tab_active + '"]').click();
+     }
+
+     if(company_is_required == 1){
+         _validate_form($('.client-form'), {
+             company: 'required',
+         });
      }
 
      $('.billing-same-as-customer').on('click', function(e) {

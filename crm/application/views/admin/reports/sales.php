@@ -2,13 +2,11 @@
 <div id="wrapper">
    <div class="content">
       <div class="row">
-         <?php include_once(APPPATH . 'views/admin/includes/alerts.php'); ?>
          <div class="col-md-12">
             <div class="panel_s">
-               <div class="panel-heading">
-                  <?php echo _l('sales_report_heading'); ?>
-               </div>
                <div class="panel-body">
+               <h4 class="bold no-margin font-medium"><?php echo _l('sales_report_heading'); ?></h4>
+               <hr />
                   <div class="row">
                      <div class="col-md-4 border-right">
                         <p><a href="#" class="font-medium" onclick="init_report(this,'total-income'); return false;"><i class="fa fa-angle-double-right" aria-hidden="true"></i> <?php echo _l('report_sales_type_income'); ?></a></p>
@@ -93,8 +91,12 @@
                   <?php echo _l('reports_sales_generated_report'); ?>
                </div>
                <div class="panel-body">
-                  <canvas id="chart" class="animated fadeIn" height="100"></canvas>
-                  <canvas id="chart-payment-modes" class="animated fadeIn" height="100"></canvas>
+                   <div class="relative chart-income" style="max-height:400px;">
+                        <canvas id="chart-income" class="animated fadeIn" height="400"></canvas>
+                  </div>
+                  <div class="relative chart-payment-modes" style="max-height:400px;">
+                  <canvas id="chart-payment-modes" class="animated fadeIn" height="400"></canvas>
+                  </div>
                   <div id="customers-report" class="hide">
                      <?php render_datatable(array(
                         _l('reports_sales_dt_customers_client'),
@@ -103,7 +105,9 @@
                         _l('reports_sales_dt_items_customers_amount_with_tax'),
                         ),'customers-report'); ?>
                   </div>
-                  <canvas id="customers-group-gen" class="animated fadeIn" height="100"></canvas>
+                  <div class="relative customers-group-gen" style="max-height:400px;">
+                        <canvas id="customers-group-gen" class="animated fadeIn" height="400"></canvas>
+                  </div>
                   <div id="invoices-report" class="hide">
                      <div class="row">
                         <div class="col-md-4">

@@ -1,4 +1,4 @@
-<?php echo form_hidden('customers_settings','true'); ?>
+<?php echo form_hidden('settings[customer_settings]','true'); ?>
 <div class="form-group">
 	<label for="clients_default_theme" class="control-label"><?php echo _l('settings_clients_default_theme'); ?></label>
 	<select name="settings[clients_default_theme]" id="clients_default_theme" class="form-control selectpicker" data-none-selected-text="<?php echo _l('dropdown_non_selected_tex'); ?>">
@@ -10,7 +10,13 @@
 <hr />
 <?php echo render_select( 'settings[customer_default_country]',get_all_countries(),array( 'country_id',array( 'short_name')), 'customer_default_country',get_option('customer_default_country')); ?>
 <hr />
+<?php render_yes_no_option('company_is_required','company_is_required'); ?>
+<hr />
+<?php render_yes_no_option('company_requires_vat_number_field','company_requires_vat_number_field'); ?>
+<hr />
 <?php render_yes_no_option('allow_registration','settings_clients_allow_registration'); ?>
+<hr />
+<?php render_yes_no_option('allow_contact_to_delete_files','allow_contact_to_delete_files'); ?>
 <hr />
 <i class="fa fa-question-circle" data-toggle="tooltip" data-title="<?php echo _l('settings_general_use_knowledgebase_tooltip'); ?>"></i>
 <?php render_yes_no_option('use_knowledge_base','settings_general_use_knowledgebase'); ?>

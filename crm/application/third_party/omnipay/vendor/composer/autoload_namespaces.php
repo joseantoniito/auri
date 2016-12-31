@@ -9,4 +9,5 @@ return array(
     'Omnipay\\Common\\' => array($vendorDir . '/omnipay/common/src'),
     'Guzzle\\Tests' => array($vendorDir . '/guzzle/guzzle/tests'),
     'Guzzle' => array($vendorDir . '/guzzle/guzzle/src'),
+    'Braintree' => array($vendorDir . '/braintree/braintree_php/lib'),
 );

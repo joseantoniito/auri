@@ -26,6 +26,9 @@ $company_info .= get_option('invoice_company_postal_code') . ' ';
 if(get_option('invoice_company_phonenumber') != ''){
     $company_info .= '<br />'.get_option('invoice_company_phonenumber');
 }
+if(get_option('company_vat') != ''){
+    $company_info .= '<br />'.get_option('company_vat');
+}
 // check for company custom fields
 $custom_company_fields = get_company_custom_fields();
 if (count($custom_company_fields) > 0) {

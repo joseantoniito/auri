@@ -1,10 +1,11 @@
 <div class="panel_s">
     <div class="panel-body">
-        <h4 class="bold no-margin"><?php echo _l('announcements'); ?></h4>
+        <h4 class="no-margin"><?php echo _l('announcements'); ?></h4>
     </div>
 </div>
 <div class="panel_s">
     <div class="panel-body">
+        <?php if(count($announcements) > 0){ ?>
         <div class="table-responsive">
             <table class="table dt-table" data-order-col="2" data-order-type="desc">
                 <thead>
@@ -23,5 +24,8 @@
                 </tbody>
             </table>
         </div>
+        <?php } else { ?>
+        <p class="no-margin"><?php echo _l('no_announcements'); ?></p>
+        <?php } ?>
     </div>
 </div>

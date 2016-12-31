@@ -105,6 +105,8 @@ class Custom_fields_model extends CRM_Model
      */
     public function update($data, $id)
     {
+        $original_field = $this->get($id);
+
         if (isset($data['disabled'])) {
             $data['active'] = 0;
             unset($data['disabled']);
@@ -112,7 +114,7 @@ class Custom_fields_model extends CRM_Model
             $data['active'] = 1;
         }
 
-         if (isset($data['disalow_client_to_edit'])) {
+        if (isset($data['disalow_client_to_edit'])) {
             $data['disalow_client_to_edit'] = 1;
         } else {
             $data['disalow_client_to_edit'] = 0;
@@ -168,6 +170,30 @@ class Custom_fields_model extends CRM_Model
         $this->db->update('tblcustomfields', $data);
         if ($this->db->affected_rows() > 0) {
             logActivity('Custom Field Updated [' . $data['name'] . ']');
+
+            if($data['type'] == 'checkbox' || $data['type'] == 'select'){
+                if(trim($data['options']) != trim($original_field->options)) {
+                    $options_now = explode(',',$data['options']);
+                    foreach($options_now as $key=>$val){
+                        $options_now[$key] = trim($val);
+                    }
+                    $options_before = explode(',',$original_field->options);
+                    foreach($options_before as $key=>$val){
+                        $options_before[$key] = trim($val);
+                    }
+                    $removed_options_in_use = array();
+                    foreach($options_before as $option){
+                        if(!in_array($option, $options_now) && total_rows('tblcustomfieldsvalues',array('fieldid'=>$id,'value'=>$option))){
+                            array_push($removed_options_in_use,$option);
+                        }
+                    }
+                    if(count($removed_options_in_use) > 0){
+                        $this->db->where('id',$id);
+                        $this->db->update('tblcustomfields',array('options'=>implode(',',$options_now).','.implode(',',$removed_options_in_use)));
+                        return array('cant_change_option_custom_field'=>true);
+                    }
+                }
+            }
             return true;
         }
         return false;

@@ -28,7 +28,7 @@
 		<?php echo render_input('settings[smtp_host]','settings_email_host',get_option('smtp_host')); ?>
 		<?php echo render_input('settings[smtp_port]','settings_email_port',get_option('smtp_port')); ?>
 		<?php echo render_input('settings[smtp_email]','settings_email',get_option('smtp_email')); ?>
-		 <i class="fa fa-question-circle" data-toggle="tooltip" data-title="<?php echo _l('smtp_username_help'); ?>"></i>
+		<i class="fa fa-question-circle" data-toggle="tooltip" data-title="<?php echo _l('smtp_username_help'); ?>"></i>
 		<?php echo render_input('settings[smtp_username]','smtp_username',get_option('smtp_username')); ?>
 		<?php
 		$ps = get_option('smtp_password');
@@ -50,7 +50,7 @@
 			<div class="input-group">
 				<input type="email" class="form-control" name="test_email" data-ays-ignore="true" placeholder="<?php echo _l('settings_send_test_email_string'); ?>">
 				<div class="input-group-btn">
-					<button type="button" class="btn btn-default test_email">Test</button>
+					<button type="button" class="btn btn-default test_email p7">Test</button>
 				</div>
 			</div>
 		</div>

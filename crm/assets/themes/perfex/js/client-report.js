@@ -28,7 +28,7 @@
 			salesChart = new Chart(chart,{
 				type:'line',
 				data:response,
-				options:{responsive:true}
+				options:{responsive:true,maintainAspectRatio:false}
 			});
 		});
 	}

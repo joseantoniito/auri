@@ -180,7 +180,7 @@ $(function() {
                     data += '<div class="display-block" data-attachment-id="' + response.attachment_id + '">';
                     data += '<div class="col-md-10">';
                     data += '<div class="pull-left"><i class="attachment-icon-preview fa fa-file-o"></i></div>'
-                    data += '<a href="' + site_url + dl_url + response.key + '">' + response.file_name + '</a>';
+                    data += '<a href="' + site_url + dl_url + response.key + '" target="_blank">' + response.file_name + '</a>';
                     data += '<p class="text-muted">' + response.filetype + '</p>';
                     data += '</div>';
                     data += '<div class="col-md-2 text-right">';
@@ -210,7 +210,7 @@ $(function() {
     $('body').on('show.bs.modal', '#sales_item_modal', function(event) {
         // Set validation for invoice item form
         _validate_form($('#invoice_item_form'), {
-            name: 'required',
+            description: 'required',
             rate: {
                 required: true,
             }
@@ -220,216 +220,26 @@ $(function() {
         var id = button.data('id');
         $('#sales_item_modal input').val('');
         $('#sales_item_modal textarea').val('');
+        $('#sales_item_modal #group_id').selectpicker('val','');
         $('select[name="tax"]').selectpicker('deselectAll');
         $('#sales_item_modal .add-title').removeClass('hide');
         $('#sales_item_modal .edit-title').addClass('hide');
+
         // If id found get the text from the datatable
         if (typeof(id) !== 'undefined') {
             $('.affect-warning').removeClass('hide');
             $('input[name="itemid"]').val(id);
-            var description = $(button).parents('tr').find('td').eq(0).text();
-            var long_description = $(button).parents('tr').find('td').eq(1).text();
-            var rate = $(button).parents('tr').find('td').eq(2).text();
-            var taxid = $(button).parents('tr').find('td').eq(3).find('span').data('taxid');
-            var address = $(button).parents('tr').find('td').eq(4).text();
             $('#sales_item_modal .add-title').addClass('hide');
             $('#sales_item_modal .edit-title').removeClass('hide');
-            $('#sales_item_modal input[name="description"]').val(description);
-            $('#sales_item_modal input[name="rate"]').val(rate);
-            $('#sales_item_modal textarea').val(long_description);
-            $('select[name="tax"]').selectpicker('val', taxid);
-            $('#sales_item_modal input[name="address"]').val(address);
-            
-            //#kendo
-            create_grid_unities(id);
+            $('#sales_item_modal input[name="description"]').val($(button).parents('tr').find('td').eq(0).text());
+            $('#sales_item_modal input[name="rate"]').val($(button).parents('tr').find('td').eq(2).text());
+            $('#sales_item_modal input[name="unit"]').val($(button).parents('tr').find('td').eq(4).text());
+            $('#sales_item_modal textarea').val($(button).parents('tr').find('td').eq(1).text());
+            $('#sales_item_modal #group_id').selectpicker('val',button.attr('data-group-id'));
+            $('select[name="tax"]').selectpicker('val', $(button).parents('tr').find('td').eq(3).find('span').data('taxid'));
         }
     });
 
-
-    var window_unity; 
-    var grid_unities;
-    $(document).ready(function() {
-        //#kendo
-         
-        console.log( "ready!" );
-        if(window.location.href.indexOf("/admin/invoice_items/invoice_items") != -1){
-            
-        }
-        else if(window.location.href.indexOf("/admin/invoice_items/item") != -1){
-            var id = $("[name='item_id']").val()
-            if(id)
-                create_grid_unities(id);
-            
-            window_unity = 
-                $("#window_unity").kendoWindow({
-                    width: "600px",
-                    title: "Manage Unity",
-                    visible: false,
-                }).data("kendoWindow");
-
-            $("#btn_add_unity").on("click", function(sender){
-                 
-                window_unity.center().open();
-            });
-
-            _validate_form($('#unity_form'), {
-                address: 'required'
-            }, manage_unity);
-            
-            _validate_form($('#invoice_item_form_1'), {
-                precio: 'required'
-            }, manage_invoice_item);
-        }
-        
-    });
-    
-    function create_grid_unities(id){
-        var itemid = 1;
-        $.get(admin_url + 'invoice_items/get_unities/' + id, function(response) {
-            console.log(response);
-             
-
-            grid_unities = 
-                $("#grid_unities").kendoGrid({
-                    dataSource: response,
-                    columns: [
-                        {field: "status", title: "Status"},                            
-                        {field: "m2_habitables", title: "m2 Habitables"},
-                        {field: "recamaras", title: "Recámaras"},
-                        {field: "banios", title: "Baños"},
-                        {field: "precio", title: "Precio"},
-                        {field:"id", title:"Acciones", width:"100px", 
-                        template: "<a id='btn_edit_unity' _id='#:id#' class='qodef-icon-shortcode normal qodef-icon-little'><i class='qodef-icon-font-awesome fa fa-pencil-square qodef-icon-element'></i></a> <a id='btn_delete_unity' _id='#:id#' class='qodef-icon-shortcode normal qodef-icon-little' style='cursor:pointer;'> <i class='qodef-icon-font-awesome fa fa-trash qodef-icon-element'></i> </a>"}
-                    ],
-                    dataBound: function(e) {
-                        console.log("dataBound");
-                         
-                        $.each(e.sender.items(), function(index, item){
-                            $(item).find("#btn_edit_unity")
-                                .on("click", edit_unity);
-                            $(item).find("#btn_delete_unity")
-                                .on("click", delete_unity);
-                        });
-                    }
-                }).data("kendoGrid");
-
-        }, 'json');
-    }
-    
-    function manage_invoice_item(form){
-        //#kendo todo
-         
-        var data = $(form).serialize();
-        data += "&tax=''";
-        var url = form.action;
-        $.post(url, data).done(function(response) {
-            response = JSON.parse(response);
-            if (response.success == true) {
-                if ($('body').find('.ei-template').length > 0) {
-                    $('#item_select').find('option').eq(0).after('<option data-subtext="' + response.item.long_description + '" value="' + response.item.itemid + '">' + response.item.description + '</option>');
-                    $('body').find('#item_select').selectpicker('refresh');
-                    add_item_to_preview(response.item.itemid);
-                } else {
-                    // Is general items view
-                    //$('.table-invoice-items').DataTable().ajax.reload();
-                }
-                alert_float('success', response.message);
-            }
-            //$('#sales_item_modal').modal('hide');
-        }).fail(function(data) {
-            alert_float('danger', data.responseText);
-        });
-        return false;
-    }
-    
-    function edit_unity(event){
-         
-        var id = $(event.currentTarget).attr("_id");
-
-        $.get(admin_url + 'invoice_items/get_unity/' + id, function(response) {
-            console.log(response);
-            
-            //todo
-            $("[name='unity_id']").val(id);
-            $("#status").val(response.status);
-            $("#m2_habitables").val(response.m2_habitables);
-            $("#recamaras").val(response.recamaras);
-            $("#banios").val(response.banios);
-            $("#precio").val(response.precio);
-            
-             
-        }, 'json');
-
-        window_unity.center().open();
-    }
-    
-    function delete_unity(event){
-        //todo
-         
-        var id = $(event.currentTarget).attr("_id");
-
-        $.get(admin_url + 'invoice_items/delete_unity/' + id, function(response) {
-            console.log(response);
-            
-            
-             
-        }, 'json');
-    }
-    
-    function manage_unity(form) {
-        //#kendo
-         
-        var data = $(form).serialize();
-        data = data.replace("item_id", "id_item");
-        data = data.replace("unity_id", "id");
-        var url = form.action;
-        $.post(url, data).done(function(response) {
-            response = JSON.parse(response);
-            if (response.success == true) {
-                 
-                refresh_grid_unities(response);
-                
-                alert_float('success', response.message);
-                
-                /*if ($('body').find('.ei-template').length > 0) {
-                    $('#item_select').find('option').eq(0).after('<option data-subtext="' + response.item.long_description + '" value="' + response.item.itemid + '">' + response.item.description + '</option>');
-                    $('body').find('#item_select').selectpicker('refresh');
-                    add_item_to_preview(response.item.itemid);
-                } else {
-                    // Is general items view
-                    $('.table-invoice-items').DataTable().ajax.reload();
-                }
-                alert_float('success', response.message);*/
-            }
-            $('#sales_item_modal').modal('hide');
-        }).fail(function(data) {
-            alert_float('danger', data.responseText);
-        });
-        return false;
-    }
-    
-    function refresh_grid_unities(response){
-        debugger;
-        console.log(grid_unities);
-        
-        var data = grid_unities.dataSource.data();
-        var indexItem;
-        var itemInGrid = $.grep(data, function(item, index){ 
-            var ok = item.id == response.item.id;
-            if(ok) indexItem = index;
-            return ok;
-        });
-        
-        if(!indexItem){
-            data.push(response.item);
-        }
-        else{
-            data.splice(indexItem, 1, response.item);
-        }
-        grid_unities.dataSource.data(data);
-        window_unity.close();
-    }
-    
     $('body').on('hidden.bs.modal', '#sales_item_modal', function(event) {
         $('#item_select').selectpicker('val', '');
     });
@@ -493,7 +303,6 @@ $(function() {
     });
     // In case user enter discount percent but there is no discount type set
     $('body').on('change', 'input[name="discount_percent"]', function() {
-        console.log($(this).val())
         if ($('select[name="discount_type"]').val() == '' && $(this).val() != 0) {
             alert('Select discount type');
             $(this).val(0);
@@ -585,7 +394,7 @@ $(function() {
             init_billing_and_shipping_details();
 
             var client_currency = response['client_currency'];
-            var s_currency = $('body').find('.ei-template select[name="currency"]');
+            var s_currency = $('body').find('.accounting-template select[name="currency"]');
             client_currency = parseInt(client_currency);
 
             if (client_currency != 0) {
@@ -861,7 +670,6 @@ function record_payment(id) {
 }
 // Add item to preview
 function add_item_to_preview(itemid) {
-     
     $.get(admin_url + 'invoice_items/get_item_by_id/' + itemid, function(response) {
         if (!response.taxname) {
             response.taxname = '';
@@ -872,9 +680,10 @@ function add_item_to_preview(itemid) {
         if (response.taxname && response.taxrate) {
             $('.main select.tax').selectpicker('val', response.taxname + '|' + response.taxrate);
         }
+        if(response.unit){
+            $('th.qty').attr('unit',response.unit);
+        }
         $('input[name="rate"]').val(response.rate);
-        $('textarea[name="address"]').val(response.address);
-
     }, 'json');
 }
 // Add task to preview
@@ -885,7 +694,6 @@ function add_task_to_preview_as_item(task_id) {
         $('textarea[name="long_description"]').val(response.description);
         $('input[name="quantity"]').val(response.total_hours);
         $('input[name="rate"]').val(response.hourly_rate);
-        $('textarea[name="address"]').val(response.address);
         $('input[name="task_id"]').val(task_id);
     }, 'json');
 }
@@ -901,6 +709,7 @@ function clear_main_values(default_taxes) {
     $('input[name="item-search"]').val('');
     $('.item-search .dropdown-menu').html('');
     $('input[name="task_id"]').val('');
+    $('th.qty').removeAttr('unit');
 }
 
 // Append the added items to the preview to the table as items
@@ -910,6 +719,7 @@ function add_item_to_table(data, itemid, merge_invoice, bill_expense) {
         data = get_main_values();
     }
     var table_row = '';
+    var unit_placeholder = '';
     var item_key = $('body').find('tbody .item').length + 1;
     table_row += '<tr class="sortable item" data-merge-invoice="' + merge_invoice + '" data-bill-expense="' + bill_expense + '">';
     table_row += '<td class="dragger">';
@@ -932,7 +742,16 @@ function add_item_to_table(data, itemid, merge_invoice, bill_expense) {
         table_row += '</td>';
         table_row += '<td class="bold description"><textarea name="newitems[' + item_key + '][description]" class="form-control" rows="5">' + data.description + '</textarea></td>';
         table_row += '<td><textarea name="newitems[' + item_key + '][long_description]" class="form-control item_long_description" rows="5">' + data.long_description.replace(regex, "\n") + '</textarea></td>';
-        table_row += '<td><input type="number" min="0" onblur="calculate_total();" onchange="calculate_total();" data-quantity name="newitems[' + item_key + '][qty]" value="' + data.qty + '" class="form-control"></td>';
+        table_row += '<td><input type="number" min="0" onblur="calculate_total();" onchange="calculate_total();" data-quantity name="newitems[' + item_key + '][qty]" value="' + data.qty + '" class="form-control">';
+
+            unit_placeholder = '';
+            if(!data.unit || typeof(data.unit) == 'undefined'){
+                unit_placeholder = lang_unit;
+                data.unit = '';
+            }
+            table_row += '<input type="text" placeholder="'+unit_placeholder+'" name="newitems['+item_key+'][unit]" class="form-control input-transparent text-right" value="'+data.unit+'">';
+
+        table_row += '</td>';
         table_row += '<td class="rate"><input type="text" data-toggle="tooltip" title="' + item_field_not_formated + '" onblur="calculate_total();" onchange="calculate_total();" name="newitems[' + item_key + '][rate]" value="' + data.rate + '" class="form-control"></td>';
         table_row += '<td class="taxrate">' + tax_dropdown + '</td>';
         table_row += '<td class="amount">' + amount + '</td>';
@@ -1060,6 +879,7 @@ function get_main_values() {
     response.qty = $('input[name="quantity"]').val();
     response.taxname = $('.main select.tax').selectpicker('val');
     response.rate = $('input[name="rate"]').val();
+    response.unit = $('th.qty').attr('unit');
     return response;
 }
 // Calculate invoice total - NOT RECOMENDING EDIT THIS FUNCTION BECUASE IS VERY SENSITIVE
@@ -1181,7 +1001,7 @@ function format_money(total) {
 // Set the currency symbol for accounting
 function init_currency_symbol() {
     if (typeof(accounting) != 'undefined') {
-        accounting.settings.currency.symbol = $('body').find('.ei-template select[name="currency"]').find('option:selected').data('subtext');
+        accounting.settings.currency.symbol = $('body').find('.accounting-template select[name="currency"]').find('option:selected').data('subtext');
         calculate_total();
     }
 }
@@ -1471,7 +1291,10 @@ function validate_estimate_form(selector) {
                 },
                 original_number: function() {
                     return $('input[name="number"]').data('original-number');
-                }
+                },
+                 date: function() {
+                    return $('input[name="date"]').val();
+                },
             }
         },
         messages: {
@@ -1622,16 +1445,26 @@ function small_table_full_view() {
 }
 
 function manage_invoice_items(form) {
-    //#kendo - repetido, probablemente obsoleto
-     
     var data = $(form).serialize();
     var url = form.action;
     $.post(url, data).done(function(response) {
         response = JSON.parse(response);
         if (response.success == true) {
-            if ($('body').find('.ei-template').length > 0) {
-                $('#item_select').find('option').eq(0).after('<option data-subtext="' + response.item.long_description + '" value="' + response.item.itemid + '">' + response.item.description + '</option>');
-                $('body').find('#item_select').selectpicker('refresh');
+            var item_select = $('#item_select');
+            if ($('body').find('.accounting-template').length > 0) {
+                var group = item_select.find('[data-group-id="'+response.item.group_id+'"]');
+                var _option = '<option data-subtext="' + response.item.long_description + '" value="' + response.item.itemid + '">('+accounting.formatNumber(response.item.rate)+') ' + response.item.description + '</option>';
+                if(group.length == 0){
+                    _option = '<optgroup label="'+(response.item.group_name == null ? '' : response.item.group_name)+'" data-group-id="'+response.item.group_id+'">'+_option+'</optgroup>';
+                    if(item_select.find('[data-group-id="0"]').length == 0){
+                        item_select.find('option:first-child').after(_option);
+                    } else {
+                        item_select.find('[data-group-id="0"]').after(_option);
+                    }
+                } else {
+                    group.prepend(_option);
+                }
+                item_select.selectpicker('refresh');
                 add_item_to_preview(response.item.itemid);
             } else {
                 // Is general items view

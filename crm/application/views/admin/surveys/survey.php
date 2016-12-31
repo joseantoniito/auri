@@ -2,16 +2,17 @@
 <div id="wrapper">
     <div class="content">
         <div class="row">
-            <?php include_once(APPPATH . 'views/admin/includes/alerts.php'); ?>
             <div class="col-md-5" id="survey-add-edit-wrapper">
                 <div class="row">
                     <div class="col-md-12">
                         <div class="panel_s">
-                            <div class="panel-heading">
-                                <?php echo $title; ?>
-                            </div>
+
                             <?php echo form_open($this->uri->uri_string(),array('id'=>'survey_form')); ?>
                             <div class="panel-body">
+                            <h4 class="bold no-margin font-medium">
+                            <?php echo $title; ?>
+                            </h4>
+                            <hr />
                                 <?php $value = (isset($survey) ? $survey->subject : ''); ?>
                                 <?php $attrs = (isset($survey) ? array() : array('autofocus'=>true)); ?>
                                 <?php echo render_input('subject','survey_add_edit_subject',$value,'text',$attrs); ?>
@@ -71,10 +72,11 @@
                     <?php if(isset($survey)){ ?>
                     <div class="col-md-12">
                         <div class="panel_s">
-                            <div class="panel-heading">
-                                <?php echo _l('send_survey_string'); ?>
-                            </div>
                             <div class="panel-body">
+                             <h4 class="bold no-margin font-medium">
+                             <?php echo _l('send_survey_string'); ?>
+                             </h4>
+                             <hr />
                                 <?php echo form_open('admin/surveys/send/'.$survey->surveyid); ?>
                                 <div class="row">
                                     <div class="col-md-8">
@@ -170,10 +172,11 @@
        </div>
        <div class="col-md-7" id="survey_questions_wrapper">
         <div class="panel_s">
-            <div class="panel-heading">
-                <?php echo _l('survey_questions_string'); ?>
-            </div>
             <div class="panel-body">
+            <h4 class="bold no-margin font-medium">
+             <?php echo _l('survey_questions_string'); ?>
+            </h4>
+            <hr />
                 <?php if(isset($survey)){ ?>
                 <a href="#" onclick="survey_toggle_full_view(); return false;" data-toggle="tooltip" data-title="<?php echo _l('toggle_full_view'); ?>" class="toggle_view pull-left mtop10">
                     <i class="fa fa-expand"></i></a>
@@ -224,8 +227,8 @@
                                          } else {
                                              $_required = '';
                                          }
-                                         $question_area .= '<input type="checkbox" onchange="update_question(this,\''.$question['boxtype'].'\','.$question['questionid'].');" data-question_required="'.$question['questionid'].'" name="required[]" '.$_required.'>';
-                                         $question_area .= '<label>'._l('survey_question_required').'</label>';
+                                         $question_area .= '<input type="checkbox" id="req_'.$question['questionid'].'" onchange="update_question(this,\''.$question['boxtype'].'\','.$question['questionid'].');" data-question_required="'.$question['questionid'].'" name="required[]" '.$_required.'>';
+                                         $question_area .= '<label for="req_'.$question['questionid'].'">'._l('survey_question_required').'</label>';
                                          $question_area .= '</div>';
                                          $question_area .= '<input type="hidden" value="" name="order[]">';
                             // used only to identify input key no saved in database
@@ -283,7 +286,7 @@
   </div>
 </div>
 <?php init_tail(); ?>
-<script src="<?php echo base_url(); ?>assets/js/surveys.js"></script>
+<?php echo app_script('assets/js','surveys.js'); ?>
 <script>
     init_editor('.tinymce-email-description');
     init_editor('.tinymce-view-description');

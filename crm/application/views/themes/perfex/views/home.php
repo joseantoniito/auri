@@ -39,11 +39,12 @@
 					</div>
 					<div class="row">
 						<div class="col-md-12">
-							<canvas id="client-home-chart" class="animated fadeIn"></canvas>
+							<div class="relative" style="max-height:400px;">
+								<canvas id="client-home-chart" height="400" class="animated fadeIn"></canvas>
+							</div>
 						</div>
 					</div>
+					<?php } ?>
 				</div>
-				<?php } ?>
 			</div>
 		</div>
-	</div>

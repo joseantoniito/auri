@@ -16,15 +16,11 @@ $task_ids      = array();
 foreach ($project_tasks as $task) {
     array_push($task_ids, $task['id']);
 }
-$where = array();
-if (count($task_ids) > 0) {
-    $where = array(
-        'WHERE task_id IN (' . implode(', ', $task_ids) . ')'
-        );
-} else {
-    echo json_encode(json_decode('{"draw":0,"iTotalRecords":"0","iTotalDisplayRecords":"0","aaData":[]}'));
-    die;
-}
+
+$where = array(
+    'WHERE task_id IN (SELECT id FROM tblstafftasks WHERE rel_id="'.$project_id.'" AND rel_type="project")'
+    );
+
 if(!has_permission('projects','','create')){
     array_push($where,'AND staff_id='.get_staff_user_id());
 }
@@ -99,22 +95,21 @@ foreach ($rResult as $aRow) {
 
 $options = '';
 if(($aRow['staff_id'] == get_staff_user_id() || has_permission('projects','','edit')) && !$this->_instance->tasks_model->is_task_billed($aRow['task_id'])){
-    if($aRow['end_time'] !== NULL){
-        $attrs = array(
-            'onclick' => 'edit_timesheet(this,' . $aRow['id'] . ');return false',
-            'data-start_time'=>strftime(get_current_date_format() . ' %H:%M',$aRow['start_time']),
-            'data-timesheet_task_id'=>$aRow['task_id'],
-            'data-timesheet_staff_id'=>$aRow['staff_id'],
-            );
-        if($aRow['end_time'] == NULL){
-           $attrs['data-end_time'] = strftime(get_current_date_format() . ' %H:%M',time());
-        } else {
-           $attrs['data-end_time'] = strftime(get_current_date_format() . ' %H:%M',$aRow['end_time']);
+
+    if($aRow['staff_id'] == get_staff_user_id() || has_permission('projects','','edit')){
+        if($aRow['end_time'] !== NULL){
+            $attrs = array(
+                'onclick' => 'edit_timesheet(this,' . $aRow['id'] . ');return false',
+                'data-start_time'=>strftime(get_current_date_format() . ' %H:%M',$aRow['start_time']),
+                'data-timesheet_task_id'=>$aRow['task_id'],
+                'data-timesheet_staff_id'=>$aRow['staff_id'],
+                );
+            $attrs['data-end_time'] = strftime(get_current_date_format() . ' %H:%M',$aRow['end_time']);
+            $options .= icon_btn('#', 'pencil-square-o', 'btn-default', $attrs);
         }
-        $options .= icon_btn('#', 'pencil-square-o', 'btn-default', $attrs);
     }
 
-     if ($aRow['end_time'] == NULL) {
+     if ($aRow['end_time'] == NULL && $aRow['staff_id'] == get_staff_user_id()) {
         $options .= icon_btn('#', 'clock-o', 'btn-danger', array(
             'onclick' => 'timer_action(this,' . $aRow['task_id'] . ',' . $aRow['id'] . ');return false',
             'data-toggle' => 'tooltip',

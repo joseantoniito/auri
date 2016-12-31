@@ -2,7 +2,6 @@
 <div id="wrapper">
  <div class="content">
   <div class="row">
-   <?php include_once(APPPATH . 'views/admin/includes/alerts.php'); ?>
    <div class="col-md-12">
     <div class="panel_s">
      <div class="panel-body _buttons">
@@ -49,7 +48,7 @@
    $total = $this->db->count_all_results('tblleads');
    ?>
    <h3 class="bold"><?php echo $total; ?></h3>
-   <span class="bold" style="color:<?php echo $status['color']; ?>"><?php echo $status['name']; ?></span>
+   <span style="color:<?php echo $status['color']; ?>"><?php echo $status['name']; ?></span>
  </div>
  <?php } ?>
  <?php
@@ -68,7 +67,7 @@ $total_leads = $this->db->count_all_results('tblleads');
  $percent_lost = ($total_leads > 0 ? number_format(($total_lost * 100) / $total_leads,2) : 0);
  ?>
  <h3 class="bold"><?php echo $percent_lost; ?>%</h3>
- <span class="text-danger bold"><?php echo _l('lost_leads'); ?></span>
+ <span class="text-danger"><?php echo _l('lost_leads'); ?></span>
 </div>
 <div class="col-md-2 col-xs-6">
  <?php
@@ -80,7 +79,7 @@ $total_junk = $this->db->count_all_results('tblleads');
 $percent_junk = ($total_leads > 0 ? number_format(($total_junk * 100) / $total_leads,2) : 0);
 ?>
 <h3 class="bold"><?php echo $percent_junk; ?>%</h3>
-<span class="text-danger bold"><?php echo _l('junk_leads'); ?></span>
+<span class="text-danger"><?php echo _l('junk_leads'); ?></span>
 </div>
 </div>
 </div>
@@ -185,7 +184,6 @@ $_table_data = array(
   '<span class="hide"> - </span><div class="checkbox mass_select_all_wrap"><input type="checkbox" id="mass_select_all" data-to-table="leads"><label></label></div>',
   '#',
   _l('leads_dt_name'),
-  _l('lead_company'),
   _l('leads_dt_email'),
   _l('leads_dt_phonenumber'),
   _l('leads_dt_assigned'),

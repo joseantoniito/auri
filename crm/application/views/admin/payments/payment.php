@@ -2,12 +2,8 @@
 <div id="wrapper">
 	<div class="content">
 		<div class="row">
-			<?php include_once(APPPATH . 'views/admin/includes/alerts.php'); ?>
 			<div class="col-md-5">
 				<div class="panel_s">
-					<div class="panel-heading">
-						<?php echo $title; ?>
-					</div>
 					<div class="col-md-12 no-padding animated fadeIn">
 						<div class="panel_s">
 							<?php echo form_open($this->uri->uri_string()); ?>
@@ -32,18 +28,18 @@
 			</div>
 			<div class="col-md-7">
 				<div class="panel_s">
-					<div class="panel-heading">
-						<?php echo _l('payment_view_heading'); ?>
-					</div>
 					<div class="panel-body">
-						<div class="text-right">
+						<h4 class="bold pull-left no-margin"><?php echo _l('payment_view_heading'); ?></h4>
+						<div class="pull-right">
 							<a href="<?php echo admin_url('payments/pdf/'.$payment->paymentid.'?print=true'); ?>" target="_blank" class="btn btn-default" data-toggle="tooltip" title="<?php echo _l('print'); ?>" data-placement="bottom"><i class="fa fa-print"></i></a>
 							<a href="<?php echo admin_url('payments/pdf/'.$payment->paymentid); ?>" class="btn btn-default" data-toggle="tooltip" title="<?php echo _l('view_pdf'); ?>" data-placement="bottom"><i class="fa fa-file-pdf-o"></i></a>
 							<?php if(has_permission('managePayment','','delete')){ ?>
 							<a href="<?php echo admin_url('payments/delete/'.$payment->paymentid); ?>" class="btn btn-danger _delete"><i class="fa fa-remove"></i></a>
 							<?php } ?>
 						</div>
+						<div class="clearfix"></div>
 						<hr />
+
 						<div class="row">
 							<div class="col-md-6">
 								<address>
@@ -52,6 +48,9 @@
 									<?php echo get_option('invoice_company_city'); ?>, <?php echo get_option('invoice_company_country_code'); ?> <?php echo get_option('invoice_company_postal_code'); ?><br>
 									<?php if(get_option('invoice_company_phonenumber') != ''){ ?>
 									<?php echo get_option('invoice_company_phonenumber'); ?><br />
+									<?php } ?>
+									<?php if(get_option('company_vat') != ''){ ?>
+									<?php echo _l('company_vat_number').': '. get_option('company_vat'); ?><br />
 									<?php } ?>
 									<?php
 							 		// check for company custom fields

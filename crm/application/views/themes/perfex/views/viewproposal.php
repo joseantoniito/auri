@@ -22,7 +22,7 @@
       </thead>
       <tbody>
         <?php
-            $items_data = get_table_items_html_and_taxes($proposal->items,'proposal');
+            $items_data = get_table_items_and_taxes($proposal->items,'proposal');
             $taxes = $items_data['taxes'];
             echo $items_data['html'];
         ?>
@@ -107,7 +107,7 @@
       <div class="col-md-3 proposal-right">
         <div class="row proposal-right-content">
           <div class="col-md-12 mtop30">
-            <?php if(is_staff_logged_in() && has_permission('proposals','','view')){ ?>
+            <?php if(is_staff_logged_in()){ ?>
             <a href="<?php echo admin_url('proposals/list_proposals/'.$proposal->id); ?>" class="btn btn-info pull-right"><?php echo _l('goto_admin_area'); ?></a>
             <?php } else if(is_client_logged_in() && has_contact_permission('proposals')){ ?>
             <a href="<?php echo site_url('clients/proposals/'); ?>" class="btn btn-info pull-right"><?php echo _l('client_go_to_dashboard'); ?></a>
@@ -121,6 +121,9 @@
                   <?php echo get_option('invoice_company_city'); ?>, <?php echo get_option('invoice_company_country_code'); ?> <?php echo get_option('invoice_company_postal_code'); ?><br>
                   <?php if(get_option('invoice_company_phonenumber') != ''){ ?>
                   <a href="tel:<?php echo get_option('invoice_company_phonenumber'); ?>"><?php echo get_option('invoice_company_phonenumber'); ?></a>
+                  <?php } ?>
+                  <?php if(get_option('company_vat') != ''){ ?>
+                  <?php echo _l('company_vat_number').': '. get_option('company_vat'); ?><br />
                   <?php } ?>
                   <?php
                   ?>

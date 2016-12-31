@@ -46,9 +46,7 @@ class Clients_controller extends CRM_Controller
             $_auto_loaded_vars['services'] = $this->tickets_model->get_service();
         }
 
-        if (get_option('use_knowledge_base') == 1) {
-            $this->load->model('knowledge_base_model');
-        }
+        $this->load->model('knowledge_base_model');
 
         if (is_client_logged_in()) {
             $_auto_loaded_vars['client'] = $this->clients_model->get(get_client_user_id());

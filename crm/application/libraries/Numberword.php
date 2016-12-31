@@ -76,8 +76,10 @@ class Numberword
             // separate decimal digit
             $this->dec_value = intval($this->val_array[count($this->val_array) - 1]);
             if ($this->dec_value > 0) {
+                $w_and = _l('number_word_and');
+                $w_and = ($w_and == " " ? "" : $w_and.=" ");
                 // convert decimal part to word;
-                $this->dec_word = _l('number_word_and') . ' ' . $this->word_array[$this->dec_value] . " " . $this->currency1;
+                $this->dec_word = $w_and . '' . $this->word_array[$this->dec_value] . " " . $this->currency1;
             }
             // loop through all 3(s) digits in VAL array
             $t              = 0;
@@ -98,12 +100,14 @@ class Numberword
                     $this->num_word = $this->word_array[$this->num_value] . " " . $this->thousand[$t] . $this->num_word;
                     // add 'and' if not last element in VAL
                     if ($i == 1) {
-                        $this->num_word = _l('number_word_and') . ' ' . $this->num_word;
+                        $w_and = _l('number_word_and');
+                        $w_and = ($w_and == " " ? "" : $w_and.=" ");
+                        $this->num_word =  $w_and. '' . $this->num_word;
                     }
                 }
                 // if VAL >= 100, set the hundred word
                 else {
-                    @$this->num_word = $this->word_array[mb_substr($this->num_value, 0, 1) . "00"] . (intval(mb_substr($this->num_value, 1, 2)) > 0 ? " " . _l('number_word_and') ." " : "") . $this->word_array[intval(mb_substr($this->num_value, 1, 2))] . " " . $this->thousand[$t] . $this->num_word;
+                    @$this->num_word = $this->word_array[mb_substr($this->num_value, 0, 1) . "00"] . (intval(mb_substr($this->num_value, 1, 2)) > 0 ? (_l('number_word_and') != " " ? " " . _l('number_word_and') . " " : " ") : "") . $this->word_array[intval(mb_substr($this->num_value, 1, 2))] . " " . $this->thousand[$t] . $this->num_word;
                 }
                 $t++;
             }

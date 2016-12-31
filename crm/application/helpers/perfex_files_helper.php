@@ -1,4 +1,5 @@
 <?php
+defined('BASEPATH') OR exit('No direct script access allowed');
 function access($attr, $path, $data, $volume) {
     return strpos(basename($path), '.') === 0       // if file/folder begins with '.' (dot)
         ? !($attr == 'read' || $attr == 'write')    // set read+write to false, other (locked+hidden) set to true
@@ -192,24 +193,10 @@ function sanitize_file_name($filename)
     // Process multiple extensions
     $filename  = array_shift($parts);
     $extension = array_pop($parts);
-    /*
-     * Loop over any intermediate extensions. Postfix them with a trailing underscore
-     * if they are a 2 - 5 character long alpha string not in the extension whitelist.
-     */
-    foreach ((array) $parts as $part) {
-        $filename .= '.' . $part;
-        if (preg_match("/^[a-zA-Z]{2,5}\d?$/", $part)) {
-            $allowed  = false;
-            $ext_preg = '!^(' . $ext_preg . ')$!i';
-            if (preg_match($ext_preg, $part)) {
-                $allowed = true;
-                break;
-            }
-        }
-        if (!$allowed)
-            $filename .= '_';
-    }
+
     $filename .= '.' . $extension;
+    $CI = &get_instance();
+    $filename = $CI->security->sanitize_filename($filename);
     return $filename;
 }
 /**

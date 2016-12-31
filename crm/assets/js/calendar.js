@@ -1,5 +1,6 @@
 // JS File used in events
 $(function(){
+
     validate_calendar_form();
     var settings = {
         customButtons: {},
@@ -8,15 +9,13 @@ $(function(){
             center: 'title',
             right: 'month,agendaWeek,agendaDay,viewFullCalendar'
         },
-        loading: function(isLoading, view) {
-            if (!isLoading) { // isLoading gives boolean value
-                $('.dt-loader').addClass('hide');
-            } else {
-                $('.dt-loader').removeClass('hide');
+        editable: false,
+        eventLimit: parseInt(calendar_events_limit) + 1,
+        views: {
+            day: {
+                eventLimit: false
             }
         },
-        editable: false,
-        eventLimit: 3,
         isRTL: (isRTL == 'true' ? true : false),
         eventStartEditable: false,
         timezone:timezone,
@@ -26,6 +25,10 @@ $(function(){
         date: moment.tz(timezone).format("DD"),
         events:calendar_data,
         eventSources:[],
+        eventLimitClick:function(cellInfo, jsEvent){
+            $('#calendar').fullCalendar('gotoDate', cellInfo.date);
+            $('#calendar').fullCalendar('changeView','basicDay');
+        },
         eventRender: function(event, element) {
             element.attr('title', event._tooltip);
             element.attr('onclick', event.onclick);
@@ -66,7 +69,7 @@ $(function(){
                         settings.eventSources.push(_gcal);
                     }
                 } else {
-                    alert('You have setup Google Calendar IDs but you dont have specified Google API key. To setup Google API key navigate to Setup->Settings->Misc->Misc');
+                    console.error('You have setup Google Calendar IDs but you dont have specified Google API key. To setup Google API key navigate to Setup->Settings->Misc->Misc');
                 }
             }
         }
@@ -76,9 +79,9 @@ $(function(){
     $('#calendar').fullCalendar(settings);
     var new_event = get_url_param('new_event');
     if(new_event){
-       $('#newEventModal').modal('show');
-       $("input[name='start'].datetimepicker").val(get_url_param('date'));
-    }
+     $('#newEventModal').modal('show');
+     $("input[name='start'].datetimepicker").val(get_url_param('date'));
+ }
 });
 
 function view_event(id) {
@@ -112,8 +115,10 @@ function calendar_form_handler(form) {
         if (response.success == true) {
             alert_float('success', response.message);
             setTimeout(function() {
-                window.location.reload();
-            }, 1000)
+                var location = window.location.href;
+                location = location.split('?');
+                window.location.href = location[0];
+            }, 700);
         }
     });
 

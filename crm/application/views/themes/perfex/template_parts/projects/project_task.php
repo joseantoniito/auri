@@ -20,7 +20,7 @@
     </div>
     <div class="clearfix"></div>
     <hr class="no-mtop"/>
-    <h2 class="bold"><?php echo $view_task->name; ?></h2>
+    <h3 class="no-margin"><?php echo $view_task->name; ?></h3>
     <?php if($project->settings->view_task_total_logged_time == 1){ ?>
     <p class="no-margin text-success"><?php echo _l('task_total_logged_time'); ?>
         <?php echo seconds_to_time_format($this->tasks_model->calc_task_total_time($view_task->id)); ?>
@@ -33,117 +33,119 @@
     } ?>
     <hr />
     <div class="row mbot30">
-        <div class="col-md-3 mtop15">
+        <div class="col-md-3">
             <i class="fa fa-users"></i> <span class="bold"><?php echo _l('task_single_assignees'); ?></span>
         </div>
         <div class="col-md-9" id="assignees">
             <?php
             $_assignees = '';
             foreach ($view_task->assignees as $assignee) {
-               $_assignees .= '
-               <div data-toggle="tooltip" class="pull-left mleft5 task-user" data-title="'.get_staff_full_name($assignee['assigneeid']).'">'
-                 .staff_profile_image($assignee['assigneeid'], array(
-                   'staff-profile-image-small'
-                   )) .'</div>';
-             }
-             if ($_assignees == '') {
-                 $_assignees = '<div class="bold mtop5 task-connectors-no-indicator display-block">'._l('task_no_assignees').'</div>';
-             }
-             echo $_assignees;
-             ?>
-         </div>
-     </div>
-     <?php if($project->settings->view_task_checklist_items == 1){ ?>
-     <?php if(count($view_task->checklist_items) > 0){ ?>
-     <hr />
-     <h4 class="bold mbot15"><?php echo _l('task_checklist_items'); ?></h4>
-     <?php } ?>
-     <?php foreach($view_task->checklist_items as $list){ ?>
-     <p class="<?php if($list['finished'] == 1){echo 'line-throught';} ?>">
-        <span class="task-checklist-indicator <?php if($list['finished'] == 1){echo 'text-success';} else{echo 'text-muted';} ?>"><i class="fa fa-check"></i></span>&nbsp;
-        <?php echo $list['description']; ?>
-    </p>
-    <?php } ?>
+             $_assignees .= '
+             <div data-toggle="tooltip" class="pull-left mleft5 task-user" data-title="'.get_staff_full_name($assignee['assigneeid']).'">'
+               .staff_profile_image($assignee['assigneeid'], array(
+                 'staff-profile-image-small'
+                 )) .'</div>';
+           }
+           if ($_assignees == '') {
+               $_assignees = '<div class="task-connectors-no-indicator display-block">'._l('task_no_assignees').'</div>';
+           }
+           echo $_assignees;
+           ?>
+       </div>
+   </div>
+   <?php if($project->settings->view_task_checklist_items == 1){ ?>
+   <?php if(count($view_task->checklist_items) > 0){ ?>
+   <hr />
+   <h4 class="bold mbot15"><?php echo _l('task_checklist_items'); ?></h4>
+   <?php } ?>
+   <?php foreach($view_task->checklist_items as $list){ ?>
+   <p class="<?php if($list['finished'] == 1){echo 'line-throught';} ?>">
+    <span class="task-checklist-indicator <?php if($list['finished'] == 1){echo 'text-success';} else{echo 'text-muted';} ?>"><i class="fa fa-check"></i></span>&nbsp;
+    <?php echo $list['description']; ?>
+</p>
+<?php } ?>
+<?php } ?>
+<?php
+$custom_fields = get_custom_fields('tasks',array('show_on_client_portal'=>1));
+if(count($custom_fields) > 0){ ?>
+<div class="row">
+    <?php foreach($custom_fields as $field){ ?>
+    <?php $value = get_custom_field_value($task->id,$field['id'],'tasks');
+    if($value == ''){continue;} $custom_fields_found = true;?>
+    <div class="col-md-9">
+        <span class="bold"><?php echo ucfirst($field['name']); ?></span>
+        <br />
+        <div class="text-left">
+            <?php echo $value; ?>
+        </div>
+    </div>
     <?php } ?>
     <?php
-    $custom_fields = get_custom_fields('tasks',array('show_on_client_portal'=>1));
-    if(count($custom_fields) > 0){ ?>
-    <div class="row">
-        <?php foreach($custom_fields as $field){ ?>
-        <?php $value = get_custom_field_value($task->id,$field['id'],'tasks');
-        if($value == ''){continue;} $custom_fields_found = true;?>
-        <div class="col-md-9">
-            <span class="bold"><?php echo ucfirst($field['name']); ?></span>
-            <br />
-            <div class="text-left">
-                <?php echo $value; ?>
-            </div>
-        </div>
-        <?php } ?>
-        <?php
             // Add separator if custom fields found for output
-        if(isset($custom_fields_found)){?>
-        <div class="clearfix"></div>
-        <hr />
-        <?php } ?>
-    </div>
-    <?php } ?>
-    <?php if($project->settings->view_task_attachments == 1){ ?>
-    <?php if(count($view_task->attachments) > 0){ ?>
+    if(isset($custom_fields_found)){?>
+    <div class="clearfix"></div>
     <hr />
-    <div class="row">
-        <div class="col-md-12">
-            <h4 class="bold font-medium"><?php echo _l('task_view_attachments'); ?></h4>
-            <ul class="list-unstyled">
-                <?php foreach($view_task->attachments as $attachment){ ?>
-                <li class="mbot10 task-attachment">
-                    <div class="mbot10 pull-right task-attachment-user">
-                     <?php
-                     if($attachment['staffid'] != 0){
-                        echo get_staff_full_name($attachment['staffid']);
-                    } else {
-                        echo get_contact_full_name($attachment['contact_id']);
-                    }
-                    ?>
-                </div>
-                <?php
-
-                $is_image = false;
-                $path = get_upload_path_by_type('task') . $view_task->id . '/'. $attachment['file_name'];
-                $href_url = site_url('download/file/taskattachment/'. $attachment['id']);
-
-                if(empty($attachment['external'])){
-                    $is_image = is_image($path);
-                    $img_url = site_url('download/preview_image?path='.$path.'&type='.$attachment['filetype']);
-                } else if(!empty($attachment['thumbnail_link']) || !empty($attachment['external'])){
-                    if(!empty($attachment['thumbnail_link'])){
-                        $is_image = true;
-                        $img_url = optimize_dropbox_thumbnail($attachment['thumbnail_link']);
-                    }
-                    $href_url = $attachment['external_link'];
-                }
-                if($is_image){
-                    echo '<div class="preview_image">';
-                }
-
-                ?>
-                <a href="<?php echo $href_url; ?>" class="pull-left">
-                    <?php if($is_image){ ?>
-                    <img src="<?php echo $img_url; ?>" class="img img-responsive">
-                    <?php } else { ?>
-                    <i class="<?php echo get_mime_class($attachment['filetype']); ?>"></i> <?php echo $attachment['file_name']; ?>
-                    <?php } ?>
-                </a>
-
-                <?php if($is_image){
-                    echo '</div>';
+    <?php } ?>
+</div>
+<?php } ?>
+<?php if($project->settings->view_task_attachments == 1){ ?>
+<?php if(count($view_task->attachments) > 0){ ?>
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        <h4 class="bold font-medium"><?php echo _l('task_view_attachments'); ?></h4>
+        <ul class="list-unstyled">
+            <?php foreach($view_task->attachments as $attachment){ ?>
+            <li class="mbot10 task-attachment">
+                <div class="mbot10 pull-right task-attachment-user">
+                   <?php
+                   if($attachment['staffid'] != 0){
+                    echo get_staff_full_name($attachment['staffid']);
+                } else {
+                    echo get_contact_full_name($attachment['contact_id']);
                 }
                 ?>
-                <div class="clearfix"></div>
-            </li>
-            <?php } ?>
-        </ul>
-    </div>
+                <?php if(get_option('allow_contact_to_delete_files') == 1 && $attachment['contact_id'] == get_contact_user_id()){ ?>
+                <a href="<?php echo site_url('clients/delete_file/'.$attachment['id'].'/task?project_id='.$project->id); ?>" class="text-danger _delete pull-right"><i class="fa fa-remove"></i></a>
+                <?php } ?>
+            </div>
+            <?php
+            $is_image = false;
+            $path = get_upload_path_by_type('task') . $view_task->id . '/'. $attachment['file_name'];
+            $href_url = site_url('download/file/taskattachment/'. $attachment['id']);
+
+            if(empty($attachment['external'])){
+                $is_image = is_image($path);
+                $img_url = site_url('download/preview_image?path='.$path.'&type='.$attachment['filetype']);
+            } else if(!empty($attachment['thumbnail_link']) || !empty($attachment['external'])){
+                if(!empty($attachment['thumbnail_link'])){
+                    $is_image = true;
+                    $img_url = optimize_dropbox_thumbnail($attachment['thumbnail_link']);
+                }
+                $href_url = $attachment['external_link'];
+            }
+            if($is_image){
+                echo '<div class="preview_image">';
+            }
+
+            ?>
+            <a href="<?php echo $href_url; ?>" class="pull-left">
+                <?php if($is_image){ ?>
+                <img src="<?php echo $img_url; ?>" class="img img-responsive">
+                <?php } else { ?>
+                <i class="<?php echo get_mime_class($attachment['filetype']); ?>"></i> <?php echo $attachment['file_name']; ?>
+                <?php } ?>
+            </a>
+
+            <?php if($is_image){
+                echo '</div>';
+            }
+            ?>
+            <div class="clearfix"></div>
+        </li>
+        <?php } ?>
+    </ul>
+</div>
 </div>
 <?php } ?>
 <?php } ?>

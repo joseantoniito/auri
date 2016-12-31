@@ -2,9 +2,11 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 if (!extension_loaded('suhosin')) {
-    ini_set('memory_limit', '-1');
+    @ini_set('memory_limit', '-1');
 }
+
 define('CRON', true);
+
 class Cron_model extends CRM_Model
 {
     function __construct()
@@ -15,8 +17,6 @@ class Cron_model extends CRM_Model
     }
     public function run($manualy = false)
     {
-        $last_recurring_invoices_cron = get_option('last_recurring_invoices_cron');
-        $last_recurring_expenses_cron = get_option('last_recurring_expenses_cron');
 
         if ($manualy == true) {
             logActivity('Cron Invoked Manually');
@@ -32,17 +32,11 @@ class Cron_model extends CRM_Model
         $this->invoice_overdue_status();
         $this->estimate_expiry_check();
         $this->contracts_expiration_check();
-
         $this->autoclose_tickets();
         $this->events();
-        if ((time() > ($last_recurring_invoices_cron + 86400) || $last_recurring_invoices_cron == '') || $manualy == true) {
-            $this->recurring_invoices();
-            update_option('last_recurring_invoices_cron', time());
-        }
-        if ((time() > ($last_recurring_expenses_cron + 86400) || $last_recurring_expenses_cron == '') || $manualy == true) {
-            $this->recurring_expenses();
-            update_option('last_recurring_expenses_cron', time());
-        }
+        $this->recurring_invoices();
+        $this->recurring_expenses();
+
         $this->auto_import_imap_tickets();
         $this->check_leads_email_integration();
         update_option('last_cron_run', time());
@@ -117,7 +111,9 @@ class Cron_model extends CRM_Model
     {
         $auto_close_after = get_option('autoclose_tickets_after');
 
-        if($auto_close_after == 0){return;}
+        if ($auto_close_after == 0) {
+            return;
+        }
 
         $this->db->select('ticketid,lastreply,date,userid,contactid,email');
         $this->db->where('status !=', 5);
@@ -176,7 +172,7 @@ class Cron_model extends CRM_Model
                     $merge_fields = array_merge($merge_fields, get_client_contact_merge_fields($contract['client']));
                     $merge_fields = array_merge($merge_fields, get_contract_merge_fields($contract['id']));
                     foreach ($staff as $member) {
-                        if (has_permission('contracts', $member['staffid'], 'create')) {
+                        if ($member['staffid'] == $contract['addedfrom'] || is_admin($member['staffid'])) {
                             add_notification(array(
                                 'description' => 'not_contract_expiry_reminder',
                                 'touserid' => $member['staffid'],
@@ -267,6 +263,16 @@ class Cron_model extends CRM_Model
     private function recurring_expenses()
     {
 
+        $expenses_hour_auto_operations = get_option('expenses_auto_operations_hour');
+        if($expenses_hour_auto_operations == ''){
+            $expenses_hour_auto_operations = 21;
+        }
+
+        $hour_now = date('G');
+        if($hour_now < $expenses_hour_auto_operations){
+           return;
+        }
+
         $this->db->where('recurring', 1);
         $recurring_expenses = $this->db->get('tblexpenses')->result_array();
         // Load the necessary models
@@ -275,6 +281,7 @@ class Cron_model extends CRM_Model
 
         $_renewals_ids_data = array();
         $total_renewed      = 0;
+
         foreach ($recurring_expenses as $expense) {
             if (!is_null($expense['recurring_ends_on'])) {
                 if (date('Y-m-d') >= date('Y-m-d', strtotime($expense['recurring_ends_on']))) {
@@ -296,6 +303,7 @@ class Cron_model extends CRM_Model
                 $last_recurring_date = date('Y-m-d', strtotime($last_recurring_date));
             }
             $calculated_date_difference = date('Y-m-d', strtotime('+' . $repeat_every . ' ' . strtoupper($type), strtotime($last_recurring_date)));
+
             if (date('Y-m-d') >= $calculated_date_difference) {
                 // Ok we can repeat the expense now
                 $new_expense_data = array();
@@ -359,23 +367,35 @@ class Cron_model extends CRM_Model
                         'send_invoice_to_customer' => $expense['send_invoice_to_customer'],
                         'create_invoice_billable' => $expense['create_invoice_billable'],
                         'is_sent' => $sent,
+                        'addedfrom' => $expense['addedfrom'],
                         'created_invoice_id' => $created_invoice_id
                     );
                 }
             }
         }
         if ($total_renewed > 0) {
+            $this->load->model('currencies_model');
+            $email_send_to_by_staff_and_expense = array();
             $date  = _dt(date('Y-m-d H:i:s'));
             // Get all active staff members
             $staff = $this->staff_model->get('', 1);
             foreach ($staff as $member) {
-                if (has_permission('expenses', $member['staffid'], 'create')) {
+                    $send = false;
+                    load_admin_language($member['staffid']);
                     $recurring_expenses_email_data = _l('not_recurring_expense_cron_activity_heading') . ' - ' . $date . '<br /><br />';
                     foreach ($_renewals_ids_data as $data) {
-                        load_admin_language($member['staffid']);
-                        $recurring_expenses_email_data .= _l('not_recurring_expenses_action_taken_from') . ': <a href="' . admin_url('expenses/list_expenses/' . $data['from']) . '">' . $data['from'] . '</a><br />';
-                        $recurring_expenses_email_data .= _l('not_expense_renewed') . ' <a href="' . admin_url('expenses/list_expenses/' . $data['renewed']) . '">' . _l('id') . ': ' . $data['renewed'] . '</a>';
-                        if ($expense['create_invoice_billable'] == 1) {
+                        if($data['addedfrom'] == $member['staffid'] || is_admin($member['staffid'])){
+                        $unique_send = '['.$member['staffid'].'-'.$data['from'].']';
+                        $send = true;
+                        // Prevent sending the email twice if the same staff is added is sale agent and is creator for this invoice.
+                        if(in_array($unique_send,$email_send_to_by_staff_and_expense)){
+                            $send = false;
+                        }
+                        $expense = $this->expenses_model->get($data['from']);
+                        $currency = $this->currencies_model->get($expense->currency);
+                        $recurring_expenses_email_data .= _l('not_recurring_expenses_action_taken_from') . ': <a href="' . admin_url('expenses/list_expenses/' . $data['from']) . '">' . $expense->category_name . (!empty($expense->expense_name) ? ' ('.$expense->expense_name.')' : '')  . '</a> - '._l('expense_amount').' '.format_money($expense->amount,$currency->symbol).'<br />';
+                        $recurring_expenses_email_data .= _l('not_expense_renewed') . ' <a href="' . admin_url('expenses/list_expenses/' . $data['renewed']) . '">' . _l('id') . ' ' . $data['renewed'] . '</a>';
+                        if ($data['create_invoice_billable'] == 1) {
                             $recurring_expenses_email_data .= '<br />' . _l('not_invoice_created') . ' ';
                             if (is_numeric($data['created_invoice_id'])) {
                                 $recurring_expenses_email_data .= _l('not_invoice_sent_yes');
@@ -393,16 +413,28 @@ class Cron_model extends CRM_Model
                         }
                         $recurring_expenses_email_data .= '<br /><br />';
                     }
-                    $recurring_expenses_email_data .= _l('not_recurring_total_renewed', $total_renewed);
-                    $this->emails_model->send_simple_email($member['email'], _l('not_recurring_expense_cron_activity_heading'), $recurring_expenses_email_data);
-                }
-                load_admin_language();
             }
+            if($send == true){
+                array_push($email_send_to_by_staff_and_expense,$unique_send);
+                $this->emails_model->send_simple_email($member['email'], _l('not_recurring_expense_cron_activity_heading'), $recurring_expenses_email_data);
+            }
+            load_admin_language();
         }
+    }
     }
 
     private function recurring_invoices()
     {
+
+        $invoice_hour_auto_operations = get_option('invoice_auto_operations_hour');
+        if($invoice_hour_auto_operations == ''){
+            $invoice_hour_auto_operations = 21;
+        }
+        $hour_now = date('G');
+        if($hour_now < $invoice_hour_auto_operations){
+           return;
+        }
+
         // dont run this function if no recurring invoices exists
         $recurring_invoices = total_rows('tblinvoices', array(
             'recurring >' => 0
@@ -412,7 +444,7 @@ class Cron_model extends CRM_Model
         }
         $invoices_create_invoice_from_recurring_only_on_paid_invoices = get_option('invoices_create_invoice_from_recurring_only_on_paid_invoices');
         $this->load->model('invoices_model');
-        $this->db->select('id,recurring,date,last_recurring_date,number,duedate,recurring_ends_on,recurring_type,custom_recurring');
+        $this->db->select('id,recurring,date,last_recurring_date,number,duedate,recurring_ends_on,recurring_type,custom_recurring,addedfrom,sale_agent');
         $this->db->from('tblinvoices');
         $this->db->where('recurring !=', 0);
         if ($invoices_create_invoice_from_recurring_only_on_paid_invoices == 1) {
@@ -464,28 +496,28 @@ class Cron_model extends CRM_Model
                         $new_invoice_data['duedate'] = _d(date('Y-m-d', strtotime('+' . get_option('invoice_due_after') . ' DAY', strtotime(date('Y-m-d')))));
                     }
                 }
-                $new_invoice_data['project_id']               = $_invoice->project_id;
-                $new_invoice_data['show_quantity_as']         = $_invoice->show_quantity_as;
-                $new_invoice_data['currency']                 = $_invoice->currency;
-                $new_invoice_data['subtotal']                 = $_invoice->subtotal;
-                $new_invoice_data['total']                    = $_invoice->total;
-                $new_invoice_data['adjustment']               = $_invoice->adjustment;
-                $new_invoice_data['discount_percent']         = $_invoice->discount_percent;
-                $new_invoice_data['discount_total']           = $_invoice->discount_total;
-                $new_invoice_data['discount_type']            = $_invoice->discount_type;
-                $new_invoice_data['terms']                    = $_invoice->terms;
-                $new_invoice_data['sale_agent']               = $_invoice->sale_agent;
+                $new_invoice_data['project_id']       = $_invoice->project_id;
+                $new_invoice_data['show_quantity_as'] = $_invoice->show_quantity_as;
+                $new_invoice_data['currency']         = $_invoice->currency;
+                $new_invoice_data['subtotal']         = $_invoice->subtotal;
+                $new_invoice_data['total']            = $_invoice->total;
+                $new_invoice_data['adjustment']       = $_invoice->adjustment;
+                $new_invoice_data['discount_percent'] = $_invoice->discount_percent;
+                $new_invoice_data['discount_total']   = $_invoice->discount_total;
+                $new_invoice_data['discount_type']    = $_invoice->discount_type;
+                $new_invoice_data['terms']            = $_invoice->terms;
+                $new_invoice_data['sale_agent']       = $_invoice->sale_agent;
                 // Since version 1.0.6
-                $new_invoice_data['billing_street']           = $_invoice->billing_street;
-                $new_invoice_data['billing_city']             = $_invoice->billing_city;
-                $new_invoice_data['billing_state']            = $_invoice->billing_state;
-                $new_invoice_data['billing_zip']              = $_invoice->billing_zip;
-                $new_invoice_data['billing_country']          = $_invoice->billing_country;
-                $new_invoice_data['shipping_street']          = $_invoice->shipping_street;
-                $new_invoice_data['shipping_city']            = $_invoice->shipping_city;
-                $new_invoice_data['shipping_state']           = $_invoice->shipping_state;
-                $new_invoice_data['shipping_zip']             = $_invoice->shipping_zip;
-                $new_invoice_data['shipping_country']         = $_invoice->shipping_country;
+                $new_invoice_data['billing_street']   = $_invoice->billing_street;
+                $new_invoice_data['billing_city']     = $_invoice->billing_city;
+                $new_invoice_data['billing_state']    = $_invoice->billing_state;
+                $new_invoice_data['billing_zip']      = $_invoice->billing_zip;
+                $new_invoice_data['billing_country']  = $_invoice->billing_country;
+                $new_invoice_data['shipping_street']  = $_invoice->shipping_street;
+                $new_invoice_data['shipping_city']    = $_invoice->shipping_city;
+                $new_invoice_data['shipping_state']   = $_invoice->shipping_state;
+                $new_invoice_data['shipping_zip']     = $_invoice->shipping_zip;
+                $new_invoice_data['shipping_country'] = $_invoice->shipping_country;
                 if ($_invoice->include_shipping == 1) {
                     $new_invoice_data['include_shipping'] = $_invoice->include_shipping;
                 }
@@ -494,7 +526,7 @@ class Cron_model extends CRM_Model
                 // Set to unpaid status automatically
                 $new_invoice_data['status']                   = 1;
                 $new_invoice_data['clientnote']               = $_invoice->clientnote;
-                $new_invoice_data['adminnote']                = 'Recuring invoice created from Cron Job from invoice ' . format_invoice_number($invoice['id']);
+                $new_invoice_data['adminnote']                = '';
                 $new_invoice_data['allowed_payment_modes']    = unserialize($_invoice->allowed_payment_modes);
                 $new_invoice_data['is_recurring_from']        = $_invoice->id;
                 $new_invoice_data['newitems']                 = array();
@@ -503,6 +535,7 @@ class Cron_model extends CRM_Model
                     $new_invoice_data['newitems'][$key]['description']      = $item['description'];
                     $new_invoice_data['newitems'][$key]['long_description'] = $item['long_description'];
                     $new_invoice_data['newitems'][$key]['qty']              = $item['qty'];
+                    $new_invoice_data['newitems'][$key]['unit']              = $item['unit'];
                     $new_invoice_data['newitems'][$key]['taxname']          = array();
                     $taxes                                                  = get_invoice_item_taxes($item['id']);
                     foreach ($taxes as $tax) {
@@ -519,7 +552,7 @@ class Cron_model extends CRM_Model
                     $this->db->update('tblinvoices', array(
                         'addedfrom' => $_invoice->addedfrom,
                         'sale_agent' => $_invoice->sale_agent,
-                        'cancel_overdue_reminders'=>$_invoice->cancel_overdue_reminders,
+                        'cancel_overdue_reminders' => $_invoice->cancel_overdue_reminders
                     ));
                     // Get the old expense custom field and add to the new
                     $custom_fields = get_custom_fields('invoice');
@@ -548,27 +581,38 @@ class Cron_model extends CRM_Model
                     }
                     $_renewals_ids_data[] = array(
                         'from' => $invoice['id'],
-                        'renewed' => $id
+                        'renewed' => $id,
+                        'addedfrom'=>$invoice['addedfrom'],
+                        'sale_agent'=>$invoice['sale_agent']
                     );
                 }
             }
         }
         if ($total_renewed > 0) {
             $date = _dt(date('Y-m-d H:i:s'));
-
+            $email_send_to_by_staff_and_invoice = array();
             // Get all active staff members
             $staff = $this->staff_model->get('', 1);
             foreach ($staff as $member) {
-                if (has_permission('invoices', $member['staffid'], 'create')) {
+                    $send = false;
                     load_admin_language($member['staffid']);
                     $recurring_invoices_email_data = _l('not_recurring_invoices_cron_activity_heading') . ' - ' . $date . '<br /><br />';
                     foreach ($_renewals_ids_data as $renewed_invoice_data) {
+                    if($renewed_invoice_data['addedfrom'] == $member['staffid'] || $renewed_invoice_data['sale_agent'] == $member['staffid'] || is_admin($member['staffid'])){
+                        $unique_send = '['.$member['staffid'].'-'.$renewed_invoice_data['from'].']';
+                        $send = true;
+                        // Prevent sending the email twice if the same staff is added is sale agent and is creator for this invoice.
+                        if(in_array($unique_send,$email_send_to_by_staff_and_invoice)){
+                            $send = false;
+                        }
                         $recurring_invoices_email_data .= _l('not_action_taken_from_recurring_invoice') . ' <a href="' . admin_url('invoices/list_invoices/' . $renewed_invoice_data['from']) . '">' . format_invoice_number($renewed_invoice_data['from']) . '</a><br />';
                         $recurring_invoices_email_data .= _l('not_invoice_renewed') . ' <a href="' . admin_url('invoices/list_invoices/' . $renewed_invoice_data['renewed']) . '">' . format_invoice_number($renewed_invoice_data['renewed']) . '</a><br /><br />';
+                       }
+                     }
+                    if($send == true){
+                        array_push($email_send_to_by_staff_and_invoice,$unique_send);
+                        $this->emails_model->send_simple_email($member['email'], _l('not_recurring_invoices_cron_activity_heading'), $recurring_invoices_email_data);
                     }
-                    $recurring_invoices_email_data .= _l('not_recurring_total_renewed', $total_renewed);
-                    $this->emails_model->send_simple_email($member['email'], _l('not_recurring_invoices_cron_activity_heading'), $recurring_invoices_email_data);
-                }
             }
             load_admin_language();
         }
@@ -753,6 +797,16 @@ class Cron_model extends CRM_Model
     }
     private function invoice_overdue_status()
     {
+
+        $invoice_hour_auto_operations = get_option('invoice_auto_operations_hour');
+        if($invoice_hour_auto_operations == ''){
+            $invoice_hour_auto_operations = 21;
+        }
+        $hour_now = date('G');
+        if($hour_now < $invoice_hour_auto_operations){
+           return;
+        }
+
         $this->load->model('invoices_model');
         $send_invoice_overdue_reminder = get_option('cron_send_invoice_overdue_reminder');
         $this->db->select('id,date,status,last_overdue_reminder,duedate');
@@ -768,9 +822,11 @@ class Cron_model extends CRM_Model
             if ($invoice['status'] == '4' || $statusid == '4' || $invoice['status'] == 3) {
 
                 if ($send_invoice_overdue_reminder == '1') {
-                    if($invoice['status'] == 3){
+                    if ($invoice['status'] == 3) {
                         // Invoice is with status partialy paid and its not due
-                        if(date('Y-m-d') <= date('Y-m-d',strtotime($invoice['duedate']))){continue;}
+                        if (date('Y-m-d') <= date('Y-m-d', strtotime($invoice['duedate']))) {
+                            continue;
+                        }
                     }
                     // Check if already sent invoice reminder
                     if ($invoice['last_overdue_reminder']) {
@@ -903,7 +959,7 @@ class Cron_model extends CRM_Model
         require_once(APPPATH . 'third_party/php-imap/Imap.php');
         if (empty($mail->last_run) || (time() > $mail->last_run + ($mail->check_every * 60))) {
             $this->db->where('id', 1);
-            $this->db->update('tblleadsemailintegration', array(
+            $this->db->update('tblleadsintegration', array(
                 'last_run' => time()
             ));
             $ps = $this->encryption->decrypt($mail->password);
@@ -918,7 +974,6 @@ class Cron_model extends CRM_Model
             // open connection
             $imap       = new Imap($mailbox, $username, $password, $encryption);
             if ($imap->isConnected() === false) {
-                logActivity('Failed to connect to IMAP lead email integration - Set option to false if you dont use it.', null);
                 return false;
             }
             if ($mail->folder == '') {
@@ -1000,56 +1055,73 @@ class Cron_model extends CRM_Model
                         'lastcontact' => NULL
                     );
 
-                    $lead_data = do_action('before_insert_lead_from_email_integration',$lead_data);
+                    $this->leads_model->lead_assigned_member_notification($lead_id,$mail->responsible,true);
+                    $lead_data = do_action('before_insert_lead_from_email_integration', $lead_data);
 
                     $this->db->insert('tblleads', $lead_data);
                     $insert_id = $this->db->insert_id();
                     if ($insert_id) {
-
-                      $this->load->helper('simple_html_dom');
-                      $html = str_get_html($email['body']);
-                      $insert_lead_fields = array();
-                      if($html){
-                        foreach($html->find('[id^="field_"]') as $data){
-                            if(isset($data->plaintext)){
-                                $value = trim($data->plaintext);
-                                if($value){
-                                    if(isset($data->attr['id']) && !empty($data->attr['id'])){
-                                        $insert_lead_fields[$data->attr['id']] = $value;
+                        // $email = '<div id="field_address">address</div><div id="custom_field_1">VALUE CUSTOM FIELD</div>';
+                        $this->load->helper('simple_html_dom');
+                        $html               = str_get_html($email['body']);
+                        $insert_lead_fields = array();
+                        $insert_lead_custom_fields = array();
+                        if ($html) {
+                            foreach ($html->find('[id^="field_"],[id^="custom_field_"]') as $data) {
+                                if (isset($data->plaintext)) {
+                                    $value = trim($data->plaintext);
+                                    if ($value) {
+                                        if (isset($data->attr['id']) && !empty($data->attr['id'])) {
+                                            $insert_lead_fields[$data->attr['id']] = $value;
+                                        }
                                     }
                                 }
                             }
                         }
-                    }
-                    foreach($insert_lead_fields as $key=>$val){
-                        $field = strafter($key,'field_');
-                        if($this->db->field_exists($field, 'tblleads')) {
-                            $insert_lead_fields[$field] = $val;
-                        }
-                        unset($insert_lead_fields[$key]);
-                    }
 
-                    foreach($insert_lead_fields as $field=>$value){
-                        if($field == 'country'){
-                            if($value == ''){
-                                $value = 0;
-                            } else {
-                               $this->db->where('iso2', $value);
-                               $this->db->or_where('short_name', $value);
-                               $this->db->or_where('long_name', $value);
-                               $country = $this->db->get('tblcountries')->row();
-                               if ($country) {
-                                $value = $country->country_id;
-                            } else {
-                                $value = 0;
+                        foreach ($insert_lead_fields as $key => $val) {
+                            $field = (strpos($key,'custom_field_') !== FALSE ? strafter($key, 'custom_field_') : strafter($key, 'field_'));
+
+                            if ($this->db->field_exists($field, 'tblleads')) {
+                                $insert_lead_fields[$field] = $val;
+                            } else if (strpos($key,'custom_field_') !== FALSE){
+                                $insert_lead_custom_fields[$field] = $val;
                             }
+                            unset($insert_lead_fields[$key]);
                         }
-                    }
 
-                    $value = $this->security->xss_clean($value);
-                    $this->db->where('id',$insert_id);
-                    $this->db->update('tblleads',array($field=>$value));
-                }
+                        foreach ($insert_lead_fields as $field => $value) {
+                            if ($field == 'country') {
+                                if ($value == '') {
+                                    $value = 0;
+                                } else {
+                                    $this->db->where('iso2', $value);
+                                    $this->db->or_where('short_name', $value);
+                                    $this->db->or_where('long_name', $value);
+                                    $country = $this->db->get('tblcountries')->row();
+                                    if ($country) {
+                                        $value = $country->country_id;
+                                    } else {
+                                        $value = 0;
+                                    }
+                                }
+                            }
+                            $value = $this->security->xss_clean($value);
+                            $this->db->where('id', $insert_id);
+                            $this->db->update('tblleads', array(
+                                $field => $value
+                            ));
+                        }
+
+                        foreach($insert_lead_custom_fields as $cf_id => $value){
+                            $value = $this->security->xss_clean($value);
+                            $this->db->insert('tblcustomfieldsvalues',array(
+                                'relid'=>$insert_id,
+                                'fieldto'=>'leads',
+                                'fieldid'=>$cf_id,
+                                'value'=>$value
+                                ));
+                        }
 
                         $this->db->insert('tblleadsemailintegrationemails', array(
                             'leadid' => $insert_id,
@@ -1216,13 +1288,13 @@ class Cron_model extends CRM_Model
                 $path = $path . $file_name;
                 $fp   = fopen($path, "w+");
                 if (fwrite($fp, $_attachment['content'])) {
-                    $lead_attachment = array();
+                    $lead_attachment   = array();
                     $lead_attachment[] = array(
                         'file_name' => $file_name,
-                        'filetype'=>get_mime_by_extension($attachment['name']),
-                        'staffid'=>0,
-                        );
-                    $attachment_id = $this->misc_model->add_attachment_to_database($leadid,'lead',$lead_attachment);
+                        'filetype' => get_mime_by_extension($attachment['name']),
+                        'staffid' => 0
+                    );
+                    $attachment_id     = $this->misc_model->add_attachment_to_database($leadid, 'lead', $lead_attachment);
                     if ($attachment_id) {
                         $this->leads_model->log_lead_activity($leadid, 'not_lead_imported_attachment', true);
                     }

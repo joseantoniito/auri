@@ -1,4 +1,5 @@
 <?php
+defined('BASEPATH') OR exit('No direct script access allowed');
 /**
  * Remove <br /> html tags from string to show in textarea with new linke
  * @param  string $text
@@ -16,6 +17,45 @@ function clear_textarea_breaks($text)
     $_text  = str_ireplace($breaks, "", $_text);
     $_text  = trim($_text);
     return $_text;
+}
+
+function app_stylesheet($path,$filename){
+    if(get_option('use_minified_files') == 1){
+        $original_file_name = $filename;
+        $_temp = explode('.',$filename);
+        $last = count($_temp) -1;
+        $extension = $_temp[$last];
+        unset($_temp[$last]);
+        $filename = '';
+        foreach($_temp as $t){
+            $filename .= $t.'.';
+        }
+        $filename.= 'min.'.$extension;
+        if(!file_exists($path.'/'.$filename)){
+            $filename = $original_file_name;
+        }
+    }
+    return '<link href="'.base_url($path.'/'.$filename).'" rel="stylesheet">'.PHP_EOL;
+}
+
+function app_script($path,$filename){
+
+    if(get_option('use_minified_files') == 1){
+        $original_file_name = $filename;
+        $_temp = explode('.',$filename);
+        $last = count($_temp) -1;
+        $extension = $_temp[$last];
+        unset($_temp[$last]);
+        $filename = '';
+        foreach($_temp as $t){
+            $filename .= $t.'.';
+        }
+        $filename.= 'min.'.$extension;
+        if(!file_exists($path.'/'.$filename)){
+            $filename = $original_file_name;
+        }
+    }
+    return '<script src="'.base_url($path.'/'.$filename).'"></script>'.PHP_EOL;
 }
 /**
  * For more readable code created this function to render only yes or not values for settings
@@ -105,6 +145,7 @@ function init_relation_tasks_table($table_attributes = array())
     if ($table_attributes['data-new-rel-type'] == 'lead') {
         $name = 'rel-tasks-leads';
     }
+
     $table = '';
     $CI =& get_instance();
     $table_name = '.table-' . $name;
@@ -136,6 +177,8 @@ function init_relation_tasks_table($table_attributes = array())
 
 function init_relation_options($data, $type, $rel_id = '')
 {
+    $_data = array();
+
     $has_permission_projects_view  = has_permission('projects', '', 'view');
     $has_permission_customers_view = has_permission('customers', '', 'view');
     $has_permission_contracts_view = has_permission('contracts', '', 'view');
@@ -146,10 +189,8 @@ function init_relation_options($data, $type, $rel_id = '')
     $is_admin                      = is_admin();
     $CI =& get_instance();
     $CI->load->model('projects_model');
-    echo '<option value=""></option>';
 
     foreach ($data as $relation) {
-        $selected        = '';
         $relation_values = get_relation_values($relation, $type);
         if ($type == 'project') {
             if (!$has_permission_projects_view) {
@@ -170,31 +211,32 @@ function init_relation_options($data, $type, $rel_id = '')
                 }
             }
         } else if ($type == 'contract') {
-            if (!$has_permission_contracts_view && $rel_id != $relation_values['id']) {
+            if (!$has_permission_contracts_view && $rel_id != $relation_values['id'] && $relation_values['addedfrom'] != get_staff_user_id()) {
                 continue;
             }
         } else if ($type == 'invoice') {
-            if (!$has_permission_invoices_view && $rel_id != $relation_values['id']) {
+            if (!$has_permission_invoices_view && $rel_id != $relation_values['id'] && $relation_values['addedfrom'] != get_staff_user_id()) {
                 continue;
             }
         } else if ($type == 'estimate') {
-            if (!$has_permission_estimates_view && $rel_id != $relation_values['id']) {
+            if (!$has_permission_estimates_view && $rel_id != $relation_values['id'] && $relation_values['addedfrom'] != get_staff_user_id()) {
                 continue;
             }
         } else if ($type == 'expense') {
-            if (!$has_permission_expenses_view && $rel_id != $relation_values['id']) {
+            if (!$has_permission_expenses_view && $rel_id != $relation_values['id'] && $relation_values['addedfrom'] != get_staff_user_id()) {
                 continue;
             }
         } else if ($type == 'proposal') {
-            if (!$has_permission_proposals_view && $rel_id != $relation_values['id']) {
+            if (!$has_permission_proposals_view && $rel_id != $relation_values['id'] && $relation_values['addedfrom'] != get_staff_user_id()) {
                 continue;
             }
         }
-        if ($rel_id == $relation_values['id']) {
-            $selected = ' selected';
-        }
-        echo '<option value="' . $relation_values['id'] . '"' . $selected . '>' . $relation_values['name'] . '</option>';
+
+        $_data[] = $relation_values;
+      //  echo '<option value="' . $relation_values['id'] . '"' . $selected . '>' . $relation_values['name'] . '</option>';
     }
+
+    return $_data;
 }
 function ticket_priority_translate($id)
 {
@@ -373,12 +415,14 @@ function render_datetime_input($name, $label = '', $value = '', $input_attrs = a
 }
 function render_textarea($name, $label = '', $value = '', $textarea_attrs = array(), $form_group_attr = array(), $form_group_class = '', $textarea_class = '')
 {
+
     $textarea         = '';
     $_form_group_attr = '';
     $_textarea_attrs  = '';
     if (!isset($textarea_attrs['rows'])) {
         $textarea_attrs['rows'] = 4;
     }
+
     foreach ($textarea_attrs as $key => $val) {
         // tooltips
         if ($key == 'title') {
@@ -408,6 +452,7 @@ function render_textarea($name, $label = '', $value = '', $textarea_attrs = arra
         $v = $value;
     }
     $textarea .= '<textarea id="' . $name . '" name="' . $name . '" class="form-control' . $textarea_class . '" ' . $_textarea_attrs . '>' . set_value($name, $v) . '</textarea>';
+
     $textarea .= '</div>';
     return $textarea;
 }
@@ -567,6 +612,7 @@ function render_datatable($headings = array(), $class = '', $additional_classes 
     foreach ($table_attributes as $key => $val) {
         $_table_attributes .= $key . '=' . '"' . $val . '" ';
     }
+
     $table = '<div class="' . $IEfix . '"><table' . $_table_attributes . 'class="table table-striped table-' . $class . '' . $_additional_classes . '">';
     $table .= '<thead>';
     $table .= '<tr>';
@@ -724,15 +770,9 @@ function AdminTicketsTableStructure($name = '', $bulk_action = false)
 <th><?php
     echo _l('ticket_dt_department');
 ?></th>
-<?php
-    if (get_option('services') == 1) {
-?>
-<th><?php
+<th<?php if(get_option('services') == 0){echo ' class="not_visible"'; }?>><?php
         echo _l('ticket_dt_service');
 ?></th>
-<?php
-    }
-?>
 <th><?php
     echo _l('ticket_dt_submitter');
 ?></th>
@@ -813,35 +853,39 @@ function format_task_status($id, $text = false, $clean = false)
     return '<span class="inline-block ' . $class . '">' . $status_name . '</span>';
 }
 
-function get_table_items_html_and_taxes($items, $type,$admin_preview = false)
+function get_table_items_and_taxes($items, $type, $admin_preview = false)
 {
     $result['html']    = '';
     $result['taxes']   = array();
     $_calculated_taxes = array();
     $i                 = 1;
     foreach ($items as $item) {
-        $_item = '';
-        $tr_sortable = '';
+        $_item             = '';
+        $tr_sortable       = '';
         $td_first_sortable = '';
-        if($admin_preview == true){
-            $tr_sortable = ' class="sortable" data-item-id="'.$item['id'].'"';
+        if ($admin_preview == true) {
+            $tr_sortable       = ' class="sortable" data-item-id="' . $item['id'] . '"';
             $td_first_sortable = ' class="dragger item_no"';
         }
 
-        $_item .= '<tr'.$tr_sortable.'>';
-        $_item .= '<td'.$td_first_sortable.'>' . $i . '</td>';
-        $_item .= '<td class="description"><span class="bold">' . $item['description'] . '</span><br /><span class="text-muted">' . $item['long_description'] . '</span></td>';
-        $_item .= '<td>' . floatVal($item['qty']) . '</td>';
-        $_item .= '<td>' . _format_number($item['rate']) . '</td>';
+        $_item .= '<tr' . $tr_sortable . '>';
+        $_item .= '<td' . $td_first_sortable . ' align="center">' . $i . '</td>';
+        $_item .= '<td class="description" align="left;"><span class="bold">' . $item['description'] . '</span><br /><span style="color:#777;">' . $item['long_description'] . '</span></td>';
+        $_item .= '<td align="right">' . floatVal($item['qty']);
+        if ($item['unit']) {
+            $_item .= ' ' . $item['unit'];
+        }
+        $_item .= '</td>';
+        $_item .= '<td align="right">' . _format_number($item['rate']) . '</td>';
         if (get_option('show_tax_per_item') == 1) {
-            $_item .= '<td>';
+            $_item .= '<td align="right">';
         }
         $item_taxes = array();
         if ($type == 'proposal') {
             $item_taxes = get_proposal_item_taxes($item['id']);
-        } else if ($type == 'estimate'){
+        } else if ($type == 'estimate') {
             $item_taxes = get_estimate_item_taxes($item['id']);
-        } else if($type == 'invoice'){
+        } else if ($type == 'invoice') {
             $item_taxes = get_invoice_item_taxes($item['id']);
         }
         if (count($item_taxes) > 0) {
@@ -877,82 +921,27 @@ function get_table_items_html_and_taxes($items, $type,$admin_preview = false)
         if (get_option('show_tax_per_item') == 1) {
             $_item .= '</td>';
         }
-        $_item .= '<td class="amount">' . _format_number(($item['qty'] * $item['rate'])) . '</td>';
+        $_item .= '<td class="amount" align="right">' . _format_number(($item['qty'] * $item['rate'])) . '</td>';
         $_item .= '</tr>';
         $result['html'] .= $_item;
         $i++;
     }
     return $result;
 }
-function get_table_items_pdf_and_taxes($items,$type){
-    $result['html'] = '';
-    $result['taxes'] = array();
 
-    $_calculated_taxes = array();
-    $i = 1;
-    foreach ($items as $item) {
-        $tblhtml = '';
-        $tblhtml .= '<tr>';
-        $tblhtml .= '<td align="center">' . $i . '</td>';
-        $tblhtml .= '<td align="left">' . $item['description'] . '<br /><span style="color:#777">' . $item['long_description'] . '</span></td>';
-        $tblhtml .= '<td align="right">' . floatVal($item['qty']) . '</td>';
-        $tblhtml .= '<td align="right">' . _format_number($item['rate']) . '</td>';
-        if (get_option('show_tax_per_item') == 1) {
-            $tblhtml .= '<td align="right">';
-        }
-
-        $item_taxes = array();
-        if ($type == 'proposal') {
-            $item_taxes = get_proposal_item_taxes($item['id']);
-        } else if ($type == 'estimate'){
-            $item_taxes = get_estimate_item_taxes($item['id']);
-        } else if($type == 'invoice'){
-            $item_taxes = get_invoice_item_taxes($item['id']);
-        }
-
-        if (count($item_taxes) > 0) {
-            foreach ($item_taxes as $tax) {
-                $calc_tax     = 0;
-                $tax_not_calc = false;
-                if (!in_array($tax['taxname'], $_calculated_taxes)) {
-                    array_push($_calculated_taxes, $tax['taxname']);
-                    $tax_not_calc = true;
-                }
-                if ($tax_not_calc == true) {
-                    $result['taxes'][$tax['taxname']]          = array();
-                    $result['taxes'][$tax['taxname']]['total'] = array();
-                    array_push($result['taxes'][$tax['taxname']]['total'], (($item['qty'] * $item['rate']) / 100 * $tax['taxrate']));
-                    $result['taxes'][$tax['taxname']]['tax_name'] = $tax['taxname'];
-                    $result['taxes'][$tax['taxname']]['taxrate']  = $tax['taxrate'];
-                } else {
-                    array_push($result['taxes'][$tax['taxname']]['total'], (($item['qty'] * $item['rate']) / 100 * $tax['taxrate']));
-                }
-                if (get_option('show_tax_per_item') == 1) {
-                    if ((count($item_taxes) > 1 && get_option('remove_tax_name_from_item_table') == false) || get_option('remove_tax_name_from_item_table') == false || mutiple_taxes_found_for_item($item_taxes)) {
-                        $tblhtml .= str_replace('|', ' ', $tax['taxname']) . '%<br />';
-                    } else {
-                    // Show only the percent of the tax if one tax applied
-                        $tblhtml .= $tax['taxrate'] . '%';
-                    }
-                }
-
-            }
-        } else {
-            if (get_option('show_tax_per_item') == 1) {
-                $tblhtml .= '0%';
-            }
-        }
-        if (get_option('show_tax_per_item') == 1) {
-            $tblhtml .= '</td>';
-        }
-
-        $tblhtml .= '<td align="right">' . _format_number(($item['qty'] * $item['rate'])) . '</td>';
-        $tblhtml .= '</tr>';
-        $i++;
-        $result['html'] .= $tblhtml;
-    }
-
-    return $result;
+/**
+ * Deprecated
+ */
+function get_table_items_html_and_taxes($items, $type, $admin_preview = false)
+{
+    return get_table_items_and_taxes($items, $type, $admin_preview);
+}
+/**
+ * Deprecated
+ */
+function get_table_items_pdf_and_taxes($items, $type)
+{
+    return get_table_items_and_taxes($items, $type);
 }
 /**
  * Callback for check_for_links

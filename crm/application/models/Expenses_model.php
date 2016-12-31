@@ -26,6 +26,7 @@ class Expenses_model extends CRM_Model
              if($expense){
                 $expense->attachment = '';
                 $expense->filetype = '';
+                $expense->attachment_added_from = 0;
 
                 $this->db->where('rel_id',$id);
                 $this->db->where('rel_type','expense');
@@ -34,6 +35,7 @@ class Expenses_model extends CRM_Model
                 if($file){
                     $expense->attachment = $file->file_name;
                     $expense->filetype = $file->filetype;
+                    $expense->attachment_added_from = $file->staffid;
                 }
 
                 $this->load->model('currencies_model');
@@ -144,7 +146,17 @@ class Expenses_model extends CRM_Model
         }
         return false;
     }
+    public function get_child_expenses($id){
+        $this->db->select('id');
+        $this->db->where('recurring_from',$id);
+        $expenses = $this->db->get('tblexpenses')->result_array();
 
+        $_expenses = array();
+        foreach($expenses as $expense){
+            $_expenses[] = $this->get($expense['id']);
+        }
+        return $_expenses;
+    }
     public function get_expenses_total($data)
     {
 
@@ -174,6 +186,8 @@ class Expenses_model extends CRM_Model
             }
         }
         $symbol = $this->currencies_model->get_currency_symbol($currencyid);
+
+        $has_permission_view = has_permission('expenses','','view');
         $_result = array();
 
         for($i = 1;$i<=5;$i++){
@@ -194,6 +208,10 @@ class Expenses_model extends CRM_Model
             }
             if(isset($data['project_id']) && $data['project_id'] != ''){
                 $this->db->where('project_id',$data['project_id']);
+            }
+
+            if(!$has_permission_view){
+                $this->db->where('addedfrom',get_staff_user_id());
             }
             switch($i){
                 case 1:
@@ -461,6 +479,7 @@ class Expenses_model extends CRM_Model
         $modes      = $this->payment_modes_model->get('',array('expenses_only !='=>1));
         $temp_modes = array();
         foreach ($modes as $mode) {
+            if($mode['selected_by_default'] == 0){continue;}
             $temp_modes[] = $mode['id'];
         }
 
@@ -476,6 +495,7 @@ class Expenses_model extends CRM_Model
             $new_invoice_data['newitems'][1]['long_description'] .= PHP_EOL.$expense->expense_name;
         }
 
+        $new_invoice_data['newitems'][1]['unit']              = '';
         $new_invoice_data['newitems'][1]['qty']              = 1;
         $new_invoice_data['newitems'][1]['taxname']          = array();
         if ($expense->tax != 0) {

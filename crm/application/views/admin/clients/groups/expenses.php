@@ -5,7 +5,7 @@
 <?php if(has_permission('expenses','','create')){ ?>
 <a href="<?php echo admin_url('expenses/expense?customer_id='.$client->userid); ?>" class="btn btn-info mbot25<?php if($client->active == 0){echo ' disabled';} ?>"><?php echo _l('new_expense'); ?></a>
 <?php } ?>
-<?php if(has_permission('expenses','','view')){ ?>
+<div id="expenses_total"></div>
 <?php
 $table_data = array(
     '#',
@@ -26,5 +26,5 @@ foreach($custom_fields as $field){
 }
 render_datatable($table_data, 'expenses-single-client');
 ?>
-<?php } ?>
+
 <?php } ?>

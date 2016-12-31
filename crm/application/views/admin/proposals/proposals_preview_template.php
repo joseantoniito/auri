@@ -29,7 +29,7 @@
             <?php echo _l('view_tracking'); ?>
             </a>
          </li>
-         <li class="pull-right" role="presentation">
+         <li role="presentation">
            <a href="#" onclick="small_table_full_view(); return false;" data-toggle="tooltip" data-title="<?php echo _l('toggle_full_view'); ?>" class="toggle_view">
             <i class="fa fa-expand"></i></a>
          </li>
@@ -41,7 +41,7 @@
          </div>
          <div class="col-md-9 text-right _buttons proposal_buttons">
          <?php if(has_permission('proposals','','edit')){ ?>
-            <a href="<?php echo admin_url('proposals/proposal/'.$proposal->id); ?>" data-toggle="tooltip" title="<?php echo _l('proposal_edit'); ?>" class="btn btn-default btn-with-tooltip" data-placement="bottom"><i class="fa fa-pencil-square-o"></i></a>
+            <a href="<?php echo admin_url('proposals/proposal/'.$proposal->id); ?>" data-placement="left" data-toggle="tooltip" title="<?php echo _l('proposal_edit'); ?>" class="btn btn-default btn-with-tooltip" data-placement="bottom"><i class="fa fa-pencil-square-o"></i></a>
             <?php } ?>
             <a href="<?php echo admin_url('proposals/pdf/'.$proposal->id.'?print=true'); ?>" target="_blank" class="btn btn-default btn-with-tooltip" data-toggle="tooltip" title="<?php echo _l('print'); ?>" data-placement="bottom"><i class="fa fa-print"></i></a>
             <a href="<?php echo admin_url('proposals/pdf/'.$proposal->id); ?>" class="btn btn-default btn-with-tooltip" data-toggle="tooltip" title="<?php echo _l('proposal_pdf'); ?>" data-placement="bottom"><i class="fa fa-file-pdf-o"></i></a>
@@ -140,6 +140,9 @@
                            <?php if(get_option('invoice_company_phonenumber') != ''){ ?>
                            <?php echo get_option('invoice_company_phonenumber'); ?><br />
                            <?php } ?>
+                           <?php if(get_option('company_vat') != ''){ ?>
+                           <?php echo _l('company_vat_number').': '. get_option('company_vat'); ?><br />
+                           <?php } ?>
                            <?php
                               // check for company custom fields
                               $custom_company_fields = get_company_custom_fields();
@@ -218,7 +221,7 @@
                            }
                            ?>
                         <a href="#" data-toggle="tooltip" onclick="toggle_file_visibility(<?php echo $attachment['id']; ?>,<?php echo $proposal->id; ?>,this); return false;" data-title="<?php echo $tooltip; ?>"><i class="fa <?php echo $icon; ?>" aria-hidden="true"></i></a>
-                        <?php if($attachment['staffid'] == get_staff_user_id() || has_permission('proposal','','delete')){ ?>
+                        <?php if($attachment['staffid'] == get_staff_user_id() || is_admin()){ ?>
                         <a href="#" class="text-danger" onclick="delete_proposal_attachment(<?php echo $attachment['id']; ?>); return false;"><i class="fa fa-times"></i></a>
                         <?php } ?>
                      </div>

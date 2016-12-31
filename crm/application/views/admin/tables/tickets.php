@@ -5,31 +5,30 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 $aColumns = array(
     'tbltickets.ticketid',
     'subject',
-    'tbldepartments.name',
-    'company',
-    'tblticketstatus.name',
-    'tblpriorities.name',
+    'tbldepartments.name as department_name',
+    'tblservices.name as service_name',
+    'CASE company WHEN "" THEN (SELECT CONCAT(firstname, " ", lastname) FROM tblcontacts WHERE userid = tblclients.userid and is_primary = 1) ELSE company END as company',
+    'status',
+    'priority',
     'lastreply',
     'tbltickets.date'
     );
+
+$companyColumn = 4;
 if($this->_instance->input->get('bulk_actions')){
     array_unshift($aColumns, '1');
+    $companyColumn++;
 }
+
 $additionalSelect = array(
     'adminread',
     'tbltickets.userid',
     'statuscolor',
-    'tbltickets.name',
+    'tbltickets.name as ticket_opened_by_name',
     'tbltickets.email',
     'tbltickets.userid',
-    'tblticketstatus.ticketstatusid',
-    'tblpriorities.priorityid',
     'assigned',
     );
-
-if (get_option('services') == 1) {
-    array_splice($aColumns, 4, 0, 'tblservices.name');
-}
 
 $join = array(
     'LEFT JOIN tblservices ON tblservices.serviceid = tbltickets.service',
@@ -125,7 +124,11 @@ $sIndexColumn = 'ticketid';
 $sTable       = 'tbltickets';
 $result  = data_tables_init($aColumns, $sIndexColumn, $sTable, $join, $where, $additionalSelect);
 $output  = $result['output'];
+
+
 $rResult = $result['rResult'];
+
+
 foreach ($rResult as $aRow) {
     $row = array();
     for ($i = 0; $i < count($aColumns); $i++) {
@@ -153,18 +156,18 @@ foreach ($rResult as $aRow) {
                 }
             }
             $_data = '<a href="' . admin_url('tickets/ticket/' . $aRow['tbltickets.ticketid']) . '" class="valign">' . $_data . '</a>';
-        } else if ($aColumns[$i] == 'company') {
+        } else if ($i == $companyColumn) {
             if ($aRow['userid'] != 0) {
                 $_data = '<a href="' . admin_url('clients/client/' . $aRow['userid']) . '">' . $aRow['company'] . '</a>';
             } else {
-                $_data = $aRow['name'];
+                $_data = $aRow['ticket_opened_by_name'];
             }
-        } else if ($aColumns[$i] == 'tblticketstatus.name') {
-            $_data = '<span class="label inline-block" style="border:1px solid ' . $aRow["statuscolor"] . '; color:' . $aRow['statuscolor'] . '">' . ticket_status_translate($aRow['ticketstatusid']) . '</span>';
+        } else if ($aColumns[$i] == 'status') {
+            $_data = '<span class="label inline-block" style="border:1px solid ' . $aRow["statuscolor"] . '; color:' . $aRow['statuscolor'] . '">' . ticket_status_translate($aRow['status']) . '</span>';
         } else if ($aColumns[$i] == 'tbltickets.date') {
             $_data = _dt($_data);
-        } else if($aColumns[$i] == 'tblpriorities.name'){
-            $_data = ticket_priority_translate($aRow['priorityid']);
+        } else if($aColumns[$i] == 'priority'){
+            $_data = ticket_priority_translate($aRow['priority']);
         } else {
            if(strpos($aColumns[$i],'date_picker_') !== false){
              $_data = _d($_data);

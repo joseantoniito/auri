@@ -1,5 +1,21 @@
 <?php
 $dimensions = $pdf->getPageDimensions();
+if($tag != ''){
+    $pdf->SetFillColor(240,240,240);
+    $pdf->SetDrawColor(245,245,245);
+    $pdf->SetXY(0,0);
+    $pdf->SetFont($font_name,'B',15);
+    $pdf->SetTextColor(0);
+    $pdf->SetLineWidth(0.75);
+    $pdf->StartTransform();
+    $pdf->Rotate(-35,109,235);
+    $pdf->Cell(100,1,mb_strtoupper($tag,'UTF-8'),'TB',0,'C','1');
+    $pdf->StopTransform();
+    $pdf->SetFont($font_name,'',$font_size);
+    $pdf->setX(10);
+    $pdf->setY(10);
+}
+
 $pdf_logo_url = pdf_logo_url();
 // Fix for logo width on proposal PDF
 $pdf_logo_url = str_replace(get_option('pdf_logo_width').'px',(get_option('pdf_logo_width')+50).'px',$pdf_logo_url);
@@ -14,6 +30,9 @@ $proposal_info .= get_option('invoice_company_country_code') . ' ';
 $proposal_info .= get_option('invoice_company_postal_code') . ' ';
 if(get_option('invoice_company_phonenumber') != ''){
     $proposal_info .= '<br />'.get_option('invoice_company_phonenumber');
+}
+if(get_option('company_vat') != ''){
+    $proposal_info .= '<br />'.get_option('company_vat');
 }
 // Check for company custom fields
 $custom_company_fields = get_company_custom_fields();
@@ -105,7 +124,7 @@ $items_html = '<table width="100%" bgcolor="#fff" cellspacing="0" cellpadding="5
 // Items
 $items_html .= '<tbody>';
 
-$items_data = get_table_items_pdf_and_taxes($proposal->items,'proposal');
+$items_data = get_table_items_and_taxes($proposal->items,'proposal');
 
 $taxes = $items_data['taxes'];
 $items_html .= $items_data['html'];

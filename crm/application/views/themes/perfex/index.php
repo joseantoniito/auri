@@ -8,11 +8,6 @@ if($use_navigation == true){
 	<div id="content">
 		<div class="container">
 			<div class="row">
-				<?php if(is_staff_logged_in() && $use_navigation == true){ ?>
-					<div id="staff_logged_in" class="alert alert-danger logged-in-as">
-						You are logged in as <a href="<?php echo admin_url(); ?>">administrator</a>
-					</div>
-					<?php } ?>
 					<?php get_template_part('alerts'); ?>
 					<div class="clearfix"></div>
 					<?php

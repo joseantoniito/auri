@@ -102,10 +102,10 @@ class Projects extends Admin_controller
         $data['statuses']              = $this->projects_model->get_project_statuses();
         $data['staff']                 = $this->staff_model->get('', 1);
 
-        $where_clients = 'active=1';
+        $where_clients = 'tblclients.active=1';
 
         if(!has_permission('customers','','view')) {
-            $where_clients .= ' AND userid IN (SELECT customer_id FROM tblcustomeradmins WHERE staff_id='.get_staff_user_id().')';
+            $where_clients .= ' AND tblclients.userid IN (SELECT customer_id FROM tblcustomeradmins WHERE staff_id='.get_staff_user_id().')';
         }
 
         $data['customers']    = $this->clients_model->get('',$where_clients);
@@ -134,11 +134,13 @@ class Projects extends Admin_controller
             $data['invoices_statuses']     = $this->invoices_model->get_statuses();
             $data['chosen_ticket_status']  = '';
             $data['project']               = $project;
-            if (!$this->input->get('group') || ($this->input->get('group') == 'project_invoices' && !has_permission('invoices', '', 'view')) || $this->input->get('group') == 'project_expenses' && (!has_permission('expenses', '', 'view') && !has_permission('expenses', '', 'create'))) {
+
+            if (!$this->input->get('group')) {
                 $view = 'project_overview';
             } else {
                 $view = $this->input->get('group');
             }
+
             $data['currency']                  = $this->projects_model->get_currency($id);
             $data['project_total_days']        = round((human_to_unix($data['project']->deadline . ' 00:00') - human_to_unix($data['project']->start_date . ' 00:00')) / 3600 / 24);
             $data['project_days_left']         = $data['project_total_days'];
@@ -157,7 +159,7 @@ class Projects extends Admin_controller
                 $__total_where_tasks .= ' AND tblstafftasks.id IN (SELECT taskid FROM tblstafftaskassignees WHERE staffid = ' . get_staff_user_id() . ')';
 
                 if (get_option('show_all_tasks_for_project_member') == 1) {
-                    $__total_where_tasks .= ' OR (rel_type="project" AND rel_id IN (SELECT project_id FROM tblprojectmembers WHERE staff_id=' . get_staff_user_id() . '))';
+                    $__total_where_tasks .= ' AND (rel_type="project" AND rel_id IN (SELECT project_id FROM tblprojectmembers WHERE staff_id=' . get_staff_user_id() . '))';
                 }
             }
             $where = ($__total_where_tasks == '' ? '' : $__total_where_tasks . ' AND ') . 'status != 5';
@@ -223,6 +225,7 @@ class Projects extends Admin_controller
             $data['projects_assets']       = true;
             $data['circle_progress_asset'] = true;
             $data['accounting_assets'] = true;
+
             $this->load->view('admin/projects/view', $data);
         } else {
             access_denied('Project View');
@@ -633,7 +636,8 @@ class Projects extends Admin_controller
             $data['taxes']      = $this->taxes_model->get();
             $data['currencies'] = $this->currencies_model->get();
             $this->load->model('invoice_items_model');
-            $data['items']   = $this->invoice_items_model->get();
+            $data['items'] = $this->invoice_items_model->get_grouped();
+            $data['items_groups'] = $this->invoice_items_model->get_groups();
             $data['clients'] = $this->clients_model->get();
 
             $data['staff']          = $this->staff_model->get('', 1);
@@ -676,6 +680,7 @@ class Projects extends Admin_controller
                     } else if ($project->billing_type == 2) {
                         $item['rate'] = $project->project_rate_per_hour;
                     }
+                    $item['unit'] = '';
                     $items[] = $item;
                 } else if ($type == 'task_per_item') {
                     foreach ($tasks as $task_id) {
@@ -689,6 +694,7 @@ class Projects extends Admin_controller
                             $item['rate'] = $task->hourly_rate;
                         }
                         $item['task_id'] = $task_id;
+                        $item['unit'] = '';
                         $items[]         = $item;
                     }
                 } else if ($type == 'timesheets_individualy') {
@@ -708,6 +714,7 @@ class Projects extends Admin_controller
                             } else if ($project->billing_type == 3) {
                                 $item['rate'] = $timesheet['task_data']->hourly_rate;
                             }
+                            $item['unit'] = '';
                             $items[] = $item;
                         }
                     }
@@ -741,6 +748,7 @@ class Projects extends Admin_controller
                     }
                     $item['rate']  = $expense->amount;
                     $item['order'] = 1;
+                    $item['unit'] = 1;
                     $items[]       = $item;
                 }
             }
@@ -755,7 +763,7 @@ class Projects extends Admin_controller
     {
         if ($this->input->is_ajax_request()) {
             $selected_milestone = '';
-            if ($task_id != '') {
+            if ($task_id != '' && $task_id != 'undefined') {
                 $task               = $this->tasks_model->get($task_id);
                 $selected_milestone = $task->milestone;
             }
@@ -794,8 +802,7 @@ class Projects extends Admin_controller
     }
     public function view_project_as_client($id, $clientid)
     {
-
-        if (has_permission('projects', '', 'create') || has_permission('projects', '', 'edit') || has_permission('projects', '', 'create') || has_permission('projects', '', 'edit') || has_permission('customers', '', 'view')) {
+        if (is_admin()) {
             $this->clients_model->login_as_client($clientid);
             redirect(site_url('clients/project/' . $id));
         }

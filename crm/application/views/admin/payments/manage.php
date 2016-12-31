@@ -1,9 +1,6 @@
 <?php init_head(); ?>
 <div id="wrapper">
 	<div class="content">
-		<div class="row">
-			<?php include_once(APPPATH . 'views/admin/includes/alerts.php'); ?>
-		</div>
 		<div class="panel_s">
 			<div class="panel-body">
 				<?php render_datatable(array(

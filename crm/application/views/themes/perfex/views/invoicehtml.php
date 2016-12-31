@@ -1,6 +1,6 @@
 <div class="col-md-12 page-pdf-html-logo">
     <?php get_company_logo('','pull-left'); ?>
-    <?php if(is_staff_logged_in() && has_permission('invoices')){ ?>
+    <?php if(is_staff_logged_in()){ ?>
     <a href="<?php echo admin_url(); ?>invoices/list_invoices/<?php echo $invoice->id; ?>" class="btn btn-info pull-right"><?php echo _l('goto_admin_area'); ?></a>
     <?php } else if(is_client_logged_in() && has_contact_permission('invoices')){ ?>
     <a href="<?php echo site_url('clients/invoices/'); ?>" class="btn btn-info pull-right"><?php echo _l('client_go_to_dashboard'); ?></a>
@@ -37,6 +37,9 @@
                         <?php echo get_option('invoice_company_city'); ?>, <?php echo get_option('invoice_company_country_code'); ?> <?php echo get_option('invoice_company_postal_code'); ?><br>
                         <?php if(get_option('invoice_company_phonenumber') != ''){ ?>
                         <?php echo get_option('invoice_company_phonenumber'); ?><br />
+                        <?php } ?>
+                        <?php if(get_option('company_vat') != ''){ ?>
+                        <?php echo _l('company_vat_number').': '. get_option('company_vat'); ?><br />
                         <?php } ?>
                         <?php
                             // check for company custom fields
@@ -104,7 +107,7 @@
                     }
                     ?>
                     <?php
-                            // check for invoice custom fields which is checked show on pdf
+                    // check for invoice custom fields which is checked show on pdf
                     $pdf_custom_fields = get_custom_fields('invoice',array('show_on_pdf'=>1));
                     foreach($pdf_custom_fields as $field){
                         $value = get_custom_field_value($invoice->id,$field['id'],'invoice');
@@ -142,16 +145,16 @@
                             </tr>
                         </thead>
                         <tbody>
-                           <?php
-                               $items_data = get_table_items_html_and_taxes($invoice->items,'invoice');
-                               $taxes = $items_data['taxes'];
-                               echo $items_data['html'];
-                           ?>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        <div class="col-md-6 col-md-offset-6">
+                         <?php
+                         $items_data = get_table_items_and_taxes($invoice->items,'invoice');
+                         $taxes = $items_data['taxes'];
+                         echo $items_data['html'];
+                         ?>
+                     </tbody>
+                 </table>
+             </div>
+         </div>
+         <div class="col-md-6 col-md-offset-6">
             <table class="table text-right">
                 <tbody>
                     <tr id="subtotal">
@@ -278,7 +281,7 @@
                                 <button type="submit" value="<?php echo $payment['paymentid']; ?>" class="btn btn-icon btn-default pull-right" name="paymentpdf"><i class="fa fa-file-pdf-o"></i></button>
                                 <?php echo form_close(); ?>
                             </td>
-                            <td><?php echo $payment['name']; ?> <?php if(!empty($payment['paymentmethod'])){echo '-'.$payment['paymentmethod']; } ?></td>
+                            <td><?php echo $payment['name']; ?> <?php if(!empty($payment['paymentmethod'])){echo ' - '.$payment['paymentmethod']; } ?></td>
                             <td><?php echo _d($payment['date']); ?></td>
                             <td><?php echo format_money($payment['amount'],$invoice->symbol); ?></td>
                         </tr>
@@ -309,7 +312,7 @@
                                         continue;
                                     }
                                     ?>
-                                    <div class="radio radio-primary">
+                                    <div class="radio radio-success">
                                         <input type="radio" value="<?php echo $mode['id']; ?>" id="pm_<?php echo $mode['id']; ?>" name="paymentmode">
                                         <label for="pm_<?php echo $mode['id']; ?>"><?php echo $mode['name']; ?></label>
                                     </div>
@@ -321,11 +324,12 @@
                                 }
                             } ?>
                             <div class="form-group">
+                                <hr />
                                 <?php if(get_option('allow_payment_amount_to_be_modified') == 1){ ?>
                                 <label for="amount" class="control-label"><?php echo _l('invoice_html_amount'); ?></label>
                                 <input type="number" data-total="<?php echo get_invoice_total_left_to_pay($invoice->id,$invoice->total); ?>" name="amount" class="form-control" value="<?php echo get_invoice_total_left_to_pay($invoice->id,$invoice->total); ?>">
                                 <?php } else {
-                                    echo '<hr />';
+
                                     echo '<span class="bold">' . _l('invoice_html_total_pay',format_money(get_invoice_total_left_to_pay($invoice->id,$invoice->total),$invoice->symbol)) . '</span>';
                                 } ?>
                             </div>

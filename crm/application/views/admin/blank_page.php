@@ -2,9 +2,15 @@
 <div id="wrapper">
 	<div class="content">
 		<div class="row">
-			<?php include_once(APPPATH . 'views/admin/includes/alerts.php'); ?>
-		</div>
-	</div>
+     <div class="col-md-12">
+       <div class="panel_s">
+         <div class="panel-body">
+              Something went wrong...
+         </div>
+       </div>
+     </div>
+    </div>
+</div>
 </div>
 <?php init_tail(); ?>
 </body>

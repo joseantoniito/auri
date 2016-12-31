@@ -35,18 +35,34 @@ class Proposals_model extends CRM_Model
         $default_pipeline_order_type = get_option('defaut_proposals_pipeline_sort_type');
         $limit                       = get_option('proposals_pipeline_limit');
 
+        $has_permission_view = has_permission('proposals','','view');
         $this->db->select('id,invoice_id,estimate_id,subject,rel_type,rel_id,total,date,open_till,currency,proposal_to,status');
         $this->db->from('tblproposals');
         $this->db->where('status', $status);
-
+        if(!$has_permission_view){
+            $this->db->where('addedfrom',get_staff_user_id());
+        }
         if ($search != '') {
-            $this->db->like('content', $search);
-            $this->db->or_like('subject', $search);
-            $this->db->or_like('total', $search);
-            $this->db->or_like('open_till', $search);
-            $this->db->or_like('proposal_to', $search);
-            $this->db->or_like('address', $search);
-            $this->db->or_like('email', $search);
+            $this->db->where('(
+                phone LIKE "%'.$search.'%"
+                OR
+                zip LIKE "%'.$search.'%"
+                OR
+                content LIKE "%'.$search.'%"
+                OR
+                state LIKE "%'.$search.'%"
+                OR
+                city LIKE "%'.$search.'%"
+                OR
+                email LIKE "%'.$search.'%"
+                OR
+                address LIKE "%'.$search.'%"
+                OR
+                proposal_to LIKE "%'.$search.'%"
+                OR
+                total LIKE "%'.$search.'%"
+                OR
+                subject LIKE "%'.$search.'%")');
         }
 
         if (isset($sort['sort_by']) && $sort['sort_by'] && isset($sort['sort']) && $sort['sort']) {
@@ -165,7 +181,9 @@ class Proposals_model extends CRM_Model
                         'rate' => number_format($item['rate'], 2, '.', ''),
                         'rel_id' => $insert_id,
                         'rel_type' => 'proposal',
-                        'item_order' => $item['order']
+                        'item_order' => $item['order'],
+                        'unit' => $item['unit']
+
                     ));
                     $itemid = $this->db->insert_id();
                     if ($itemid) {
@@ -342,7 +360,8 @@ class Proposals_model extends CRM_Model
                     'description' => $item['description'],
                     'long_description' => nl2br($item['long_description']),
                     'rate' => number_format($item['rate'], 2, '.', ''),
-                    'qty' => $item['qty']
+                    'qty' => $item['qty'],
+                    'unit'=>$item['unit']
                 ));
                 if ($this->db->affected_rows() > 0) {
                     $affectedRows++;
@@ -407,7 +426,8 @@ class Proposals_model extends CRM_Model
                     'rate' => number_format($item['rate'], 2, '.', ''),
                     'rel_id' => $id,
                     'rel_type' => 'proposal',
-                    'item_order' => $item['order']
+                    'item_order' => $item['order'],
+                    'unit'=>$item['unit']
                 ));
                 $new_item_added = $this->db->insert_id();
                 if ($new_item_added) {
@@ -757,6 +777,7 @@ class Proposals_model extends CRM_Model
             $insert_data['newitems'][$key]['description']      = $item['description'];
             $insert_data['newitems'][$key]['long_description'] = clear_textarea_breaks($item['long_description']);
             $insert_data['newitems'][$key]['qty']              = $item['qty'];
+            $insert_data['newitems'][$key]['unit']              = $item['unit'];
             $insert_data['newitems'][$key]['taxname']          = array();
             $taxes                                                   = get_proposal_item_taxes($item['id']);
             foreach ($taxes as $tax) {
@@ -799,14 +820,12 @@ class Proposals_model extends CRM_Model
      */
     public function mark_action_status($status, $id, $client = false)
     {
-        if (is_staff_logged_in()) {
-            $client = false;
-        }
         $original_proposal = $this->get($id);
         $this->db->where('id', $id);
         $this->db->update('tblproposals', array(
             'status' => $status
         ));
+
         if ($this->db->affected_rows() > 0) {
             // Client take action
             if ($client == true) {
@@ -953,7 +972,7 @@ class Proposals_model extends CRM_Model
             if (!empty($_data->company)) {
                 $data->to = $_data->company;
             } else {
-                $data->to = $_data->firstname . ' ' . $_data->lastname;
+                $data->to = $contact->firstname . ' ' . $contact->lastname;
             }
 
             $data->address = $_data->address;

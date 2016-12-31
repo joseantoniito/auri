@@ -11,7 +11,7 @@
     <link rel="stylesheet" type="text/css" media="screen" href="<?php echo base_url('assets/plugins/elFinder/themes/windows-10/css/theme.css'); ?>">
     <!-- elFinder JS (REQUIRED) -->
     <script src="<?php echo base_url('assets/plugins/elFinder/js/elfinder.min.js'); ?>"></script>
-    <link href="<?php echo base_url('assets/css/style.css'); ?>" rel="stylesheet">
+    <?php echo app_stylesheet('assets/css','style.css'); ?>
     <?php if(file_exists(FCPATH.'assets/plugins/elFinder/js/i18n/elfinder.'.$locale.'.js')){ ?>
     <script src="<?php echo base_url('assets/plugins/elFinder/js/i18n/elfinder.'.$locale.'.js'); ?>"></script>
     <?php } ?>

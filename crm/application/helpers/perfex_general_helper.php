@@ -1,4 +1,5 @@
 <?php
+defined('BASEPATH') OR exit('No direct script access allowed');
 header('Content-Type: text/html; charset=utf-8');
 /**
  * This function is deprecated
@@ -22,6 +23,7 @@ function add_encryption_key_old(){
     @chmod($config_path, FILE_READ_MODE);
     return $key;
 }
+
 function is_rtl($client_area = false){
 
     $CI =& get_instance();
@@ -347,6 +349,9 @@ function get_locale_key($language = 'english')
     }
     $locale = do_action('before_get_locale',$locale);
     return $locale;
+}
+function can_view_own($permission,$user_id){
+
 }
 /**
  * Check if staff user has permission

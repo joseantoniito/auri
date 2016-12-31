@@ -1,4 +1,5 @@
 <?php
+defined('BASEPATH') OR exit('No direct script access allowed');
 function is_client_id_used($id){
 
     $total = 0;
@@ -897,21 +898,23 @@ function get_locales()
         "Catalan" => 'ca',
         "Czech" => 'cs',
         "Danish" => 'da',
+        "Albanian" => 'sq',
         "German" => 'de',
         "Deutsch" => 'de',
         'Dutch' => 'de',
         "Greek" => 'el',
         "English" => 'en',
+        "Finland" => 'fi',
         "Spanish" => 'es',
         "Persian" => 'fa',
         "Finnish" => 'fi',
         "French" => 'fr',
         "Hebrew" => 'he',
+        "Hindi" => 'hi',
         'Indonesian' => 'id',
         "Hindi" => 'hi',
         "Croatian" => 'hr',
         "Hungarian" => 'hu',
-        "Indonesian" => 'id',
         "Icelandic" => 'is',
         "Italian" => 'it',
         "Japanese" => 'ja',
@@ -919,7 +922,7 @@ function get_locales()
         "Lithuanian" => 'lt',
         "Latvian" => 'lv',
         "Norwegian" => 'nb',
-        "Dutch" => 'nl',
+        "Netherlands" => 'nl',
         "Polish" => 'pl',
         "Portuguese" => 'pt',
         "Romanian" => 'ro',
@@ -966,12 +969,14 @@ function get_permission_conditions()
     return array(
         'contracts' => array(
             'view' => true,
+            'view_own' => true,
             'edit' => true,
             'create' => true,
             'delete' => true
         ),
         'tasks' => array(
             'view' => true,
+            'view_own' => false,
             'edit' => true,
             'create' => true,
             'delete' => true,
@@ -979,18 +984,21 @@ function get_permission_conditions()
         ),
         'reports' => array(
             'view' => true,
+            'view_own' => false,
             'edit' => false,
             'create' => false,
             'delete' => false
         ),
         'settings' => array(
             'view' => true,
+            'view_own' => false,
             'edit' => true,
-            'create' => true,
-            'delete' => true
+            'create' => false,
+            'delete' => false
         ),
         'projects' => array(
             'view' => true,
+            'view_own' => false,
             'edit' => true,
             'create' => true,
             'delete' => true,
@@ -998,90 +1006,98 @@ function get_permission_conditions()
         ),
         'surveys' => array(
             'view' => true,
+            'view_own' => false,
             'edit' => true,
             'create' => true,
             'delete' => true
         ),
         'staff' => array(
             'view' => true,
+            'view_own' => false,
             'edit' => true,
             'create' => true,
             'delete' => true
         ),
         'customers' => array(
             'view' => true,
+            'view_own' => false,
             'edit' => true,
             'create' => true,
             'delete' => true
         ),
         'email_templates' => array(
             'view' => true,
+            'view_own' => false,
             'edit' => true,
             'create' => false,
             'delete' => false
         ),
         'roles' => array(
             'view' => true,
-            'edit' => true,
-            'create' => true,
-            'delete' => true
-        ),
-        'manageDepartments' => array(
-            'view' => true,
+            'view_own' => false,
             'edit' => true,
             'create' => true,
             'delete' => true
         ),
         'expenses' => array(
             'view' => true,
+            'view_own' => true,
             'edit' => true,
             'create' => true,
             'delete' => true
         ),
         'bulk_pdf_exporter' => array(
             'view' => true,
+            'view_own' => false,
             'edit' => false,
             'create' => false,
             'delete' => false
         ),
         'goals' => array(
             'view' => true,
+            'view_own' => false,
             'edit' => true,
             'create' => true,
             'delete' => true
         ),
         'knowledge_base' => array(
             'view' => true,
+            'view_own' => false,
             'edit' => true,
             'create' => true,
             'delete' => true
         ),
         'proposals' => array(
             'view' => true,
+            'view_own' => true,
             'edit' => true,
             'create' => true,
             'delete' => true
         ),
         'estimates' => array(
             'view' => true,
+            'view_own' => true,
             'edit' => true,
             'create' => true,
             'delete' => true
         ),
         'payments' => array(
             'view' => true,
+            'view_own' => false,
             'edit' => true,
             'create' => true,
             'delete' => true
         ),
         'invoices' => array(
             'view' => true,
+            'view_own' => true,
             'edit' => true,
             'create' => true,
             'delete' => true
         ),
         'items' => array(
             'view' => true,
+            'view_own' => false,
             'edit' => true,
             'create' => true,
             'delete' => true
@@ -1099,25 +1115,25 @@ function get_proposal_templates(){
 function get_datatables_language_array()
 {
     $lang = array(
-        'emptyTable' => preg_replace("/{(\d+)}/", _l("dt_entries"), _l("dt_empty_table")),
-        'info' => preg_replace("/{(\d+)}/", _l("dt_entries"), _l("dt_info")),
-        'infoEmpty' => preg_replace("/{(\d+)}/", _l("dt_entries"), _l("dt_info_empty")),
-        'infoFiltered' => preg_replace("/{(\d+)}/", _l("dt_entries"), _l("dt_info_filtered")),
-        'lengthMenu' => preg_replace("/{(\d+)}/", _l("dt_entries"), _l("dt_length_menu")),
-        'loadingRecords' => _l('dt_loading_records'),
+        'emptyTable' => preg_replace("/{(\d+)}/", htmlentities(_l("dt_entries")), htmlentities(_l("dt_empty_table"))),
+        'info' => preg_replace("/{(\d+)}/", htmlentities(_l("dt_entries")), htmlentities(_l("dt_info"))),
+        'infoEmpty' => preg_replace("/{(\d+)}/", htmlentities(_l("dt_entries")), htmlentities(_l("dt_info_empty"))),
+        'infoFiltered' => preg_replace("/{(\d+)}/", htmlentities(_l("dt_entries")), htmlentities(_l("dt_info_filtered"))),
+        'lengthMenu' => preg_replace("/{(\d+)}/", htmlentities(_l("dt_entries")), htmlentities(_l("dt_length_menu"))),
+        'loadingRecords' => htmlentities(_l('dt_loading_records')),
         'processing' => '<div class="dt-loader"></div>',
         'search' => '<div class="input-group"><span class="input-group-addon"><span class="glyphicon glyphicon-search"></span></span>',
-        'searchPlaceholder' => _l('dt_search'),
-        'zeroRecords' => _l('dt_zero_records'),
+        'searchPlaceholder' => htmlentities(_l('dt_search')),
+        'zeroRecords' => htmlentities(_l('dt_zero_records')),
         'paginate' => array(
-            'first' => _l('dt_paginate_first'),
-            'last' => _l('dt_paginate_last'),
-            'next' => _l('dt_paginate_next'),
-            'previous' => _l('dt_paginate_previous')
+            'first' => htmlentities(_l('dt_paginate_first')),
+            'last' => htmlentities(_l('dt_paginate_last')),
+            'next' => htmlentities(_l('dt_paginate_next')),
+            'previous' => htmlentities(_l('dt_paginate_previous'))
         ),
         'aria' => array(
-            'sortAscending' => _l('dt_sort_ascending'),
-            'sortDescending' => _l('dt_sort_descending')
+            'sortAscending' => htmlentities(_l('dt_sort_ascending')),
+            'sortDescending' => htmlentities(_l('dt_sort_descending'))
         )
     );
     return $lang;
@@ -1125,22 +1141,22 @@ function get_datatables_language_array()
 function get_project_discussions_language_array()
 {
     $lang = array(
-        'discussion_add_comment' => _l('discussion_add_comment'),
-        'discussion_newest' => _l('discussion_newest'),
-        'discussion_oldest' => _l('discussion_oldest'),
-        'discussion_attachments' => _l('discussion_attachments'),
-        'discussion_send' => _l('discussion_send'),
-        'discussion_reply' => _l('discussion_reply'),
-        'discussion_edit' => _l('discussion_edit'),
-        'discussion_edited' => _l('discussion_edited'),
-        'discussion_you' => _l('discussion_you'),
-        'discussion_save' => _l('discussion_save'),
-        'discussion_delete' => _l('discussion_delete'),
-        'discussion_view_all_replies' => _l('discussion_view_all_replies'),
-        'discussion_hide_replies' => _l('discussion_hide_replies'),
-        'discussion_no_comments' => _l('discussion_no_comments'),
-        'discussion_no_attachments' => _l('discussion_no_attachments'),
-        'discussion_attachments_drop' => _l('discussion_attachments_drop')
+        'discussion_add_comment' => htmlentities(_l('discussion_add_comment')),
+        'discussion_newest' => htmlentities(_l('discussion_newest')),
+        'discussion_oldest' => htmlentities(_l('discussion_oldest')),
+        'discussion_attachments' => htmlentities(_l('discussion_attachments')),
+        'discussion_send' => htmlentities(_l('discussion_send')),
+        'discussion_reply' => htmlentities(_l('discussion_reply')),
+        'discussion_edit' => htmlentities(_l('discussion_edit')),
+        'discussion_edited' => htmlentities(_l('discussion_edited')),
+        'discussion_you' => htmlentities(_l('discussion_you')),
+        'discussion_save' => htmlentities(_l('discussion_save')),
+        'discussion_delete' => htmlentities(_l('discussion_delete')),
+        'discussion_view_all_replies' => htmlentities(_l('discussion_view_all_replies')),
+        'discussion_hide_replies' => htmlentities(_l('discussion_hide_replies')),
+        'discussion_no_comments' => htmlentities(_l('discussion_no_comments')),
+        'discussion_no_attachments' => htmlentities(_l('discussion_no_attachments')),
+        'discussion_attachments_drop' => htmlentities(_l('discussion_attachments_drop'))
     );
     return $lang;
 }
@@ -1154,10 +1170,13 @@ function render_admin_js_variables()
         'site_url' => site_url(),
         'admin_url' => admin_url(),
         '_is_mobile' => is_mobile(),
+        'company_is_required' => get_option('company_is_required'),
         'maximum_allowed_ticket_attachments' => get_option('maximum_allowed_ticket_attachments'),
+        'show_setup_menu_item_only_on_hover' => get_option('show_setup_menu_item_only_on_hover'),
+        'calendar_events_limit' => get_option('calendar_events_limit'),
+        'lang_unit' => htmlentities(_l('unit')),
         'max_php_ini_upload_size' => bytesToSize('', file_upload_max_size()),
-        'file_exceds_maxfile_size_in_form' => _l('file_exceds_maxfile_size_in_form'),
-        'view_permission_auto_checked' => _l('view_permission_auto_checked'),
+        'file_exceds_maxfile_size_in_form' => htmlentities(_l('file_exceds_maxfile_size_in_form')),
         'auto_check_for_new_notifications' => get_option('auto_check_for_new_notifications'),
         'tables_pagination_limit' => get_option('tables_pagination_limit'),
         'newsfeed_maximum_files_upload' => get_option('newsfeed_maximum_files_upload'),
@@ -1166,41 +1185,41 @@ function render_admin_js_variables()
         'decimal_separator' => get_option('decimal_separator'),
         'thousand_separator' => get_option('thousand_separator'),
         'currency_placement' => get_option('currency_placement'),
-        'drop_files_here_to_upload' => _l('drop_files_here_to_upload'),
-        'browser_not_support_drag_and_drop' => _l('browser_not_support_drag_and_drop'),
-        'remove_file' => _l('remove_file'),
-        'you_can_not_upload_any_more_files' => _l('you_can_not_upload_any_more_files'),
+        'drop_files_here_to_upload' => htmlentities(_l('drop_files_here_to_upload')),
+        'browser_not_support_drag_and_drop' => htmlentities(_l('browser_not_support_drag_and_drop')),
+        'remove_file' => htmlentities(_l('remove_file')),
+        'you_can_not_upload_any_more_files' => htmlentities(_l('you_can_not_upload_any_more_files')),
         'timezone' => get_option('default_timezone'),
-        'dt_length_menu_all' => _l("dt_length_menu_all"),
-        'dt_button_column_visibility' => _l('dt_button_column_visibility'),
-        'dt_button_reload' => _l('dt_button_reload'),
-        'dt_button_excel' => _l('dt_button_excel'),
-        'dt_button_csv' => _l('dt_button_csv'),
-        'dt_button_pdf' => _l('dt_button_pdf'),
-        'dt_button_print' => _l('dt_button_print'),
-        'dt_button_export' => _l('dt_button_export'),
-        'item_field_not_formated' => _l('numbers_not_formated_while_editing'),
-        'no_results_found' => _l('not_results_found'),
+        'dt_length_menu_all' => htmlentities(_l("dt_length_menu_all")),
+        'dt_button_column_visibility' => htmlentities(_l('dt_button_column_visibility')),
+        'dt_button_reload' => htmlentities(_l('dt_button_reload')),
+        'dt_button_excel' => htmlentities(_l('dt_button_excel')),
+        'dt_button_csv' => htmlentities(_l('dt_button_csv')),
+        'dt_button_pdf' => htmlentities(_l('dt_button_pdf')),
+        'dt_button_print' => htmlentities(_l('dt_button_print')),
+        'dt_button_export' => htmlentities(_l('dt_button_export')),
+        'item_field_not_formated' => htmlentities(_l('numbers_not_formated_while_editing')),
+        'no_results_found' => htmlentities(_l('not_results_found')),
         'google_api' => '',
         'calendarIDs' => '',
         'has_tasks_permission' => has_permission('tasks', '', 'create'),
         'invoice_due_after' => get_option('invoice_due_after'),
-        'media_files' => _l('media_files'),
-        'proposal_save' => _l('proposal_save'),
-        'contract_save' => _l('contract_save'),
-        'calendar_expand' => _l('calendar_expand'),
+        'media_files' => htmlentities(_l('media_files')),
+        'proposal_save' => htmlentities(_l('proposal_save')),
+        'contract_save' => htmlentities(_l('contract_save')),
+        'calendar_expand' => htmlentities(_l('calendar_expand')),
         'allowed_files' => get_option('allowed_files'),
-        'dropdown_non_selected_text' => _l('dropdown_non_selected_tex'),
-        'confirm_action_prompt' => _l('confirm_action_prompt'),
-        'mass_delete_btn' => _l('mass_delete'),
+        'dropdown_non_selected_text' => htmlentities(_l('dropdown_non_selected_tex')),
+        'confirm_action_prompt' => htmlentities(_l('confirm_action_prompt')),
+        'mass_delete_btn' => htmlentities(_l('mass_delete')),
         'calendar_first_day' => get_option('calendar_first_day'),
-        'estimate_number_exists' => _l('estimate_number_exists'),
-        'invoice_number_exists' => _l('invoice_number_exists'),
-        'no_results_text_search_dropdown' => _l('no_results_text_search_dropdown'),
-        'email_exists' => _l('email_exists'),
+        'estimate_number_exists' => htmlentities(_l('estimate_number_exists')),
+        'invoice_number_exists' => htmlentities(_l('invoice_number_exists')),
+        'no_results_text_search_dropdown' => htmlentities(_l('no_results_text_search_dropdown')),
+        'email_exists' => htmlentities(_l('email_exists')),
         'is_admin' => is_admin(),
         'is_staff_member' => is_staff_member(),
-        'invoice_task_billable_timers_found'=>_l('invoice_task_billable_timers_found'),
+        'invoice_task_billable_timers_found'=>htmlentities(_l('invoice_task_billable_timers_found')),
     );
     $js_vars     = do_action('before_render_js_vars_admin', $js_vars);
     echo '<script>';
@@ -1216,6 +1235,18 @@ function get_ticket_form_accepted_mimes()
     $all_form_ext               = $ticket_allowed_extensions;
     if (is_array($_ticket_allowed_extensions)) {
         foreach ($_ticket_allowed_extensions as $ext) {
+            $all_form_ext .= ',' . get_mime_by_extension($ext);
+        }
+    }
+    return $all_form_ext;
+}
+function get_form_accepted_mimes()
+{
+    $allowed_extensions  = get_option('allowed_files');
+    $_allowed_extensions = explode(',', $allowed_extensions);
+    $all_form_ext               = $allowed_extensions;
+    if (is_array($_allowed_extensions)) {
+        foreach ($_allowed_extensions as $ext) {
             $all_form_ext .= ',' . get_mime_by_extension($ext);
         }
     }
@@ -1255,7 +1286,7 @@ function is_cron_setup_required()
             if ($feature > 0) {
                 array_push($used_features, 'Surveys');
             }
-            $feature = total_rows('tblleadsemailintegration', array(
+            $feature = total_rows('tblleadsintegration', array(
                 'active' => 1
             ));
             $using_cron_features += $feature;
@@ -1385,6 +1416,7 @@ function get_staff_email_templates_slugs()
         'new-project-discussion-comment-to-staff',
         'staff-added-as-project-member',
         'new-staff-created',
+        'new-lead-assigned',
     );
 
     return do_action('staff_email_templates', $staff_email_templates_slugs);

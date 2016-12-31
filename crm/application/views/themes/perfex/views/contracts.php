@@ -1,13 +1,15 @@
 <div class="panel_s">
     <div class="panel-body">
-        <h4 class="bold no-margin text-muted"><?php echo _l('clients_contracts'); ?></h4>
+        <h4 class="no-margin"><?php echo _l('clients_contracts'); ?></h4>
     </div>
 </div>
 <div class="panel_s">
     <div class="panel-body">
         <div class="col-md-12">
-            <h4 class="text-muted bold"><?php echo _l('contract_summary_by_type'); ?></h4>
-            <canvas class="chart" height="100" id="contracts-by-type-chart"></canvas>
+            <p><?php echo _l('contract_summary_by_type'); ?></p>
+           <div class="relative" style="max-height:300px;">
+                <canvas class="chart" height="300" id="contracts-by-type-chart"></canvas>
+           </div>
         </div>
         <div class="clearfix"></div>
         <div class="table-responsive">

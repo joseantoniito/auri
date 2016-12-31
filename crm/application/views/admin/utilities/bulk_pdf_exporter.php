@@ -2,28 +2,26 @@
 <div id="wrapper">
     <div class="content">
         <div class="row">
-            <?php include_once(APPPATH . 'views/admin/includes/alerts.php'); ?>
             <div class="col-md-5">
                 <div class="panel_s">
-                    <div class="panel-heading">
-                        <?php echo $title; ?>
-                    </div>
                     <div class="panel-body">
+                        <h4 class="bold no-margin font-medium"><?php echo $title; ?></h4>
+                        <hr />
                         <?php echo form_open($this->uri->uri_string()); ?>
                         <div class="form-group">
                             <label for="export_type"><?php echo _l('bulk_pdf_export_select_type'); ?></label>
                             <select name="export_type" id="export_type" class="selectpicker" data-width="100%" data-none-selected-text="<?php echo _l('dropdown_non_selected_tex'); ?>">
                                 <option value=""></option>
-                                <?php if(has_permission('invoices','','view')){ ?>
+                                <?php if(has_permission('invoices','','view') || has_permission('invoices','','view_own')){ ?>
                                 <option value="invoices"><?php echo _l('bulk_export_pdf_invoices'); ?></option>
                                 <?php } ?>
-                                <?php if(has_permission('estimates','','view')){ ?>
+                                <?php if(has_permission('estimates','','view') || has_permission('estimates','','view_own')){ ?>
                                 <option value="estimates"><?php echo _l('bulk_export_pdf_estimates'); ?></option>
                                 <?php } ?>
-                                <?php if(has_permission('payments','','view')){ ?>
+                                <?php if(has_permission('payments','','view') || has_permission('invoices','','view_own')){ ?>
                                 <option value="payments"><?php echo _l('bulk_export_pdf_payments'); ?></option>
                                 <?php } ?>
-                                <?php if(has_permission('proposals','','view')){ ?>
+                                <?php if(has_permission('proposals','','view') || has_permission('proposals','','view_own')){ ?>
                                 <option value="proposals"><?php echo _l('bulk_export_pdf_proposals'); ?></option>
                                 <?php } ?>
                             </select>
@@ -66,44 +64,44 @@
                             <?php foreach($proposal_statuses as $status){
                                 if($status == 0){continue;}
                                 ?>
-                            <div class="radio radio-primary">
-                                <input type="radio" value="<?php echo $status; ?>" name="proposal_export_status" id="proposal_<?php echo format_proposal_status($status,'',false); ?>">
-                                <label for="proposal_<?php echo format_proposal_status($status,'',false); ?>"><?php echo format_proposal_status($status,'',false); ?></label>
+                                <div class="radio radio-primary">
+                                    <input type="radio" value="<?php echo $status; ?>" name="proposal_export_status" id="proposal_<?php echo format_proposal_status($status,'',false); ?>">
+                                    <label for="proposal_<?php echo format_proposal_status($status,'',false); ?>"><?php echo format_proposal_status($status,'',false); ?></label>
+                                </div>
+                                <?php } ?>
                             </div>
-                            <?php } ?>
-                        </div>
-                        <div class="form-group hide shifter" id="payment_modes">
-                            <?php
+                            <div class="form-group hide shifter" id="payment_modes">
+                                <?php
                                 array_unshift($payment_modes,array('id'=>'','name'=>_l('bulk_export_status_all')));
                                 echo render_select('paymentmode',$payment_modes,array('id','name'),'bulk_export_zip_payment_modes');
                                 ?>
+                            </div>
+                            <button class="btn btn-info" type="submit"><?php echo _l('bulk_pdf_export_button'); ?></button>
+                            <?php echo form_close(); ?>
                         </div>
-                        <button class="btn btn-info" type="submit"><?php echo _l('bulk_pdf_export_button'); ?></button>
-                        <?php echo form_close(); ?>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-<?php init_tail(); ?>
-<script>
-    $(function(){
-        _validate_form($('form'),{export_type:'required'});
-        $('#export_type').on('change',function(){
-            var val = $(this).val();
-            $('.shifter').addClass('hide');
-            if(val == 'invoices'){
-             $('#invoices_status').removeClass('hide');
-         } else if(val == 'estimates'){
-             $('#estimates_status').removeClass('hide');
-         } else if(val == 'payments'){
-            $('#payment_modes').removeClass('hide');
-        } else if(val == 'proposals'){
-            $('#proposal_status').removeClass('hide');
-        }
-    });
-    });
-</script>
+    <?php init_tail(); ?>
+    <script>
+        $(function(){
+            _validate_form($('form'),{export_type:'required'});
+            $('#export_type').on('change',function(){
+                var val = $(this).val();
+                $('.shifter').addClass('hide');
+                if(val == 'invoices'){
+                   $('#invoices_status').removeClass('hide');
+               } else if(val == 'estimates'){
+                   $('#estimates_status').removeClass('hide');
+               } else if(val == 'payments'){
+                $('#payment_modes').removeClass('hide');
+            } else if(val == 'proposals'){
+                $('#proposal_status').removeClass('hide');
+            }
+        });
+        });
+    </script>
 </body>
 </html>

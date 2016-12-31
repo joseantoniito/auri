@@ -9,7 +9,6 @@
 <div id="wrapper">
 	<div class="content">
 		<div class="row">
-			<?php include_once(APPPATH . 'views/admin/includes/alerts.php'); ?>
 			<div class="col-md-12">
 				<div class="panel_s">
 					<div class="panel-body">
@@ -57,7 +56,7 @@
 									<?php echo _l('ticket_single_last_reply',time_ago($ticket->lastreply)); ?>
 								</span>
 								<?php } ?>
-								<h3>#<?php echo $ticket->ticketid; ?> - <?php echo $ticket->subject; ?></h3>
+								<h3 id="ticket_subject">#<?php echo $ticket->ticketid; ?> - <?php echo $ticket->subject; ?></h3>
 								<hr />
 							</div>
 							<div class="col-md-4 text-right">
@@ -167,7 +166,7 @@
 														<div class="input-group">
 															<input type="file" class="form-control ignore-validation" name="attachments[]" accept="<?php echo get_ticket_form_accepted_mimes(); ?>">
 															<span class="input-group-btn">
-																<button class="btn btn-success add_more_attachments" type="button"><i class="fa fa-plus"></i></button>
+																<button class="btn btn-success add_more_attachments p7" type="button"><i class="fa fa-plus"></i></button>
 																</span>
 														</div>
 													</div>
@@ -329,7 +328,9 @@
 						<div class="col-md-9">
 							<div class="row">
 								<div class="col-md-12 text-right">
+								<a href=""></a>
 									<a href="#" onclick="edit_ticket_message(<?php echo $ticket->ticketid; ?>,'ticket'); return false;"><i class="fa fa-pencil-square-o"></i></a>
+									<a href="#" data-toggle="tooltip" data-placement="left" data-title="<?php echo _l('convert_to_task'); ?>" onclick="convert_ticket_to_task(<?php echo $ticket->ticketid; ?>,'ticket'); return false;"><i class="fa fa-tasks" aria-hidden="true"></i></a>
 								</div>
 							</div>
 							<div data-ticket-id="<?php echo $ticket->ticketid; ?>" class="tc-content">
@@ -408,6 +409,7 @@
 							<div class="row">
 								<div class="col-md-12 text-right">
 									<a href="#" onclick="edit_ticket_message(<?php echo $reply['id']; ?>,'reply'); return false;"><i class="fa fa-pencil-square-o"></i></a>
+									<a href="#" data-toggle="tooltip" data-placement="left" data-title="<?php echo _l('convert_to_task'); ?>" onclick="convert_ticket_to_task(<?php echo $reply['id']; ?>,'reply'); return false;"><i class="fa fa-tasks" aria-hidden="true"></i></a>
 								</div>
 							</div>
 							<div class="clearfix"></div>
@@ -475,10 +477,23 @@
 		<?php echo form_close(); ?>
 	</div>
 </div>
-<?php init_tail(); ?>
-<script src="<?php echo base_url(); ?>assets/js/tickets.js"></script>
 <script>
+var _ticket_message;
+</script>
+<?php init_tail(); ?>
+<?php echo app_script('assets/js','tickets.js'); ?>
+<script>
+	$(function(){
+		 $('body').on('shown.bs.modal', '#_task_modal', function() {
+		 	if(typeof(_ticket_message) != 'undefined') {
+		 		tinymce.activeEditor.execCommand('mceInsertContent', false, _ticket_message);
+		 		$('body #_task_modal input[name="name"]').val($('#ticket_subject').text());
+		 	}
+		 });
+	});
+
 	$.validator.setDefaults({ignore: ".ignore-validation"});
+
 	var Ticket_message_editor;
 	var edit_ticket_message_additional = $('#edit-ticket-message-additional');
 	var headers_tasks = $('.table-rel-tasks').find('th');
@@ -487,25 +502,36 @@
 
 	function edit_ticket_message(id,type){
 		edit_ticket_message_additional.empty();
-		var message;
 		if(type == 'ticket'){
-			message = $('[data-ticket-id="'+id+'"]').html();
+			_ticket_message = $('[data-ticket-id="'+id+'"]').html();
 		} else {
-			message = $('[data-reply-id="'+id+'"]').html();
+			_ticket_message = $('[data-reply-id="'+id+'"]').html();
 		}
+
 		init_ticket_edit_editor();
-		tinyMCE.activeEditor.setContent(message);
+		tinyMCE.activeEditor.setContent(_ticket_message);
 		$('#ticket-message').modal('show');
 		edit_ticket_message_additional.append(hidden_input('type',type));
 		edit_ticket_message_additional.append(hidden_input('id',id));
 		edit_ticket_message_additional.append(hidden_input('main_ticket',$('input[name="ticketid"]').val()));
 	}
+
 	function init_ticket_edit_editor(){
 		if(typeof(Ticket_message_editor) !== 'undefined'){
 			return true;
 		}
 		Ticket_message_editor = init_editor('.tinymce-ticket-edit');
 	}
+
+	function convert_ticket_to_task(id,type){
+		if(type == 'ticket'){
+			_ticket_message = $('[data-ticket-id="'+id+'"]').html();
+		} else {
+			_ticket_message = $('[data-reply-id="'+id+'"]').html();
+		}
+		new_task_from_relation(undefined,'ticket',id);
+	}
+
 </script>
 </body>
 </html>

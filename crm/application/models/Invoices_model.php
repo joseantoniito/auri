@@ -59,6 +59,8 @@ class Invoices_model extends CRM_Model
             }
             return $invoice;
         }
+
+        $this->db->order_by('number,YEAR(date)', 'desc');
         return $this->db->get()->result_array();
     }
     /**
@@ -152,6 +154,8 @@ class Invoices_model extends CRM_Model
         $result['paid']    = array();
         $result['overdue'] = array();
 
+        $has_permission_view = has_permission('invoices','','view');
+
         for ($i = 1; $i <= 3; $i++) {
             $this->db->select('id,total');
             $this->db->from('tblinvoices');
@@ -178,6 +182,10 @@ class Invoices_model extends CRM_Model
                 if (count($data['agents']) > 0) {
                     $this->db->where_in('sale_agent', $data['agents']);
                 }
+            }
+
+            if(!$has_permission_view){
+                $this->db->where('addedfrom',get_staff_user_id());
             }
 
             $invoices = $this->db->get()->result_array();
@@ -485,7 +493,8 @@ class Invoices_model extends CRM_Model
                         'rate' => number_format($item['rate'], 2, '.', ''),
                         'rel_id' => $insert_id,
                         'rel_type'=>'invoice',
-                        'item_order' => $item['order']
+                        'item_order' => $item['order'],
+                        'unit' => $item['unit']
                     ));
 
                     $itemid = $this->db->insert_id();
@@ -528,7 +537,9 @@ class Invoices_model extends CRM_Model
                 }
             }
 
+
             $this->update_total_tax($insert_id);
+
             if (!DEFINED('CRON') && $expense == false) {
                 $lang_key = 'invoice_activity_created';
             } else if (!DEFINED('CRON') && $expense == true) {
@@ -587,7 +598,11 @@ class Invoices_model extends CRM_Model
     }
     public function get_expenses_to_bill($clientid){
         $this->load->model('expenses_model');
-        return $this->expenses_model->get('','billable=1 AND clientid='.$clientid.' AND invoiceid IS NULL');
+        $where = 'billable=1 AND clientid='.$clientid.' AND invoiceid IS NULL';
+        if(!has_permission('expenses','','view')){
+            $where .=' AND addedfrom='.get_staff_user_id();
+        }
+        return $this->expenses_model->get('',$where);
     }
     public function check_for_merge_invoice($client_id, $current_invoice)
     {
@@ -607,12 +622,18 @@ class Invoices_model extends CRM_Model
             6,
         );
 
+        $has_permission_view = has_permission('invoices','','view');
         $this->db->select('id');
         $this->db->where('clientid', $client_id);
         $this->db->where('STATUS IN (' . implode(', ', $statuses) . ')');
+        if(!$has_permission_view){
+            $this->db->where('addedfrom',get_staff_user_id());
+        }
         if ($current_invoice != 'undefined') {
             $this->db->where('id !=', $current_invoice);
         }
+
+
         $invoices  = $this->db->get('tblinvoices')->result_array();
         $_invoices = array();
         foreach ($invoices as $invoice) {
@@ -680,6 +701,7 @@ class Invoices_model extends CRM_Model
             $new_invoice_data['newitems'][$key]['description']      = $item['description'];
             $new_invoice_data['newitems'][$key]['long_description'] = clear_textarea_breaks($item['long_description']);
             $new_invoice_data['newitems'][$key]['qty']              = $item['qty'];
+            $new_invoice_data['newitems'][$key]['unit']              = $item['unit'];
             $new_invoice_data['newitems'][$key]['taxname']          = array();
             $taxes                                                  = get_invoice_item_taxes($item['id']);
             foreach ($taxes as $tax) {
@@ -961,15 +983,18 @@ class Invoices_model extends CRM_Model
         $this->load->model('taxes_model');
         if (count($items) > 0) {
             foreach ($items as $key => $item) {
+
                 $invoice_item_id = $item['itemid'];
                 $original_item   = $this->get_invoice_item($invoice_item_id);
                 $this->db->where('id', $invoice_item_id);
                 $this->db->update('tblitems_in', array(
-                    'item_order' => $item['order']
+                    'item_order' => $item['order'],
+                     'unit' => $item['unit']
                 ));
                 if ($this->db->affected_rows() > 0) {
                     $affectedRows++;
                 }
+
                 // Check for invoice item short description change
                 $this->db->where('id', $invoice_item_id);
                 $this->db->update('tblitems_in', array(
@@ -1076,7 +1101,8 @@ class Invoices_model extends CRM_Model
                     'rate' => number_format($item['rate'], 2, '.', ''),
                     'rel_id' => $id,
                     'rel_type'=>'invoice',
-                    'item_order' => $item['order']
+                    'item_order' => $item['order'],
+                    'unit'=>$item['unit']
                 ));
                 $new_item_added = $this->db->insert_id();
                 if ($new_item_added) {
@@ -1314,6 +1340,9 @@ class Invoices_model extends CRM_Model
             $this->db->where('rel_type', 'invoice');
             $this->db->delete('tblsalesactivity');
 
+            $this->db->where('is_recurring_from',$id);
+            $this->db->update('tblinvoices',array('is_recurring_from'=>NULL));
+
             // Delete the custom field values
             $this->db->where('relid', $id);
             $this->db->where('fieldto', 'invoice');
@@ -1480,7 +1509,7 @@ class Invoices_model extends CRM_Model
             }
         }
 
-        if (is_array($sent_to)) {
+        if (is_array($sent_to) && count($sent_to) > 0) {
             $status_updated = update_invoice_status($invoice->id,true,true);
             $i = 0;
             foreach ($sent_to as $contact_id) {

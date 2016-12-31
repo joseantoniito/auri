@@ -1,15 +1,11 @@
 <div class="col-md-12">
  <div class="panel_s">
   <div class="panel-body _buttons">
-   <?php
-   if(has_permission('invoices','','create')){
-    $this->load->view('admin/invoices/invoices_top_stats');
-  }
-  ?>
-  <?php if(has_permission('invoices','','create')){ ?>
-  <a href="<?php echo admin_url('invoices/invoice'); ?>" class="btn btn-info pull-left new new-invoice-list"><?php echo _l('create_new_invoice'); ?></a>
-  <?php } ?>
-  <div class="display-block text-right">
+   <?php $this->load->view('admin/invoices/invoices_top_stats'); ?>
+   <?php if(has_permission('invoices','','create')){ ?>
+   <a href="<?php echo admin_url('invoices/invoice'); ?>" class="btn btn-info pull-left new new-invoice-list"><?php echo _l('create_new_invoice'); ?></a>
+   <?php } ?>
+   <div class="display-block text-right">
     <div class="btn-group pull-right mleft4 invoice-view-buttons btn-with-tooltip-group _filter_data" data-toggle="tooltip" data-title="<?php echo _l('filter_by'); ?>">
      <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
        <i class="fa fa-filter" aria-hidden="true"></i>
@@ -67,7 +63,9 @@
    </li>
    <?php } ?>
    <div class="clearfix"></div>
+   <?php if(count($payment_modes) > 0){ ?>
    <li class="divider"></li>
+   <?php } ?>
    <?php foreach($payment_modes as $mode){
      if(total_rows('tblinvoicepaymentrecords',array('paymentmode'=>$mode['id'])) == 0){continue;}
      ?>
@@ -80,9 +78,7 @@
    </ul>
  </div>
  <a href="#" class="btn btn-default btn-with-tooltip toggle-small-view hidden-xs" onclick="toggle_small_view('.table-invoices','#invoice'); return false;" data-toggle="tooltip" title="<?php echo _l('invoices_toggle_table_tooltip'); ?>"><i class="fa fa-angle-double-left"></i></a>
- <?php if(has_permission('invoices','','create')){ ?>
  <a href="#" class="btn btn-default btn-with-tooltip invoices-total" onclick="slideToggle('#stats-top'); init_invoices_total(true); return false;" data-toggle="tooltip" title="<?php echo _l('view_stats_tooltip'); ?>"><i class="fa fa-bar-chart"></i></a>
- <?php } ?>
 </div>
 </div>
 </div>
@@ -112,7 +108,7 @@
   </div>
 </div>
 </div>
-<div class="col-md-7">
+<div class="col-md-7 small-table-right-col">
  <div id="invoice" class="hide">
  </div>
 </div>

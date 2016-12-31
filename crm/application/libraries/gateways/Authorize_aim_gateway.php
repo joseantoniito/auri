@@ -50,6 +50,12 @@ class Authorize_aim_gateway
                 'default_value' => 'USD'
             ),
             array(
+                'name' => 'paymentmethod_' . $this->id . '_default_selected',
+                'type' => 'yes_no',
+                'default_value' => 1,
+                'label' => 'settings_paymentmethod_default_selected_on_invoice'
+            ),
+            array(
                 'name' => 'paymentmethod_' . $this->id . '_test_mode_enabled',
                 'type' => 'yes_no',
                 'default_value' => 0,
@@ -146,6 +152,7 @@ function add_authorize_aim_online_mode($modes)
         'id' => $CI->authorize_aim_gateway->get_id(),
         'name' => get_option('paymentmethod_' . $CI->authorize_aim_gateway->get_id() . '_label'),
         'description' => '',
+        'selected_by_default'=>get_option('paymentmethod_' . $CI->authorize_aim_gateway->get_id() . '_default_selected'),
         'active' => get_option('paymentmethod_' . $CI->authorize_aim_gateway->get_id() . '_active')
     );
 

@@ -1,27 +1,24 @@
  <div class="panel-body mtop10">
   <div class="row">
-   <div class="col-md-3">
-    <?php
-    if(has_permission('items','','create')){
-     $items[] = array(
-       'itemid'=>'',
-       'description'=>'',
-       'option_attributes'=>array(
-         'data-divider'=>"true",
-         )
-       );
-     $items[] = array(
-       'itemid'=>'newitem',
-       'description'=>_l('new_invoice_item'),
-       'option_attributes'=>array(
-         'data-content'=>"<span class='text-info'>"._l('new_invoice_item')."</span>",
-         )
-       );
-   }
-   ?>
-   <?php echo render_select('item_select',$items,array('itemid','description','long_description'),'','',array('data-none-selected-text'=>_l('add_item')),array(),'no-margin'); ?>
+   <div class="col-md-4">
+     <div class="form-group no-mbot">
+      <select name="item_select" class="selectpicker no-margin" data-width="100%" id="item_select" data-none-selected-text="<?php echo _l('add_item'); ?>">
+       <option value=""></option>
+       <?php foreach($items as $group_id=>$_items){ ?>
+       <optgroup data-group-id="<?php echo $group_id; ?>" label="<?php echo $_items[0]['group_name']; ?>">
+         <?php foreach($_items as $item){ ?>
+         <option value="<?php echo $item['id']; ?>">(<?php echo _format_number($item['rate']); ; ?>) <?php echo $item['description']; ?></option>
+         <?php } ?>
+       </optgroup>
+       <?php } ?>
+       <?php if(has_permission('items','','create')){ ?>
+       <option data-divider="true"></option>
+       <option value="newitem" data-content="<span class='text-info'><?php echo _l('new_invoice_item'); ?></span>"></option>
+       <?php } ?>
+     </select>
+   </div>
  </div>
- <div class="col-md-9 text-right show_quantity_as_wrapper">
+ <div class="col-md-8 text-right show_quantity_as_wrapper">
   <div class="mtop10">
    <span><?php echo _l('show_quantity_as'); ?></span>
    <div class="radio radio-primary radio-inline">
@@ -39,7 +36,7 @@
 </div>
 </div>
 </div>
-<div class="table-responsive s_table">
+<div class="table-responsive s_table mtop10">
  <table class="table estimate-items-table items table-main-estimate-edit">
   <thead>
    <tr>
@@ -81,7 +78,7 @@
    $default_tax = get_option('default_tax');
    $default_tax_name = '';
    $default_tax_name = explode('+',$default_tax);
-   $select = '<select class="selectpicker display-block tax main-tax" data-width="100%" name="taxname" multiple data-none-selected-text="'._l('dropdown_non_selected_tex').'" data-live-search="true">';
+   $select = '<select class="selectpicker display-block tax main-tax" data-container="body" data-width="100%" name="taxname" multiple data-none-selected-text="'._l('dropdown_non_selected_tex').'" data-live-search="true">';
    $no_tax_selected = '';
    if($default_tax == ''){
     $no_tax_selected = 'selected';
@@ -144,7 +141,14 @@ echo $select;
   $table_row .= '</td>';
   $table_row .= '<td class="bold description"><textarea name="' . $items_indicator . '[' . $i . '][description]" class="form-control" rows="5">' . clear_textarea_breaks($item['description']) . '</textarea></td>';
   $table_row .= '<td><textarea name="' . $items_indicator . '[' . $i . '][long_description]" class="form-control" rows="5">' . clear_textarea_breaks($item['long_description']) . '</textarea></td>';
-  $table_row .= '<td><input type="number" min="0" onblur="calculate_total();" onchange="calculate_total();" data-quantity name="' . $items_indicator . '[' . $i . '][qty]" value="' . $item['qty'] . '" class="form-control"></td>';
+  $table_row .= '<td><input type="number" min="0" onblur="calculate_total();" onchange="calculate_total();" data-quantity name="' . $items_indicator . '[' . $i . '][qty]" value="' . $item['qty'] . '" class="form-control">';
+  $unit_placeholder = '';
+  if(!$item['unit']){
+    $unit_placeholder = _l('unit');
+    $item['unit'] = '';
+  }
+  $table_row .= '<input type="text" placeholder="'.$unit_placeholder.'" name="'.$items_indicator.'['.$i.'][unit]" class="form-control input-transparent text-right" value="'.$item['unit'].'">';
+  $table_row .= '</td>';
   $table_row .= '<td class="rate"><input type="text" data-toggle="tooltip" title="' . _l('numbers_not_formated_while_editing') . '" onblur="calculate_total();" onchange="calculate_total();" name="' . $items_indicator . '[' . $i . '][rate]" value="' . $item['rate'] . '" class="form-control"></td>';
   $table_row .= '<td class="taxrate">' . $this->misc_model->get_taxes_dropdown_template('' . $items_indicator . '[' . $i . '][taxname][]', $estimate_item_taxes, 'estimate', $item['id'], true, $manual) . '</td>';
   $table_row .= '<td class="amount">' . $amount . '</td>';

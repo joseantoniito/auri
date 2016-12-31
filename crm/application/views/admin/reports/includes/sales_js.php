@@ -23,7 +23,7 @@
        "sale_agent_estimates": '[name="sale_agent_estimates"]',
    }
    $(function() {
-       $('select[name="currency"],select[name="invoice_status"],select[name="estimate_status"],select[name="sale_agent_invoices"],select[name="sale_agent_estimates"]').on('change', function() {
+       $('select[name="currency"],select[name="invoice_status"],select[name="estimate_status"],select[name="sale_agent_invoices"],select[name="sale_agent_estimates"],select[name="payments_years"]').on('change', function() {
            gen_reports();
        });
        $('select[name="invoice_status"],select[name="estimate_status"],select[name="sale_agent_invoices"],select[name="sale_agent_estimates"]').on('change', function() {
@@ -77,7 +77,7 @@
            var paymentReceivedReportsTable = $(this).DataTable();
            var sums = paymentReceivedReportsTable.ajax.json().sums;
            $(this).find('tfoot').addClass('bold');
-           $(this).find('tfoot td').eq(0).html("<?php echo _l('invoice_total'); ?>");
+           $(this).find('tfoot td').eq(0).html("<?php echo htmlentities(_l('invoice_total')); ?>");
            $(this).find('tfoot td.total').html(sums.total_amount);
        });
 
@@ -85,7 +85,7 @@
            var invoiceReportsTable = $(this).DataTable();
            var sums = invoiceReportsTable.ajax.json().sums;
            $(this).find('tfoot').addClass('bold');
-           $(this).find('tfoot td').eq(0).html("<?php echo _l('invoice_total'); ?>");
+           $(this).find('tfoot td').eq(0).html("<?php echo htmlentities(_l('invoice_total')); ?>");
            $(this).find('tfoot td.subtotal').html(sums.subtotal);
            $(this).find('tfoot td.total').html(sums.total);
            $(this).find('tfoot td.total_tax').html(sums.total_tax);
@@ -98,7 +98,7 @@
            var estimatesReportsTable = $(this).DataTable();
            var sums = estimatesReportsTable.ajax.json().sums;
            $(this).find('tfoot').addClass('bold');
-           $(this).find('tfoot td').eq(0).html("<?php echo _l('invoice_total'); ?>");
+           $(this).find('tfoot td').eq(0).html("<?php echo htmlentities(_l('invoice_total')); ?>");
            $(this).find('tfoot td.subtotal').html(sums.subtotal);
            $(this).find('tfoot td.total').html(sums.total);
            $(this).find('tfoot td.total_tax').html(sums.total_tax);
@@ -113,15 +113,15 @@
        report_wrapper.removeClass('hide');
    }
    $('head title').html($(e).text());
-   $('#customers-group-gen').addClass('hide');
+   $('.customers-group-gen').addClass('hide');
    report_customers_groups.addClass('hide');
    report_customers.addClass('hide');
    report_invoices.addClass('hide');
    report_estimates.addClass('hide');
    report_payments_received.addClass('hide');
    $('#income-years').addClass('hide');
-   $('#chart').addClass('hide');
-   $('#chart-payment-modes').addClass('hide');
+   $('.chart-income').addClass('hide');
+   $('.chart-payment-modes').addClass('hide');
    report_from_choose.addClass('hide');
    $('select[name="months-report"]').selectpicker('val', '');
        // Clear custom date picker
@@ -132,17 +132,18 @@
            report_from_choose.removeClass('hide');
        }
        if (type == 'total-income') {
-           $('#chart').removeClass('hide');
+           $('.chart-income').removeClass('hide');
            $('#income-years').removeClass('hide');
            date_range.addClass('hide');
        } else if (type == 'customers-report') {
            report_customers.removeClass('hide');
        } else if (type == 'customers-group') {
-           $('#customers-group-gen').removeClass('hide');
+        console.log('ok')
+           $('.customers-group-gen').removeClass('hide');
        } else if (type == 'invoices-report') {
            report_invoices.removeClass('hide');
        } else if (type == 'payment-modes') {
-           $('#chart-payment-modes').removeClass('hide');
+           $('.chart-payment-modes').removeClass('hide');
            $('#income-years').removeClass('hide');
        } else if (type == 'payments-received') {
            report_payments_received.removeClass('hide');
@@ -165,11 +166,12 @@
        }
        $.post(admin_url + 'reports/total_income_report', data).done(function(response) {
            response = JSON.parse(response);
-           salesChart = new Chart($('#chart'), {
+           salesChart = new Chart($('#chart-income'), {
                type: 'bar',
                data: response,
                options: {
-                   responsive: true
+                   responsive: true,
+                   maintainAspectRatio:false
                }
            })
        });
@@ -191,7 +193,8 @@
                type: 'bar',
                data: response,
                options: {
-                   responsive: true
+                   responsive: true,
+                   maintainAspectRatio:false
                }
            })
        });
@@ -221,7 +224,8 @@
            response = JSON.parse(response);
            groupsChart = new Chart($('#customers-group-gen'), {
                type: 'line',
-               data: response
+               data: response,
+               options:{maintainAspectRatio:false}
            });
        });
    }
@@ -254,13 +258,13 @@
    }
    // Main generate report function
    function gen_reports() {
-       if (!$('#chart').hasClass('hide')) {
+       if (!$('.chart-income').hasClass('hide')) {
            total_income_bar_report();
-       } else if (!$('#chart-payment-modes').hasClass('hide')) {
+       } else if (!$('.chart-payment-modes').hasClass('hide')) {
            report_by_payment_modes();
        } else if (!report_customers.hasClass('hide')) {
            customers_report();
-       } else if (!$('#customers-group-gen').hasClass('hide')) {
+       } else if (!$('.customers-group-gen').hasClass('hide')) {
            report_by_customer_groups();
        } else if (!report_invoices.hasClass('hide')) {
            invoices_report();

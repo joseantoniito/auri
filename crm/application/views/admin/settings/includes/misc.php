@@ -25,19 +25,21 @@
         <hr />
         <?php echo render_input('settings[media_max_file_size_upload]','settings_media_max_file_size_upload',get_option('media_max_file_size_upload'),'number'); ?>
         <hr />
+        <?php echo render_yes_no_option('show_setup_menu_item_only_on_hover','show_setup_menu_item_only_on_hover'); ?>
+        <hr />
         <?php echo render_yes_no_option('show_help_on_setup_menu','show_help_on_setup_menu'); ?>
+        <hr />
+        <?php render_yes_no_option('use_minified_files','use_minified_files'); ?>
       </div>
-
-
-  <div role="tabpanel" class="tab-pane" id="set_newsfeed">
-   <?php echo render_input('settings[newsfeed_maximum_files_upload]','settings_newsfeed_max_file_upload_post',get_option('newsfeed_maximum_files_upload'),'number'); ?>
-   <hr />
-   <?php echo render_input('settings[newsfeed_maximum_file_size]','settings_newsfeed_max_file_size',get_option('newsfeed_maximum_file_size'),'number'); ?>
- </div>
- <div role="tabpanel" class="tab-pane" id="set_recaptcha">
-   <?php echo render_input('settings[recaptcha_secret_key]','recaptcha_secret_key',get_option('recaptcha_secret_key')); ?>
-   <?php echo render_input('settings[recaptcha_site_key]','recaptcha_site_key',get_option('recaptcha_site_key')); ?>
-   <hr />
-   <?php echo render_yes_no_option('use_recaptcha_customers_area','use_recaptcha_customers_area'); ?>
- </div>
-</div>
+      <div role="tabpanel" class="tab-pane" id="set_newsfeed">
+       <?php echo render_input('settings[newsfeed_maximum_files_upload]','settings_newsfeed_max_file_upload_post',get_option('newsfeed_maximum_files_upload'),'number'); ?>
+       <hr />
+       <?php echo render_input('settings[newsfeed_maximum_file_size]','settings_newsfeed_max_file_size',get_option('newsfeed_maximum_file_size'),'number'); ?>
+     </div>
+     <div role="tabpanel" class="tab-pane" id="set_recaptcha">
+       <?php echo render_input('settings[recaptcha_secret_key]','recaptcha_secret_key',get_option('recaptcha_secret_key')); ?>
+       <?php echo render_input('settings[recaptcha_site_key]','recaptcha_site_key',get_option('recaptcha_site_key')); ?>
+       <hr />
+       <?php echo render_yes_no_option('use_recaptcha_customers_area','use_recaptcha_customers_area'); ?>
+     </div>
+   </div>

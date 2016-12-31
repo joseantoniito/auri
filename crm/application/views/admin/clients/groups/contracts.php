@@ -6,7 +6,7 @@
 <a href="<?php echo admin_url('contracts/contract?customer_id='.$client->userid); ?>" class="btn btn-info mbot25<?php if($client->active == 0){echo ' disabled';} ?>"><?php echo _l('new_contract'); ?></a>
 <div class="clearfix"></div>
 <?php } ?>
-<?php if(has_permission('contracts','','view')){ ?>
+
 <?php
 $table_data = array(
   '#',
@@ -22,5 +22,5 @@ foreach($custom_fields as $field){
 }
 array_push($table_data,_l('options'));
 render_datatable($table_data, 'contracts-single-client'); ?>
-<?php } ?>
+
 <?php } ?>

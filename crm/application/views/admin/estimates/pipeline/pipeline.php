@@ -1,5 +1,6 @@
 <?php
 $i = 0;
+$has_permission_edit = has_permission('estimates','','edit');
 foreach ($estimate_statuses as $status) {
  $total_pages = $this->estimates_model->do_kanban_query($status,$this->input->get('search'),1,array(),true);
  $total_pages = ceil($total_pages/get_option('estimates_pipeline_limit'));
@@ -13,7 +14,7 @@ foreach ($estimate_statuses as $status) {
             </div>
             <div class="kan-ban-content-wrapper">
                 <div class="kan-ban-content">
-                    <ul class="sortable status pipeline-status" data-status-id="<?php echo $status; ?>">
+                    <ul class="sortable<?php if($has_permission_edit){echo ' status pipeline-status';} ?>" data-status-id="<?php echo $status; ?>">
                         <?php
                         $estimates = $this->estimates_model->do_kanban_query($status,$this->input->get('search'),1,array('sort_by'=>$this->input->get('sort_by'),'sort'=>$this->input->get('sort')));
                         $total_estimates = count($estimates);

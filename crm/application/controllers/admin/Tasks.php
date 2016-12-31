@@ -91,7 +91,12 @@ class Tasks extends Admin_controller
             redirect($_SERVER['HTTP_REFERER']);
         }
     }
-
+    public function update_task_description($id){
+        if(has_permission('tasks','','edit')){
+            $this->db->where('id',$id);
+            $this->db->update('tblstafftasks',array('description'=>$this->input->post('description')));
+        }
+    }
     public function detailed_overview()
     {
 
@@ -219,10 +224,16 @@ class Tasks extends Admin_controller
             }
             die;
         }
+
+        $data['milestones'] = array();
+
         if ($id == '') {
             $title = _l('add_new', _l('task_lowercase'));
         } else {
             $data['task'] = $this->tasks_model->get($id);
+            if($data['task']->rel_type == 'project'){
+                $data['milestones'] = $this->projects_model->get_milestones($data['task']->rel_id);
+            }
             $title        = _l('edit', _l('task_lowercase')) . ' ' . $data['task']->name;
         }
         $data['project_end_date_attrs'] = array();

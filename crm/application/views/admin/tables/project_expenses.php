@@ -32,13 +32,14 @@ include_once(APPPATH.'views/admin/tables/includes/expenses_filter.php');
 
 array_push($where,'AND project_id='.$project_id);
 
-
+if(!has_permission('expenses','','view')){
+    array_push($where,'AND addedfrom='.get_staff_user_id());
+}
 $sIndexColumn = "id";
 $sTable       = 'tblexpenses';
 $result       = data_tables_init($aColumns, $sIndexColumn, $sTable, $join, $where, array(
     'name',
     'tblexpenses.id',
-    'company',
     'billable',
     'invoiceid',
     'currency',

@@ -21,7 +21,7 @@
                 $output = '<a href="'.admin_url('staff/member/'.$_result['staffid']).'">'.$_result['firstname']. ' ' . $_result['lastname'] .'</a>';
                 break;
                 case 'tickets':
-                $output = '<a href="'.admin_url('tickets/ticket/'.$_result['ticketid']).'">#'.$_result['ticketid'].'</a>';
+                $output = '<a href="'.admin_url('tickets/ticket/'.$_result['ticketid']).'">#'.$_result['ticketid'].' - '.$_result['subject'].'</a>';
                 break;
                 case 'surveys':
                 $output = '<a href="'.admin_url('surveys/survey/'.$_result['surveyid']).'">'.$_result['subject'].'</a>';
@@ -50,6 +50,9 @@
                 break;
                 case 'expenses':
                 $output = '<a href="'.admin_url('expenses/list_expenses/'.$_result['expenseid']).'">'.$_result['category_name']. ' - ' ._format_number($_result['amount']).'</a>';
+                break;
+                  case 'proposals':
+                $output = '<a href="'.admin_url('proposals/list_proposals/'.$_result['id']).'">'.format_proposal_number($_result['id']) .' - ' . $_result['subject'] .'</a>';
                 break;
                 case 'goals':
                 $output = '<a href="'.admin_url('goals/goal/'.$_result['id']).'">'.$_result['subject'].'</a>';

@@ -19,15 +19,16 @@
      <div class="feed-item">
        <div class="date"><?php echo time_ago($activity['dateadded']); ?></div>
        <div class="text">
+        <p class="bold no-mbot">
+         <?php if($href != ''){ ?>
+         <a href="<?php echo $href;?>"><?php echo $name; ?></a> -
+         <?php } else { echo $name;} ;?>
+         <?php echo $activity['description']; ?></p>
          <?php echo _l('project_name'); ?>: <a href="<?php echo admin_url('projects/view/'.$activity['project_id']); ?>"><?php echo $activity['project_name']; ?></a>
-         <p>
-           <?php if($href != ''){ ?>
-           <a href="<?php echo $href;?>"><?php echo $name; ?></a>
-           <?php } else { echo $name;} ;?>
-         </p>
-         <p><?php echo $activity['description']; ?></p>
        </div>
-       <p class="text-muted"><?php echo $activity['additional_data']; ?></p>
+       <?php if(!empty($activity['additional_data'])){ ?>
+       <p class="text-muted mtop5"><?php echo $activity['additional_data']; ?></p>
+       <?php } ?>
      </div>
      <?php } ?>
    </div>

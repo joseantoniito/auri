@@ -2,13 +2,13 @@
 <div id="wrapper">
 	<div class="content">
 		<div class="row">
-			<?php include_once(APPPATH . 'views/admin/includes/alerts.php'); ?>
 			<div class="col-md-6">
 				<div class="panel_s">
-					<div class="panel-heading">
-						<?php echo $title; ?>
-					</div>
 					<div class="panel-body">
+					<h4 class="bold no-margin font-medium">
+					<?php echo $title; ?>
+					</h4>
+					<hr />
 						<?php echo form_open($this->uri->uri_string()); ?>
 
 						<?php $value = (isset($announcement) ? $announcement->name : ''); ?>

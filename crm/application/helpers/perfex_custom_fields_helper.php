@@ -1,4 +1,5 @@
 <?php
+defined('BASEPATH') OR exit('No direct script access allowed');
 /**
  * Render custom fields for particular area
  * @param  string  $belongs_to belongs to ex.leads,customers,staff
@@ -90,10 +91,11 @@ function render_custom_fields($belongs_to, $rel_id = false, $where = array())
                 $fields_html .= '</select>';
                 $fields_html .= '</div>';
             } else if ($field['type'] == 'checkbox') {
-                $fields_html .= '<p class="control-label">' . $field_name . '</p>';
+                $fields_html .= '<div class="form-group chk">';
+                $fields_html .= '<br /><label class="control-label" for="custom_fields[' . $field['fieldto'] . '][' . $field['id'] . '][]">' . $field_name . '</label>';
                 $options = explode(',', $field['options']);
                 $value   = explode(',', $value);
-                $fields_html .= '<div class="form-group chk">';
+
                 foreach ($options as $option) {
                     $checked = '';
                     // Replace double quotes with single.

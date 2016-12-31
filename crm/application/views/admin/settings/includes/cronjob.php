@@ -41,6 +41,9 @@
     <?php render_yes_no_option('create_invoice_from_recurring_only_on_paid_invoices','invoices_create_invoice_from_recurring_only_on_paid_invoices'); ?>
     <hr />
     <?php render_yes_no_option('send_renewed_invoice_from_recurring_to_email','send_renewed_invoice_from_recurring_to_email'); ?>
+    <hr />
+    <i class="fa fa-question-circle" data-toggle="tooltip" data-title="<?php echo _l('inv_hour_of_day_perform_auto_operations_help'); ?>"></i>
+    <?php echo render_input('settings[invoice_auto_operations_hour]','hour_of_day_perform_auto_operations',get_option('invoice_auto_operations_hour'),'number',array('data-toggle'=>'tooltip','data-title'=>_l('hour_of_day_perform_auto_operations_format'))); ?>
   </div>
   <div role="tabpanel" class="tab-pane" id="tasks">
    <?php echo render_input('settings[tasks_reminder_notification_before]','tasks_reminder_notification_before',get_option('tasks_reminder_notification_before'),'number',array('data-toggle'=>'tooltip','title'=>'tasks_reminder_notification_before_help')); ?>

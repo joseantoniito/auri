@@ -2,7 +2,6 @@
 <div id="wrapper">
     <div class="content">
         <div class="row">
-            <?php include_once(APPPATH . 'views/admin/includes/alerts.php'); ?>
             <div class="col-md-12">
                 <div class="panel_s no-margin">
                     <div class="panel-body _buttons">
@@ -56,8 +55,8 @@
 <?php $this->load->view('admin/includes/modals/sales_attach_file'); ?>
 <?php init_tail(); ?>
 <div id="convert_helper"></div>
-<link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/proposals.css">
-<script src="<?php echo base_url(); ?>assets/js/proposals.js"></script>
+<?php echo app_stylesheet('assets/css','proposals.css'); ?>
+<?php echo app_script('assets/js','proposals.js'); ?>
 <script>
     $(function(){
       proposals_pipeline();

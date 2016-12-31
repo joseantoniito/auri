@@ -14,7 +14,7 @@ $top_search_area = ob_get_contents();
 ob_end_clean();
 ?>
 <div id="header">
-    <div class="hide-menu hidden-lg"><i class="fa fa-bars"></i></div>
+    <div class="hide-menu"><i class="fa fa-bars"></i></div>
     <div id="logo">
         <?php get_company_logo('admin') ?>
     </div>
@@ -42,7 +42,7 @@ ob_end_clean();
                 <?php } ?>
                 <li>
                     <a href="#" class="dropdown-toggle top-timers<?php if(count($_started_timers) > 0){echo ' text-warning';} ?>" data-toggle="dropdown"><i class="fa fa-clock-o"></i></a>
-                    <ul class="dropdown-menu animated fadeIn started-timers-top width300">
+                    <ul class="dropdown-menu animated fadeIn started-timers-top width300" id="started-timers-top">
                        <?php $this->load->view('admin/tasks/started_timers'); ?>
                    </ul>
                </li>
@@ -56,8 +56,7 @@ ob_end_clean();
             </ul>
         </div>
     </div>
-    <div class="navbar-right">
-        <ul class="nav navbar-nav">
+        <ul class="nav navbar-nav navbar-right">
             <?php
             if(!is_mobile()){
                 echo $top_search_area;
@@ -85,7 +84,7 @@ ob_end_clean();
             </li>
             <li class="icon">
                 <a href="#" class="dropdown-toggle top-timers<?php if(count($_started_timers) > 0){echo ' text-warning';} ?>" data-toggle="dropdown"><i class="fa fa-clock-o"></i></a>
-                <ul class="dropdown-menu animated fadeIn started-timers-top width300">
+                <ul class="dropdown-menu animated fadeIn started-timers-top width350" id="started-timers-top">
                     <?php $this->load->view('admin/tasks/started_timers'); ?>
                 </ul>
             </li>
@@ -98,7 +97,7 @@ ob_end_clean();
                 <?php $this->load->view('admin/includes/notifications'); ?>
             </li>
         </ul>
-    </div>
+
 </nav>
 </div>
 <div id="mobile-search" class="<?php if(!is_mobile()){echo 'hide';} ?>">

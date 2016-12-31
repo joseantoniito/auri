@@ -51,11 +51,13 @@
                                         <label for="timesheet_task_id"><?php echo _l('project_timesheet_task'); ?></label>
                                     </div>
                                     <div class="col-md-9">
-                                        <select name="timesheet_task_id" id="timesheet_task_id" class="selectpicker" data-live-search="true" data-width="100%" data-none-selected-text="-">
+                                            <select name="timesheet_task_id" id="timesheet_task_id" class="selectpicker" data-live-search="true" data-width="100%" data-none-selected-text="-">
                                             <option value=""></option>
                                             <?php foreach($tasks as $task){
-                                                if($task['billed'] == 1 || (!has_permission('projects','','create') && !$this->tasks_model->is_task_assignee(get_staff_user_id(),$task['id']))){continue;}
-                                                echo '<option value="'.$task['id'].'">'.$task['name'].'</option>';
+                                                if($task['billed'] == 1 || (!has_permission('projects','','create') && !$this->tasks_model->is_task_assignee(get_staff_user_id(),$task['id']) || $task['status'] == 5)){
+                                                    continue;
+                                                }
+                                                    echo '<option value="'.$task['id'].'">'.$task['name'].'</option>';
                                                 }
                                                 ?>
                                         </select>

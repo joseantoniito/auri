@@ -2,13 +2,13 @@
 <div id="wrapper">
     <div class="content">
         <div class="row">
-            <?php include_once(APPPATH . 'views/admin/includes/alerts.php'); ?>
             <div class="col-md-6">
                 <div class="panel_s">
-                    <div class="panel-heading">
-                        <?php echo $title; ?>
-                    </div>
                     <div class="panel-body">
+                    <h4 class="bold no-margin font-medium">
+                    <?php echo $title; ?>
+                    </h4>
+                    <hr />
                     <p class="company_field_info text-info<?php if(isset($custom_field) && $custom_field->fieldto != 'company' || !isset($custom_field)){echo ' hide';} ?>"><?php echo _l('custom_field_company_info'); ?></p>
                         <?php if(isset($custom_field)){ ?>
                         <a href="<?php echo admin_url('custom_fields/field'); ?>" class="btn btn-success pull-left mbot20 display-block"><?php echo _l('new_custom_field'); ?></a>
@@ -44,7 +44,7 @@
                     <?php $value = (isset($custom_field) ? $custom_field->name : ''); ?>
                     <?php echo render_input('name','custom_field_name',$value); ?>
                     <label for="custom_type"><?php echo _l('custom_field_add_edit_type'); ?></label>
-                    <select name="type" class="selectpicker" data-width="100%" data-none-selected-text="<?php echo _l('dropdown_non_selected_tex'); ?>">
+                    <select name="type" id="type" class="selectpicker"<?php if(isset($custom_field) && total_rows('tblcustomfieldsvalues',array('fieldid'=>$custom_field->id,'fieldto'=>$custom_field->fieldto)) > 0 && ($custom_field->type == 'checkbox' || $custom_field->type == 'select')){echo ' disabled';} ?> data-width="100%" data-none-selected-text="<?php echo _l('dropdown_non_selected_tex'); ?>">
                         <option value=""></option>
                         <option value="input" <?php if(isset($custom_field) && $custom_field->type == 'input'){echo 'selected';} ?>>Input</option>
                         <option value="colorpicker" <?php if(isset($custom_field) && $custom_field->type == 'colorpicker'){echo 'selected';} ?>>Color Picker</option>
@@ -117,7 +117,7 @@
         bs_column: 'required'
     });
       $('form').on('submit',function(){
-        $('#fieldto').removeAttr('disabled');
+        $('#fieldto,#type').removeAttr('disabled');
         return true;
     });
       $('select[name="fieldto"]').on('change', function() {

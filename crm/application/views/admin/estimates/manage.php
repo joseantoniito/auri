@@ -2,7 +2,6 @@
 <div id="wrapper">
  <div class="content">
   <div class="row">
-   <?php include_once(APPPATH . 'views/admin/includes/alerts.php'); ?>
    <?php $this->load->view('admin/estimates/list_template'); ?>
 </div>
 </div>

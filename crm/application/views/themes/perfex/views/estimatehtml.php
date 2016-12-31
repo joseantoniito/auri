@@ -1,6 +1,6 @@
 <div class="col-md-12 page-pdf-html-logo">
     <?php get_company_logo('','pull-left'); ?>
-    <?php if(is_staff_logged_in() && has_permission('estimates')){ ?>
+    <?php if(is_staff_logged_in()){ ?>
     <a href="<?php echo admin_url(); ?>estimates/list_estimates/<?php echo $estimate->id; ?>" class="btn btn-info pull-right"><?php echo _l('goto_admin_area'); ?>
     </a>
     <?php } else if(is_client_logged_in() && has_contact_permission('estimates')){ ?>
@@ -18,7 +18,7 @@
                     </div>
                 </div>
                 <div class="col-md-6 text-right _buttons">
-                 <div class="visible-xs">
+                   <div class="visible-xs">
                     <div class="mtop10"></div>
                 </div>
                 <?php echo form_open($this->uri->uri_string(),array('class'=>'pull-right')); ?>
@@ -56,6 +56,9 @@
                     <?php echo get_option('invoice_company_city'); ?>, <?php echo get_option('invoice_company_country_code'); ?> <?php echo get_option('invoice_company_postal_code'); ?><br>
                     <?php if(get_option('invoice_company_phonenumber') != ''){ ?>
                     <?php echo get_option('invoice_company_phonenumber'); ?><br />
+                    <?php } ?>
+                    <?php if(get_option('company_vat') != ''){ ?>
+                    <?php echo _l('company_vat_number').': '. get_option('company_vat'); ?><br />
                     <?php } ?>
                     <?php
                             // check for company custom fields
@@ -166,17 +169,17 @@
                     </tr>
                 </thead>
                 <tbody>
-                 <?php
-                     $items_data = get_table_items_html_and_taxes($estimate->items,'estimate');
-                     $taxes = $items_data['taxes'];
-                     echo $items_data['html'];
-                 ?>
-             </tbody>
-         </table>
-     </div>
- </div>
+                   <?php
+                   $items_data = get_table_items_and_taxes($estimate->items,'estimate');
+                   $taxes = $items_data['taxes'];
+                   echo $items_data['html'];
+                   ?>
+               </tbody>
+           </table>
+       </div>
+   </div>
 
- <div class="col-md-6 col-md-offset-6">
+   <div class="col-md-6 col-md-offset-6">
     <table class="table text-right">
         <tbody>
             <tr id="subtotal">
@@ -231,7 +234,7 @@
 <?php
 if(get_option('total_to_words_enabled') == 1){ ?>
 <div class="col-md-12 text-center">
- <p class="bold"><?php echo  _l('num_word').': '.$this->numberword->convert($estimate->total,$estimate->currency_name); ?></p>
+   <p class="bold"><?php echo  _l('num_word').': '.$this->numberword->convert($estimate->total,$estimate->currency_name); ?></p>
 </div>
 <?php } ?>
 <?php if(count($estimate->attachments) > 0 && $estimate->visible_attachments_to_customer_found == true){ ?>

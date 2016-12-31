@@ -2,14 +2,13 @@
 <div id="wrapper">
 <div class="content">
 <div class="row">
-<?php include_once(APPPATH . 'views/admin/includes/alerts.php'); ?>
 <div class="col-md-12">
     <div class="panel_s">
         <div class="panel-body _buttons">
             <?php if(has_permission('knowledge_base','','create')){ ?>
-            <a href="<?php echo admin_url('knowledge_base/article'); ?>" class="btn btn-info"><?php echo _l('kb_article_new_article'); ?></a>
+            <a href="<?php echo admin_url('knowledge_base/article'); ?>" class="btn btn-info mright5"><?php echo _l('kb_article_new_article'); ?></a>
             <?php } ?>
-            <a href="#" class="btn btn-default mleft5 toggle-articles-list"><i class="fa fa-th-list"></i></a>
+            <a href="#" class="btn btn-default toggle-articles-list"><i class="fa fa-th-list"></i></a>
             <div class="_hidden_inputs _filters">
                 <?php foreach($groups as $group){
                     echo form_hidden('kb_group_'.$group['groupid']);
@@ -33,17 +32,21 @@
                                             $kanban_colors .= "<div class='kanban-cpicker cpicker ".$color_selected_class."' data-color='".$color."' style='background:".$color.";border:1px solid ".$color."'></div>";
                                         }
                                         ?>
-                                <ul class="kan-ban-col" data-col-group-id="<?php echo $group['groupid']; ?>">
+                                <ul class="kan-ban-col<?php if(!has_permission('knowledge_base','','edit')){echo ' not-sortable'; } ?>" data-col-group-id="<?php echo $group['groupid']; ?>">
                                     <li class="kan-ban-col-wrapper">
                                         <div class="border-right panel_s">
                                             <?php
                                                 $group_color = 'style="background:'.$group["color"].';border:1px solid '.$group['color'].'"';
                                                 ?>
                                             <div class="panel-heading-bg primary-bg" <?php echo $group_color; ?> data-group-id="<?php echo $group['groupid']; ?>">
-                                                <i class="fa fa-reorder pointer"></i> <a href="#" class="color-white" <?php if(has_permission('knowledge_base','','create') || has_permission('knowledge_base','','edit')){ ?>onclick="edit_kb_group(this,<?php echo $group['groupid']; ?>); return false;" data-name="<?php echo $group['name']; ?>" data-color="<?php echo $group['color']; ?>" data-description="<?php echo clear_textarea_breaks($group['description']); ?>" data-order="<?php echo $group['group_order']; ?>" data-active="<?php echo $group['active']; ?>" <?php } ?>><?php echo $group['name']; ?></a>
+                                                <?php if(has_permission('knowledge_base','','edit')){ ?>
+                                                <i class="fa fa-reorder pointer"></i> <?php } ?>
+                                                <a href="#" class="color-white" <?php if(has_permission('knowledge_base','','create') || has_permission('knowledge_base','','edit')){ ?>onclick="edit_kb_group(this,<?php echo $group['groupid']; ?>); return false;" data-name="<?php echo $group['name']; ?>" data-color="<?php echo $group['color']; ?>" data-description="<?php echo clear_textarea_breaks($group['description']); ?>" data-order="<?php echo $group['group_order']; ?>" data-active="<?php echo $group['active']; ?>" <?php } ?>><?php echo $group['name']; ?></a>
                                                 <small> - <?php echo total_rows('tblknowledgebase','articlegroup='.$group['groupid']); ?></small>
+                                                <?php if(has_permission('knowledge_base','','edit')){ ?>
                                                 <a href="#" onclick="return false;" class="pull-right color-white kanban-color-picker" data-placement="bottom" data-toggle="popover" data-content="<div class='kan-ban-settings cpicker-wrapper'><?php echo $kanban_colors; ?></div>" data-html="true" data-trigger="focus"><i class="fa fa-angle-down"></i>
                                                 </a>
+                                                <?php } ?>
                                             </div>
                                             <?php
                                                 $this->db->select()->from('tblknowledgebase')->where('articlegroup',$group['groupid'])->order_by('article_order','asc');
@@ -51,14 +54,24 @@
                                                 ?>
                                             <div class="kan-ban-content-wrapper">
                                                 <div class="kan-ban-content">
-                                                    <ul class="sortable article-group groups" data-group-id="<?php echo $group['groupid']; ?>">
+                                                    <ul class="sortable article-group groups<?php if(!has_permission('knowledge_base','','edit')){echo 'not-sortable'; } ?>" data-group-id="<?php echo $group['groupid']; ?>">
                                                         <?php foreach($articles as $article) { ?>
                                                         <li class="<?php if($article['active'] == 0){echo 'line-throught';} ?>" data-article-id="<?php echo $article['articleid']; ?>">
                                                             <div class="panel-body">
-                                                                <i class="fa fa-file-text-o"></i>
-                                                                <a href="<?php echo admin_url('knowledge_base/article/'.$article['articleid']); ?>"><?php echo $article['subject']; ?></a>
-                                                                <p class="text-info"><small><?php echo _l('article_total_views'); ?>: <?php echo total_rows('tblviewstracking',array('rel_type'=>'kb_article','rel_id'=>$article['articleid'])); ?></small></p>
-
+                                                                <?php if($article['staff_article'] == 1){ ?>
+                                                                    <a href="<?php echo admin_url('knowledge_base/view/'.$article['slug']); ?>">
+                                                                <?php } else { ?>
+                                                                     <a href="<?php echo site_url('clients/knowledge_base/'.$article['slug']); ?>">
+                                                                <?php } ?><?php echo $article['subject']; ?></a>
+                                                                <?php if(has_permission('knowledge_base','','edit')){ ?>
+                                                                 <a href="<?php echo admin_url('knowledge_base/article/'.$article['articleid']); ?>" target="_blank" class="pull-right"><small><i class="fa fa-pencil-square-o" aria-hidden="true"></i></small></a>
+                                                                <?php } ?>
+                                                                <div class="clearfix"></div>
+                                                                <hr />
+                                                                <p class="pull-left"><small><?php echo _l('article_total_views'); ?>: <?php echo total_rows('tblviewstracking',array('rel_type'=>'kb_article','rel_id'=>$article['articleid'])); ?></small></p>
+                                                                <?php if($article['staff_article'] == 1){ ?>
+                                                                    <span class="label label-default pull-right"><?php echo _l('internal_article'); ?></span>
+                                                                <?php } ?>
                                                             </div>
                                                         </li>
                                                         <?php } ?>
@@ -146,12 +159,19 @@
                 }
             }
         }).disableSelection();
+
+
+            $('.groups').sortable({
+                cancel: '.not-sortable'
+            });
+
         setTimeout(function(){
             $('.kb-kan-ban').removeClass('hide');
         },200);
         $(".container-fluid").sortable({
             helper: 'clone',
             item: '.kan-ban-col',
+            cancel: '.not-sortable',
             update: function(event, ui) {
                 var order = [];
                 var status = $('.kan-ban-col');

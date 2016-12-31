@@ -14,7 +14,7 @@ class Knowledge_base_model extends CRM_Model
      */
     public function get($id = '', $slug = '')
     {
-        $this->db->select('slug,articleid, articlegroup, subject,tblknowledgebase.description,tblknowledgebase.active as active_article,tblknowledgebasegroups.active as active_group,name as group_name');
+        $this->db->select('slug,articleid, articlegroup, subject,tblknowledgebase.description,tblknowledgebase.active as active_article,tblknowledgebasegroups.active as active_group,name as group_name,staff_article');
         $this->db->from('tblknowledgebase');
         $this->db->join('tblknowledgebasegroups', 'tblknowledgebasegroups.groupid = tblknowledgebase.articlegroup', 'left');
         $this->db->order_by('article_order', 'asc');
@@ -38,7 +38,7 @@ class Knowledge_base_model extends CRM_Model
      * @param  mixed $current_id current article id
      * @return array
      */
-    public function get_related_articles($current_id){
+    public function get_related_articles($current_id, $customers = true){
 
         $total_related_articles = 5;
         $total_related_articles = do_action('total_related_articles',$total_related_articles);
@@ -50,6 +50,11 @@ class Knowledge_base_model extends CRM_Model
         $this->db->where('articlegroup',$article->articlegroup);
         $this->db->where('articleid !=',$current_id);
         $this->db->where('active',1);
+        if($customers == true){
+            $this->db->where('staff_article',0);
+        } else {
+            $this->db->where('staff_article',1);
+        }
         $this->db->limit($total_related_articles);
         return $this->db->get('tblknowledgebase')->result_array();
     }
@@ -64,6 +69,11 @@ class Knowledge_base_model extends CRM_Model
             unset($data['disabled']);
         } else {
             $data['active'] = 1;
+        }
+        if(isset($data['staff_article'])){
+            $data['staff_article'] = 1;
+        } else {
+            $data['staff_article'] = 0;
         }
         $data['datecreated'] = date('Y-m-d H:i:s');
         $data['slug']        = slug_it($data['subject']);
@@ -93,6 +103,13 @@ class Knowledge_base_model extends CRM_Model
         } else {
             $data['active'] = 1;
         }
+
+         if(isset($data['staff_article'])){
+            $data['staff_article'] = 1;
+        } else {
+            $data['staff_article'] = 0;
+        }
+
         $this->db->where('articleid', $id);
         $this->db->update('tblknowledgebase', $data);
         if ($this->db->affected_rows() > 0) {

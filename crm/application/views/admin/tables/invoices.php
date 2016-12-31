@@ -7,7 +7,7 @@ $aColumns = array(
     'total_tax',
     'YEAR(date)',
     'date',
-    'company',
+    'CASE company WHEN "" THEN (SELECT CONCAT(firstname, " ", lastname) FROM tblcontacts WHERE userid = tblclients.userid and is_primary = 1) ELSE company END as company',
     'project_id',
     'duedate',
     'tblinvoices.status',
@@ -98,12 +98,15 @@ if($this->_instance->input->post('project_id')){
     array_push($where,'AND project_id='.$this->_instance->input->post('project_id'));
 }
 
+if(!has_permission('invoices','','view')){
+    array_push($where,'AND tblinvoices.addedfrom='.get_staff_user_id());
+}
+
 $sIndexColumn = "id";
 $sTable       = 'tblinvoices';
 
 $result       = data_tables_init($aColumns, $sIndexColumn, $sTable, $join, $where, array(
     'tblinvoices.id',
-    'company',
     'tblinvoices.clientid',
     'symbol',
     'total',
@@ -129,7 +132,7 @@ foreach ($rResult as $aRow) {
            }
        } else if ($aColumns[$i] == 'date') {
         $__data = _d($_data);
-    } else if ($aColumns[$i] == 'company') {
+    } else if ($i == 5) {
         $__data = '<a href="' . admin_url('clients/client/' . $aRow['clientid']) . '">' . $aRow['company'] . '</a><br />';
     } else if ($aColumns[$i] == 'duedate') {
         $__data = _d($_data);

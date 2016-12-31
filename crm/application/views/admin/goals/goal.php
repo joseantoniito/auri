@@ -2,13 +2,11 @@
 <div id="wrapper">
     <div class="content">
         <div class="row">
-            <?php include_once(APPPATH . 'views/admin/includes/alerts.php'); ?>
             <div class="col-md-6">
                 <div class="panel_s">
-                    <div class="panel-heading">
-                        <?php echo $title; ?>
-                    </div>
                     <div class="panel-body">
+                        <h4 class="bold no-margin font-medium"><?php echo $title; ?></h4>
+                        <hr />
                         <?php echo form_open($this->uri->uri_string()); ?>
                         <?php $attrs = (isset($goal) ? array() : array('autofocus'=>true)); ?>
                         <?php $value = (isset($goal) ? $goal->subject : ''); ?>
@@ -50,68 +48,67 @@
             <?php if(isset($goal)){ ?>
             <div class="col-md-6">
                 <div class="panel_s">
-                    <div class="panel-heading">
-                        <?php echo _l('goal_achievement'); ?>
-                    </div>
                     <div class="panel-body">
+                    <h4 class="bold no-margin font-medium"><?php echo _l('goal_achievement'); ?></h4>
+                    <hr />
                         <?php
-                            $show_acchievement_ribbon = false;
-                            $help_text = '';
-                            if($goal->end_date < date('Y-m-d')){
-                              $achieve_indicator_class = 'danger';
-                              $lang_key = 'goal_failed';
-                              $finished = true;
-                              $notify_type = 'failed';
+                        $show_acchievement_ribbon = false;
+                        $help_text = '';
+                        if($goal->end_date < date('Y-m-d')){
+                          $achieve_indicator_class = 'danger';
+                          $lang_key = 'goal_failed';
+                          $finished = true;
+                          $notify_type = 'failed';
 
-                              if($goal->notified == 1){
-                                $help_text = '<p class="text-muted text-center">'._l('goal_staff_members_notified_about_failure').'</p>';
-                              }
+                          if($goal->notified == 1){
+                            $help_text = '<p class="text-muted text-center">'._l('goal_staff_members_notified_about_failure').'</p>';
+                        }
 
-                              $show_acchievement_ribbon = true;
-                            } else if($achievement['percent'] == 100){
+                        $show_acchievement_ribbon = true;
+                    } else if($achievement['percent'] == 100){
 
-                              $achieve_indicator_class = 'success';
-                              $show_acchievement_ribbon = true;
-                              if($goal->notified == 1){
-                                $help_text = '<p class="text-muted text-center">'._l('goal_staff_members_notified_about_achievement').'</p>';
-                              }
+                      $achieve_indicator_class = 'success';
+                      $show_acchievement_ribbon = true;
+                      if($goal->notified == 1){
+                        $help_text = '<p class="text-muted text-center">'._l('goal_staff_members_notified_about_achievement').'</p>';
+                    }
 
-                              $notify_type = 'success';
-                              $finished = true;
-                              $lang_key = 'goal_achieved';
+                    $notify_type = 'success';
+                    $finished = true;
+                    $lang_key = 'goal_achieved';
 
-                            } else if($achievement['percent'] >= 80) {
-                              $achieve_indicator_class = 'warning';
-                              $show_acchievement_ribbon = true;
-                              $lang_key = 'goal_close';
-                            }
-                            if($show_acchievement_ribbon == true){
-                              echo '<div class="ribbon '.$achieve_indicator_class.'"><span>'._l($lang_key).'</span></div>';
-                            }
+                } else if($achievement['percent'] >= 80) {
+                  $achieve_indicator_class = 'warning';
+                  $show_acchievement_ribbon = true;
+                  $lang_key = 'goal_close';
+              }
+              if($show_acchievement_ribbon == true){
+                  echo '<div class="ribbon '.$achieve_indicator_class.'"><span>'._l($lang_key).'</span></div>';
+              }
 
-                            ?>
-                        <h3 class="text-center"><?php echo _l('goal_result_heading'); ?></h3>
-                        <?php if($goal->goal_type == 1){
-                            echo '<p class="text-muted text-center">' . _l('goal_income_shown_in_base_currency') . '</p>';
-                            }
-                            if((isset($finished) && $goal->notified == 0) && ($goal->notify_when_achieve == 1 || $goal->notify_when_fail == 1)){
-                            echo '<p class="text-center text-info">'._l('goal_notify_when_end_date_arrives').'</p>';
+              ?>
+              <h3 class="text-center"><?php echo _l('goal_result_heading'); ?></h3>
+              <?php if($goal->goal_type == 1){
+                echo '<p class="text-muted text-center">' . _l('goal_income_shown_in_base_currency') . '</p>';
+            }
+            if((isset($finished) && $goal->notified == 0) && ($goal->notify_when_achieve == 1 || $goal->notify_when_fail == 1)){
+                echo '<p class="text-center text-info">'._l('goal_notify_when_end_date_arrives').'</p>';
 
-                            echo '<div class="text-center"><a href="'.admin_url('goals/notify/'.$goal->id . '/'.$notify_type).'" class="btn btn-default">'._l('goal_notify_staff_manualy').'</a></div>';
-                            }
-                            echo $help_text;
-                            ?>
-                        <div class="achievement mtop30" data-toggle="tooltip" title="<?php echo _l('goal_total',$achievement['total']); ?>">
-                            <div class="goal-progress" data-thickness="40" data-reverse="true">
-                                <strong class="goal-percent"></strong>
-                            </div>
-                        </div>
-                    </div>
+                echo '<div class="text-center"><a href="'.admin_url('goals/notify/'.$goal->id . '/'.$notify_type).'" class="btn btn-default">'._l('goal_notify_staff_manualy').'</a></div>';
+            }
+            echo $help_text;
+            ?>
+            <div class="achievement mtop30" data-toggle="tooltip" title="<?php echo _l('goal_total',$achievement['total']); ?>">
+                <div class="goal-progress" data-thickness="40" data-reverse="true">
+                    <strong class="goal-percent"></strong>
                 </div>
             </div>
-            <?php } ?>
         </div>
     </div>
+</div>
+<?php } ?>
+</div>
+</div>
 </div>
 <?php init_tail(); ?>
 <script>
@@ -123,30 +120,30 @@
     });
     $(function(){
         <?php if(isset($goal)){ ?>
-        var circle = $('.goal-progress').circleProgress({
-            value: '<?php echo $achievement['progress_bar_percent']; ?>',
-            size: 250,
-            fill: {
-                gradient: ["#28b8da", "#059DC1"]
-            }
-        }).on('circle-animation-progress', function(event, progress, stepValue) {
-            $(this).find('strong.goal-percent').html(parseInt(100 * stepValue) + '<i>%</i>');
-        });
-        <?php } ?>
-        var goal_type = $('select[name="goal_type"]').val();
-        if (goal_type == 5 || goal_type == 7) {
-            $('#contract_types').removeClass('hide');
-        }
-        $('select[name="goal_type"]').on('change', function() {
-            var goal_type = $(this).val();
+            var circle = $('.goal-progress').circleProgress({
+                value: '<?php echo $achievement['progress_bar_percent']; ?>',
+                size: 250,
+                fill: {
+                    gradient: ["#28b8da", "#059DC1"]
+                }
+            }).on('circle-animation-progress', function(event, progress, stepValue) {
+                $(this).find('strong.goal-percent').html(parseInt(100 * stepValue) + '<i>%</i>');
+            });
+            <?php } ?>
+            var goal_type = $('select[name="goal_type"]').val();
             if (goal_type == 5 || goal_type == 7) {
                 $('#contract_types').removeClass('hide');
-            } else {
-                $('#contract_types').addClass('hide');
-                $('#contract_type').selectpicker('val', '');
             }
+            $('select[name="goal_type"]').on('change', function() {
+                var goal_type = $(this).val();
+                if (goal_type == 5 || goal_type == 7) {
+                    $('#contract_types').removeClass('hide');
+                } else {
+                    $('#contract_types').addClass('hide');
+                    $('#contract_type').selectpicker('val', '');
+                }
+            });
         });
-    });
-</script>
+    </script>
 </body>
 </html>

@@ -2,7 +2,6 @@
 <div id="wrapper">
 	<div class="content">
 		<div class="row">
-			<?php include_once(APPPATH . 'views/admin/includes/alerts.php'); ?>
 			<div class="col-md-12">
 				<div class="panel_s">
 					<div class="panel-body _buttons">
@@ -54,7 +53,9 @@
         <?php echo _l('home_weekend_ticket_opening_statistics'); ?>
       </div>
       <div class="panel-body">
-        <canvas class="chart" id="weekly-ticket-openings-chart" height="70"></canvas>
+        <div class="relative" style="max-height:350px;">
+          <canvas class="chart" id="weekly-ticket-openings-chart" height="350"></canvas>
+        </div>
       </div>
     </div>
     <div class="panel_s">
@@ -105,7 +106,7 @@
 </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 <?php init_tail(); ?>
-<script src="<?php echo base_url(); ?>assets/js/tickets.js"></script>
+<?php echo app_script('assets/js','tickets.js'); ?>
 <script>
   var chart;
   var chart_data = <?php echo $weekly_tickets_opening_statistics; ?>;
@@ -117,7 +118,7 @@
     chart = new Chart($('#weekly-ticket-openings-chart'),{
     	type:'line',
     	data:chart_data,
-    	options:{responsive:true}
+    	options:{responsive:true,maintainAspectRatio:false}
     });
   }
 </script>

@@ -1,9 +1,8 @@
 <?php init_head(); ?>
-<?php $groups = get_all_knowledge_base_articles_grouped(); ?>
+<?php $groups = get_all_knowledge_base_articles_grouped(false); ?>
 <div id="wrapper">
     <div class="content">
         <div class="row">
-            <?php include_once(APPPATH . 'views/admin/includes/alerts.php'); ?>
             <div class="col-md-12">
                 <div class="panel_s">
                     <div class="panel-heading">
@@ -29,6 +28,7 @@
                         <div class="panel_s">
                             <div class="panel-heading">
                                 <?php echo $group['name']; ?>
+
                             </div>
                             <div class="panel-body">
                                 <?php foreach($group['articles'] as $article) {
@@ -44,60 +44,65 @@
                                     	$percent_no = number_format(($total_no_answers * 100) / $total_answers,2);
                                     }
                                     ?>
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <div class="row">
-                                            <div class="col-md-8">
-                                                <span class="bold"><?php echo $article['subject']; ?></span>
-                                                (<?php echo _l('kb_report_total_answers'); ?>: <?php echo $total_answers; ?>)
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="row">
+                                                <div class="col-md-8">
+                                                    <span class="bold">
+                                                        <?php if($article['staff_article'] == 1){ ?>
+                                                        <span class="label label-default mright5 inline-block mbot10"><?php echo _l('internal_article'); ?></span>
+                                                        <?php } ?>
+                                                        <?php echo $article['subject']; ?></span>
+                                                        (<?php echo _l('kb_report_total_answers'); ?>: <?php echo $total_answers; ?>)
+                                                    </div>
+                                                    <?php if($total_yes_answers > 0){ ?>
+                                                    <div class="col-md-4 text-right">
+                                                        <?php echo _l('report_kb_yes'); ?>: <?php echo $total_yes_answers; ?>
+                                                    </div>
+                                                    <?php } ?>
+                                                </div>
                                             </div>
-                                            <?php if($total_yes_answers > 0){ ?>
-                                            <div class="col-md-4 text-right">
-                                                <?php echo _l('report_kb_yes'); ?>: <?php echo $total_yes_answers; ?>
+                                            <?php if($total_no_answers > 0 || $total_yes_answers > 0){ ?>
+                                            <div class="col-md-12 progress-bars-report-articles">
+                                                <div class="progress">
+                                                    <div class="progress-bar progress-bar-info progress-bar-striped" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 0%" data-percent="<?php echo $percent_yes; ?>">
+                                                        0%
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-12 text-right">
+
+                                                        <?php echo _l('report_kb_no'); ?>: <?php echo $total_no_answers; ?>
+                                                    </div>
+                                                </div>
+                                                <div class="progress">
+                                                    <div class="progress-bar progress-bar-danger progress-bar-striped" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 0%" data-percent="<?php echo $percent_no; ?>">
+                                                        0%
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <?php } else { ?>
+                                            <div class="col-md-12">
+                                                <p class="no-margin text-info"><?php echo _l('report_kb_no_votes'); ?></p>
                                             </div>
                                             <?php } ?>
                                         </div>
+                                        <hr />
+                                        <?php } ?>
                                     </div>
-                                    <?php if($total_no_answers > 0 || $total_yes_answers > 0){ ?>
-                                    <div class="col-md-12 progress-bars-report-articles">
-                                        <div class="progress">
-                                            <div class="progress-bar progress-bar-info progress-bar-striped" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 0%" data-percent="<?php echo $percent_yes; ?>">
-                                                0%
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-md-12 text-right">
-                                                <?php echo _l('report_kb_no'); ?>: <?php echo $total_no_answers; ?>
-                                            </div>
-                                        </div>
-                                        <div class="progress">
-                                            <div class="progress-bar progress-bar-danger progress-bar-striped" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 0%" data-percent="<?php echo $percent_no; ?>">
-                                                0%
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <?php } else { ?>
-                                    <div class="col-md-12">
-                                        <p class="no-margin text-info"><?php echo _l('report_kb_no_votes'); ?></p>
-                                    </div>
-                                    <?php } ?>
                                 </div>
-                                <hr />
-                                <?php } ?>
                             </div>
+                            <?php } ?>
                         </div>
                     </div>
-                    <?php } ?>
                 </div>
             </div>
         </div>
-    </div>
-</div>
-<?php init_tail(); ?>
-<script>
-    $(function(){
-    var groupid = $('select[name="report-group-change"]').val();
-    $('#group_'+groupid).removeClass('hide');
+        <?php init_tail(); ?>
+        <script>
+            $(function(){
+                var groupid = $('select[name="report-group-change"]').val();
+                $('#group_'+groupid).removeClass('hide');
        // Used for knowledge base reports
        $('select[name="report-group-change"]').on('change', function() {
        	var groupid = $(this).val();
@@ -113,7 +118,7 @@
 
        	init_progress_bars();
        });
-    })
+   })
 </script>
 </body>
 </html>

@@ -2,7 +2,6 @@
 <div id="wrapper">
   <div class="content">
     <div class="row">
-      <?php include_once(APPPATH . 'views/admin/includes/alerts.php'); ?>
       <div class="col-md-12">
         <div class="panel_s">
           <div class="panel-body _buttons">
@@ -203,7 +202,6 @@
 </div>
 </div>
 <?php init_tail(); ?>
-<script src="<?php echo base_url('assets/plugins/jquery/jquery-migrate.js'); ?>"></script>
 <script src="<?php echo base_url(); ?>assets/plugins/jquery-nestable/jquery.nestable.js"></script>
 <link href="<?php echo base_url(); ?>assets/plugins/font-awesome-icon-picker/css/fontawesome-iconpicker.min.css" rel="stylesheet">
 <script src="<?php echo base_url(); ?>assets/plugins/font-awesome-icon-picker/js/fontawesome-iconpicker.js"></script>

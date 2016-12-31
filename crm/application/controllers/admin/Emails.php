@@ -46,6 +46,7 @@ class Emails extends Admin_controller
         $data['contracts'] = $this->emails_model->get(array('type'=>'contract','language'=>'english'));
         $data['proposals'] = $this->emails_model->get(array('type'=>'proposals','language'=>'english'));
         $data['projects'] =  $this->emails_model->get(array('type'=>'project','language'=>'english'));
+        $data['leads'] =  $this->emails_model->get(array('type'=>'leads','language'=>'english'));
         $data['title']     = _l('email_templates');
         $this->load->view('admin/emails/email_templates', $data);
     }

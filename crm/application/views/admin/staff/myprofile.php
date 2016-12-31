@@ -2,10 +2,9 @@
 <div id="wrapper">
   <div class="content">
     <div class="row">
-      <?php include_once(APPPATH . 'views/admin/includes/alerts.php'); ?>
       <?php if ($staff_p->staffid == get_staff_user_id() || is_admin()){ ?>
       <div class="col-md-12">
-        <div class="panel_s no-margin">
+        <div class="panel_s">
           <div class="panel-body no-padding-bottom">
            <?php $this->load->view('admin/staff/stats'); ?>
          </div>
@@ -14,18 +13,26 @@
      <?php } ?>
      <div class="col-md-5">
       <div class="panel_s">
-        <div class="panel-heading">
-          <?php echo _l('staff_profile_string'); ?>
-        </div>
+
         <div class="panel-body">
+        <h4 class="bold no-margin font-medium">
+          <?php echo _l('staff_profile_string'); ?>
+        </h4>
+        <hr />
           <?php if($staff_p->active == 0){ ?>
           <div class="alert alert-danger text-center"><?php echo _l('staff_profile_inactive_account'); ?></div>
           <hr />
           <?php } ?>
           <div class="button-group mtop10 pull-right">
+           <?php if(!empty($staff_p->facebook)){ ?>
             <a href="<?php echo $staff_p->facebook; ?>" target="_blank" class="btn btn-default btn-icon"><i class="fa fa-facebook"></i></a>
+            <?php } ?>
+            <?php if(!empty($staff_p->linkedin)){ ?>
             <a href="<?php echo $staff_p->linkedin; ?>" class="btn btn-default btn-icon"><i class="fa fa-linkedin"></i></a>
+            <?php } ?>
+            <?php if(!empty($staff_p->skype)){ ?>
             <a href="skype:<?php echo $staff_p->skype; ?>" data-toggle="tooltip" title="<?php echo $staff_p->skype; ?>" target="_blank" class="btn btn-default btn-icon"><i class="fa fa-skype"></i></a>
+            <?php } ?>
             <?php if(has_permission('staff','','edit')){ ?>
             <a href="<?php echo admin_url('staff/member/'.$staff_p->staffid); ?>" class="btn btn-default btn-icon"><i class="fa fa-pencil-square"></i></a>
             <?php } ?>
@@ -64,10 +71,12 @@
    <?php if ($staff_p->staffid == get_staff_user_id()){ ?>
    <div class="col-md-7">
     <div class="panel_s">
-      <div class="panel-heading">
-        <?php echo _l('staff_profile_notifications'); ?>
-      </div>
+
       <div class="panel-body">
+       <h4 class="bold no-margin font-medium">
+        <?php echo _l('staff_profile_notifications'); ?>
+       </h4>
+       <hr />
         <div id="notifications">
         </div>
         <a href="#" class="btn btn-info loader"><?php echo _l('load_more'); ?></a>

@@ -9,7 +9,6 @@ $aColumns     = array(
     '1',
     'tblleads.id',
     'tblleads.name',
-    'tblleads.company',
     'tblleads.email',
     'tblleads.phonenumber',
     'assigned',
@@ -150,7 +149,7 @@ foreach ($rResult as $aRow) {
         $row[] = $_data;
     }
 
-    $options = icon_btn('#', 'pencil-square-o','btn-default',array('onclick'=>'init_lead('.$aRow['id'].');return false;'));
+    $options = icon_btn('#', 'eye','btn-default',array('onclick'=>'init_lead('.$aRow['id'].');return false;'));
     if (is_lead_creator($aRow['id']) || $is_admin) {
         $options .= icon_btn('leads/delete/' . $aRow['id'], 'remove', 'btn-danger _delete');
     }

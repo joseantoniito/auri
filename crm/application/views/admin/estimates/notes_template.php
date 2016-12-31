@@ -20,10 +20,12 @@ foreach($notes as $note){ ?>
         </div>
         <div data-note-edit-textarea="<?php echo $note['id']; ?>" class="hide mtop15">
             <?php echo render_textarea('note','',$note['description']); ?>
+        <?php if($note['addedfrom'] == get_staff_user_id() || is_admin()){ ?>
         <div class="text-right">
             <button type="button" class="btn btn-default" onclick="toggle_edit_note(<?php echo $note['id']; ?>);return false;"><?php echo _l('cancel'); ?></button>
             <button type="button" class="btn btn-info" onclick="edit_note(<?php echo $note['id']; ?>);"><?php echo _l('update_note'); ?></button>
           </div>
+        <?php } ?>
         </div>
     </div>
     <?php if ($i >= 0 && $i != $len - 1) {

@@ -20,7 +20,7 @@ class Admin_controller extends CRM_Controller
 
         if(CI_VERSION != '3.1.2'){
             echo '<h2>Additionaly you will need to replace the <b>system</b> folder. We updated Codeigniter to 3.1.2.</h2>';
-            echo '<p>From the newest downloaded files upload the system folder to the Perfex CRM directory.';
+            echo '<p>From the newest downloaded files upload the <b>system</b> folder to your Perfex CRM installation directory.';
             die;
         }
 
@@ -36,7 +36,6 @@ class Admin_controller extends CRM_Controller
             }
             redirect(site_url('authentication/admin'));
         }
-
 
         // In case staff have setup logged in as client - This is important dont change it
         $this->session->unset_userdata('client_user_id');
@@ -198,12 +197,6 @@ class Admin_controller extends CRM_Controller
             'name' => _l('qa_create_survey'),
             'permission' => 'surveys',
             'url' => 'surveys/survey'
-        ));
-		
-		$this->perfex_base->add_quick_actions_link(array(
-            'name' => _l('new_invoice_item'),
-            'permission' => 'items',
-            'url' => 'invoice-items/invoice-item'
         ));
 
         $tickets = array(

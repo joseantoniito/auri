@@ -2,13 +2,12 @@
 <div id="wrapper">
 <div class="content email-templates">
     <div class="row">
-        <?php include_once(APPPATH . 'views/admin/includes/alerts.php'); ?>
         <div class="col-md-12">
             <div class="panel_s">
                 <div class="panel-body">
                     <div class="row">
                         <div class="col-md-12">
-                        <h3 class="bold"><?php echo _l('email_templates'); ?></h3>
+                        <h4 class="bold no-margin font-medium"><?php echo _l('email_templates'); ?></h3>
                         <hr />
                             <h4 class="bold well email-template-heading"><?php echo _l('email_template_ticket_fields_heading'); ?></h4>
                             <div class="table-responsive">
@@ -202,6 +201,28 @@
                                             <tr>
                                                 <td class="<?php if($staff_template['active'] == 0){echo 'text-throught';} ?>">
                                                     <a href="<?php echo admin_url('emails/email_template/'.$staff_template['emailtemplateid']); ?>"><?php echo $staff_template['name']; ?></a>
+                                                </td>
+                                            </tr>
+                                            <?php } ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                        </div>
+                         <div class="col-md-12">
+                        <hr />
+                            <h4 class="bold well email-template-heading"><?php echo _l('leads'); ?></h4>
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th><?php echo _l('email_templates_table_heading_name'); ?></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php foreach($leads as $lead_template){ ?>
+                                            <tr>
+                                                <td class="<?php if($lead_template['active'] == 0){echo 'text-throught';} ?>">
+                                                    <a href="<?php echo admin_url('emails/email_template/'.$lead_template['emailtemplateid']); ?>"><?php echo $lead_template['name']; ?></a>
                                                 </td>
                                             </tr>
                                             <?php } ?>

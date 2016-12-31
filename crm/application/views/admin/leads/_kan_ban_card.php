@@ -11,7 +11,7 @@ if ($lead['status'] == $status['id']) { ?>
         <div class="row">
             <div class="col-md-12 lead-name">
                 <a href="#" onclick="init_lead(<?php echo $lead['id']; ?>);return false;">
-                    <h5 class="bold">#<?php echo $lead['id'] . ' - ' . $lead['lead_name']; ?></h5>
+                    <span class="inline-block mtop10 mbot10 full-width">#<?php echo $lead['id'] . ' - ' . $lead['lead_name']; ?></span>
                 </a>
             </div>
             <div class="col-md-6 text-muted">

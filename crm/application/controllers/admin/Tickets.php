@@ -119,15 +119,23 @@ class Tickets extends Admin_controller
         $this->load->model('knowledge_base_model');
         $this->load->model('departments_model');
         $this->load->model('projects_model');
-        $projects = $this->projects_model->get_projects_for_ticket($data['ticket']->userid);
+        $projects = array();
 
-        $i = 0;
-        foreach ($projects as $project) {
-            if (!has_permission('projects', '', 'view') && !$this->projects_model->is_member($project['id'])) {
-                unset($projects[$i]);
-            }
-            $i++;
+        $where = '';
+        $where .= 'clientid='.$data['ticket']->userid;
+
+        if(!has_permission('projects','','view')){
+           $where .= ' AND id IN (SELECT project_id FROM tblprojectmembers WHERE staff_id='.get_staff_user_id().')';
         }
+
+        $projects = $this->projects_model->get('', $where);
+           if($data['ticket']->project_id != 0){
+            if(total_rows('tblprojectmembers',array('staff_id'=>get_staff_user_id(),'project_id'=>$data['ticket']->project_id)) == 0 && !has_permission('projects','','view')){
+                $this->db->where('id',$data['ticket']->project_id);
+                $projects[] = $this->db->get('tblprojects')->row_array();
+            }
+        }
+
        $where_contacts = 'CASE
               WHEN id NOT IN(SELECT contactid FROM tbltickets WHERE ticketid='.$id.') THEN active=1
               ELSE 1=1
@@ -315,15 +323,15 @@ class Tickets extends Admin_controller
         if ($this->input->is_ajax_request()) {
             $contact_id = $this->input->post('contact_id');
             $this->load->model('projects_model');
-            $projects = $this->projects_model->get_projects_for_ticket(get_user_id_by_contact_id($contact_id));
-            $i        = 0;
-            foreach ($projects as $project) {
-                if (!has_permission('projects', '', 'view') && !$this->projects_model->is_member($project['id'])) {
-                    unset($projects[$i]);
-                }
-                $i++;
+
+            $where = '';
+            $where .= 'clientid='.get_user_id_by_contact_id($contact_id);
+
+            if(!has_permission('projects','','view')){
+                 $where .= ' AND id IN (SELECT project_id FROM tblprojectmembers WHERE staff_id='.get_staff_user_id().')';
             }
 
+            $projects = $this->projects_model->get('', $where);
             echo json_encode(array(
                 'contact_data' => $this->clients_model->get_contact($contact_id),
                 'projects' => $projects

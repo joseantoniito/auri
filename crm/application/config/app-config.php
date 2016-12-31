@@ -17,7 +17,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 |
 */
 
-define('APP_BASE_URL','http://localhost/perfex_crm/crm/');
+define('APP_BASE_URL','http://auri.mastering-marketing.org/crm/');
 
 /*
 |--------------------------------------------------------------------------
@@ -38,7 +38,7 @@ define('APP_ENC_KEY','996757f426acf0440cdc58e9cc4ef7be');
 /* Database credentials - Auto added on install */
 
 /* The hostname of your database server. */
-define('APP_DB_HOSTNAME','192.185.16.192');
+define('APP_DB_HOSTNAME','localhost');
 /* The username used to connect to the database */
 define('APP_DB_USERNAME','rafaq5_auri_perf');
 /* The password used to connect to the database */

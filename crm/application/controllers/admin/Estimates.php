@@ -15,7 +15,7 @@ class Estimates extends Admin_controller
     /* List all estimates datatables */
     public function list_estimates($id = '', $clientid = false)
     {
-        if (!has_permission('estimates', '', 'view')) {
+        if (!has_permission('estimates', '', 'view') && !has_permission('estimates', '', 'view_own')) {
             access_denied('estimates');
         }
         $data['estimate_statuses'] = $this->estimates_model->get_statuses();
@@ -23,6 +23,7 @@ class Estimates extends Admin_controller
             $data['title']           = _l('estimates_pipeline');
             $data['bodyclass']       = 'estimates-pipeline estimates_total_manual';
             $data['switch_pipeline'] = false;
+
             if(is_numeric($id)){
                 $data['estimateid'] = $id;
             } else {
@@ -31,16 +32,24 @@ class Estimates extends Admin_controller
             $this->load->view('admin/estimates/pipeline/manage', $data);
         } else {
 
+             // Pipeline was initiated but user click from home page and need to show table only to filter
+            if($this->input->get('status') || $this->input->get('filter') && ($this->session->has_userdata('estimate_pipeline') && $this->session->userdata('estimate_pipeline') == 'true')){
+                $this->pipeline(0,true);
+            }
+
             if ($this->input->is_ajax_request()) {
                 $this->perfex_base->get_table_data('estimates', array(
                     'clientid' => $clientid,
                     'id' => $id
                 ));
             }
+
             $data['estimateid'] = '';
+
             if (is_numeric($id)) {
                 $data['estimateid'] = $id;
             }
+
             $data['switch_pipeline'] = true;
             $data['title']           = _l('estimates');
             $data['bodyclass'] = 'estimates_total_manual';
@@ -52,9 +61,10 @@ class Estimates extends Admin_controller
     /* Add new estimate or update existing */
     public function estimate($id = '')
     {
-        if (!has_permission('estimates', '', 'view')) {
+        if (!has_permission('estimates', '', 'view') && !has_permission('estimates','','view_own')) {
             access_denied('estimates');
         }
+
         if ($this->input->post()) {
             if ($id == '') {
                 if (!has_permission('estimates', '', 'create')) {
@@ -88,6 +98,10 @@ class Estimates extends Admin_controller
             $title = _l('create_new_estimate');
         } else {
             $estimate             = $this->estimates_model->get($id);
+
+            if(!$estimate || (!has_permission('estimates','','view') && $estimate->addedfrom != get_staff_user_id())){
+                blank_page(_l('estimate_not_found'));
+            }
             $data['estimate']     = $estimate;
             $data['edit']         = true;
             $title                = _l('edit', _l('estimate_lowercase'));
@@ -101,12 +115,14 @@ class Estimates extends Admin_controller
         $this->load->model('currencies_model');
         $data['currencies'] = $this->currencies_model->get();
         $this->load->model('invoice_items_model');
-        $data['items']   = $this->invoice_items_model->get();
 
-        $where_clients = 'active=1';
+        $data['items'] = $this->invoice_items_model->get_grouped();
+        $data['items_groups'] = $this->invoice_items_model->get_groups();
+
+        $where_clients = 'tblclients.active=1';
 
         if(!has_permission('customers','','view')) {
-            $where_clients .= ' AND userid IN (SELECT customer_id FROM tblcustomeradmins WHERE staff_id='.get_staff_user_id().')';
+            $where_clients .= ' AND tblclients.userid IN (SELECT customer_id FROM tblcustomeradmins WHERE staff_id='.get_staff_user_id().')';
         }
 
         $data['clients']    = $this->clients_model->get('',$where_clients);
@@ -115,6 +131,28 @@ class Estimates extends Admin_controller
                 || (total_rows('tblcustomeradmins',array('staff_id'=>get_staff_user_id(),'customer_id'=>$data['estimate']->clientid)) == 0 && !has_permission('customers','','view'))){
                 $data['clients'][] = $this->clients_model->get($data['estimate']->clientid,array(),'row_array');
             }
+        }
+
+        $data['projects'] = array();
+
+        if($id != '' || isset($data['customer_id'])){
+
+              $where = '';
+              $where_customer_id = (isset($data['customer_id']) ? $data['customer_id'] : $estimate->clientid);
+              $where .= 'clientid='.$where_customer_id;
+
+              if(!has_permission('projects','','view')){
+                 $where .= ' AND id IN (SELECT project_id FROM tblprojectmembers WHERE staff_id='.get_staff_user_id().')';
+              }
+
+              $data['projects'] = $this->projects_model->get('', $where);
+
+              if($id != '' && $data['estimate']->project_id != 0){
+                    if(total_rows('tblprojectmembers',array('staff_id'=>get_staff_user_id(),'project_id'=>$data['estimate']->project_id)) == 0 && !has_permission('projects','','view')){
+                        $this->db->where('id',$data['estimate']->project_id);
+                        $data['projects'][] = $this->db->get('tblprojects')->row_array();
+                    }
+              }
         }
 
         $data['staff'] = $this->staff_model->get('', 1);
@@ -146,12 +184,14 @@ class Estimates extends Admin_controller
        $original_number = $this->input->post('original_number');
        $number           = trim($number);
        $number = ltrim($number,'0');
+
        if($isedit == 'true'){
             if($number == $original_number){
                 echo json_encode(true);
                 die;
             }
        }
+
        if(total_rows('tblestimates',array('YEAR(date)'=>date('Y',strtotime(to_sql_date($date))),'number'=>$number)) > 0){
             echo 'false';
        } else {
@@ -165,17 +205,19 @@ class Estimates extends Admin_controller
     }
      public function delete_attachment($id)
     {
-        if (!has_permission('estimates', '', 'delete')) {
+        $file = $this->misc_model->get_file($id);
+        if($file->staffid == get_staff_user_id() || is_admin()){
+            echo $this->estimates_model->delete_attachment($id);
+        } else {
             header('HTTP/1.0 400 Bad error');
             echo _l('access_denied');
             die;
         }
-        echo $this->estimates_model->delete_attachment($id);
     }
     /* Get all estimate data used when user click on estimate number in a datatable left side*/
     public function get_estimate_data_ajax($id, $to_return = false)
     {
-        if (!has_permission('estimates', '', 'view')) {
+        if (!has_permission('estimates', '', 'view') && !has_permission('estimates', '', 'view_own')) {
             echo _l('access_denied');
             die;
         }
@@ -183,10 +225,11 @@ class Estimates extends Admin_controller
             die('No estimate found');
         }
         $estimate = $this->estimates_model->get($id);
-        if (!$estimate) {
-            echo 'Estimate Not Found';
+        if(!$estimate || (!has_permission('estimates','','view') && $estimate->addedfrom != get_staff_user_id())){
+            echo _l('estimate_not_found');
             die;
         }
+
         $estimate->date       = _d($estimate->date);
         $estimate->expirydate = _d($estimate->expirydate);
         if ($estimate->invoiceid !== NULL) {
@@ -258,7 +301,7 @@ class Estimates extends Admin_controller
     }
     public function get_notes($id)
     {
-        if (has_permission('estimates', '', 'view')) {
+        if (has_permission('estimates', '', 'view') || has_permission('estimates', '', 'view_own')) {
             $data['notes'] = $this->misc_model->get_notes($id,'estimate');
             $this->load->view('admin/estimates/notes_template', $data);
         }
@@ -282,7 +325,7 @@ class Estimates extends Admin_controller
 
     }
     public function send_expiry_reminder($id){
-        if (!has_permission('estimates', '', 'view')) {
+        if (!has_permission('estimates', '', 'view') && !has_permission('estimates', '', 'view_own')) {
             access_denied('estimates');
         }
         $success = $this->estimates_model->send_expiry_reminder($id);
@@ -300,7 +343,7 @@ class Estimates extends Admin_controller
     /* Send estimate to email */
     public function send_to_email($id)
     {
-        if (!has_permission('estimates', '', 'view')) {
+        if (!has_permission('estimates', '', 'view') && !has_permission('estimates', '', 'view_own')) {
             access_denied('estimates');
         }
         $success = $this->estimates_model->send_estimate_to_client($id, '', $this->input->post('attach_pdf'),$this->input->post('cc'));
@@ -392,7 +435,7 @@ class Estimates extends Admin_controller
     /* Generates estimate PDF and senting to email  */
     public function pdf($id)
     {
-        if (!has_permission('estimates', '', 'view')) {
+        if (!has_permission('estimates', '', 'view') && !has_permission('estimates', '', 'view_own')) {
             access_denied('estimates');
         }
         if (!$id) {
@@ -410,14 +453,14 @@ class Estimates extends Admin_controller
     // Pipeline
     public function get_pipeline()
     {
-        if (has_permission('estimates', '', 'view')) {
+        if (has_permission('estimates', '', 'view') || has_permission('estimates', '', 'view_own')) {
             $data['estimate_statuses'] = $this->estimates_model->get_statuses();
             $this->load->view('admin/estimates/pipeline/pipeline', $data);
         }
     }
     public function pipeline_open($id)
     {
-        if (has_permission('estimates', '', 'view')) {
+        if (has_permission('estimates', '', 'view') || has_permission('estimates', '', 'view_own')) {
             $data['id'] = $id;
             $data['estimate'] = $this->get_estimate_data_ajax($id, true);
             $this->load->view('admin/estimates/pipeline/estimate', $data);
@@ -429,7 +472,7 @@ class Estimates extends Admin_controller
             $this->estimates_model->update_pipeline($this->input->post());
         }
     }
-    public function pipeline($set = 0)
+    public function pipeline($set = 0,$manual = false)
     {
         if ($set == 1) {
             $set = 'true';
@@ -439,7 +482,9 @@ class Estimates extends Admin_controller
         $this->session->set_userdata(array(
             'estimate_pipeline' => $set
         ));
-        redirect(admin_url('estimates/list_estimates'));
+        if($manual == false){
+            redirect(admin_url('estimates/list_estimates'));
+        }
     }
      public function pipeline_load_more()
     {

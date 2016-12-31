@@ -2,7 +2,6 @@
 <div id="wrapper">
     <div class="content">
         <div class="row">
-            <?php include_once(APPPATH . 'views/admin/includes/alerts.php'); ?>
             <div class="col-md-12">
                 <div class="panel_s">
                     <div class="panel-body _buttons">
@@ -12,7 +11,7 @@
                 <div class="panel_s">
                     <div class="panel-body">
                         <?php if(count($sources) > 0){ ?>
-                        <div class="container-fluid">
+
                             <div class="table-responsive">
                                 <table class="table dt-table">
                                     <thead>
@@ -36,7 +35,7 @@
                                     </tbody>
                                 </table>
                             </div>
-                        </div>
+
                         <?php } else { ?>
                         <p class="no-margin"><?php echo _l('leads_sources_not_found'); ?></p>
                         <?php } ?>

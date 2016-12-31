@@ -2,13 +2,14 @@
 <div id="wrapper">
 	<div class="content">
 		<div class="row">
-			<?php include_once(APPPATH . 'views/admin/includes/alerts.php'); ?>
 			<div class="col-md-12">
 				<div class="panel_s">
-					<div class="panel-heading">
-						<?php echo $title; ?>
-					</div>
+
 					<div class="panel-body">
+					<h4 class="bold no-margin font-medium">
+						<?php echo $title; ?>
+					</h4>
+					<hr />
 						<div class="_buttons">
 							<a href="<?php echo admin_url('utilities/make_backup_db'); ?>" class="btn btn-default pull-right">
 								<?php echo _l('utility_create_new_backup_db'); ?>
@@ -21,7 +22,7 @@
 						<p class="mtop20 text-info bold">
 							<?php echo _l('utility_db_backup_note'); ?>
 						</p>
-						<div class="container-fluid">
+
 							<div class="table-responsive">
 								<table class="table dt-table" data-order-col="2" data-order-type="desc">
 									<thead>
@@ -51,7 +52,7 @@
 											<?php } ?>
 										</tbody>
 									</table>
-								</div>
+
 							</div>
 						</div>
 					</div>

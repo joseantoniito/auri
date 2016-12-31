@@ -2,7 +2,6 @@
 <div id="wrapper">
  <div class="content">
   <div class="row">
-   <?php include_once(APPPATH . 'views/admin/includes/alerts.php'); ?>
    <div class="_filters _hidden_inputs">
     <?php
     foreach($statuses as $_status){
@@ -145,12 +144,11 @@
    $.each($('._hidden_inputs._filters input'),function(){
      Proposals_ServerParams[$(this).attr('name')] = '[name="'+$(this).attr('name')+'"]';
    });
-
    initDataTable('.table-proposals', window.location.href, ['undefined'], ['undefined'], Proposals_ServerParams, [6, 'DESC']);
    init_proposal();
  });
 </script>
-<link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/proposals.css">
-<script src="<?php echo base_url(); ?>assets/js/proposals.js"></script>
+<?php echo app_stylesheet('assets/css','proposals.css'); ?>
+<?php echo app_script('assets/js','proposals.js'); ?>
 </body>
 </html>

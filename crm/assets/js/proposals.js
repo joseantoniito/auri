@@ -7,7 +7,6 @@ $(function(){
 });
 function init_proposal_editor() {
 
-
  tinymce.remove('div.editable');
 
  var _templates = [];
@@ -50,9 +49,8 @@ function init_proposal_editor() {
     'advlist autolink autoresize lists link image charmap hr anchor',
     'searchreplace wordcount visualblocks visualchars code fullscreen',
     'media nonbreaking save table contextmenu directionality',
-    'paste textcolor colorpicker textpattern imagetools'
+    'paste textcolor colorpicker textpattern'
     ],
-
     autoresize_bottom_margin: 50,
     toolbar1: 'save_button fontselect fontsizeselect insertfile | styleselect',
     toolbar2:'bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent',

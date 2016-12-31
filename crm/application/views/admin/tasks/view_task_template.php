@@ -23,7 +23,7 @@
               echo '<div class="task-single-related-wrapper">';
               $task_rel_data = get_relation_data($task->rel_type,$task->rel_id);
               $task_rel_value = get_relation_values($task_rel_data,$task->rel_type);
-              echo '<h4 class="bold font-medium mbot15">'._l('task_single_related').': <a href="'.$task_rel_value['link'].'">'.$task_rel_value['name'].'</a></h4>';
+              echo '<h4 class="bold font-medium mbot15">'._l('task_single_related').': <a href="'.$task_rel_value['link'].'" target="_blank">'.$task_rel_value['name'].'</a></h4>';
               echo '</div>';
             }
             ?>
@@ -173,11 +173,14 @@
             <hr />
          </div>
          <div class="clearfix"></div>
-         <h4 class="bold th font-medium mbot15"><?php echo _l('task_view_description'); ?></h4>
+         <h4 class="bold th font-medium mbot15 pull-left"><?php echo _l('task_view_description'); ?></h4>
+         <?php if(has_permission('tasks','','edit')){ ?><a href="#" onclick="edit_task_inline_description(this,<?php echo $task->id; ?>); return false;" class="pull-right mtop5 font-medium-xs"><i class="fa fa-pencil-square-o"></i></a>
+         <?php } ?>
+         <div class="clearfix"></div>
          <?php if(!empty($task->description)){
-            echo '<div class="tc-content">' .check_for_links($task->description) .'</div>';
+            echo '<div class="tc-content"><div id="task_view_description">' .check_for_links($task->description) .'</div></div>';
             } else {
-            echo '<p class="text-muted no-margin">' . _l('task_no_description') . '</p>';
+            echo '<div class="text-muted no-margin tc-content" id="task_view_description">' . _l('task_no_description') . '</div>';
             } ?>
          <div class="clearfix"></div>
          <hr />
@@ -203,18 +206,18 @@
                   <?php foreach($task->attachments as $attachment){ ?>
                   <li class="mbot10 task-attachment">
                      <div class="mbot10 pull-right task-attachment-user">
-                        <?php if($attachment['staffid'] == get_staff_user_id() || has_permission('tasks','','delete')){ ?>
+                        <?php if($attachment['staffid'] == get_staff_user_id() || is_admin()){ ?>
                         <a href="#" class="pull-right" onclick="remove_task_attachment(this,<?php echo $attachment['id']; ?>); return false;">
                         <i class="fa fa fa-times"></i>
                         </a>
                         <?php } ?>
                         <?php
                            if($attachment['staffid'] != 0){
-                             echo '<a href="'.admin_url('profile/'.$attachment['staffid']).'" target="_blank">'.get_staff_full_name($attachment['staffid']) .'</a>';
-                           } else {
-                             echo '<a href="'.admin_url('clients/client/'.get_user_id_by_contact_id($attachment['contact_id']).'?contactid='.$attachment['contact_id']).'" target="_blank">'.get_contact_full_name($attachment['contact_id']) .'</a>';
+                             echo '<a href="'.admin_url('profile/'.$attachment['staffid']).'" target="_blank">'.get_staff_full_name($attachment['staffid']) .'</a> - ';
+                           } else if($attachment['contact_id'] != 0) {
+                             echo '<a href="'.admin_url('clients/client/'.get_user_id_by_contact_id($attachment['contact_id']).'?contactid='.$attachment['contact_id']).'" target="_blank">'.get_contact_full_name($attachment['contact_id']) .'</a> - ';
                            }
-                           echo ' - ' . time_ago($attachment['dateadded']);
+                           echo time_ago($attachment['dateadded']);
                            ?>
                      </div>
                      <div class="clearfix"></div>
@@ -251,7 +254,7 @@
          <?php } ?>
          <hr />
          <a href="#" onclick="slideToggle('.tasks-comments'); return false;" >
-            <h4 class="bold mbot20"><?php echo _l('task_comments'); ?></h4>
+            <h4 class="mbot20 font-medium"><?php echo _l('task_comments'); ?></h4>
          </a>
          <div class="tasks-comments inline-block full-width" <?php if(count($task->comments) == 0){echo 'style="display:none"';} ?>>
             <textarea name="comment" id="task_comment" rows="5" class="form-control mtop15"></textarea>
@@ -362,7 +365,7 @@
          <div class="clearfix"></div>
          <div class="task-info task-status">
             <h5>
-               <i class="fa fa-<?php if($task->status == 5){echo 'star';} else if($task->status == 1){echo 'star-o';} else {echo 'star-half-o';} ?> pull-left"></i><?php echo _l('task_status'); ?>: <?php echo format_task_status($task->status,true); ?>
+               <i class="fa fa-<?php if($task->status == 5){echo 'star';} else if($task->status == 1){echo 'star-o';} else {echo 'star-half-o';} ?> pull-left task-info-icon"></i><?php echo _l('task_status'); ?>: <?php echo format_task_status($task->status,true); ?>
                <?php if($this->tasks_model->is_task_assignee(get_staff_user_id(),$task->id) || has_permission('tasks','','edit') || has_permission('tasks','','create')) { ?>
                <div class="task-single-menu task-menu-status pull-right">
                   <a href="#" onclick="return false;" class="trigger manual-popover">
@@ -384,30 +387,42 @@
             </h5>
          </div>
          <div class="<?php if(date('Y-m-d') > $task->startdate && total_rows('tbltaskstimers',array('task_id'=>$task->id)) == 0 && $task->status != 5){echo 'text-danger';}else{echo 'text-muted';} ?> task-info">
-            <h5><i class="fa fa-calendar-plus-o pull-left fa-margin"></i>
+            <h5><i class="fa task-info-icon fa-calendar-plus-o pull-left fa-margin"></i>
                <?php echo _l('task_single_start_date'); ?>: <?php echo _d($task->startdate); ?>
             </h5>
          </div>
          <div class="task-info <?php if(!$task->status != 5){echo ' text-danger'; }else{echo 'text-info';} ?><?php if(!$task->duedate){ echo ' hide';} ?>">
-            <h5><i class="fa fa-calendar-check-o pull-left"></i>
+            <h5><i class="fa task-info-icon fa-calendar-check-o pull-left"></i>
                <?php echo _l('task_single_due_date'); ?>: <?php echo _d($task->duedate); ?>
             </h5>
          </div>
          <div class="text-<?php echo get_task_priority_class($task->priority); ?> task-info">
-            <h5><i class="fa pull-left fa-bolt"></i>
+            <h5><i class="fa task-info-icon pull-left fa-bolt"></i>
                <?php echo _l('task_single_priority'); ?>: <?php echo task_priority($task->priority); ?>
             </h5>
          </div>
-         <?php if($task->hourly_rate != 0 && (has_permission('tasks','','create') || has_permission('tasks','','edit'))){ ?>
+         <?php if((has_permission('tasks','','create') || has_permission('tasks','','edit'))){ ?>
          <div class="task-info">
-            <h5><i class="fa pull-left fa-clock-o"></i>
+            <h5><i class="fa task-info-icon pull-left fa-clock-o"></i>
                <?php echo _l('task_hourly_rate'); ?>: <?php echo _format_number($task->hourly_rate); ?>
             </h5>
          </div>
+         <div class="task-info">
+            <h5><i class="fa task-info-icon pull-left fa fa-money"></i>
+               <?php echo _l('task_billable'); ?>: <?php echo ($task->billable == 1 ? _l('task_billable_yes') : _l('task_billable_no')) ?>
+            </h5>
+         </div>
+         <?php if($task->billable == 1){ ?>
+         <div class="task-info<?php if($task->billed == 0){echo ' text-warning';} ?>">
+            <h5><i class="fa task-info-icon pull-left fa-check"></i>
+               <?php echo _l('task_billed'); ?>: <?php echo ($task->billed == 1 ? _l('task_billed_yes') : _l('task_billed_no')) ?>
+            </h5>
+         </div>
+         <?php } ?>
          <?php } ?>
          <?php if($task->status == 5){ ?>
          <div class="task-info text-success" data-toggle="tooltip" data-title="<?php echo _dt($task->datefinished); ?>" data-placement="bottom">
-            <h5><i class="fa pull-left fa-check"></i>
+            <h5><i class="fa task-info-icon pull-left fa-check"></i>
                <?php echo _l('task_single_finished'); ?>: <?php echo time_ago($task->datefinished); ?>
             </h5>
          </div>
@@ -426,13 +441,13 @@
          <?php if($this->tasks_model->is_task_assignee(get_staff_user_id(),$task->id) || total_rows('tbltaskstimers',array('task_id'=>$task->id,'staff_id'=>get_staff_user_id())) > 0){ ?>
          <div class="task-info text-muted">
             <h5>
-               <i class="fa fa-clock-o"></i> <?php echo _l('task_user_logged_time'); ?> <?php echo seconds_to_time_format($this->tasks_model->calc_task_total_time($task->id,' AND staff_id='.get_staff_user_id())); ?>
+               <i class="fa task-info-icon fa-clock-o"></i> <?php echo _l('task_user_logged_time'); ?> <?php echo seconds_to_time_format($this->tasks_model->calc_task_total_time($task->id,' AND staff_id='.get_staff_user_id())); ?>
             </h5>
          </div>
          <?php } ?>
          <?php if(has_permission('tasks','','create')){ ?>
          <div class="task-info text-success">
-            <h5><i class="fa fa-clock-o"></i>
+            <h5><i class="fa task-info-icon fa-clock-o"></i>
                <?php echo _l('task_total_logged_time'); ?> <?php echo seconds_to_time_format($this->tasks_model->calc_task_total_time($task->id)); ?>
             </h5>
          </div>
@@ -481,7 +496,7 @@
                $_assignees = '';
                foreach ($task->assignees as $assignee) {
                 $_remove_assigne = '';
-                if((has_permission('tasks','','edit') || has_permission('tasks','','create')) && total_rows('tbltaskstimers',array('task_id'=>$task->id,'staff_id'=>$assignee['assigneeid'])) == 0){
+                if(has_permission('tasks','','edit') || has_permission('tasks','','create')){
                   $_remove_assigne = ' <a href="#" class="remove-task-user text-danger" onclick="remove_assignee(' . $assignee['id'] . ',' . $task->id . '); return false;"><i class="fa fa-remove"></i></a>';
                 }
                 $_assignees .= '
@@ -574,6 +589,8 @@
    });
 
    taskid = '<?php echo $task->id; ?>';
+   tinyMCE.remove('#task_view_description');
+
    if(typeof(Dropbox) != 'undefined'){
    document.getElementById("dropbox-chooser-task").appendChild(Dropbox.createChooseButton({
            success: function(files) {

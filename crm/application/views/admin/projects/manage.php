@@ -2,7 +2,6 @@
 <div id="wrapper">
   <div class="content">
     <div class="row">
-      <?php include_once(APPPATH . 'views/admin/includes/alerts.php'); ?>
       <div class="col-md-12">
         <div class="panel_s">
           <div class="panel-body _buttons">
@@ -66,7 +65,7 @@
                     <?php $where = ($_where == '' ? '' : $_where.' AND ').'status = '.$status; ?>
                     <a href="#" onclick="dt_custom_view('project_status_<?php echo $status; ?>','.table-projects','project_status_<?php echo $status; ?>',true); return false;">
                      <h3 class="bold"><?php echo total_rows('tblprojects',$where); ?></h3>
-                     <span class="text-<?php echo get_project_label($status); ?> bold"><?php echo _l('project_status_'.$status); ?></span>
+                     <span class="text-<?php echo get_project_label($status); ?>"><?php echo _l('project_status_'.$status); ?></span>
                    </a>
                  </div>
                  <?php } ?>
@@ -108,7 +107,7 @@
   ProjectsServerParams[$(this).attr('name')] = '[name="'+$(this).attr('name')+'"]';
 });
  var projects_not_sortable = $('.table-projects').find('th').length - 1;
- initDataTable('.table-projects', window.location.href, [projects_not_sortable], [projects_not_sortable], ProjectsServerParams, [3, 'ASC']).column(0).visible(false, false).columns.adjust();
+ initDataTable('.table-projects', window.location.href, [projects_not_sortable], [projects_not_sortable], ProjectsServerParams, [4, 'ASC']).column(0).visible(false, false).columns.adjust();
 </script>
 </body>
 </html>

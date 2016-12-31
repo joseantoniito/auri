@@ -3,10 +3,10 @@
 <head>
     <style>
         body {
-         font-family: Verdana, Geneva, sans-serif;
-         font-size:14px;
-     }
-     .wrapper {
+           font-family: Verdana, Geneva, sans-serif;
+           font-size:14px;
+       }
+       .wrapper {
         margin:0 auto;
         display:block;
         background:#f0f0f0;
@@ -56,8 +56,7 @@
 </head>
 <body>
     <div class="wrapper">
-       <?php include_once(APPPATH . 'views/admin/includes/alerts.php'); ?>
-       <h1>
+     <h1>
         Database upgrade is required.
     </h1>
     <p>You need to perform an database upgrade before proceed using Perfex CRM. Your files version is <?php echo wordwrap($this->config->item('migration_version'),1,'.',true); ?> and database version is <?php echo wordwrap($this->_current_version,1,'.',true); ?></p>

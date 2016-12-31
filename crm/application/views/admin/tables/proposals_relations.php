@@ -43,6 +43,11 @@ if($rel_type == 'customer'){
 }
 
 $where = array($where);
+
+if(!has_permission('proposals','','view')){
+  array_push($where,'AND addedfrom='.get_staff_user_id());
+}
+
 $result  = data_tables_init($aColumns, $sIndexColumn, $sTable, $join, $where, $additional_select);
 
 $output  = $result['output'];
@@ -56,7 +61,7 @@ foreach ($rResult as $aRow) {
             $_data = $aRow[ strafter($aColumns[$i],'as ')];
         } else {
             $_data = $aRow[ $aColumns[$i] ];
-        }if($aColumns[$i] == 'tblproposals.id'){
+        } if($aColumns[$i] == 'tblproposals.id'){
              $_data = '<a href="'.admin_url('proposals/list_proposals/'.$aRow['id']).'">' . format_proposal_number($aRow['tblproposals.id']) . '</a>';
         } else if ($aColumns[$i] == 'subject') {
             $_data = '<a href="'.admin_url('proposals/list_proposals/'.$aRow['id']).'">' . $_data . '</a>';

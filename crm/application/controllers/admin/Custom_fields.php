@@ -35,7 +35,9 @@ class Custom_fields extends Admin_controller
                 }
             } else {
                 $success = $this->custom_fields_model->update($this->input->post(), $id);
-                if ($success) {
+                if (is_array($success) && isset($success['cant_change_option_custom_field'])) {
+                    set_alert('warning', _l('cf_option_in_use'));
+                } else if($success === true){
                     set_alert('success', _l('updated_successfuly', _l('custom_field')));
                 }
                 redirect(admin_url('custom_fields/field/' . $id));

@@ -9,7 +9,6 @@
 <a href="#" class="btn btn-info mbot25" data-toggle="modal" data-target="#sync_data_proposal_data"><?php echo _l('sync_data'); ?></a>
 <?php $this->load->view('admin/proposals/sync_data',array('related'=>$client,'rel_id'=>$client->userid,'rel_type'=>'customer')); ?>
 <?php } ?>
-<?php if(has_permission('proposals','','view')){ ?>
 <?php
 $table_data = array(
  _l('proposal') . ' #',
@@ -24,5 +23,4 @@ foreach($custom_fields as $field){
 }
 render_datatable($table_data,'proposals-client-profile');
 ?>
-<?php } ?>
 <?php } ?>

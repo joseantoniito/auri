@@ -60,6 +60,31 @@ class Knowledge_base extends Admin_controller
         $data['title'] = $title;
         $this->load->view('admin/knowledge_base/article', $data);
     }
+    public function view($slug){
+        if(!has_permission('knowledge_base','','view')){
+            access_denied('View Knowledge Base Article');
+        }
+
+        $data['article'] = $this->knowledge_base_model->get(false,$slug);
+
+        if(!$data['article']){
+            show_404();
+        }
+
+        $data['related_articles'] = $this->knowledge_base_model->get_related_articles($data['article']->articleid,false);
+
+        add_views_tracking('kb_article', $data['article']->articleid);
+        $data['title'] = $data['article']->subject;
+        $this->load->view('admin/knowledge_base/view',$data);
+    }
+     public function add_kb_answer()
+    {
+        // This is for did you find this answer useful
+        if (($this->input->post() && $this->input->is_ajax_request())) {
+            echo json_encode($this->knowledge_base_model->add_article_answer($this->input->post()));
+            die();
+        }
+    }
     /* Change article active or inactive */
     public function change_article_status($id, $status)
     {

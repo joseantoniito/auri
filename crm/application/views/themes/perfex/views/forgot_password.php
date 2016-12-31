@@ -13,7 +13,7 @@
           <?php echo $this->session->flashdata('message-danger'); ?>
         </div>
         <?php } ?>
-        <?php echo render_input('email','customer_forgot_password_email',set_value('email'),'email'); ?>
+        <?php echo render_input('email','customer_forgot_password_email','','email'); ?>
         <div class="form-group">
           <button type="submit" class="btn btn-info btn-block"><?php echo _l('customer_forgot_password_submit'); ?></button>
         </div>

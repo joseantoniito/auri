@@ -1,8 +1,8 @@
 <div id="setup-menu-wrapper" class="animated <?php if($this->session->has_userdata('setup-menu-open') && $this->session->userdata('setup-menu-open') == true){echo 'display-block';} ?>">
     <ul class="nav metis-menu" id="setup-menu">
         <li>
-            <button class="btn btn-default close-customizer"><i class="fa fa-close"></i></button>
-            <span class="text-left bold customizer-heading"><i class="fa fa-cog"></i> <?php echo _l('setting_bar_heading'); ?></span>
+            <a class="close-customizer"><i class="fa fa-close"></i></a>
+            <span class="text-left bold customizer-heading"><?php echo _l('setting_bar_heading'); ?></span>
         </li>
         <?php
         $menu_active       = get_option('setup_menu_active');

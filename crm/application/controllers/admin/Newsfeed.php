@@ -65,7 +65,7 @@ class Newsfeed extends Admin_controller
 
             $response .= '</div>';
             $response .= '<div class="media-body">';
-            $response .= '<h5 class="media-heading"><a href="' . admin_url('profile/' . $post['creator']) . '">' . get_staff_full_name($post['creator']) . '</a></h5>';
+            $response .= '<p class="media-heading no-mbot"><a href="' . admin_url('profile/' . $post['creator']) . '">' . get_staff_full_name($post['creator']) . '</a></p>';
             $response .= '<small class="post-time-ago">' . time_ago($post['datecreated']) . '</small>';
             if ($post['creator'] == get_staff_user_id() || is_admin()) {
                 $response .= '<div class="dropdown pull-right">';

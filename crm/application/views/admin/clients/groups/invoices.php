@@ -1,12 +1,11 @@
 <?php if(isset($client)){ ?>
 <h4 class="no-mtop bold"><?php echo _l('client_invoices_tab'); ?></h4>
 <hr />
-
 <div id="invoices_total"></div>
 <?php if(has_permission('invoices','','create')){ ?>
 <a href="<?php echo admin_url('invoices/invoice?customer_id='.$client->userid); ?>" class="btn btn-info mbot25<?php if($client->active == 0){echo ' disabled';} ?>"><?php echo _l('create_new_invoice'); ?></a>
 <?php } ?>
-<?php if(has_permission('invoices','','view')){ ?>
+<?php if(has_permission('invoices','','view') || has_permission('invoices','','view_own')){ ?>
 <a href="#" class="btn btn-info mbot25" data-toggle="modal" data-target="#client_zip_invoices"><?php echo _l('zip_invoices'); ?></a>
 <?php
 $table_data = array(

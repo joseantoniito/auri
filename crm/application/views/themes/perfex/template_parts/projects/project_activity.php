@@ -14,10 +14,10 @@
             <?php } ?>
             <div class="media-body">
                 <div class="display-block">
-                    <h5 class="no-margin">
+                    <p class="mtop5 no-mbot">
                         <?php echo $fullname . ' - <b>'.$activity['description'].'</b>'; ?>
-                    </h5>
-                    <p class="text-muted mtop10"><?php echo $activity['additional_data']; ?></p>
+                    </p>
+                    <p class="text-muted"><?php echo $activity['additional_data']; ?></p>
                 </div>
             </div>
             <hr />

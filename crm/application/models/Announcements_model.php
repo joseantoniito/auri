@@ -133,19 +133,12 @@ class Announcements_model extends CRM_Model
         $this->db->where('announcementid', $id);
         $this->db->delete('tblannouncements');
         if ($this->db->affected_rows() > 0) {
-            logActivity('Announcement Deleted [' . $id . ']');
+
             $this->db->where('announcementid', $id);
-            $DISMISSED_ANNOUNCEMENTS_TABLE = $this->db->get('tbldismissedannouncements')->result_array();
-            $total_dismissed_announcement  = count($DISMISSED_ANNOUNCEMENTS_TABLE);
-            if ($total_dismissed_announcement > 0) {
-                $this->db->where('announcementid', $id);
-                $this->db->delete('tbldismissedannouncements');
-                if ($this->db->affected_rows() == $total_dismissed_announcement) {
-                    return true;
-                }
-            } else {
-                return true;
-            }
+            $this->db->delete('tbldismissedannouncements');
+
+            logActivity('Announcement Deleted [' . $id . ']');
+            return true;
         }
         return false;
     }

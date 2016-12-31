@@ -13,7 +13,7 @@ foreach ($statuses as $status) {
      </div>
      <div class="kan-ban-content-wrapper">
       <div class="kan-ban-content">
-        <ul class="sortable status pipeline-status" data-status-id="<?php echo $status; ?>">
+        <ul class="sortable<?php if(has_permission('proposals','','edit')){echo ' status pipeline-status'; } ?>" data-status-id="<?php echo $status; ?>">
           <?php
           $proposals = $this->proposals_model->do_kanban_query($status,$this->input->get('search'),1,array('sort_by'=>$this->input->get('sort_by'),'sort'=>$this->input->get('sort')));
           $total_proposals = count($proposals);

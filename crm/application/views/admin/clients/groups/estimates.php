@@ -7,8 +7,9 @@
 <?php if(has_permission('estimates','','create')){ ?>
 <a href="<?php echo admin_url('estimates/estimate?customer_id='.$client->userid); ?>" class="btn btn-info mbot25<?php if($client->active == 0){echo ' disabled';} ?>"><?php echo _l('create_new_estimate'); ?></a>
 <?php } ?>
-<?php if(has_permission('estimates','','view')){ ?>
+<?php if(has_permission('estimates','','view') || has_permission('estimates','','view_own')){ ?>
 <a href="#" class="btn btn-info mbot25" data-toggle="modal" data-target="#client_zip_estimates"><?php echo _l('zip_estimates'); ?></a>
+<?php } ?>
 <?php
 $table_data = array(_l('estimate_dt_table_heading_number'),
    _l('estimate_dt_table_heading_amount'),
@@ -23,10 +24,10 @@ $table_data = array(_l('estimate_dt_table_heading_number'),
 
 $custom_fields = get_custom_fields('estimate',array('show_on_table'=>1));
 foreach($custom_fields as $field){
-    array_push($table_data,$field['name']);
+  array_push($table_data,$field['name']);
 }
 render_datatable($table_data, 'estimates-single-client');
 include_once(APPPATH . 'views/admin/clients/modals/zip_estimates.php');
 ?>
-<?php } ?>
+
 <?php } ?>

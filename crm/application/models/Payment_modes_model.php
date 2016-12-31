@@ -32,6 +32,7 @@ class Payment_modes_model extends CRM_Model
                     $mode->id = $id;
                     $mode->name = $online_mode['name'];
                     $mode->description = $online_mode['description'];
+                    $mode->selected_by_default = $online_mode['selected_by_default'];
                     $mode->show_on_pdf = 0;
                     return $mode;
                 }
@@ -77,6 +78,12 @@ class Payment_modes_model extends CRM_Model
             $data['show_on_pdf'] = 1;
         }
 
+        if (!isset($data['selected_by_default'])) {
+            $data['selected_by_default'] = 0;
+        } else {
+            $data['selected_by_default'] = 1;
+        }
+
         $this->db->insert('tblinvoicepaymentsmodes', array(
             'name' => $data['name'],
             'description' => nl2br($data['description']),
@@ -84,6 +91,7 @@ class Payment_modes_model extends CRM_Model
             'expenses_only' => $data['expenses_only'],
             'invoices_only' => $data['invoices_only'],
             'show_on_pdf' => $data['show_on_pdf'],
+            'selected_by_default'=>$data['selected_by_default']
         ));
         $insert_id = $this->db->insert_id();
         if ($insert_id) {
@@ -115,6 +123,13 @@ class Payment_modes_model extends CRM_Model
         }
 
 
+        if (!isset($data['selected_by_default'])) {
+            $data['selected_by_default'] = 0;
+        } else {
+            $data['selected_by_default'] = 1;
+        }
+
+
          if (!isset($data['invoices_only'])) {
             $data['invoices_only'] = 0;
         } else {
@@ -134,6 +149,7 @@ class Payment_modes_model extends CRM_Model
             'expenses_only' => $data['expenses_only'],
             'invoices_only' => $data['invoices_only'],
             'show_on_pdf' => $data['show_on_pdf'],
+            'selected_by_default' => $data['selected_by_default'],
         ));
 
         if ($this->db->affected_rows() > 0) {

@@ -25,6 +25,7 @@
             }
             echo form_hidden('not_sent',$this->input->get('filter'));
             echo form_hidden('project_id');
+            echo form_hidden('invoiced');
             ?>
         </div>
         <?php $total_estimates = total_rows('tblestimates'); ?>

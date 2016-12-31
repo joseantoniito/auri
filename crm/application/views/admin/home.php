@@ -12,11 +12,11 @@
                 <?php $this->load->view('admin/includes/widgets/user_data'); ?>
                 <div class="row">
                     <?php if(is_staff_member()){ ?>
-                    <div class="col-md-6">
+                    <div class="col-md-6 col-sm-12">
                         <?php $this->load->view('admin/includes/widgets/leads_chart'); ?>
                     </div>
                     <?php } ?>
-                    <div class="col-md-<?php if(!is_staff_member()){echo 12;}else{echo 6;};?>">
+                    <div class="col-md-<?php if(!is_staff_member()){echo 12;}else{echo 6;};?> col-sm-12">
                         <?php $this->load->view('admin/includes/widgets/projects_chart'); ?>
                     </div>
                 </div>
@@ -45,27 +45,29 @@
             // Tickets awaiting reply by department chart
             var tickets_dep_chart = new Chart($('#tickets-awaiting-reply-by-department'), {
                 type: 'doughnut',
-                data: <?php echo $tickets_awaiting_reply_by_department; ?>
+                data: <?php echo $tickets_awaiting_reply_by_department; ?>,
             });
         }
         if ($('#tickets-awaiting-reply-by-status').length > 0) {
             // Tickets awaiting reply by department chart
             new Chart($('#tickets-awaiting-reply-by-status'), {
                 type: 'doughnut',
-                data: <?php echo $tickets_reply_by_status; ?>
+                data: <?php echo $tickets_reply_by_status; ?>,
             });
         }
         if ($('#leads_status_stats').length > 0) {
             // Leads overview status
             new Chart($('#leads_status_stats'), {
                 type: 'doughnut',
-                data: <?php echo $leads_status_stats; ?>
+                data: <?php echo $leads_status_stats; ?>,
+                options:{maintainAspectRatio:false}
             });
         }
         // Projects statuses
         new Chart($('#projects_status_stats'), {
             type: 'bar',
-            data: <?php echo $projects_status_stats; ?>
+            data: <?php echo $projects_status_stats; ?>,
+            options:{maintainAspectRatio:false}
         });
         // Payments statistics
         init_weekly_payment_statistics( <?php echo $weekly_payment_stats; ?> );
@@ -86,7 +88,7 @@
                         type: 'bar',
                         data: response,
                         options: {
-                            responsive: true
+                            responsive: true,
                         },
                     });
                 }, 'json');

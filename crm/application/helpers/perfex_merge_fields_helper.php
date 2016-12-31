@@ -1,12 +1,13 @@
 <?php
-
+defined('BASEPATH') OR exit('No direct script access allowed');
 function get_other_merge_fields()
 {
     $CI = &get_instance();
     $fields                      = array();
-    $fields['{logo_url}']        = '<a href="' . site_url() . '" target="_blank"><img src="' . base_url('uploads/company/' . get_option('company_logo')) . '"></a>';
-    $fields['{crm_url}']         = '<a href="' . site_url() . '">' . site_url() . '</a>';
-    $fields['{admin_url}']         = '<a href="' . site_url('admin') . '">' . site_url('admin') . '</a>';
+    $fields['{logo_url}']        = base_url('uploads/company/' . get_option('company_logo'));
+    $fields['{logo_image_with_url}']        = '<a href="' . site_url() . '" target="_blank"><img src="' . base_url('uploads/company/' . get_option('company_logo')) . '"></a>';
+    $fields['{crm_url}']         = site_url();
+    $fields['{admin_url}']         = site_url('admin');
     $fields['{main_domain}']     = get_option('main_domain');
     $fields['{companyname}']     = get_option('companyname');
     if(!is_staff_logged_in() || is_client_logged_in()){
@@ -21,6 +22,70 @@ function get_other_merge_fields()
         }
     }
     return $fields;
+}
+function get_lead_merge_fields($id){
+
+    $CI = &get_instance();
+    $fields = array();
+    $fields['{lead_name}'] = '';
+    $fields['{lead_position}'] = '';
+    $fields['{lead_company}'] = '';
+    $fields['{lead_country}'] = '';
+    $fields['{lead_zip}'] = '';
+    $fields['{lead_city}'] = '';
+    $fields['{lead_state}'] = '';
+    $fields['{lead_address}'] = '';
+    $fields['{lead_assigned}'] = '';
+    $fields['{lead_status}'] = '';
+    $fields['{lead_source}'] = '';
+    $fields['{lead_phonenumber}'] = '';
+    $fields['{lead_link}'] = '';
+
+    $CI->db->where('id',$id);
+    $lead = $CI->db->get('tblleads')->row();
+
+    if(!$lead){
+        return $fields;
+    }
+
+    $fields['{lead_link}'] = admin_url('leads/index/'.$lead->id);
+    $fields['{lead_name}'] = $lead->name;
+    $fields['{lead_position}'] = $lead->title;
+    $fields['{lead_company}'] = $lead->company;
+    $fields['{lead_zip}'] = $lead->zip;
+    $fields['{lead_city}'] = $lead->city;
+    $fields['{lead_state}'] = $lead->state;
+    $fields['{lead_address}'] = $lead->address;
+
+    if($lead->assigned != 0){
+        $fields['{lead_assigned}'] = get_staff_full_name($lead->assigned);
+    }
+    if($lead->country != 0){
+        $country = get_country($lead->country);
+        $fields['{lead_country}'] = $country->short_name;
+    }
+
+    if($lead->junk == 1){
+        $fields['{lead_status}'] = _l('lead_junk');
+    } else if($lead->lost == 1){
+        $fields['{lead_status}'] = _l('lead_lost');
+    } else {
+        $CI->db->select('name');
+        $CI->db->from('tblleadsstatus');
+        $CI->db->where('id',$lead->status);
+        $status = $CI->db->get()->row();
+        if($status){
+            $fields['{lead_status}'] = $status->name;
+        }
+    }
+
+    $custom_fields = get_custom_fields('leads');
+    foreach($custom_fields as $field){
+        $fields['{'.$field['slug'].'}']       = get_custom_field_value($id,$field['id'],'leads');
+    }
+
+    return $fields;
+
 }
 function get_project_merge_fields($project_id,$additional_data = array()){
 
@@ -73,42 +138,47 @@ function get_project_merge_fields($project_id,$additional_data = array()){
         } else {
             // is file
            $table = 'tblprojectfiles';
-        }
-
-        $discussion = $CI->db->get($table)->row();
-
-        $fields['{discussion_subject}'] = $discussion->subject;
-        $fields['{discussion_description}'] = $discussion->description;
-
-        if(isset($additional_data['discussion_comment_id'])){
-            $CI->db->where('id',$additional_data['discussion_comment_id']);
-            $discussion_comment = $CI->db->get('tblprojectdiscussioncomments')->row();
-            $fields['{discussion_comment}'] = $discussion_comment->content;
-        }
-    }
-    if(isset($additional_data['customer_template'])){
-       $fields['{project_link}'] = '<a href="'.site_url('clients/project/'.$project_id).'">'.$project->name.'</a>';
-
-       if(isset($additional_data['discussion_id']) && isset($additional_data['discussion_type']) && $additional_data['discussion_type'] == 'regular'){
-       $fields['{discussion_link}'] = '<a href="'.site_url('clients/project/'.$project_id.'?group=project_discussions&discussion_id='.$additional_data['discussion_id']).'">'.$discussion->subject.'</a>';
-       } else if(isset($additional_data['discussion_id']) && isset($additional_data['discussion_type'])  && $additional_data['discussion_type'] == 'file'){
-         // is file
-         $fields['{discussion_link}'] = '<a href="'.site_url('clients/project/'.$project_id.'?group=project_files&file_id='.$additional_data['discussion_id']).'">'.$discussion->subject.'</a>';
        }
-    } else {
-      $fields['{project_link}'] = '<a href="'.admin_url('projects/view/'.$project_id).'">'.$project->name.'</a>';
-      if(isset($additional_data['discussion_type']) && $additional_data['discussion_type'] == 'regular' && isset($additional_data['discussion_id'])){
-          $fields['{discussion_link}'] = '<a href="'.admin_url('projects/view/'.$project_id.'?group=project_discussions&discussion_id='.$additional_data['discussion_id']).'">'.$discussion->subject.'</a>';
-      } else {
-        if(isset($additional_data['discussion_id'])){
-        // is file
-         $fields['{discussion_link}'] = '<a href="'.admin_url('projects/view/'.$project_id.'?group=project_files&file_id='.$additional_data['discussion_id']).'">'.$discussion->subject.'</a>';
-         }
 
-      }
+       $discussion = $CI->db->get($table)->row();
+
+       $fields['{discussion_subject}'] = $discussion->subject;
+       $fields['{discussion_description}'] = $discussion->description;
+
+       if(isset($additional_data['discussion_comment_id'])){
+        $CI->db->where('id',$additional_data['discussion_comment_id']);
+        $discussion_comment = $CI->db->get('tblprojectdiscussioncomments')->row();
+        $fields['{discussion_comment}'] = $discussion_comment->content;
     }
+}
+if(isset($additional_data['customer_template'])){
+   $fields['{project_link}'] = site_url('clients/project/'.$project_id);
 
-    return $fields;
+   if(isset($additional_data['discussion_id']) && isset($additional_data['discussion_type']) && $additional_data['discussion_type'] == 'regular'){
+       $fields['{discussion_link}'] = site_url('clients/project/'.$project_id.'?group=project_discussions&discussion_id='.$additional_data['discussion_id']);
+   } else if(isset($additional_data['discussion_id']) && isset($additional_data['discussion_type'])  && $additional_data['discussion_type'] == 'file'){
+         // is file
+     $fields['{discussion_link}'] = site_url('clients/project/'.$project_id.'?group=project_files&file_id='.$additional_data['discussion_id']);
+ }
+} else {
+  $fields['{project_link}'] = admin_url('projects/view/'.$project_id);
+  if(isset($additional_data['discussion_type']) && $additional_data['discussion_type'] == 'regular' && isset($additional_data['discussion_id'])){
+      $fields['{discussion_link}'] = admin_url('projects/view/'.$project_id.'?group=project_discussions&discussion_id='.$additional_data['discussion_id']);
+  } else {
+    if(isset($additional_data['discussion_id'])){
+        // is file
+     $fields['{discussion_link}'] = admin_url('projects/view/'.$project_id.'?group=project_files&file_id='.$additional_data['discussion_id']);
+ }
+
+}
+}
+
+$custom_fields = get_custom_fields('projects');
+foreach($custom_fields as $field){
+    $fields['{'.$field['slug'].'}']       = get_custom_field_value($project_id,$field['id'],'projects');
+}
+
+return $fields;
 }
 function get_password_merge_field($data,$staff,$type){
 
@@ -117,13 +187,13 @@ function get_password_merge_field($data,$staff,$type){
 
     if($staff == true){
         if($type == 'forgot'){
-        $fields['{reset_password_url}'] = '<a href="'.site_url('authentication/reset_password/'.floatval($staff).'/'.$data['userid'].'/'.$data['new_pass_key']).'">' .site_url('authentication/reset_password/'.floatval($staff).'/'.$data['userid'].'/'.$data['new_pass_key']) . '</a>';
+            $fields['{reset_password_url}'] = site_url('authentication/reset_password/'.floatval($staff).'/'.$data['userid'].'/'.$data['new_pass_key']);
         }
     } else {
         if($type == 'forgot'){
-            $fields['{reset_password_url}'] = '<a href="'.site_url('clients/reset_password/'.floatval($staff).'/'.$data['userid'].'/'.$data['new_pass_key']).'">'.site_url('clients/reset_password/'.floatval($staff).'/'.$data['userid'].'/'.$data['new_pass_key']) . '</a>';
+            $fields['{reset_password_url}'] = site_url('clients/reset_password/'.floatval($staff).'/'.$data['userid'].'/'.$data['new_pass_key']);
         } else if($type == 'set'){
-            $fields['{set_password_url}'] = '<a href="'.site_url('authentication/set_password/'.$staff.'/'.$data['userid'].'/'.$data['new_pass_key']).'">' . site_url('authentication/set_password/'.$staff.'/'.$data['userid'].'/'.$data['new_pass_key']) . '</a>';
+            $fields['{set_password_url}'] = site_url('authentication/set_password/'.$staff.'/'.$data['userid'].'/'.$data['new_pass_key']);
         }
     }
 
@@ -207,7 +277,7 @@ function get_estimate_merge_fields($estimate_id)
         return $fields;
     }
 
-    $fields['{estimate_link}']       = '<a href="' . site_url('viewestimate/' . $estimate_id . '/' . $estimate->hash) . '" target="_blank">' . _l('estimate_email_link_text') . '</a>';
+    $fields['{estimate_link}']       = site_url('viewestimate/' . $estimate_id . '/' . $estimate->hash);
     $fields['{estimate_number}']     = format_estimate_number($estimate_id);
     $fields['{estimate_expirydate}'] = _d($estimate->expirydate);
     $fields['{estimate_date}']       = _d($estimate->date);
@@ -234,7 +304,7 @@ function get_invoice_merge_fields($invoice_id)
         return $fields;
     }
 
-    $fields['{invoice_link}']    = '<a href="' . site_url('viewinvoice/' . $invoice_id . '/' . $invoice->hash) . '" target="_blank">' . _l('invoice_email_link_text') . '</a>';
+    $fields['{invoice_link}']    = site_url('viewinvoice/' . $invoice_id . '/' . $invoice->hash);
     $fields['{invoice_number}']  = format_invoice_number($invoice_id);
     $fields['{invoice_duedate}'] = _d($invoice->duedate);
     $fields['{invoice_date}']    = _d($invoice->date);
@@ -269,7 +339,7 @@ function get_proposal_merge_fields($proposal_id)
 
     $fields['{proposal_id}']          = $proposal_id;
     $fields['{proposal_number}']          = format_proposal_number($proposal_id);
-    $fields['{proposal_link}']        = '<a href="' . site_url('viewproposal/' . $proposal_id . '/' . $proposal->hash) . '" target="_blank">' . $proposal->subject . '</a>';
+    $fields['{proposal_link}']        = site_url('viewproposal/' . $proposal_id . '/' . $proposal->hash);
     $fields['{proposal_subject}']     = $proposal->subject;
     $fields['{proposal_total}']       = format_money($proposal->total, $currency->symbol);
     $fields['{proposal_open_till}']   = _d($proposal->open_till);
@@ -335,9 +405,9 @@ function get_task_merge_fields($task_id,$client_template = false)
     // Client templateonly passed when sending to tasks related to project and sending email template to contacts
     // Passed from tasks_model  _send_task_responsible_users_notification function
     if($client_template == false){
-        $fields['{task_link}'] = '<a href="' . admin_url('tasks/list_tasks/' . $task_id) . '">' . $task->name . '</a>';
+        $fields['{task_link}'] = admin_url('tasks/list_tasks/' . $task_id);
     } else {
-        $fields['{task_link}'] = '<a href="'.site_url('clients/project/'.$task->rel_id.'group=project_tasks&taskid='.$task_id).'">' . $task->name .'</a>';
+        $fields['{task_link}'] = site_url('clients/project/'.$task->rel_id.'?group=project_tasks&taskid='.$task_id);
     }
 
     if (is_client_logged_in()) {
@@ -355,31 +425,31 @@ function get_task_merge_fields($task_id,$client_template = false)
         $CI->db->where('id',$task->rel_id);
         $project = $CI->db->get()->row();
         if($project){
-             $fields['{project_name}']        = $project->name;
-        }
-    }
+         $fields['{project_name}']        = $project->name;
+     }
+ }
 
-    $fields['{task_name}']        = $task->name;
-    $fields['{task_description}'] = $task->description;
-    $fields['{task_status}'] = format_task_status($task->status,false,true);
-    $fields['{task_priority}']    = task_priority($task->priority);
-    $fields['{task_startdate}']   = _d($task->startdate);
-    $fields['{task_duedate}']     = _d($task->duedate);
+ $fields['{task_name}']        = $task->name;
+ $fields['{task_description}'] = $task->description;
+ $fields['{task_status}'] = format_task_status($task->status,false,true);
+ $fields['{task_priority}']    = task_priority($task->priority);
+ $fields['{task_startdate}']   = _d($task->startdate);
+ $fields['{task_duedate}']     = _d($task->duedate);
 
-    $CI->db->where('taskid', $task_id);
-    $CI->db->limit(1);
-    $CI->db->order_by('dateadded', 'desc');
-    $comment                      = $CI->db->get('tblstafftaskcomments')->row();
-    if($comment){
-        $fields['{task_comment}'] = $comment->content;
-    }
+ $CI->db->where('taskid', $task_id);
+ $CI->db->limit(1);
+ $CI->db->order_by('dateadded', 'desc');
+ $comment                      = $CI->db->get('tblstafftaskcomments')->row();
+ if($comment){
+    $fields['{task_comment}'] = $comment->content;
+}
 
-    $custom_fields = get_custom_fields('tasks');
-    foreach($custom_fields as $field){
-        $fields['{'.$field['slug'].'}']       = get_custom_field_value($task_id,$field['id'],'tasks');
-    }
+$custom_fields = get_custom_fields('tasks');
+foreach($custom_fields as $field){
+    $fields['{'.$field['slug'].'}']       = get_custom_field_value($task_id,$field['id'],'tasks');
+}
 
-    return $fields;
+return $fields;
 }
 function get_staff_merge_fields($staff_id, $password = '')
 {
@@ -402,20 +472,20 @@ function get_staff_merge_fields($staff_id, $password = '')
 
     if($password != ''){
        $fields['{password}'] = $password;
-    }
+   }
 
-    $fields['{staff_firstname}'] = $staff->firstname;
-    $fields['{staff_lastname}']  = $staff->lastname;
-    $fields['{staff_email}']  = $staff->email;
-    $fields['{staff_datecreated}']  = $staff->datecreated;
+   $fields['{staff_firstname}'] = $staff->firstname;
+   $fields['{staff_lastname}']  = $staff->lastname;
+   $fields['{staff_email}']  = $staff->email;
+   $fields['{staff_datecreated}']  = $staff->datecreated;
 
 
-    $custom_fields = get_custom_fields('staff');
-    foreach($custom_fields as $field){
-        $fields['{'.$field['slug'].'}']       = get_custom_field_value($staff_id,$field['id'],'staff');
-    }
+   $custom_fields = get_custom_fields('staff');
+   foreach($custom_fields as $field){
+    $fields['{'.$field['slug'].'}']       = get_custom_field_value($staff_id,$field['id'],'staff');
+}
 
-    return $fields;
+return $fields;
 }
 function get_ticket_merge_fields($template, $ticket_id, $reply_id = '')
 {
@@ -450,14 +520,14 @@ function get_ticket_merge_fields($template, $ticket_id, $reply_id = '')
     $fields['{ticket_id}'] = $ticket_id;
     $fields['{ticket_priority}'] = ticket_priority_translate($ticket->priority);
 
-    if ($template == 'ticket-reply-to-admin' || $template == 'ticket-reply') {
+    if ($template == 'ticket-reply-to-admin' || $template == 'ticket-reply' || 'new-ticket-opened-admin') {
         if ($template != 'ticket-reply-to-admin' && $template != 'new-ticket-created-staff') {
-            $fields['{ticket_url}'] = '<a href="' . site_url('clients/ticket/' . $ticket_id) . '" target="_blank">' . _l('ticket') . ' #' . $ticket_id . '</a>';
+            $fields['{ticket_url}'] = site_url('clients/ticket/' . $ticket_id);
         } else {
-            $fields['{ticket_url}'] = '<a href="' . admin_url('tickets/ticket/' . $ticket_id) . '" target="_blank">' . _l('ticket') . ' #' . $ticket_id . '</a>';
+            $fields['{ticket_url}'] = admin_url('tickets/ticket/' . $ticket_id);
         }
     } else {
-        $fields['{ticket_url}'] = '<a href="' . admin_url('tickets/ticket/' . $ticket_id) . '" target="_blank">' . _l('ticket') . ' #' . $ticket_id . '</a>';
+        $fields['{ticket_url}'] = admin_url('tickets/ticket/' . $ticket_id);
     }
 
     if ($template == 'ticket-reply-to-admin' || $template == 'ticket-reply') {
@@ -522,7 +592,7 @@ function get_available_merge_fields()
                         'staff'
                         )
                     ),
-                  array(
+                array(
                     'name' => 'Reset Password Url',
                     'key' => '{reset_password_url}',
                     'available' => array(
@@ -597,7 +667,7 @@ function get_available_merge_fields()
                         )
                     ),
                 array(
-                    'name' => 'Client Phonenumber',
+                    'name' => 'Client Phone Number',
                     'key' => '{client_phonenumber}',
                     'available' => array(
                         'client',
@@ -681,543 +751,631 @@ function get_available_merge_fields()
                         )
                     )
                 )
-            ),
+),
+array(
+    'ticket' => array(
         array(
-            'ticket' => array(
-                array(
-                    'name' => 'Ticket ID',
-                    'key' => '{ticket_id}',
-                    'available' => array(
-                        'ticket'
-                        )
-                    ),
-                array(
-                    'name' => 'Ticket URL',
-                    'key' => '{ticket_url}',
-                    'available' => array(
-                        'ticket'
-                        )
-                    ),
-                array(
-                    'name' => 'Department',
-                    'key' => '{ticket_department}',
-                    'available' => array(
-                        'ticket'
-                        )
-                    ),
-                array(
-                    'name' => 'Date Opened',
-                    'key' => '{ticket_date}',
-                    'available' => array(
-                        'ticket'
-                        )
-                    ),
-                array(
-                    'name' => 'Ticket Subject',
-                    'key' => '{ticket_subject}',
-                    'available' => array(
-                        'ticket'
-                        )
-                    ),
-                array(
-                    'name' => 'Ticket Message',
-                    'key' => '{ticket_message}',
-                    'available' => array(
-                        'ticket'
-                        )
-                    ),
-                array(
-                    'name' => 'Ticket Status',
-                    'key' => '{ticket_status}',
-                    'available' => array(
-                        'ticket'
-                        )
-                    ),
-                array(
-                    'name' => 'Ticket Priority',
-                    'key' => '{ticket_priority}',
-                    'available' => array(
-                        'ticket'
-                        )
-                    )
+            'name' => 'Ticket ID',
+            'key' => '{ticket_id}',
+            'available' => array(
+                'ticket'
                 )
             ),
         array(
-            'contract' => array(
-                array(
-                    'name' => 'Contract ID',
-                    'key' => '{contract_id}',
-                    'available' => array(
-                        'contract'
-                        )
-                    ),
-                array(
-                    'name' => 'Contract Subject',
-                    'key' => '{contract_subject}',
-                    'available' => array(
-                        'contract'
-                        )
-                    ),
-                array(
-                    'name' => 'Contract Description',
-                    'key' => '{contract_description}',
-                    'available' => array(
-                        'contract'
-                        )
-                    ),
-                array(
-                    'name' => 'Contract Date Start',
-                    'key' => '{contract_datestart}',
-                    'available' => array(
-                        'contract'
-                        )
-                    ),
-                array(
-                    'name' => 'Contract Date End',
-                    'key' => '{contract_dateend}',
-                    'available' => array(
-                        'contract'
-                        )
-                    ),
-                array(
-                    'name' => 'Contract Value',
-                    'key' => '{contract_contract_value}',
-                    'available' => array(
-                        'contract'
-                        )
-                    )
+            'name' => 'Ticket URL',
+            'key' => '{ticket_url}',
+            'available' => array(
+                'ticket'
                 )
             ),
         array(
-            'invoice' => array(
-                array(
-                    'name' => 'Invoice Link',
-                    'key' => '{invoice_link}',
-                    'available' => array(
-                        'invoice'
-                        )
-                    ),
-                array(
-                    'name' => 'Invoice Number',
-                    'key' => '{invoice_number}',
-                    'available' => array(
-                        'invoice'
-                        )
-                    ),
-                array(
-                    'name' => 'Invoice Duedate',
-                    'key' => '{invoice_duedate}',
-                    'available' => array(
-                        'invoice'
-                        )
-                    ),
-                array(
-                    'name' => 'Invoice Date',
-                    'key' => '{invoice_date}',
-                    'available' => array(
-                        'invoice'
-                        )
-                    ),
-                array(
-                    'name' => 'Invoice Status',
-                    'key' => '{invoice_status}',
-                    'available' => array(
-                        'invoice'
-                        )
-                    )
+            'name' => 'Department',
+            'key' => '{ticket_department}',
+            'available' => array(
+                'ticket'
                 )
             ),
         array(
-            'estimate' => array(
-                array(
-                    'name' => 'Estimate Link',
-                    'key' => '{estimate_link}',
-                    'available' => array(
-                        'estimate'
-                        )
-                    ),
-                array(
-                    'name' => 'Estimate Number',
-                    'key' => '{estimate_number}',
-                    'available' => array(
-                        'estimate'
-                        )
-                    ),
-                array(
-                    'name' => 'Reference no.',
-                    'key' => '{estimate_reference_no}',
-                    'available' => array(
-                        'estimate'
-                        )
-                    ),
-                array(
-                    'name' => 'Estimate Expiry Date',
-                    'key' => '{estimate_expirydate}',
-                    'available' => array(
-                        'estimate'
-                        )
-                    ),
-                array(
-                    'name' => 'Estimate Date',
-                    'key' => '{estimate_date}',
-                    'available' => array(
-                        'estimate'
-                        )
-                    ),
-                array(
-                    'name' => 'Estimate Status',
-                    'key' => '{estimate_status}',
-                    'available' => array(
-                        'estimate'
-                        )
-                    )
+            'name' => 'Date Opened',
+            'key' => '{ticket_date}',
+            'available' => array(
+                'ticket'
                 )
             ),
         array(
-            'tasks' => array(
-                array(
-                    'name'=>'Staff/Contact who take action on task',
-                    'key' => '{task_user_take_action}',
-                    'available' => array(
-                        'tasks'
-                        )
-                    ),
-                array(
-                    'name' => 'Task Link',
-                    'key' => '{task_link}',
-                    'available' => array(
-                        'tasks'
-                        )
-                    ),
-                array(
-                    'name' => 'Task Name',
-                    'key' => '{task_name}',
-                    'available' => array(
-                        'tasks'
-                        )
-                    ),
-                array(
-                    'name' => 'Task Description',
-                    'key' => '{task_description}',
-                    'available' => array(
-                        'tasks'
-                        )
-                    ),
-                  array(
-                    'name' => 'Task Status',
-                    'key' => '{task_status}',
-                    'available' => array(
-                        'tasks'
-                        )
-                    ),
-                  array(
-                    'name' => 'Task Comment',
-                    'key' => '{task_comment}',
-                    'available' => array(
-                        'tasks'
-                        )
-                    ),
-                array(
-                    'name' => 'Task Priority',
-                    'key' => '{task_priority}',
-                    'available' => array(
-                        'tasks'
-                        )
-                    ),
-                array(
-                    'name' => 'Task Start Date',
-                    'key' => '{task_startdate}',
-                    'available' => array(
-                        'tasks'
-                        )
-                    ),
-                array(
-                    'name' => 'Task Due Date',
-                    'key' => '{task_duedate}',
-                    'available' => array(
-                        'tasks'
-                        )
-                    )
+            'name' => 'Ticket Subject',
+            'key' => '{ticket_subject}',
+            'available' => array(
+                'ticket'
                 )
             ),
         array(
-            'proposals' => array(
-                array(
-                    'name' => 'Proposal ID',
-                    'key' => '{proposal_id}',
-                    'available' => array(
-                        'proposals'
-                        )
-                    ),
-                  array(
-                    'name' => 'Proposal Number',
-                    'key' => '{proposal_number}',
-                    'available' => array(
-                        'proposals'
-                        )
-                    ),
-                array(
-                    'name' => 'Subject',
-                    'key' => '{proposal_subject}',
-                    'available' => array(
-                        'proposals'
-                        )
-                    ),
-                array(
-                    'name' => 'Total',
-                    'key' => '{proposal_total}',
-                    'available' => array(
-                        'proposals'
-                        )
-                    ),
-                array(
-                    'name' => 'Open Till',
-                    'key' => '{proposal_open_till}',
-                    'available' => array(
-                        'proposals'
-                        )
-                    ),
-                array(
-                    'name' => 'Company Name',
-                    'key' => '{proposal_proposal_to}',
-                    'available' => array(
-                        'proposals'
-                        )
-                    ),
-                array(
-                    'name' => 'Address',
-                    'key' => '{proposal_address}',
-                    'available' => array(
-                        'proposals'
-                        )
-                    ),
-                 array(
-                    'name' => 'City',
-                    'key' => '{proposal_city}',
-                    'available' => array(
-                        'proposals'
-                        )
-                    ),
-                    array(
-                    'name' => 'State',
-                    'key' => '{proposal_state}',
-                    'available' => array(
-                        'proposals'
-                        )
-                    ),
-                       array(
-                    'name' => 'Zip Code',
-                    'key' => '{proposal_zip}',
-                    'available' => array(
-                        'proposals'
-                        )
-                    ),
-                               array(
-                    'name' => 'Country',
-                    'key' => '{proposal_country}',
-                    'available' => array(
-                        'proposals'
-                        )
-                    ),
-                array(
-                    'name' => 'Email',
-                    'key' => '{proposal_email}',
-                    'available' => array(
-                        'proposals'
-                        )
-                    ),
-                array(
-                    'name' => 'Phone',
-                    'key' => '{proposal_phone}',
-                    'available' => array(
-                        'proposals'
-                        )
-                    ),
-                array(
-                    'name' => 'Proposal Link',
-                    'key' => '{proposal_link}',
-                    'available' => array(
-                        'proposals'
-                        )
-                    )
+            'name' => 'Ticket Message',
+            'key' => '{ticket_message}',
+            'available' => array(
+                'ticket'
                 )
             ),
         array(
-            'projects'=>array(
-                array(
-                    'name'=>'Project Name',
-                    'key'=>'{project_name}',
-                    'available'=>array('project'),
-                    ),
-                array(
-                    'name'=>'Project Description',
-                    'key'=>'{project_description}',
-                    'available'=>array('project'),
-                    ),
-                array(
-                    'name'=>'Project Start Date',
-                    'key'=>'{project_start_date}',
-                    'available'=>array('project'),
-                    ),
-                array(
-                    'name'=>'Project Deadline',
-                    'key'=>'{project_deadline}',
-                    'available'=>array('project'),
-                    ),
-                array(
-                    'name'=>'Project Link',
-                    'key'=>'{project_link}',
-                    'available'=>array('project'),
-                    ),
-                array(
-                    'name'=>'Discussion Link',
-                    'key'=>'{discussion_link}',
-                    'available'=>array('project'),
-                    ),
-                array(
-                    'name'=>'File Creator',
-                    'key'=>'{file_creator}',
-                    'available'=>array('project'),
-                    ),
-                array(
-                    'name'=>'Discussion Creator',
-                    'key'=>'{discussion_creator}',
-                    'available'=>array('project'),
-                    ),
-                array(
-                    'name'=>'Comment Creator',
-                    'key'=>'{comment_creator}',
-                    'available'=>array('project'),
-                    ),
-                array(
-                    'name'=>'Discussion Subject',
-                    'key'=>'{discussion_subject}',
-                    'available'=>array('project'),
-                ),
-                array(
-                    'name'=>'Discussion Description',
-                    'key'=>'{discussion_description}',
-                    'available'=>array('project'),
-                ),
-                array(
-                    'name'=>'Discussion Comment',
-                    'key'=>'{discussion_comment}',
-                    'available'=>array('project'),
-                ),
+            'name' => 'Ticket Status',
+            'key' => '{ticket_status}',
+            'available' => array(
+                'ticket'
                 )
             ),
         array(
-            'other' => array(
-                array(
-                    'name' => 'Logo Url',
-                    'key' => '{logo_url}',
-                    'fromoptions' => true,
-                    'available' => array(
-                        'ticket',
-                        'client',
-                        'staff',
-                        'invoice',
-                        'estimate',
-                        'contract',
-                        'tasks',
-                        'proposals',
-                        'project',
-                        )
-                    ),
-                array(
-                    'name' => 'CRM Url',
-                    'key' => '{crm_url}',
-                    'fromoptions' => true,
-                    'available' => array(
-                        'ticket',
-                        'client',
-                        'staff',
-                        'invoice',
-                        'estimate',
-                        'contract',
-                        'tasks',
-                        'proposals',
-                        'project',
-                        )
-                    ),
-                array(
-                    'name' => 'Admin Url',
-                    'key' => '{admin_url}',
-                    'fromoptions' => true,
-                    'available' => array(
-                        'ticket',
-                        'client',
-                        'staff',
-                        'invoice',
-                        'estimate',
-                        'contract',
-                        'tasks',
-                        'proposals',
-                        'project',
-                        )
-                    ),
-                array(
-                    'name' => 'Main Domain',
-                    'key' => '{main_domain}',
-                    'fromoptions' => true,
-                    'available' => array(
-                        'ticket',
-                        'client',
-                        'staff',
-                        'invoice',
-                        'estimate',
-                        'contract',
-                        'tasks',
-                        'proposals',
-                        'project',
-                        )
-                    ),
-                array(
-                    'name' => 'Company Name',
-                    'key' => '{companyname}',
-                    'fromoptions' => true,
-                    'available' => array(
-                        'ticket',
-                        'client',
-                        'staff',
-                        'invoice',
-                        'estimate',
-                        'contract',
-                        'tasks',
-                        'proposals',
-                        'project',
-                        )
-                    ),
-                array(
-                    'name' => 'Email Signature',
-                    'key' => '{email_signature}',
-                    'fromoptions' => true,
-                    'available' => array(
-                        'ticket',
-                        'client',
-                        'staff',
-                        'invoice',
-                        'estimate',
-                        'contract',
-                        'tasks',
-                        'proposals',
-                        'project',
-                        )
-                    )
+            'name' => 'Ticket Priority',
+            'key' => '{ticket_priority}',
+            'available' => array(
+                'ticket'
+                )
+            ),
+        array(
+            'name' => 'Ticket Service',
+            'key' => '{ticket_service}',
+            'available' => array(
+                'ticket'
                 )
             )
-        );
-if (get_option('services') == 1) {
-    $services = array(
-        'name' => 'Ticket Service',
-        'key' => '{ticket_service}',
-        'available' => array(
-            'ticket'
+        )
+    ),
+array(
+    'contract' => array(
+        array(
+            'name' => 'Contract ID',
+            'key' => '{contract_id}',
+            'available' => array(
+                'contract'
+                )
+            ),
+        array(
+            'name' => 'Contract Subject',
+            'key' => '{contract_subject}',
+            'available' => array(
+                'contract'
+                )
+            ),
+        array(
+            'name' => 'Contract Description',
+            'key' => '{contract_description}',
+            'available' => array(
+                'contract'
+                )
+            ),
+        array(
+            'name' => 'Contract Date Start',
+            'key' => '{contract_datestart}',
+            'available' => array(
+                'contract'
+                )
+            ),
+        array(
+            'name' => 'Contract Date End',
+            'key' => '{contract_dateend}',
+            'available' => array(
+                'contract'
+                )
+            ),
+        array(
+            'name' => 'Contract Value',
+            'key' => '{contract_contract_value}',
+            'available' => array(
+                'contract'
+                )
             )
-        );
-    array_push($available_merge_fields[2]['ticket'], $services);
-}
-
+        )
+    ),
+array(
+    'invoice' => array(
+        array(
+            'name' => 'Invoice Link',
+            'key' => '{invoice_link}',
+            'available' => array(
+                'invoice'
+                )
+            ),
+        array(
+            'name' => 'Invoice Number',
+            'key' => '{invoice_number}',
+            'available' => array(
+                'invoice'
+                )
+            ),
+        array(
+            'name' => 'Invoice Duedate',
+            'key' => '{invoice_duedate}',
+            'available' => array(
+                'invoice'
+                )
+            ),
+        array(
+            'name' => 'Invoice Date',
+            'key' => '{invoice_date}',
+            'available' => array(
+                'invoice'
+                )
+            ),
+        array(
+            'name' => 'Invoice Status',
+            'key' => '{invoice_status}',
+            'available' => array(
+                'invoice'
+                )
+            )
+        )
+    ),
+array(
+    'estimate' => array(
+        array(
+            'name' => 'Estimate Link',
+            'key' => '{estimate_link}',
+            'available' => array(
+                'estimate'
+                )
+            ),
+        array(
+            'name' => 'Estimate Number',
+            'key' => '{estimate_number}',
+            'available' => array(
+                'estimate'
+                )
+            ),
+        array(
+            'name' => 'Reference no.',
+            'key' => '{estimate_reference_no}',
+            'available' => array(
+                'estimate'
+                )
+            ),
+        array(
+            'name' => 'Estimate Expiry Date',
+            'key' => '{estimate_expirydate}',
+            'available' => array(
+                'estimate'
+                )
+            ),
+        array(
+            'name' => 'Estimate Date',
+            'key' => '{estimate_date}',
+            'available' => array(
+                'estimate'
+                )
+            ),
+        array(
+            'name' => 'Estimate Status',
+            'key' => '{estimate_status}',
+            'available' => array(
+                'estimate'
+                )
+            )
+        )
+    ),
+array(
+    'tasks' => array(
+        array(
+            'name'=>'Staff/Contact who take action on task',
+            'key' => '{task_user_take_action}',
+            'available' => array(
+                'tasks'
+                )
+            ),
+        array(
+            'name' => 'Task Link',
+            'key' => '{task_link}',
+            'available' => array(
+                'tasks'
+                )
+            ),
+        array(
+            'name' => 'Task Name',
+            'key' => '{task_name}',
+            'available' => array(
+                'tasks'
+                )
+            ),
+        array(
+            'name' => 'Task Description',
+            'key' => '{task_description}',
+            'available' => array(
+                'tasks'
+                )
+            ),
+        array(
+            'name' => 'Task Status',
+            'key' => '{task_status}',
+            'available' => array(
+                'tasks'
+                )
+            ),
+        array(
+            'name' => 'Task Comment',
+            'key' => '{task_comment}',
+            'available' => array(
+                'tasks'
+                )
+            ),
+        array(
+            'name' => 'Task Priority',
+            'key' => '{task_priority}',
+            'available' => array(
+                'tasks'
+                )
+            ),
+        array(
+            'name' => 'Task Start Date',
+            'key' => '{task_startdate}',
+            'available' => array(
+                'tasks'
+                )
+            ),
+        array(
+            'name' => 'Task Due Date',
+            'key' => '{task_duedate}',
+            'available' => array(
+                'tasks'
+                )
+            )
+        )
+    ),
+array(
+    'proposals' => array(
+        array(
+            'name' => 'Proposal ID',
+            'key' => '{proposal_id}',
+            'available' => array(
+                'proposals'
+                )
+            ),
+        array(
+            'name' => 'Proposal Number',
+            'key' => '{proposal_number}',
+            'available' => array(
+                'proposals'
+                )
+            ),
+        array(
+            'name' => 'Subject',
+            'key' => '{proposal_subject}',
+            'available' => array(
+                'proposals'
+                )
+            ),
+        array(
+            'name' => 'Total',
+            'key' => '{proposal_total}',
+            'available' => array(
+                'proposals'
+                )
+            ),
+        array(
+            'name' => 'Open Till',
+            'key' => '{proposal_open_till}',
+            'available' => array(
+                'proposals'
+                )
+            ),
+        array(
+            'name' => 'Company Name',
+            'key' => '{proposal_proposal_to}',
+            'available' => array(
+                'proposals'
+                )
+            ),
+        array(
+            'name' => 'Address',
+            'key' => '{proposal_address}',
+            'available' => array(
+                'proposals'
+                )
+            ),
+        array(
+            'name' => 'City',
+            'key' => '{proposal_city}',
+            'available' => array(
+                'proposals'
+                )
+            ),
+        array(
+            'name' => 'State',
+            'key' => '{proposal_state}',
+            'available' => array(
+                'proposals'
+                )
+            ),
+        array(
+            'name' => 'Zip Code',
+            'key' => '{proposal_zip}',
+            'available' => array(
+                'proposals'
+                )
+            ),
+        array(
+            'name' => 'Country',
+            'key' => '{proposal_country}',
+            'available' => array(
+                'proposals'
+                )
+            ),
+        array(
+            'name' => 'Email',
+            'key' => '{proposal_email}',
+            'available' => array(
+                'proposals'
+                )
+            ),
+        array(
+            'name' => 'Phone',
+            'key' => '{proposal_phone}',
+            'available' => array(
+                'proposals'
+                )
+            ),
+        array(
+            'name' => 'Proposal Link',
+            'key' => '{proposal_link}',
+            'available' => array(
+                'proposals'
+                )
+            )
+        )
+    ),
+array(
+    'leads'=> array(
+        array(
+            'name'=>'Lead Name',
+            'key'=>'{lead_name}',
+            'available'=>array('lead')
+            ),
+        array(
+            'name'=>'Lead Position',
+            'key'=>'{lead_position}',
+            'available'=>array('lead')
+            ),
+        array(
+            'name'=>'Lead Phone Number',
+            'key'=>'{lead_phonenumber}',
+            'available'=>array('lead')
+            ),
+        array(
+            'name'=>'Lead Company',
+            'key'=>'{lead_company}',
+            'available'=>array('lead')
+            ),
+        array(
+            'name'=>'Lead Country',
+            'key'=>'{lead_country}',
+            'available'=>array('lead')
+            ),
+        array(
+            'name'=>'Lead Zip',
+            'key'=>'{lead_zip}',
+            'available'=>array('lead')
+            ),
+        array(
+            'name'=>'Lead City',
+            'key'=>'{lead_city}',
+            'available'=>array('lead')
+            ),
+        array(
+            'name'=>'Lead State',
+            'key'=>'{lead_state}',
+            'available'=>array('lead')
+            ),
+        array(
+            'name'=>'Lead Address',
+            'key'=>'{lead_address}',
+            'available'=>array('lead')
+            ),
+        array(
+            'name'=>'Lead Assigned',
+            'key'=>'{lead_assigned}',
+            'available'=>array('lead')
+            ),
+        array(
+            'name'=>'Lead Status',
+            'key'=>'{lead_status}',
+            'available'=>array('lead')
+            ),
+        array(
+            'name'=>'Lead Souce',
+            'key'=>'{lead_source}',
+            'available'=>array('lead')
+            ),
+        array(
+            'name'=>'Lead Link',
+            'key'=>'{lead_link}',
+            'available'=>array('lead')
+            ),
+        )
+    ),
+array(
+    'projects'=>array(
+        array(
+            'name'=>'Project Name',
+            'key'=>'{project_name}',
+            'available'=>array('project'),
+            ),
+        array(
+            'name'=>'Project Description',
+            'key'=>'{project_description}',
+            'available'=>array('project'),
+            ),
+        array(
+            'name'=>'Project Start Date',
+            'key'=>'{project_start_date}',
+            'available'=>array('project'),
+            ),
+        array(
+            'name'=>'Project Deadline',
+            'key'=>'{project_deadline}',
+            'available'=>array('project'),
+            ),
+        array(
+            'name'=>'Project Link',
+            'key'=>'{project_link}',
+            'available'=>array('project'),
+            ),
+        array(
+            'name'=>'Discussion Link',
+            'key'=>'{discussion_link}',
+            'available'=>array('project'),
+            ),
+        array(
+            'name'=>'File Creator',
+            'key'=>'{file_creator}',
+            'available'=>array('project'),
+            ),
+        array(
+            'name'=>'Discussion Creator',
+            'key'=>'{discussion_creator}',
+            'available'=>array('project'),
+            ),
+        array(
+            'name'=>'Comment Creator',
+            'key'=>'{comment_creator}',
+            'available'=>array('project'),
+            ),
+        array(
+            'name'=>'Discussion Subject',
+            'key'=>'{discussion_subject}',
+            'available'=>array('project'),
+            ),
+        array(
+            'name'=>'Discussion Description',
+            'key'=>'{discussion_description}',
+            'available'=>array('project'),
+            ),
+        array(
+            'name'=>'Discussion Comment',
+            'key'=>'{discussion_comment}',
+            'available'=>array('project'),
+            ),
+        )
+    ),
+array(
+    'other' => array(
+        array(
+            'name' => 'Logo Url',
+            'key' => '{logo_url}',
+            'fromoptions' => true,
+            'available' => array(
+                'ticket',
+                'client',
+                'staff',
+                'invoice',
+                'estimate',
+                'contract',
+                'tasks',
+                'proposals',
+                'project',
+                'lead',
+                )
+            ),
+        array(
+            'name' => 'Logo Image With Url',
+            'key' => '{logo_image_with_url}',
+            'fromoptions' => true,
+            'available' => array(
+                'ticket',
+                'client',
+                'staff',
+                'invoice',
+                'estimate',
+                'contract',
+                'tasks',
+                'proposals',
+                'project',
+                'lead',
+                )
+            ),
+        array(
+            'name' => 'CRM Url',
+            'key' => '{crm_url}',
+            'fromoptions' => true,
+            'available' => array(
+                'ticket',
+                'client',
+                'staff',
+                'invoice',
+                'estimate',
+                'contract',
+                'tasks',
+                'proposals',
+                'project',
+                'lead',
+                )
+            ),
+        array(
+            'name' => 'Admin Url',
+            'key' => '{admin_url}',
+            'fromoptions' => true,
+            'available' => array(
+                'ticket',
+                'client',
+                'staff',
+                'invoice',
+                'estimate',
+                'contract',
+                'tasks',
+                'proposals',
+                'project',
+                'lead',
+                )
+            ),
+        array(
+            'name' => 'Main Domain',
+            'key' => '{main_domain}',
+            'fromoptions' => true,
+            'available' => array(
+                'ticket',
+                'client',
+                'staff',
+                'invoice',
+                'estimate',
+                'contract',
+                'tasks',
+                'proposals',
+                'project',
+                'lead',
+                )
+            ),
+        array(
+            'name' => 'Company Name',
+            'key' => '{companyname}',
+            'fromoptions' => true,
+            'available' => array(
+                'ticket',
+                'client',
+                'staff',
+                'invoice',
+                'estimate',
+                'contract',
+                'tasks',
+                'proposals',
+                'project',
+                'lead',
+                )
+            ),
+        array(
+            'name' => 'Email Signature',
+            'key' => '{email_signature}',
+            'fromoptions' => true,
+            'available' => array(
+                'ticket',
+                'client',
+                'staff',
+                'invoice',
+                'estimate',
+                'contract',
+                'tasks',
+                'proposals',
+                'project',
+                'lead'
+                )
+            )
+        )
+    )
+);
 $i = 0;
 foreach($available_merge_fields as $fields){
     $f = 0;

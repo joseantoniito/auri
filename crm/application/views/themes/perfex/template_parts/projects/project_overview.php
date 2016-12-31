@@ -42,7 +42,7 @@
                   <td class="bold"><?php echo _l('project_deadline'); ?></td>
                   <td><?php echo _d($project->deadline); ?></td>
                </tr>
-               <?php if($project->billing_type == 1){ ?>
+               <?php if($project->billing_type == 1 && $project->settings->view_task_total_logged_time == 1){ ?>
                <tr>
                   <td class="bold"><?php echo _l('project_overview_total_logged_hours'); ?></td>
                   <td><?php echo seconds_to_time_format($this->projects_model->total_logged_time($project->id)); ?></td>

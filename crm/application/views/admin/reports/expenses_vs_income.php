@@ -2,7 +2,6 @@
 <div id="wrapper">
     <div class="content">
         <div class="row">
-            <?php include_once(APPPATH . 'views/admin/includes/alerts.php'); ?>
             <div class="col-md-12">
                 <div class="panel_s">
                     <div class="panel-body">
@@ -19,7 +18,9 @@
                                 <p class="text-danger bold">
                                     <?php echo _l('amount_display_in_base_currency'); ?>
                                 </p>
-                                <canvas class="chart" id="report-expense-vs-income"></canvas>
+                                <div class="relative" style="max-height:600px;">
+                                    <canvas class="chart" height="600" id="report-expense-vs-income"></canvas>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -31,7 +32,8 @@
             $(function(){
                 chartExpenseVsIncome = new Chart($('#report-expense-vs-income'),{
                     type:'bar',
-                    data:<?php echo $chart_expenses_vs_income_values; ?>
+                    data:<?php echo $chart_expenses_vs_income_values; ?>,
+                    options:{maintainAspectRatio:false}
                 });
             });
             function change_expense_report_year(year){

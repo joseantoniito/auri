@@ -42,6 +42,8 @@
         <?php render_yes_no_option('show_pay_link_to_invoice_pdf','show_pay_link_to_invoice_pdf'); ?>
         <hr />
         <?php render_yes_no_option('show_transactions_on_invoice_pdf','show_transactions_on_invoice_pdf'); ?>
+        <hr />
+        <?php render_yes_no_option('show_page_number_on_pdf','show_page_number_on_pdf'); ?>
     </div>
     <div role="tabpanel" class="tab-pane" id="formats">
 

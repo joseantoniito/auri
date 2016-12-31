@@ -85,11 +85,13 @@ class Clients extends Clients_controller
         if (!has_contact_permission('projects')) {
             redirect(site_url());
         }
-        $project         = $this->projects_model->get($id, array(
+        $project = $this->projects_model->get($id, array(
             'clientid' => get_client_user_id()
         ));
+
         $data['project'] = $project;
-        $data['title']   = $data['project']->name;
+
+        $data['title'] = $data['project']->name;
         if ($this->input->post('action')) {
             $action = $this->input->post('action');
 
@@ -111,9 +113,9 @@ class Clients extends Clients_controller
                     die;
                     break;
                 case 'new_discussion':
-                    $data = $this->input->post();
-                    unset($data['action']);
-                    $success = $this->projects_model->add_discussion($data);
+                    $discussion_data = $this->input->post();
+                    unset($discussion_data['action']);
+                    $success = $this->projects_model->add_discussion($discussion_data);
                     if ($success) {
                         set_alert('success', _l('added_successfuly', _l('project_discussion')));
                     }
@@ -124,21 +126,21 @@ class Clients extends Clients_controller
                     die;
                     break;
                 case 'get_file':
-                    $data['discussion_user_profile_image_url'] = contact_profile_image_url(get_contact_user_id());
-                    $data['current_user_is_admin']             = false;
-                    $data['file']                              = $this->projects_model->get_file($this->input->post('id'), $this->input->post('project_id'));
+                    $file_data['discussion_user_profile_image_url'] = contact_profile_image_url(get_contact_user_id());
+                    $file_data['current_user_is_admin']             = false;
+                    $file_data['file']                              = $this->projects_model->get_file($this->input->post('id'), $this->input->post('project_id'));
 
-                    if (!$data['file']) {
+                    if (!$file_data['file']) {
                         header("HTTP/1.0 404 Not Found");
                         die;
                     }
-                    echo get_template_part('projects/file', $data, true);
+                    echo get_template_part('projects/file', $file_data, true);
                     die;
                     break;
                 case 'update_file_data':
-                    $data = $this->input->post();
-                    unset($data['action']);
-                    $this->projects_model->update_file_data($data);
+                    $file_data = $this->input->post();
+                    unset($file_data['action']);
+                    $this->projects_model->update_file_data($file_data);
                     break;
                 case 'upload_task_file':
                     $taskid = $this->input->post('task_id');
@@ -159,12 +161,12 @@ class Clients extends Clients_controller
                     die;
                     break;
                 case 'new_task_comment':
-                    $data    = $this->input->post();
-                    $success = $this->tasks_model->add_task_comment($data);
+                    $comment_data = $this->input->post();
+                    $success      = $this->tasks_model->add_task_comment($comment_data);
                     if ($success) {
                         set_alert('success', _l('task_comment_added'));
                     }
-                    redirect(site_url('clients/project/' . $id . '?group=project_tasks&taskid=' . $data['taskid']));
+                    redirect(site_url('clients/project/' . $id . '?group=project_tasks&taskid=' . $comment_data['taskid']));
                     break;
                 default:
                     redirect(site_url('clients/project/' . $id));
@@ -251,6 +253,7 @@ class Clients extends Clients_controller
                 'project_id' => $id
             ));
         }
+
         $data['estimates'] = array();
         if (has_contact_permission('estimates')) {
             $data['estimates'] = $this->estimates_model->get('', array(
@@ -276,10 +279,62 @@ class Clients extends Clients_controller
             'visible_to_customer' => 1
         ));
 
-        $this->data    = $data;
-        $this->view    = 'files';
+        $this->data = $data;
+        $this->view = 'files';
         $this->layout();
     }
+    public function upload_files()
+    {
+
+        if (!is_client_logged_in()) {
+            redirect(site_url('clients/login'));
+        }
+        if ($this->input->post('external')) {
+            $file                        = $this->input->post('files');
+            $file[0]['staffid']          = 0;
+            $file[0]['contact_id']       = get_contact_user_id();
+            $file['visible_to_customer'] = 1;
+            $this->misc_model->add_attachment_to_database(get_client_user_id(), 'customer', $file, $this->input->post('external'));
+        } else {
+            handle_client_attachments_upload(get_client_user_id(), true);
+        }
+    }
+
+    public function delete_file($id, $type = '')
+    {
+        if (!is_client_logged_in()) {
+            redirect(site_url('clients/login'));
+        }
+
+        if (get_option('allow_contact_to_delete_files') == 1) {
+            if ($type == 'general') {
+                $file = $this->misc_model->get_file($id);
+                if ($file->contact_id == get_contact_user_id()) {
+                    $this->clients_model->delete_attachment($id);
+                    set_alert('success', _l('deleted', _l('file')));
+                }
+                redirect(site_url('clients/files'));
+            } else if ($type == 'project') {
+                $this->load->model('projects_model');
+                $file = $this->projects_model->get_file($id);
+                if ($file->contact_id == get_contact_user_id()) {
+                    $this->projects_model->remove_file($id);
+                    set_alert('success', _l('deleted', _l('file')));
+                }
+                redirect(site_url('clients/projects/' . $file->project_id . '?group=project_file'));
+            } else if ($type == 'task') {
+                $file = $this->misc_model->get_file($id);
+                if ($file->contact_id == get_contact_user_id()) {
+                    $this->load->model('tasks_model');
+                    $this->tasks_model->remove_task_attachment($id);
+                    set_alert('success', _l('deleted', _l('file')));
+                }
+                redirect(site_url('clients/project/' . $this->input->get('project_id') . '?group=project_tasks&taskid=' . $file->rel_id));
+            }
+        }
+        redirect(site_url());
+    }
+
     public function remove_task_comment($id)
     {
         if (!is_client_logged_in()) {
@@ -382,7 +437,7 @@ class Clients extends Clients_controller
         }
 
         $number_word_lang_rel_id = 'unknown';
-        if($proposal->rel_type == 'customer'){
+        if ($proposal->rel_type == 'customer') {
             $number_word_lang_rel_id = $proposal->rel_id;
         }
         $this->load->library('numberword', array(
@@ -574,9 +629,9 @@ class Clients extends Clients_controller
             $invoice_number = format_invoice_number($invoice->id);
             $companyname    = get_option('invoice_company_name');
             if ($companyname != '') {
-                $invoice_number .= '-' . mb_strtoupper(slug_it($companyname),'UTF-8');
+                $invoice_number .= '-' . mb_strtoupper(slug_it($companyname), 'UTF-8');
             }
-            $pdf->Output(mb_strtoupper(slug_it($invoice_number),'UTF-8') . '.pdf', 'D');
+            $pdf->Output(mb_strtoupper(slug_it($invoice_number), 'UTF-8') . '.pdf', 'D');
             die();
         }
         // Handle $_POST payment
@@ -596,7 +651,7 @@ class Clients extends Clients_controller
             $payment               = $this->payments_model->get($id);
             $payment->invoice_data = $this->invoices_model->get($payment->invoiceid);
             $paymentpdf            = payment_pdf($payment);
-            $paymentpdf->Output(mb_strtoupper(slug_it(_l('payment') . '-' . $payment->paymentid),'UTF-8') . '.pdf', 'D');
+            $paymentpdf->Output(mb_strtoupper(slug_it(_l('payment') . '-' . $payment->paymentid), 'UTF-8') . '.pdf', 'D');
             die;
         }
         $this->load->library('numberword', array(
@@ -628,6 +683,7 @@ class Clients extends Clients_controller
             $action = $this->input->post('estimate_action');
             // Only decline and accept allowed
             if ($action == 4 || $action == 3) {
+
                 $success = $this->estimates_model->mark_action_status($action, $id, true);
                 if (is_array($success) && $success['invoiced'] == true) {
                     $invoice = $this->invoices_model->get($success['invoiceid']);
@@ -651,9 +707,9 @@ class Clients extends Clients_controller
             $estimate_number = format_estimate_number($estimate->id);
             $companyname     = get_option('invoice_company_name');
             if ($companyname != '') {
-                $estimate_number .= '-' . mb_strtoupper(slug_it($companyname),'UTF-8');
+                $estimate_number .= '-' . mb_strtoupper(slug_it($companyname), 'UTF-8');
             }
-            $pdf->Output(mb_strtoupper(slug_it($estimate_number),'UTF-8') . '.pdf', 'D');
+            $pdf->Output(mb_strtoupper(slug_it($estimate_number), 'UTF-8') . '.pdf', 'D');
             die();
         }
         $this->load->library('numberword', array(
@@ -757,12 +813,17 @@ class Clients extends Clients_controller
             redirect(site_url('clients/login'));
         }
         if ($this->input->post()) {
-            $this->form_validation->set_rules('company', _l('clients_company'), 'required');
+
+            if (get_option('company_is_required') == 1) {
+                $this->form_validation->set_rules('company', _l('clients_company'), 'required');
+            }
+
             $custom_fields = get_custom_fields('customers', array(
                 'show_on_client_portal' => 1,
                 'required' => 1,
                 'disalow_client_to_edit' => 0
             ));
+
             foreach ($custom_fields as $field) {
                 $field_name = 'custom_fields[' . $field['fieldto'] . '][' . $field['id'] . ']';
                 if ($field['type'] == 'checkbox') {
@@ -856,7 +917,9 @@ class Clients extends Clients_controller
         if (get_option('allow_registration') != 1 || is_client_logged_in()) {
             redirect(site_url());
         }
-        $this->form_validation->set_rules('company', _l('client_company'), 'required');
+        if (get_option('company_is_required') == 1) {
+            $this->form_validation->set_rules('company', _l('client_company'), 'required');
+        }
         $this->form_validation->set_rules('firstname', _l('client_firstname'), 'required');
         $this->form_validation->set_rules('lastname', _l('client_lastname'), 'required');
         $this->form_validation->set_rules('email', _l('client_email'), 'required|is_unique[tblcontacts.email]|valid_email');
@@ -924,7 +987,9 @@ class Clients extends Clients_controller
         if (is_client_logged_in()) {
             redirect(site_url());
         }
+
         $this->form_validation->set_rules('email', _l('customer_forgot_password_email'), 'required|valid_email|callback_contact_email_exists');
+
         if ($this->input->post()) {
             if ($this->form_validation->run() !== false) {
                 $this->load->model('Authentication_model');
@@ -989,7 +1054,7 @@ class Clients extends Clients_controller
     }
     public function knowledge_base($slug = '')
     {
-        if ((get_option('use_knowledge_base') == 1 && !is_client_logged_in() && get_option('knowledge_base_without_registration') == 1) || (get_option('use_knowledge_base') == 1 && is_client_logged_in())) {
+        if ((get_option('use_knowledge_base') == 1 && !is_client_logged_in() && get_option('knowledge_base_without_registration') == 1) || (get_option('use_knowledge_base') == 1 && is_client_logged_in()) || is_staff_logged_in()) {
             $data = array();
             if ($slug == '' || $this->input->get('groupid')) {
                 $data['title'] = _l('clients_knowledge_base');
@@ -1060,6 +1125,7 @@ class Clients extends Clients_controller
     {
         $this->load->model('authentication_model');
         $this->authentication_model->logout(false);
+        do_action('after_client_logout');
         redirect(site_url('clients/login'));
     }
     public function contact_email_exists($email = '')

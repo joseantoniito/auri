@@ -2,7 +2,6 @@
 <div id="wrapper">
     <div class="content">
         <div class="row">
-            <?php include_once(APPPATH . 'views/admin/includes/alerts.php'); ?>
             <div class="col-md-12">
                 <div class="panel_s">
                     <div class="panel-body">
@@ -42,17 +41,17 @@
                          <table class="table table table-striped table-expenses">
                          <thead>
                              <tr>
-                                 <td><?php echo _l('expense_dt_table_heading_category'); ?></td>
-                                 <td><?php echo _l('expense_dt_table_heading_amount'); ?></td>
-                                 <td><?php echo _l('expenses_report_tax'); ?></td>
-                                 <td><?php echo _l('expenses_report_total_tax'); ?></td>
-                                 <td><?php echo _l('report_invoice_amount_with_tax'); ?></td>
-                                 <td><?php echo _l('expenses_list_billable'); ?></td>
-                                 <td><?php echo _l('expense_dt_table_heading_date'); ?></td>
-                                 <td><?php echo _l('expense_dt_table_heading_customer'); ?></td>
-                                 <td><?php echo _l('invoice'); ?></td>
-                                 <td><?php echo _l('expense_dt_table_heading_reference_no'); ?></td>
-                                 <td><?php echo _l('expense_dt_table_heading_payment_mode'); ?></td>
+                                 <th><?php echo _l('expense_dt_table_heading_category'); ?></th>
+                                 <th><?php echo _l('expense_dt_table_heading_amount'); ?></th>
+                                 <th><?php echo _l('expenses_report_tax'); ?></th>
+                                 <th><?php echo _l('expenses_report_total_tax'); ?></th>
+                                 <th><?php echo _l('report_invoice_amount_with_tax'); ?></th>
+                                 <th><?php echo _l('expenses_list_billable'); ?></th>
+                                 <th><?php echo _l('expense_dt_table_heading_date'); ?></th>
+                                 <th><?php echo _l('expense_dt_table_heading_customer'); ?></th>
+                                 <th><?php echo _l('invoice'); ?></th>
+                                 <th><?php echo _l('expense_dt_table_heading_reference_no'); ?></th>
+                                 <th><?php echo _l('expense_dt_table_heading_payment_mode'); ?></th>
                              </tr>
                          </thead>
                          <tbody></tbody>

@@ -211,9 +211,15 @@ class Utilities extends Admin_controller
         if (!has_permission('bulk_pdf_exporter', '', 'view')) {
             access_denied('bulk_pdf_exporter');
         }
+
+        $has_permission_estimates_view = has_permission('estimates','','view');
+        $has_permission_invoices_view = has_permission('invoices','','view');
+        $has_permission_proposals_view = has_permission('proposals','','view');
+        $has_permission_payments_view = has_permission('payments','','view');
+
         if ($this->input->post()) {
             if (!is_really_writable(TEMP_FOLDER)) {
-                show_error('/temp folder is not writable. You need to change the permissions to 777');
+                show_error('/temp folder is not writable. You need to change the permissions to 755');
             }
             $type = $this->input->post('export_type');
             if ($type == 'invoices') {
@@ -223,6 +229,11 @@ class Utilities extends Admin_controller
                 if ($status != 'all') {
                     $this->db->where('status', $status);
                 }
+
+                if(!$has_permission_invoices_view){
+                    $this->db->where('addedfrom',get_staff_user_id());
+                }
+
                 $this->db->order_by('date', 'desc');
             } else if ($type == 'estimates') {
                 $status = $this->input->post('estimate_export_status');
@@ -231,12 +242,20 @@ class Utilities extends Admin_controller
                 if ($status != 'estimates_all') {
                     $this->db->where('status', $status);
                 }
+
+                if(!$has_permission_estimates_view){
+                    $this->db->where('addedfrom',get_staff_user_id());
+                }
                 $this->db->order_by('date', 'desc');
             } else if ($type == 'payments') {
                 $this->db->select('tblinvoicepaymentrecords.id as paymentid');
                 $this->db->from('tblinvoicepaymentrecords');
                 $this->db->join('tblinvoices', 'tblinvoices.id = tblinvoicepaymentrecords.invoiceid', 'left');
                 $this->db->join('tblclients', 'tblclients.userid = tblinvoices.clientid', 'left');
+
+                if(!$has_permission_payments_view){
+                    $this->db->where('invoiceid IN (SELECT id FROM tblinvoices WHERE addedfrom=' . get_staff_user_id() . ')');
+                }
                 if ($this->input->post('paymentmode')) {
                     $this->db->where('paymentmode', $this->input->post('paymentmode'));
                 }
@@ -247,6 +266,11 @@ class Utilities extends Admin_controller
                 if ($status != 'all') {
                     $this->db->where('status', $status);
                 }
+
+                if(!$has_permission_proposals_view){
+                    $this->db->where('addedfrom',get_staff_user_id());
+                }
+
                 $this->db->order_by('date', 'desc');
             } else {
                 // This may not happend but in all cases :)
@@ -290,7 +314,7 @@ class Utilities extends Admin_controller
                 foreach ($data as $estimate) {
                     $this->load->model('estimates_model');
                     $estimate_data   = $this->estimates_model->get($estimate['id']);
-                    $this->pdf_zip   = estimate_pdf($estimate_data);
+                    $this->pdf_zip   = estimate_pdf($estimate_data,$this->input->post('tag'));
                     $_temp_file_name = slug_it(format_estimate_number($estimate_data->id));
                     $file_name       = $dir . '/' . strtoupper($_temp_file_name);
                     $this->pdf_zip->Output($file_name . '.pdf', 'F');
@@ -301,7 +325,7 @@ class Utilities extends Admin_controller
                 foreach ($data as $payment) {
                     $payment_data               = $this->payments_model->get($payment['paymentid']);
                     $payment_data->invoice_data = $this->invoices_model->get($payment_data->invoiceid);
-                    $this->pdf_zip              = payment_pdf($payment_data);
+                    $this->pdf_zip              = payment_pdf($payment_data,$this->input->post('tag'));
                     $file_name                  = $dir;
                     $file_name .= '/' . strtoupper(_l('payment'));
                     $file_name .= '-' . strtoupper($payment_data->paymentid) . '.pdf';
@@ -311,7 +335,7 @@ class Utilities extends Admin_controller
                 $this->load->model('proposals_model');
                 foreach ($data as $proposal) {
                     $proposal        = $this->proposals_model->get($proposal['id']);
-                    $this->pdf_zip   = proposal_pdf($proposal);
+                    $this->pdf_zip   = proposal_pdf($proposal,$this->input->post('tag'));
                     $_temp_file_name = slug_it($proposal->subject);
                     $file_name       = $dir . '/' . strtoupper($_temp_file_name);
                     $this->pdf_zip->Output($file_name . '.pdf', 'F');
@@ -420,6 +444,8 @@ class Utilities extends Admin_controller
             'shortname' => 'is_not_staff',
             'name' => _l('is_not_staff_member')
         );
+
+        $data['jquery_migrate_assets'] = true;
         $data['title']         = _l('main_menu');
         $this->load->view('admin/utilities/main_menu', $data);
     }
@@ -458,6 +484,7 @@ class Utilities extends Admin_controller
             'shortname' => 'is_not_staff',
             'name' => _l('is_not_staff_member')
         );
+        $data['jquery_migrate_assets'] = true;
         $data['title']         = _l('setup_menu');
         $this->load->view('admin/utilities/setup_menu', $data);
     }
