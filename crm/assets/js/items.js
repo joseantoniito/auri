@@ -1,15 +1,17 @@
 $(function() {
-    //#kendo unities
+    //#kendo developments
     var window_unity; 
     var grid_unities;
     $(document).ready(function() {
         //#kendo
          debugger;
         console.log( "ready!" );
-        if(window.location.href.indexOf("/admin/invoice_items/invoice_items") != -1){
-            
+        if(window.location.href.indexOf("/admin/inventory/") != -1 &&
+          window.location.href.indexOf("/admin/inventory/") == window.location.href.length - 17 ){
+            console.log("Ready properties!!!");
+            create_grid_developments();
         }
-        else if(window.location.href.indexOf("/admin/invoice_items/item") != -1){
+        else if(window.location.href.indexOf("/admin/inventory/item") != -1){
             var id = $("[name='item_id']").val()
             if(id)
                 create_grid_unities(id);
@@ -37,6 +39,50 @@ $(function() {
         
     });
     
+    function create_grid_developments(){
+        var itemid = 1;
+        
+        $.get(admin_url + 'inventory/get_developments/', function(response) {
+            debugger;
+            console.log(response);
+            grid_unities = 
+                $("#grid_developments").kendoGrid({
+                    dataSource: response,
+                    columns: [
+                        {field: "nombre", title: "nombre"},                            
+                        {field: "id_tipo_desarrollo", title: "id_tipo_desarrollo"},
+                        {field: "total_de_unidades", title: "total_de_unidades"},
+                        {field: "direccion", title: "direccion"},
+                        {field: "codigo_postal", title: "codigo_postal"},
+                        {field:"id", title:"Acciones", width:"100px", 
+                        template: "<a id='btn_edit_development' href='item/#:id#' class='qodef-icon-shortcode normal qodef-icon-little'><i class='qodef-icon-font-awesome fa fa-pencil-square qodef-icon-element'></i></a> <a id='btn_delete_development' class='qodef-icon-shortcode normal qodef-icon-little' style='cursor:pointer;'> <i class='qodef-icon-font-awesome fa fa-trash qodef-icon-element'></i> </a>"}
+                    ],
+                    dataBound: function(e) {
+                        console.log("dataBound");
+                         
+                        $.each(e.sender.items(), function(index, item){
+                            $(item).find("#btn_delete_development")
+                                .on("click", delete_development);
+                        });
+                    }
+                }).data("kendoGrid");
+            }, 'json');
+    }
+    
+    function delete_development(event){
+        //todo
+         
+        var id = $(event.currentTarget).attr("_id");
+
+        $.get(admin_url + 'invoice_items/delete_unity/' + id, function(response) {
+            console.log(response);
+            
+            
+             
+        }, 'json');
+    }
+    
+    //#kendo unities
     function create_grid_unities(id){
         var itemid = 1;
         $.get(admin_url + 'invoice_items/get_unities/' + id, function(response) {
@@ -74,7 +120,7 @@ $(function() {
         //#kendo todo
          
         var data = $(form).serialize();
-        data += "&tax=''";
+        data = data.replace("development_id", "id");
         var url = form.action;
         $.post(url, data).done(function(response) {
             response = JSON.parse(response);

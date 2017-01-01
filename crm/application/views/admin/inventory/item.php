@@ -11,17 +11,35 @@
                         </div>
                         
                         <div class="panel-body border-t-grey">
-                            <?php echo form_open('admin/invoice_items/manage',array('id'=>'invoice_item_form_1')); ?>
+                            <?php echo form_open('admin/inventory/manage_development',array('id'=>'invoice_item_form_1')); ?>
                                 
-                                <?php echo form_hidden('itemid',$id); ?>
-                                <?php $value=( isset($item) ? $item->m2_habitables : ''); ?>
-                                <?php echo render_input( 'm2_habitables', 'm2_habitables',$value); ?>
-                                <?php $value=( isset($item) ? $item->rate : ''); ?>
-                                <?php echo render_input( 'rate', 'rate',$value); ?>
-                                <?php $value=( isset($item) ? $item->long_description : ''); ?>
-                                <?php echo render_textarea( 'long_description', 'long_description',$value); ?>
-                                <?php $value=( isset($item) ? $item->address : ''); ?>
-                                <?php echo render_input( 'address', 'address',$value); ?>
+                                <?php echo form_hidden('development_id',$id); ?>
+                                <?php $value=( isset($item) ? $item->nombre : ''); ?>
+                                <?php echo render_input( 'nombre', 'nombre',$value); ?>
+                                <?php $value=( isset($item) ? $item->logotipo : ''); ?>
+                                <?php echo render_input( 'logotipo', 'logotipo',$value); ?>
+                                <?php $value=( isset($item) ? $item->descripcion : ''); ?>
+                                <?php echo render_textarea( 'descripcion', 'descripcion',$value); ?>
+                                <?php $value=( isset($item) ? $item->id_tipo_desarrollo : ''); ?>
+                                <?php echo render_select('id_tipo_desarrollo',$items_tipo_desarrollo,array('id','nombre'),'Tipo de desarrollo',$value); ?>
+                                <?php $value=( isset($item) ? $item->id_tipo_desarrollo : ''); ?>
+                                <?php echo render_select('id_etapa_desarrollo',$items_etapa_desarrollo,array('id','nombre'),'Etapa de desarrollo',$value); ?>
+                                <?php $value=( isset($item) ? $item->total_de_unidades : ''); ?>
+                                <?php echo render_input( 'total_de_unidades', 'total de unidades',$value); ?>
+                                <?php $value=( isset($item) ? $item->id_entrega : ''); ?>
+                                <?php echo render_select('id_entrega',$items_tipos_entrega,array('id','nombre'),'Entrega',$value); ?>
+                            
+                                <?php $value=( isset($item) ? $item->id_estado : ''); ?>
+                                <?php echo render_select('id_estado',$items_estados,array('id','nombre'),'Estado',$value); ?>
+                                <?php $value=( isset($item) ? $item->id_municipio : ''); ?>
+                                <?php echo render_select('id_municipio',$items_municipios,array('id','nombre'),'Municipio',$value); ?>
+                                <?php $value=( isset($item) ? $item->id_colonia : ''); ?>
+                                <?php echo render_select('id_colonia',$items_colonias,array('id','nombre'),'Colonia',$value); ?>
+                            
+                                <?php $value=( isset($item) ? $item->direccion : ''); ?>
+                                <?php echo render_input( 'direccion', 'Dirección',$value); ?>
+                                <?php $value=( isset($item) ? $item->codigo_postal : ''); ?>
+                                <?php echo render_input( 'codigo_postal', 'Código postal',$value); ?>
     
                                 <div class="modal-footer">
                                     <button type="submit" class="btn btn-info"><?php echo _l('submit'); ?></button>
