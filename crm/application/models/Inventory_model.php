@@ -37,10 +37,14 @@ class Inventory_model extends CRM_Model
     
     public function edit_development($data)
     {
-       $id = $data['id'];
+        $id = $data['id'];
         unset($data['id']);
         $this->db->where('id', $id);
         $this->db->update('tbldevelopments', $data);
+        
+        $ids_services = $data['ids_services'];
+        unset($data['ids_services']);
+        
         if ($this->db->affected_rows() > 0) {
             logActivity('Invoice Item development Updated [ID: ' . $id . ', ' . $data['status'] . ']');
             return true;
@@ -59,13 +63,32 @@ class Inventory_model extends CRM_Model
         return false;
     }
     
+    public function manage_development_features($data)
+    {
+        $this->db->where('id_development', $data['id_development']);
+        $this->db->delete('tbldevelopmentservices');
+        
+        $ids_services = json_decode($data['ids_services']);
+        foreach ($ids_services as $id_service) {
+            $this->db->insert('tbldevelopmentservices', ['id_development' => $data['id_development'],'id_service' => $id_service]);
+        }
+        return true;
+    }
+    public function get_development_features($id)
+    {
+        $this->db->select('id_development, id_service');
+        $this->db->from('tbldevelopmentservices');
+        $this->db->where('id_development', $id);
+        return $this->db->get()->result_array();
+    }
+    
     
     //manage unities
     public function get_unities($id)
     {
         $this->db->select('tblunities.id, id_item, status, unidad, m2_habitables, balcon, terraza, roofgarden, m2_totales, recamaras, banios, precio, enganche_total, reservacion, contrato, num_mensualidades, saldo_de_enganche, mensualidades, credito');
         $this->db->from('tblunities');
-        $this->db->join('tblitems', 'tblunities.id_item = tblitems.id', 'inner');
+        $this->db->join('tbldevelopments', 'tblunities.id_item = tbldevelopments.id', 'inner');
         $this->db->where('id_item', $id);
         return $this->db->get()->result_array();
     }

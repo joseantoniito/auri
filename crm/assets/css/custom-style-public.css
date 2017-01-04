@@ -1,0 +1,191 @@
+body{
+    background-color: #f6f6f6;
+}
+
+.card {
+    display: block;
+    width: auto;
+    height: auto;
+    background-color: #fff;
+    color: #000;
+    -webkit-box-shadow: 0 1px 2px rgba(0,0,0,0.25);
+    -moz-box-shadow: 0 1px 2px rgba(0,0,0,0.25);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.25);
+    position: relative;
+    margin-bottom: 25px;
+}
+
+.card .card-content {
+    padding: 16px;
+}
+.no-padding-bottom {
+    padding-bottom: 0!important;
+}
+
+
+.card .card-title h1 {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    white-space: nowrap;
+    font-size: 20px;
+    line-height: 24px;
+    margin-bottom: 7px;
+    font-weight: 400;
+}
+
+.card .card-title a {
+    padding-left: 5px;
+    color: #666;
+    text-decoration: none;
+}
+
+.carousel-inner > .item > img,
+  .carousel-inner > .item > a > img {
+      width: 70%;
+      margin: auto;
+  }
+
+ .ctas-ficha {
+    display: flex;
+    justify-content: space-around;
+}
+.card .card-content {
+    padding: 16px;
+}
+.ctas-ficha .btn-primary {
+    background-color: #f60;
+    color: #fff;
+    border: 1px solid #f60;
+}
+.ctas-ficha .btn {
+    width: 30%;
+    margin: 0;
+}
+
+.list {
+    margin-bottom: 20px;
+}
+body#ficha .location #imgVar, body#ficha .location #imgMap {
+    width: 100%;
+    height: 260px;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+    display: block;
+}
+body#ficha .card .clicvermapa {
+    z-index: 20;
+}
+
+.card.datos-desarrollos {
+    padding-bottom: 10px;
+}
+body#ficha .timeline-table {
+    position: relative;
+    margin: 20px 0;
+}
+.timeline-table table {
+    position: relative;
+    width: 100%;
+    z-index: 10;
+}
+table {
+    max-width: 100%;
+    background-color: transparent;
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+.timeline-table table .timeline-name:first-child {
+    text-align: left;
+}
+.timeline-table table .timeline-name {
+    text-align: center;
+    padding-bottom: 15px;
+    font-size: 16px;
+    color: #ccc;
+    font-weight: 300;
+}
+.timeline-table table .timeline-name span {
+    display: inline-block;
+    white-space: nowrap;
+}
+.timeline-table table .timeline-point:first-child {
+    text-align: left;
+}
+.timeline-table table .timeline-point {
+    text-align: center;
+    max-width: 25%;
+}
+.timeline-table table .timeline-point .timeline-circle {
+    border-radius: 11px;
+    background: #fff;
+    display: inline-block;
+    height: 15px;
+    width: 15px;
+    border: 1px solid #000;
+}
+ .timeline-table table .timeline-point:first-child {
+    text-align: left;
+}
+.timeline-table table .timeline-point .timeline-circle.activo {
+    background: #000;
+}
+.timeline-table table .timeline-point:last-child {
+    text-align: right;
+}
+.timeline-table table .timeline-point {
+    text-align: center;
+    max-width: 25%;
+}
+
+.card .partial {
+    max-height: 360px;
+    overflow: hidden;
+    position: relative;
+    display: block;
+}
+.aviso-unidades h3 {
+    margin: 0 15px;
+}
+
+.aviso-datos ul span, .aviso-datos-anunciante ul span, .aviso-datos ul li span, .aviso-datos-anunciante ul li span {
+    display: inline-block;
+    font-weight: 300;
+}
+.aviso-datos ul, .aviso-datos-anunciante ul, .aviso-datos ul li, .aviso-datos-anunciante ul li {
+    list-style: none;
+    margin: 0;
+    font-size: 18px;
+    line-height: 30px;
+}
+.aviso-datos ul i, .aviso-datos-anunciante ul i, .aviso-datos ul li i, .aviso-datos-anunciante ul li i {
+    font-size: 24px;
+    display: inline-block;
+    margin-right: 20px;
+}
+.card .card-content h3, .card .card-content .h3 {
+    font-size: 20px;
+    line-height: 24px;
+    font-weight: normal;
+}
+
+/*#sales_item_modal .modal-content{
+    min-width:900px;
+}*/
+
+#window_unity{
+    display: none;
+}
+
+#window_unity input.form-control{
+    width:95% !important;
+}
+
+.border-b-grey{
+    border-bottom: 1px solid #f0f0f0;
+}
+.border-t-grey{
+    border-top: 1px solid #f0f0f0;
+}

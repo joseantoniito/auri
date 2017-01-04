@@ -3,7 +3,7 @@
     <div class="content">
         <div class="row">
             <?php include_once(APPPATH . 'views/admin/includes/alerts.php'); ?>
-            <div class="col-md-5" id="survey-add-edit-wrapper">
+            <div class="col-md-7" id="survey-add-edit-wrapper">
                 <div class="panel_s">
                     <div class="panel-body">
                         <div class="panel-heading">
@@ -20,27 +20,52 @@
                                 <?php echo render_input( 'logotipo', 'logotipo',$value); ?>
                                 <?php $value=( isset($item) ? $item->descripcion : ''); ?>
                                 <?php echo render_textarea( 'descripcion', 'descripcion',$value); ?>
-                                <?php $value=( isset($item) ? $item->id_tipo_desarrollo : ''); ?>
-                                <?php echo render_select('id_tipo_desarrollo',$items_tipo_desarrollo,array('id','nombre'),'Tipo de desarrollo',$value); ?>
-                                <?php $value=( isset($item) ? $item->id_tipo_desarrollo : ''); ?>
-                                <?php echo render_select('id_etapa_desarrollo',$items_etapa_desarrollo,array('id','nombre'),'Etapa de desarrollo',$value); ?>
-                                <?php $value=( isset($item) ? $item->total_de_unidades : ''); ?>
-                                <?php echo render_input( 'total_de_unidades', 'total de unidades',$value); ?>
-                                <?php $value=( isset($item) ? $item->id_entrega : ''); ?>
-                                <?php echo render_select('id_entrega',$items_tipos_entrega,array('id','nombre'),'Entrega',$value); ?>
+                                <div class="row padTop32">
+                                    <div class="col-md-6">
+                                        <?php $value=( isset($item) ? $item->id_tipo_desarrollo : ''); ?>
+                                        <?php echo render_select('id_tipo_desarrollo',$items_tipo_desarrollo,array('id','nombre'),'Tipo de desarrollo',$value); ?>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <?php $value=( isset($item) ? $item->id_tipo_desarrollo : ''); ?>
+                                        <?php echo render_select('id_etapa_desarrollo',$items_etapa_desarrollo,array('id','nombre'),'Etapa de desarrollo',$value); ?>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <?php $value=( isset($item) ? $item->total_de_unidades : ''); ?>
+                                        <?php echo render_input( 'total_de_unidades', 'total de unidades',$value); ?>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <?php $value=( isset($item) ? $item->id_entrega : ''); ?>
+                                        <?php echo render_select('id_entrega',$items_tipos_entrega,array('id','nombre'),'Entrega',$value); ?>
+                                    </div>
+                                </div>
+                                <div class="row padTop32">
+                                    <div class="col-md-4">
+                                        <?php $value=( isset($item) ? $item->id_estado : ''); ?>
+                                        <?php echo render_select('id_estado',$items_estados,array('id','nombre'),'Estado',$value); ?>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <?php $value=( isset($item) ? $item->id_municipio : ''); ?>
+                                        <?php echo render_select('id_municipio',$items_municipios,array('id','nombre'),'Municipio',$value); ?>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <?php $value=( isset($item) ? $item->id_colonia : ''); ?>
+                                        <?php echo render_select('id_colonia',$items_colonias,array('id','nombre'),'Colonia',$value); ?>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <?php $value=( isset($item) ? $item->direccion : ''); ?>
+                                        <?php echo render_input( 'direccion', 'Dirección',$value); ?>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <?php $value=( isset($item) ? $item->codigo_postal : ''); ?>
+                                        <?php echo render_input( 'codigo_postal', 'Código postal',$value); ?>
+                                    </div>
+                                </div>
+                                
                             
-                                <?php $value=( isset($item) ? $item->id_estado : ''); ?>
-                                <?php echo render_select('id_estado',$items_estados,array('id','nombre'),'Estado',$value); ?>
-                                <?php $value=( isset($item) ? $item->id_municipio : ''); ?>
-                                <?php echo render_select('id_municipio',$items_municipios,array('id','nombre'),'Municipio',$value); ?>
-                                <?php $value=( isset($item) ? $item->id_colonia : ''); ?>
-                                <?php echo render_select('id_colonia',$items_colonias,array('id','nombre'),'Colonia',$value); ?>
-                            
-                                <?php $value=( isset($item) ? $item->direccion : ''); ?>
-                                <?php echo render_input( 'direccion', 'Dirección',$value); ?>
-                                <?php $value=( isset($item) ? $item->codigo_postal : ''); ?>
-                                <?php echo render_input( 'codigo_postal', 'Código postal',$value); ?>
-    
                                 <div class="modal-footer">
                                     <button type="submit" class="btn btn-info"><?php echo _l('submit'); ?></button>
                                 </div>
@@ -51,7 +76,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-7">
+            <div class="col-md-5">
                 <div class="panel_s">
                     <div class="panel-body">
                         <div class="panel-heading">
@@ -68,7 +93,7 @@
                         <div id="grid_unities"></div>
                         
                         <div id="window_unity">
-                            <?php echo form_open('admin/invoice_items/manage_unity',array('id'=>'unity_form')); ?>
+                            <?php echo form_open('admin/inventory/manage_unity',array('id'=>'unity_form')); ?>
                             <?php echo form_hidden( 'item_id',$id); ?>
                             <?php echo form_hidden( 'unity_id', ''); ?>
                             <div class="panel_s" style="min-height:200px;">
@@ -86,6 +111,32 @@
                             <?php echo form_close(); ?>
                         </div>
                         
+                    </div>
+                </div>
+                
+                <div class="panel_s">
+                    <div class="panel-body">
+                        <div class="panel-heading">
+                            <h4 class="customer-heading-profile bold margin-b-grey">Características</h4>
+                        </div>
+                        <div>
+                        <?php echo form_open('admin/inventory/manage_development_features',array('id'=>'development_features_form')); ?>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <!--<?php $value=( isset($item) ? $item->ids_services : ''); ?>
+<                                   input name="ids_services" value="[1,3]" type="hidden" />-->
+                                    <?php echo form_hidden('id_development',$id); ?>
+                                    <?php echo form_hidden('ids_services','[1,3]'); ?>
+                                    <?php echo form_hidden('development_features', $development_features); ?>
+                                    
+                                    <div id="list_view_services"></div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                    <button type="submit" class="btn btn-info"><?php echo _l('submit'); ?></button>
+                                </div>
+                        <?php echo form_close(); ?>
+                        </div>
                     </div>
                 </div>
             </div>

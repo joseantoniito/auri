@@ -6,7 +6,7 @@
             <?php if(has_permission('items','','create')){ ?>
             <div class="panel_s">
               <div class="panel-body _buttons">
-                <a href="inventory/item" class="btn btn-info pull-left" ><?php echo _l('new_invoice_item'); ?></a>
+                <a href="item" class="btn btn-info pull-left" ><?php echo _l('new_invoice_item'); ?></a>
               </div>
 
             </div>

@@ -113,6 +113,32 @@ class Inventory extends Admin_controller
         //todo: cambiar recursos
     }
     
+    public function manage_development_features(){
+        if (has_permission('items','','view')) {
+            if ($this->input->post()) {
+                $data = $this->input->post();
+                
+                if(!has_permission('items','','create')){
+                  header('HTTP/1.0 400 Bad error');
+                  echo _l('access_denied');
+                  die;
+                }
+                $success = false;
+                $message = '';
+                if ($this->inventory_model->manage_development_features($data)) {
+                    $success = true;
+                    $message = _l('added_successfuly', _l('invoice_item'));
+                };
+                echo json_encode(array(
+                    'success' => $success,
+                    'message' => $message,
+                    'data' => json_decode($data['ids_services'])
+                    ));
+                
+            }
+        }
+    }
+    
     
     //manage unities
     public function item($id = '')
@@ -160,6 +186,9 @@ class Inventory extends Admin_controller
         $items_colonias[0] = ['id' => 1,'nombre' => 'Lomas de San Pedrito Peñuelas',];            
         $items_colonias[1] = ['id' => 2,'nombre' => 'Álamos',];
         $data['items_colonias'] = $items_colonias;
+        
+        $data['development_features'] = json_encode($this->inventory_model->get_development_features($id));
+        
         
         $this->load->view('admin/inventory/item', $data);
     }
