@@ -3,6 +3,15 @@
 		
 	</head>
 	<body>
+        <header class="header">
+            <div class="container flex-header">
+                <div class="logo-header-wrap">
+                    <a href="/" title="Inmuebles24.com" class="logo-header inmuebles24">
+                        <img src="/crm/uploads/company/logo.png">
+                    </a>
+                </div>
+            </div>
+        </header>
 		<div class="container">
 			<div class="row">
 				<div class="col-md-9">
@@ -71,11 +80,10 @@
                     <div id="map" class="card location">
                         <div class="card-content no-padding-bottom">
 							<h3>Ubicación</h3>
-							<div class="list list-directions">
-								<ul>
-									<li id="direccion2"></li>
-								</ul>
-							</div>
+							<span>
+                                <i class="fa fa-map-marker" aria-hidden="true"></i>
+                                <span id="direccion2"></span>
+                            </span>
 						</div>
                         <div id="imgVar" class="clicvermapa on">
                             <iframe id="iframeMap" src="" width="100%" height="260" frameborder="0" marginwidth="0" marginheight="0" scrolling="no"></iframe>
@@ -130,37 +138,82 @@
 									<ul>
 										<li>
 											<span class="nombre">
-												<i class="licon licon-ficha_casa"></i>Desarrollo vertical
+												<i class="fa fa-home fa_medium fa_normal"></i>
+                                                <span id="tipo_desarrollo"></span>
 											</span>
 											<span class="valor"></span>
 										</li>
 										<li>
 											<span class="nombre">
-												<i class="licon licon-ficha_precio"></i>Precio  desde
+												<i class="fa fa-money fa_medium fa_normal"></i>Precio  desde
 											</span>
-											<span class="valor">MN 6,163,850</span>
+											<span id="precio_desde" class="valor"></span>
 										</li>
 
 										<li>
-											<span class="nombre"><i class="licon licon-superficie_total"></i>10<small>m²</small> - 147<small>m²</small> Superficie de terreno</span>
+											<span class="nombre">
+                                                <i class="fa fa-location-arrow fa_medium fa_normal"></i>
+                                                <span id="superficie_terreno_minima"></span><small>m²</small> - 
+                                                <span id="superficie_terreno_maxima"></span><small>m²</small> 
+                                                Superficie de terreno</span>
 										</li>
 										<li>
-											<span class="nombre"><i class="licon licon-superficie_cubierta"></i>111<small>m²</small> - 141<small>m²</small> Superficie construída</span>
+											<span class="nombre">
+                                                <i class="fa fa-building fa_medium fa_normal"></i>
+                                                <span id="superficie_contruida_minima"></span><small>m²</small> - 
+                                                <span id="superficie_contruida_maxima"></span><small>m²</small> 
+                                                Superficie construída</span>
 										</li>
 										<li>
-											<span class="nombre"><i class="licon licon-dormitorios"></i>3 Recámaras</span>
+											<span class="nombre">
+                                                <i class="fa fa-bed fa_medium fa_normal"></i>
+                                                <span id="superficie_contruida_maxima"></span> Recámaras</span>
 										</li>
 										<li>
-											<span class="nombre"><i class="licon licon-banos"></i>Hasta 2 Baños</span>
+											<span class="nombre">
+                                                <i class="fa fa-shower fa_medium fa_normal"></i>
+                                                Hasta <span id="banios_maximo"></span> Baños</span>
 										</li>
 										<li>
-											<span class="nombre"><i class="licon licon-medio-banos"></i>Hasta 1 Medios baños</span>
+											<span class="nombre">
+                                                <i class="fa fa-bath fa_medium fa_normal"></i>
+                                                Hasta <span id="medios_banios_maximo"></span> Medios baños</span>
 										</li>
 										<li>
-											<span class="nombre"><i class="licon licon-garages"></i>Hasta 2 Estacionamientos</span>
+											<span class="nombre">
+                                                <i class="fa fa-car fa_medium fa_normal"></i>
+                                                Hasta <span id="estacionamientos_maximo"></span> Estacionamientos</span>
 										</li>
 									</ul>
 								</div>
+                                <div class="card-content">
+									<ul>
+										<li>
+											<span class="nombre" style="display:none;">Tipo de desarrollo</span>
+											<span id="tipo_desarrollo2" class="valor" title=""></span>
+										</li>
+										<li>
+											<span class="nombre">Entrega</span>
+											<span id="tipo_entrega" class="valor" title=""></span>
+										</li>
+										<li>
+											<span class="nombre">Unidades</span>
+											<span id="total_de_unidades" class="valor" title=""></span>
+										</li>
+										<li>
+											<span class="nombre">Desde</span>
+											<span id="precio_desde2" class="valor" title=""></span>
+											<br>
+											<button class="btn btn-link no-padding-left"></button>
+										</li>
+									</ul>
+								</div>
+                            </div>
+                            <div class="card description">
+                                <div class="card-content">
+                                    <h3>Servicios</h3>
+                                    <div id="list_view_services"></div>
+                                </div>
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -172,6 +225,33 @@
                                 </div>
                             </div>
                             
+                            <div class="card description">
+                                <div class="card-content">
+									<h3>Características Generales</h3>
+                                    <div id="list_view_general_caracteristics"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="card description">
+                                <div class="card-content">
+									<h3>Áreas Sociales</h3>
+                                    <div id="list_view_social_areas"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="card description">
+                                <div class="card-content">
+									<h3>Exteriores</h3>
+                                    <div id="list_view_outsides"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="card description">
+                                <div class="card-content">
+									<h3>Amenidades</h3>
+                                    <div id="list_view_amenities"></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -189,10 +269,10 @@
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
 		
-		<script src="/perfex_crm/crm/assets/js/items-public.js"></script>
-		<link href="/perfex_crm/crm/assets/css/custom-style-public.css" rel="stylesheet">
+		<script src="/crm/assets/js/items-public.js"></script>
+		<link href="/crm/assets/css/custom-style-public.css" rel="stylesheet">
 		
-		<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
 		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA8Xq5o6lNl4YyFt0F30E_yas-zDNk3sMg" async="" defer=""></script>
 	</body>
 </html>

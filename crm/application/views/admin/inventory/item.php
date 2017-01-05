@@ -7,68 +7,110 @@
                 <div class="panel_s">
                     <div class="panel-body">
                         <div class="panel-heading">
-                            <h4 class="customer-heading-profile bold">Add or Edit Property</h4>
+                            <h4 class="customer-heading-profile bold">Agregar o Editar Desarrollo</h4>
                         </div>
                         
                         <div class="panel-body border-t-grey">
                             <?php echo form_open('admin/inventory/manage_development',array('id'=>'invoice_item_form_1')); ?>
                                 
-                                <?php echo form_hidden('development_id',$id); ?>
-                                <?php $value=( isset($item) ? $item->nombre : ''); ?>
-                                <?php echo render_input( 'nombre', 'nombre',$value); ?>
-                                <?php $value=( isset($item) ? $item->logotipo : ''); ?>
-                                <?php echo render_input( 'logotipo', 'logotipo',$value); ?>
-                                <?php $value=( isset($item) ? $item->descripcion : ''); ?>
-                                <?php echo render_textarea( 'descripcion', 'descripcion',$value); ?>
-                                <div class="row padTop32">
-                                    <div class="col-md-6">
-                                        <?php $value=( isset($item) ? $item->id_tipo_desarrollo : ''); ?>
-                                        <?php echo render_select('id_tipo_desarrollo',$items_tipo_desarrollo,array('id','nombre'),'Tipo de desarrollo',$value); ?>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <?php $value=( isset($item) ? $item->id_tipo_desarrollo : ''); ?>
-                                        <?php echo render_select('id_etapa_desarrollo',$items_etapa_desarrollo,array('id','nombre'),'Etapa de desarrollo',$value); ?>
-                                    </div>
+                            <?php echo form_hidden('development_id',$id); ?>
+                            <?php $value=( isset($item) ? $item->nombre : ''); ?>
+                            <?php echo render_input( 'nombre', 'Nombre',$value); ?>
+                            <?php $value=( isset($item) ? $item->logotipo : ''); ?>
+                            <?php echo render_input( 'logotipo', 'Logotipo',$value); ?>
+                            <?php $value=( isset($item) ? $item->descripcion : ''); ?>
+                            <?php echo render_textarea( 'descripcion', 'Descripción',$value); ?>
+                            <div class="row padTop32">
+                                <div class="col-md-6">
+                                    <?php $value=( isset($item) ? $item->id_tipo_desarrollo : ''); ?>
+                                    <?php echo render_select('id_tipo_desarrollo',$items_tipo_desarrollo,array('id','nombre'),'Tipo de desarrollo',$value); ?>
                                 </div>
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <?php $value=( isset($item) ? $item->total_de_unidades : ''); ?>
-                                        <?php echo render_input( 'total_de_unidades', 'total de unidades',$value); ?>
-                                    </div>
-                                    <div class="col-md-8">
-                                        <?php $value=( isset($item) ? $item->id_entrega : ''); ?>
-                                        <?php echo render_select('id_entrega',$items_tipos_entrega,array('id','nombre'),'Entrega',$value); ?>
-                                    </div>
+                                <div class="col-md-6">
+                                    <?php $value=( isset($item) ? $item->id_tipo_desarrollo : ''); ?>
+                                    <?php echo render_select('id_etapa_desarrollo',$items_etapa_desarrollo,array('id','nombre'),'Etapa de desarrollo',$value); ?>
                                 </div>
-                                <div class="row padTop32">
-                                    <div class="col-md-4">
-                                        <?php $value=( isset($item) ? $item->id_estado : ''); ?>
-                                        <?php echo render_select('id_estado',$items_estados,array('id','nombre'),'Estado',$value); ?>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <?php $value=( isset($item) ? $item->id_municipio : ''); ?>
-                                        <?php echo render_select('id_municipio',$items_municipios,array('id','nombre'),'Municipio',$value); ?>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <?php $value=( isset($item) ? $item->id_colonia : ''); ?>
-                                        <?php echo render_select('id_colonia',$items_colonias,array('id','nombre'),'Colonia',$value); ?>
-                                    </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <?php $value=( isset($item) ? $item->precio_desde : ''); ?>
+                                    <?php echo render_input( 'precio_desde', 'Precio Desde',$value); ?>
                                 </div>
-                                <div class="row">
-                                    <div class="col-md-8">
-                                        <?php $value=( isset($item) ? $item->direccion : ''); ?>
-                                        <?php echo render_input( 'direccion', 'Dirección',$value); ?>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <?php $value=( isset($item) ? $item->codigo_postal : ''); ?>
-                                        <?php echo render_input( 'codigo_postal', 'Código postal',$value); ?>
-                                    </div>
+                                <div class="col-md-4">
+                                    <?php $value=( isset($item) ? $item->total_de_unidades : ''); ?>
+                                    <?php echo render_input( 'total_de_unidades', 'Total de Unidades',$value); ?>
                                 </div>
-                                
+                                <div class="col-md-4">
+                                    <?php $value=( isset($item) ? $item->id_entrega : ''); ?>
+                                    <?php echo render_select('id_entrega',$items_tipos_entrega,array('id','nombre'),'Entrega',$value); ?>
+                                </div>
+                            </div>
+                            <div class="row padTop32">
+                                <div class="col-md-4">
+                                    <?php $value=( isset($item) ? $item->id_estado : ''); ?>
+                                    <?php echo render_select('id_estado',$items_estados,array('id','nombre'),'Estado',$value); ?>
+                                </div>
+                                <div class="col-md-4">
+                                    <?php $value=( isset($item) ? $item->id_municipio : ''); ?>
+                                    <?php echo render_select('id_municipio',$items_municipios,array('id','nombre'),'Municipio',$value); ?>
+                                </div>
+                                <div class="col-md-4">
+                                    <?php $value=( isset($item) ? $item->id_colonia : ''); ?>
+                                    <?php echo render_select('id_colonia',$items_colonias,array('id','nombre'),'Colonia',$value); ?>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <?php $value=( isset($item) ? $item->direccion : ''); ?>
+                                    <?php echo render_input( 'direccion', 'Dirección',$value); ?>
+                                </div>
+                                <div class="col-md-4">
+                                    <?php $value=( isset($item) ? $item->codigo_postal : ''); ?>
+                                    <?php echo render_input( 'codigo_postal', 'Código Postal',$value); ?>
+                                </div>
+                            </div>
+
+                            <div class="row padTop32">
+                                <div class="col-md-6">
+                                    <?php $value=( isset($item) ? $item->superficie_terreno_minima : ''); ?>
+                                    <?php echo render_input( 'superficie_terreno_minima', 'Superficie de Terreno Mínima',$value); ?>
+                                </div>
+                                <div class="col-md-6">
+                                    <?php $value=( isset($item) ? $item->superficie_terreno_maxima : ''); ?>
+                                    <?php echo render_input( 'superficie_terreno_maxima', 'Superficie de Terreno Máxima',$value); ?>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <?php $value=( isset($item) ? $item->superficie_contruida_minima : ''); ?>
+                                    <?php echo render_input( 'superficie_contruida_minima', 'Superficie Construida Mínima',$value); ?>
+                                </div>
+                                <div class="col-md-6">
+                                    <?php $value=( isset($item) ? $item->superficie_contruida_maxima : ''); ?>
+                                    <?php echo render_input( 'superficie_contruida_maxima', 'Superficie Construida Máxima',$value); ?>
+                                </div>
+                            </div>
+                            <div class="row padTop32">
+                                <div class="col-md-3">
+                                    <?php $value=( isset($item) ? $item->recamaras_total : ''); ?>
+                                    <?php echo render_input( 'recamaras_total', 'Total de Recámaras',$value); ?>
+                                </div>
+                                <div class="col-md-3">
+                                    <?php $value=( isset($item) ? $item->banios_maximo : ''); ?>
+                                    <?php echo render_input( 'banios_maximo', 'Máximo de Baños',$value); ?>
+                                </div>
+                                <div class="col-md-3">
+                                    <?php $value=( isset($item) ? $item->medios_banios_maximo : ''); ?>
+                                    <?php echo render_input( 'medios_banios_maximo', 'Máximo de Medio-Baños',$value); ?>
+                                </div>
+                                <div class="col-md-3">
+                                    <?php $value=( isset($item) ? $item->estacionamientos_maximo : ''); ?>
+                                    <?php echo render_input( 'estacionamientos_maximo', 'Máximo de Estacionamientos',$value); ?>
+                                </div>
+                            </div>
                             
-                                <div class="modal-footer">
-                                    <button type="submit" class="btn btn-info"><?php echo _l('submit'); ?></button>
-                                </div>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-info"><?php echo _l('submit'); ?></button>
+                            </div>
                             <?php echo form_close(); ?>
                         </div>
                         
@@ -80,14 +122,12 @@
                 <div class="panel_s">
                     <div class="panel-body">
                         <div class="panel-heading">
-                            <!--<?php echo _l('survey_questions_string'); ?>-->
-                            
-                            <h4 class="customer-heading-profile bold margin-b-grey">Unities</h4>
+                            <h4 class="customer-heading-profile bold margin-b-grey">Unidades</h4>
                         </div>
                         
                         <div class="panel-body _buttons ">
                             <span class="btn btn-info pull-left" 
-                               id="btn_add_unity"><?php echo _l('new_invoice_item'); ?></span>
+                               id="btn_add_unity">Nueva Unidad</span>
                         </div>
                         
                         <div id="grid_unities"></div>
@@ -123,13 +163,34 @@
                         <?php echo form_open('admin/inventory/manage_development_features',array('id'=>'development_features_form')); ?>
                             <div class="row">
                                 <div class="col-md-6">
-                                    <!--<?php $value=( isset($item) ? $item->ids_services : ''); ?>
-<                                   input name="ids_services" value="[1,3]" type="hidden" />-->
                                     <?php echo form_hidden('id_development',$id); ?>
-                                    <?php echo form_hidden('ids_services','[1,3]'); ?>
-                                    <?php echo form_hidden('development_features', $development_features); ?>
+                                    <?php echo form_hidden('item_features', $item_features); ?>
                                     
+                                    <h4>Servicios</h4>
+                                    <?php echo form_hidden('ids_services','[1,3]'); ?>
                                     <div id="list_view_services"></div>
+                                    <div class="height_20"></div>
+                                    
+                                    <h4>Características Generales</h4>
+                                    <?php echo form_hidden('ids_general_caracteristics','[1,3]'); ?>
+                                    <div id="list_view_general_caracteristics"></div>
+                                    <div class="height_20"></div>                                    
+                                </div>
+                                <div class="col-md-6">
+                                    <h4>Áreas Sociales</h4>
+                                    <?php echo form_hidden('ids_social_areas','[1,3]'); ?>
+                                    <div id="list_view_social_areas"></div>
+                                    <div class="height_20"></div>
+                                    
+                                    <h4>Exteriores</h4>
+                                    <?php echo form_hidden('ids_outsides','[1,3]'); ?>
+                                    <div id="list_view_outsides"></div>
+                                    <div class="height_20"></div>
+                                    
+                                    <h4>Amenidades</h4>
+                                    <?php echo form_hidden('ids_amenities','[1,3]'); ?>
+                                    <div id="list_view_amenities"></div>
+                                    <div class="height_20"></div>
                                 </div>
                             </div>
                             <div class="modal-footer">

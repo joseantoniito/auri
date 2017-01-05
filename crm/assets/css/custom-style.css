@@ -2,6 +2,37 @@
     min-width:900px;
 }*/
 
+.fa_medium{
+    font-size: 1.6em;
+}
+.fa_normal{
+    color: #337ab7;
+}
+#development_features_form .k-listview{
+    border: 0;
+    padding-left: 7px;
+    padding-right:4px;
+}
+#development_features_form h4{
+    font-weight: 500;
+    font-size: 15px;
+    border-bottom: 1px solid #337ab7;
+    padding-bottom:7px;
+}
+
+.height_10{
+    height: 10px;
+}
+.height_20{
+    height: 20px;
+}
+.height_32{
+    height: 32px;
+}
+.height_64{
+    height: 64px;
+}
+
 .padTop32{
     padding-top: 32px !important;
 }

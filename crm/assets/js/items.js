@@ -52,56 +52,61 @@ $(function() {
     
     $(document).ready(function() {
         //#kendo
-         
         console.log( "ready!" );
         if(window.location.href.indexOf("/admin/inventory/") != -1 &&
           window.location.href.indexOf("/admin/inventory/") == window.location.href.length - 17 ){
-            console.log("Ready properties!!!");
+            console.log("Ready developments!!!");
             create_grid_developments();
         }
         else if(window.location.href.indexOf("/admin/inventory/item") != -1){
             var id = $("[name='item_id']").val()
             if(id)
                 create_grid_unities(id);
-            create_checkbox_listview("list_view_services", services, "ids_services")
             
+            //development features
+            _validate_form($('#development_features_form'), {
+                precio: 'required'
+            }, manage_development_features);
+            var hdn_item_features = $("[name='item_features']");
+            var item_features = JSON.parse(hdn_item_features.val());
+            hdn_item_features.val("");
+            create_checkbox_listview("list_view_services", services, "ids_services", item_features, 1);
+            create_checkbox_listview("list_view_general_caracteristics", general_caracteristics, "ids_general_caracteristics", item_features, 2);
+            create_checkbox_listview("list_view_social_areas", social_areas, "ids_social_areas", item_features, 3);
+            create_checkbox_listview("list_view_outsides", outsides, "ids_outsides", item_features, 4);
+            create_checkbox_listview("list_view_amenities", amenities, "ids_amenities", item_features, 5);
+            
+            //development unities
             window_unity = 
                 $("#window_unity").kendoWindow({
                     width: "600px",
                     title: "Manage Unity",
                     visible: false,
                 }).data("kendoWindow");
-
             $("#btn_add_unity").on("click", function(sender){
                  
                 window_unity.center().open();
             });
-
             _validate_form($('#unity_form'), {
                 address: 'required'
             }, manage_unity);
             
+            //development item
             _validate_form($('#invoice_item_form_1'), {
                 precio: 'required'
-            }, manage_invoice_item);
-            
-            _validate_form($('#development_features_form'), {
-                precio: 'required'
-            }, manage_development_features);
-            
+            }, manage_invoice_item); 
         }
         
          
         $("[href='" + admin_url + "invoice_items']").attr("href", admin_url + "inventory/");
     });
     
-    function create_checkbox_listview(id_container, data, hdn_selected_items){
+    function create_checkbox_listview(id_container, data, hdn_selected_items, features, id_type_feature){
         
-        var selected_items = [];
-        //if(hdn_selected_items)
-        //    selected_items = JSON.parse($("[name='" + hdn_selected_items + "']").val());
-        var features = JSON.parse($("[name='development_features']").val());
-        selected_items = $.map(features, function(item){ return parseInt(item.id_service)});
+        var selected_items = $.map(features, function(item){ 
+            if(item.id_type == id_type_feature)
+                return parseInt(item.id_feature)
+        });
         $("[name='" + hdn_selected_items + "']").val(JSON.stringify(selected_items));
         
         chks_services = 
@@ -110,8 +115,6 @@ $(function() {
                 template: "<div class='row'><input id='chk_item' _id='#:id#' type='checkbox' /><span id='lbl_item'>#:nombre#</span></div>"
                 ,
                 dataBound: function(e) {
-                    console.log("dataBound");
-
                     $.each(e.sender.items(), function(index, item){
                         var chk_item = $(item).find("#chk_item");
                         var id = parseInt(chk_item.attr("_id"));
@@ -140,8 +143,6 @@ $(function() {
     }
     
     function create_grid_developments(){
-        var itemid = 1;
-        
         $.get(admin_url + 'inventory/get_developments/', function(response) {
             
             console.log(response);
@@ -155,7 +156,7 @@ $(function() {
                         {field: "direccion", title: "direccion"},
                         {field: "codigo_postal", title: "codigo_postal"},
                         {field:"id", title:"Acciones", width:"100px", 
-                        template: "<a id='btn_edit_development' href='item/#:id#' class='qodef-icon-shortcode normal qodef-icon-little'><i class='qodef-icon-font-awesome fa fa-pencil-square qodef-icon-element'></i></a> <a id='btn_delete_development' class='qodef-icon-shortcode normal qodef-icon-little' style='cursor:pointer;'> <i class='qodef-icon-font-awesome fa fa-trash qodef-icon-element'></i> </a>"}
+                        template: "<a id='btn_edit_development' href='item/#:id#' class='normal'><i class='fa fa-pencil-square fa_medium'></i></a> <a id='btn_delete_development' class='normal' style='cursor:pointer;'> <i class='fa fa-trash fa_medium'></i> </a><a id='btn_edit_development' href='/desarrollo/?id=#:id#' target='_blank' class='qodef-icon-shortcode normal qodef-icon-little'><i class='fa fa-eye fa_medium'></i></a>"}
                     ],
                     dataBound: function(e) {
                         console.log("dataBound");
@@ -218,20 +219,18 @@ $(function() {
     function create_grid_unities(id){
         var itemid = 1;
         $.get(admin_url + 'inventory/get_unities/' + id, function(response) {
-            console.log(response);
-             
-
+            
             grid_unities = 
                 $("#grid_unities").kendoGrid({
                     dataSource: response,
                     columns: [
                         {field: "status", title: "Status"},                            
                         {field: "m2_habitables", title: "m2 Habitables"},
-                        //{field: "recamaras", title: "RecÃ¡maras"},
-                        //{field: "banios", title: "BaÃ±os"},
+                        //{field: "recamaras", title: "Recámaras"},
+                        //{field: "banios", title: "Baños"},
                         {field: "precio", title: "Precio"},
                         {field:"id", title:"Acciones", width:"100px", 
-                        template: "<a id='btn_edit_unity' _id='#:id#' class='qodef-icon-shortcode normal qodef-icon-little'><i class='qodef-icon-font-awesome fa fa-pencil-square qodef-icon-element'></i></a> <a id='btn_delete_unity' _id='#:id#' class='qodef-icon-shortcode normal qodef-icon-little' style='cursor:pointer;'> <i class='qodef-icon-font-awesome fa fa-trash qodef-icon-element'></i> </a>"}
+                        template: "<a id='btn_edit_unity' _id='#:id#' class='normal'><i class='fa fa-pencil-square fa_medium'></i></a> <a id='btn_delete_unity' _id='#:id#' class='normal' style='cursor:pointer;'> <i class='fa fa-trash fa_medium'></i> </a>"}
                     ],
                     dataBound: function(e) {
                         console.log("dataBound");
@@ -270,15 +269,9 @@ $(function() {
     }
     
     function delete_unity(event){
-        //todo
-         
         var id = $(event.currentTarget).attr("_id");
-
         $.get(admin_url + 'inventory/delete_unity/' + id, function(response) {
             console.log(response);
-            
-            
-             
         }, 'json');
     }
     
@@ -303,9 +296,6 @@ $(function() {
     }
     
     function refresh_grid_unities(response){
-        
-        console.log(grid_unities);
-        
         var data = grid_unities.dataSource.data();
         var indexItem;
         var itemInGrid = $.grep(data, function(item, index){ 

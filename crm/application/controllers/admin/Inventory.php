@@ -42,8 +42,9 @@ class Inventory extends Admin_controller
     {
         if ($this->input->is_ajax_request()) {
             $item = $this->inventory_model->get_development($id);
-            //$item->long_description = nl2br($item->long_description);
-            echo json_encode($item);
+            echo json_encode(array(
+                'item' => $item,
+                'item_features' => $this->inventory_model->get_development_features($id)));
         }
     }
     
@@ -132,13 +133,19 @@ class Inventory extends Admin_controller
                 echo json_encode(array(
                     'success' => $success,
                     'message' => $message,
-                    'data' => json_decode($data['ids_services'])
+                    'data' => $data
                     ));
                 
             }
         }
     }
     
+    public function get_development_features($id)
+    {
+        if ($this->input->is_ajax_request()) {
+            echo json_encode($this->inventory_model->get_development_features($id));
+        }
+    }
     
     //manage unities
     public function item($id = '')
@@ -155,6 +162,7 @@ class Inventory extends Admin_controller
         if($id != ''){
             $item = $this->inventory_model->get_development($id);
             $data['item'] = $item;
+            $data['item_features'] = json_encode($this->inventory_model->get_development_features($id));
         }
         
         $items_tipo_desarrollo = array();
@@ -186,9 +194,6 @@ class Inventory extends Admin_controller
         $items_colonias[0] = ['id' => 1,'nombre' => 'Lomas de San Pedrito Peñuelas',];            
         $items_colonias[1] = ['id' => 2,'nombre' => 'Álamos',];
         $data['items_colonias'] = $items_colonias;
-        
-        $data['development_features'] = json_encode($this->inventory_model->get_development_features($id));
-        
         
         $this->load->view('admin/inventory/item', $data);
     }

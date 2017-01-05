@@ -2,6 +2,59 @@ body{
     background-color: #f6f6f6;
 }
 
+.header {
+    height: auto;
+    -webkit-box-shadow: 0 0 8px rgba(0,0,0,0.45);
+    -moz-box-shadow: 0 0 8px rgba(0,0,0,0.45);
+    box-shadow: 0 0 8px rgba(0,0,0,0.45);
+    padding: 10px;
+    min-width: 540px;
+    position: relative;
+    background: #fff;
+    z-index: 999;
+    width: 100%;
+    padding-left: 0;
+    padding-right: 0;
+    margin-bottom: 20px;
+    min-height: 50px;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    -webkit-transform: translateZ(0);
+}
+
+.flex-header{
+    display: flex;
+}
+
+.header .flex-header .logo-header-wrap {
+    width: 170px;
+    height: 40px;
+    float: left;
+}
+.header .flex-header .logo-header-wrap img {
+    background-color: #0094DA;
+}
+
+#myCarousel{
+    padding-top: 20px;
+}
+.carousel-control{
+    background-image: none !important;
+}
+.carousel-inner{
+    background-color: #EEEEEE !important;
+}
+.card .card-content .k-listview{
+    border: 0;
+    padding-left: 20px;
+}
+.fa_medium{
+    font-size: 1.6em;
+}
+.fa_normal{
+    color: #337ab7;
+}
+
 .card {
     display: block;
     width: auto;
@@ -54,11 +107,11 @@ body{
 .card .card-content {
     padding: 16px;
 }
-.ctas-ficha .btn-primary {
+/*.ctas-ficha .btn-primary {
     background-color: #f60;
     color: #fff;
     border: 1px solid #f60;
-}
+}*/
 .ctas-ficha .btn {
     width: 30%;
     margin: 0;
@@ -159,6 +212,7 @@ table {
     margin: 0;
     font-size: 18px;
     line-height: 30px;
+    padding-left: 0;
 }
 .aviso-datos ul i, .aviso-datos-anunciante ul i, .aviso-datos ul li i, .aviso-datos-anunciante ul li i {
     font-size: 24px;
@@ -169,6 +223,7 @@ table {
     font-size: 20px;
     line-height: 24px;
     font-weight: normal;
+    margin-top: 0;
 }
 
 /*#sales_item_modal .modal-content{

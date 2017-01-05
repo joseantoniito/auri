@@ -17,7 +17,7 @@ class Inventory_model extends CRM_Model
     
     public function get_development($id)
     {
-        $this->db->select('id, nombre, logotipo, descripcion, id_tipo_desarrollo, id_etapa_desarrollo, total_de_unidades, id_entrega, id_estado, id_municipio, id_colonia, direccion, codigo_postal, id_mostar_ubicacion, clave_interna');
+        $this->db->select('id, nombre, logotipo, descripcion, id_tipo_desarrollo, id_etapa_desarrollo, total_de_unidades, id_entrega, id_estado, id_municipio, id_colonia, direccion, codigo_postal, id_mostar_ubicacion, clave_interna, precio_desde, superficie_terreno_minima, superficie_terreno_maxima, superficie_contruida_minima, superficie_contruida_maxima, recamaras_total, banios_maximo, medios_banios_maximo, estacionamientos_maximo');
         $this->db->from('tbldevelopments');
         $this->db->where('id', $id);
         return $this->db->get()->row();
@@ -42,11 +42,8 @@ class Inventory_model extends CRM_Model
         $this->db->where('id', $id);
         $this->db->update('tbldevelopments', $data);
         
-        $ids_services = $data['ids_services'];
-        unset($data['ids_services']);
-        
         if ($this->db->affected_rows() > 0) {
-            logActivity('Invoice Item development Updated [ID: ' . $id . ', ' . $data['status'] . ']');
+            logActivity('Invoice Item development Updated [ID: ' . $id . ', ' . $data['nombre'] . ']');
             return true;
         }
         return false;
@@ -65,21 +62,66 @@ class Inventory_model extends CRM_Model
     
     public function manage_development_features($data)
     {
+        $id_development = $data['id_development'];
         $this->db->where('id_development', $data['id_development']);
-        $this->db->delete('tbldevelopmentservices');
+        $this->db->delete('tbldevelopmentfeatures');
         
-        $ids_services = json_decode($data['ids_services']);
-        foreach ($ids_services as $id_service) {
-            $this->db->insert('tbldevelopmentservices', ['id_development' => $data['id_development'],'id_service' => $id_service]);
+        $id_type = 1;
+        foreach (json_decode($data['ids_services']) as $id_feature) {
+            $this->db->insert('tbldevelopmentfeatures', [
+                'id_development' => $id_development,
+                'id_feature' => $id_feature,
+                'id_type' => $id_type
+            ]);
         }
+            
+        $id_type = 2;
+        foreach (json_decode($data['ids_general_caracteristics']) as $id_feature) {
+            $this->db->insert('tbldevelopmentfeatures', [
+                'id_development' => $id_development,
+                'id_feature' => $id_feature,
+                'id_type' => $id_type
+            ]);
+        }
+            
+        $id_type = 3;
+        foreach (json_decode($data['ids_social_areas']) as $id_feature) {
+            $this->db->insert('tbldevelopmentfeatures', [
+                'id_development' => $id_development,
+                'id_feature' => $id_feature,
+                'id_type' => $id_type
+            ]);
+        }
+            
+        $id_type = 4;
+        foreach (json_decode($data['ids_outsides']) as $id_feature) {
+            $this->db->insert('tbldevelopmentfeatures', [
+                'id_development' => $id_development,
+                'id_feature' => $id_feature,
+                'id_type' => $id_type
+            ]);
+        }
+            
+        $id_type = 5;
+        foreach (json_decode($data['ids_amenities']) as $id_feature) {
+            $this->db->insert('tbldevelopmentfeatures', [
+                'id_development' => $id_development,
+                'id_feature' => $id_feature,
+                'id_type' => $id_type
+            ]);
+        }
+        
         return true;
     }
     public function get_development_features($id)
     {
-        $this->db->select('id_development, id_service');
-        $this->db->from('tbldevelopmentservices');
+        $this->db->select('id_development, id_feature, id_type');
+        $this->db->from('tbldevelopmentfeatures');
         $this->db->where('id_development', $id);
-        return $this->db->get()->result_array();
+        $features = $this->db->get()->result_array();
+        
+        //return array('features' => $features);
+        return $features;
     }
     
     
