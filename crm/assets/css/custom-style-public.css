@@ -98,6 +98,8 @@ body{
   .carousel-inner > .item > a > img {
       width: 70%;
       margin: auto;
+      max-height: 585px;
+      min-height: 585px;
   }
 
  .ctas-ficha {

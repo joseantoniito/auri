@@ -113,15 +113,35 @@ class Inventory_model extends CRM_Model
         
         return true;
     }
+    
     public function get_development_features($id)
     {
         $this->db->select('id_development, id_feature, id_type');
         $this->db->from('tbldevelopmentfeatures');
         $this->db->where('id_development', $id);
-        $features = $this->db->get()->result_array();
+        return $this->db->get()->result_array();
+    }
+    
+    public function add_media_item($data){
+        $this->db->insert('tblmediaitems', $data);
+        $insert_id = $this->db->insert_id();
+        if ($insert_id) 
+            return $insert_id;
+        return false;
+    }
         
-        //return array('features' => $features);
-        return $features;
+    public function add_development_media_item($data){
+        $this->db->insert('tbldevelopmentmediaitems', $data);
+    }
+    
+    public function get_development_media_items($id)
+    {
+        //#media
+        $this->db->select('id, url, name, id_type');
+        $this->db->from('tblmediaitems');
+        $this->db->join('tbldevelopmentmediaitems', 'tblmediaitems.id = tbldevelopmentmediaitems.id_media_item', 'inner');
+        $this->db->where('id_development', $id);
+        return $this->db->get()->result_array();
     }
     
     

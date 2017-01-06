@@ -44,7 +44,9 @@ class Inventory extends Admin_controller
             $item = $this->inventory_model->get_development($id);
             echo json_encode(array(
                 'item' => $item,
-                'item_features' => $this->inventory_model->get_development_features($id)));
+                'item_features' => $this->inventory_model->get_development_features($id),
+                'item_media_items' => $this->inventory_model->get_development_media_items($id)                
+            ));
         }
     }
     
@@ -140,12 +142,76 @@ class Inventory extends Admin_controller
         }
     }
     
-    public function get_development_features($id)
-    {
+    public function get_development_features($id){
         if ($this->input->is_ajax_request()) {
             echo json_encode($this->inventory_model->get_development_features($id));
         }
     }
+    
+    public function add_development_media_item(){
+        if (has_permission('items','','view')) {
+            if ($this->input->post()) {
+                $data = $this->input->post();
+                
+                if(!has_permission('items','','create')){
+                  header('HTTP/1.0 400 Bad error');
+                  echo _l('access_denied');
+                  die;
+                }
+                $success = false;
+                $message = '';
+                if ($this->inventory_model->add_development_media_item($data)) {
+                    $success = true;
+                    $message = _l('added_successfuly', "multimedia item");
+                };
+                echo json_encode(array(
+                    'success' => $success,
+                    'message' => $message,
+                    'data' => $data
+                    ));
+            }
+        }
+    }
+    
+    public function save_media_item(){
+        $fileParam = "files";
+        //$uploadRoot = "F:/xampp/htdocs/perfex_crm/crm/uploads/inventory/";
+        $uploadRoot = "/home3/rafaq5/public_html/auri/crm/uploads/inventory/";
+        $files = $_FILES[$fileParam];
+        
+        if (isset($files['name']))
+        {
+            $error = $files['error'];
+            if ($error == UPLOAD_ERR_OK) {
+                $targetPath = $uploadRoot . basename($files["name"]);
+                $uploadedFile = $files["tmp_name"];
+                if (is_uploaded_file($uploadedFile)) {
+                    if (!move_uploaded_file($uploadedFile, $targetPath)) {
+                        echo "Error moving uploaded file";
+                    }
+                }
+                
+                $id_type = 0;
+                if (strpos($files["type"], 'image') !== false)
+                    $id_type = 1;
+                if (strpos($files["type"], 'video') !== false)
+                    $id_type = 2;
+                
+                
+                echo $this->inventory_model->add_media_item([
+                    'url' => "/uploads/inventory/" . $files["name"],
+                    'name' => $files["name"],
+                    'id_type' => $id_type
+                ]);
+                
+            } else {
+                // See http://php.net/manual/en/features.file-upload.errors.php
+                echo "Error code " . $error;
+            }
+        }
+    }
+    
+    
     
     //manage unities
     public function item($id = '')
@@ -153,16 +219,14 @@ class Inventory extends Admin_controller
         if (!has_permission('items', '', 'view')) {
             access_denied('items');
         }
-        //if ($this->input->is_ajax_request()) {
-        //    $this->perfex_base->get_table_data('mail_lists');
-        //}
-        $data['title'] = 'Propiedad';//_l('mail_lists');
+        $data['title'] = 'Propiedad';
         $data['id'] = $id;
         
         if($id != ''){
             $item = $this->inventory_model->get_development($id);
             $data['item'] = $item;
             $data['item_features'] = json_encode($this->inventory_model->get_development_features($id));
+            $data['item_media_items'] = json_encode($this->inventory_model->get_development_media_items($id));
         }
         
         $items_tipo_desarrollo = array();

@@ -89,7 +89,10 @@ $(function() {
             console.log(response);
             var item = response.item;
             var item_features = response.item_features;
+            var item_media_items = response.item_media_items;
             
+            load_media_items(item_media_items, id);
+
             $("#nombre").text(item.nombre);
             $("#direccion").text(item.direccion);
             $("#direccion2").text(item.direccion);
@@ -148,6 +151,33 @@ $(function() {
         }, 'json');
     }
     
+    function load_media_items(item_media_items, id){
+        var ol = $('#myCarousel .carousel-indicators');
+        var list_box = $('#myCarousel .carousel-inner');
+        
+        $.each(item_media_items, function(index, item){
+            var li = $("<li></li>")
+                .attr("data-target", "#myCarousel")
+                .attr("data-slide-to", index)
+                .attr("class", index == 0 ? "active" : "");
+            ol.append(li);
+            
+            var list_box_item = $("<div></div>")
+                .attr("class", "item " + (index == 0 ? "active" : "") )
+                .append($("<img />")
+                    .attr("width", "585")
+                    .attr("height", "585")
+                    .attr("alt", item.name)
+                    .attr("src", "/crm" + item.url)
+                    .attr("_id", item.id)
+                );
+            list_box.append(list_box_item);
+        });
+        
+        $('#myCarousel.carousel').carousel();
+        
+    }
+    
     function create_check_listview(id_container, data, features, id_type_feature){
         var selected_items = $.map(features, function(item){ 
             if(item.id_type == id_type_feature)
@@ -160,7 +190,7 @@ $(function() {
         chks_services = 
             $("#" + id_container).kendoListView({
                 dataSource: data,
-                template: "<div class='row'><a id='ico_item' _id='#:id#' class='qodef-icon-shortcode normal qodef-icon-little'><i class='qodef-icon-font-awesome fa fa-check qodef-icon-element'></i></a><span id='lbl_item'>#:nombre#</span></div>"
+                template: "<div class='row'><a id='ico_item' _id='' class='qodef-icon-shortcode normal qodef-icon-little'><i class='qodef-icon-font-awesome fa fa-check qodef-icon-element'></i></a><span id='lbl_item'>#:nombre#</span></div>"
                 ,
                 dataBound: function(e) {
                     console.log("dataBound");
@@ -169,4 +199,7 @@ $(function() {
                 }
             }).data("kendoListView");
     }
+    
+    
+    
 });

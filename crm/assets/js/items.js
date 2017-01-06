@@ -2,6 +2,7 @@ $(function() {
     //#kendo developments
     var window_unity; 
     var grid_unities;
+    var upload_photos;
     var services = [
         {id: 1, nombre: 'Circuito cerrado'},
         {id: 2, nombre: 'Gimnasio'},
@@ -95,11 +96,67 @@ $(function() {
             _validate_form($('#invoice_item_form_1'), {
                 precio: 'required'
             }, manage_invoice_item); 
+            
+            
+            //development photos
+            var hdn_item_media_items = $("[name='item_media_items']");
+            var item_media_items = JSON.parse(hdn_item_media_items.val());
+            hdn_item_media_items.val("");
+            
+            $.each(item_media_items, function(index, item){
+                item.extension = "." + item.name.split('.')[1];
+            })
+            
+            var initial_files = [
+                { name: "file1.doc", size: 525, extension: ".doc" },
+                { name: "file2.jpg", size: 600, extension: ".jpg" },
+                { name: "file3.xls", size: 720, extension: ".xls" },
+            ];
+            upload_photos = $("#upload_photos").kendoUpload({
+                async: {
+                    saveUrl: admin_url + "inventory/save_media_item",
+                    removeUrl: "/Upload/RemoveImagenes",
+                    autoUpload: true
+                },
+                files: item_media_items,
+                template: "<div class='upload_photos_item'><img src='/crm/uploads/inventory/#:name#' /><span id='lbl_item'>#:name#</span></div>"
+                ,
+                success: function(e){
+                    debugger;
+                    console.log(e);
+                    var id_media_item = e.response
+                    if(id_media_item)
+                        add_development_media_item(id_media_item);
+                },
+                error: function(e){
+                    debugger;
+                    console.log(e);
+                },
+                dataBound: function(e){
+                    console.log("data_bound", e)
+                }
+            }).data("kendoUpload");
+        
+            //console.log(upload_photos.getFiles());
         }
         
          
         $("[href='" + admin_url + "invoice_items']").attr("href", admin_url + "inventory/");
     });
+
+    function add_development_media_item(id_media_item){
+        var id_development = parseInt($("[name='item_id']").val());
+        var data = "id_development=" + id_development + "&id_media_item=" +id_media_item;
+        
+        $.post(admin_url + 'inventory/add_development_media_item', data).done(function(response) {
+            response = JSON.parse(response);
+            if (response.success == true) {
+                alert_float('success', response.message);
+            }
+        }).fail(function(data) {
+            alert_float('danger', data.responseText);
+        });
+    }
     
     function create_checkbox_listview(id_container, data, hdn_selected_items, features, id_type_feature){
         

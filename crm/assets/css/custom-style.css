@@ -2,6 +2,32 @@
     min-width:900px;
 }*/
 
+#upload_photos_container .k-file-success {
+    color: #479b49;
+    /*width: 29%;*/
+    width: 23%;
+    float: left;
+}
+
+#upload_photos_container .upload_photos_item {
+    display: block;
+}
+
+#upload_photos_container .upload_photos_item img{
+    display: block;
+    width: 100%;
+    /*max-height: 78px;
+    min-height: 78px;*/
+    max-height: 118px;
+    min-height: 118px;
+}
+
+#upload_photos_container .upload_photos_item span{
+    display: block;
+    font-size: 12px;
+    line-height: 14px;
+}
+
 .fa_medium{
     font-size: 1.6em;
 }

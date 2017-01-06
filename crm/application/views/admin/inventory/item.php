@@ -200,6 +200,36 @@
                         </div>
                     </div>
                 </div>
+                
+                
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel_s">
+                    <div class="panel-body">
+                        <div class="panel-heading">
+                            <h4 class="customer-heading-profile bold margin-b-grey">Multimedia</h4>
+                        </div>
+                        <div>
+                        <?php echo form_open('admin/inventory/manage_development_photos',array('id'=>'development_photos_form')); ?>
+                            <div id="upload_photos_container" class="row">
+                                <div class="col-md-12">
+                                    <?php echo form_hidden('id_development',$id); ?>
+                                    <?php echo form_hidden('item_media_items', $item_media_items); ?>
+                                    
+                                    <?php echo form_hidden('ids_multimedia','[1,3]'); ?>
+                                    <input name="files" id="upload_photos" type="file" />
+                                    <div class="height_20"></div>
+                                </div>
+                            </div>
+                            <!--<div class="modal-footer">
+                                    <button type="submit" class="btn btn-info"><?php echo _l('submit'); ?></button>
+                                </div>-->
+                        <?php echo form_close(); ?>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
