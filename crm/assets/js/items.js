@@ -61,8 +61,7 @@ $(function() {
         }
         else if(window.location.href.indexOf("/admin/inventory/item") != -1){
             var id = $("[name='item_id']").val()
-            if(id)
-                create_grid_unities(id);
+            create_grid_unities(id);
             
             //development features
             _validate_form($('#development_features_form'), {
@@ -115,25 +114,32 @@ $(function() {
             upload_photos = $("#upload_photos").kendoUpload({
                 async: {
                     saveUrl: admin_url + "inventory/save_media_item",
-                    removeUrl: "/Upload/RemoveImagenes",
+                    removeUrl: admin_url + "inventory/remove_media_item",
                     autoUpload: true
                 },
                 files: item_media_items,
-                template: "<div class='upload_photos_item'><img src='/crm/uploads/inventory/#:name#' /><span id='lbl_item'>#:name#</span></div>"
+                template: "<div class='upload_photos_item'><img src='/crm/uploads/inventory/#:name#' /><span id='lbl_item'>#:name#</span><button type='button' class='k-button k-button-bare k-upload-action'><span class='k-icon k-i-close k-delete' title='Remove'></span></button></div>"
                 ,
                 success: function(e){
                     debugger;
                     console.log(e);
-                    var id_media_item = e.response
-                    if(id_media_item)
-                        add_development_media_item(id_media_item);
+                    if(e.response.type == "save"){
+                        var id_media_item = e.response.id;
+                        if(id_media_item)
+                            add_development_media_item(id_media_item);
+                    }
+                    else if(e.response.type == "remove"){
+                        var id_media_item = e.files[0].id;
+                        delete_development_media_item(id_media_item);
+                    }
                 },
                 error: function(e){
                     debugger;
                     console.log(e);
                 },
-                dataBound: function(e){
-                    console.log("data_bound", e)
+                remove: function(e){
+                    console.log("on_remove_files", e);
+                    //e.preventDefault();
                 }
             }).data("kendoUpload");
         
@@ -156,6 +162,31 @@ $(function() {
         }).fail(function(data) {
             alert_float('danger', data.responseText);
         });
+    }
+
+    function delete_development_media_item(id_media_item){
+        $.get(admin_url + 'inventory/delete_media_item/' + id_media_item, function(response) {
+            console.log(response); 
+            $.get(admin_url + 'inventory/delete_development_media_item/' + id_media_item, function(response) {
+                console.log(response); 
+                alert_float('success', "Item multimedia eliminado correctamente");
+                //var uploadf=$("#upload_photos").data("kendoUpload");
+                //uploadf.options.files[0].uid
+                //uploadf.wrapper.find("img")
+                
+            }, 'json');
+            
+        }, 'json');
+        
+        
+        /*$.post(admin_url + 'inventory/remove_development_media_item', data).done(function(response) {
+            response = JSON.parse(response);
+            if (response.success == true) {
+                alert_float('success', response.message);
+            }
+        }).fail(function(data) {
+            alert_float('danger', data.responseText);
+        });*/
     }
     
     function create_checkbox_listview(id_container, data, hdn_selected_items, features, id_type_feature){
@@ -233,10 +264,7 @@ $(function() {
         var id = $(event.currentTarget).attr("_id");
 
         $.get(admin_url + 'inventory/delete_unity/' + id, function(response) {
-            console.log(response);
-            
-            
-             
+            console.log(response); 
         }, 'json');
     }
     
@@ -247,6 +275,10 @@ $(function() {
         var url = form.action;
         $.post(url, data).done(function(response) {
             response = JSON.parse(response);
+            $("[name='development_id']").val(response.item.id);
+            $("[name='id_development']").val(response.item.id);
+            $("[name='item_id']").val(response.item.id);
+            
             if (response.success == true) {
                 alert_float('success', response.message);
             }
@@ -274,12 +306,10 @@ $(function() {
     
     //#kendo unities
     function create_grid_unities(id){
-        var itemid = 1;
-        $.get(admin_url + 'inventory/get_unities/' + id, function(response) {
-            
-            grid_unities = 
+        
+        grid_unities = 
                 $("#grid_unities").kendoGrid({
-                    dataSource: response,
+                    dataSource: [],
                     columns: [
                         {field: "status", title: "Status"},                            
                         {field: "m2_habitables", title: "m2 Habitables"},
@@ -300,8 +330,11 @@ $(function() {
                         });
                     }
                 }).data("kendoGrid");
-
-        }, 'json');
+        
+        if(id)
+            $.get(admin_url + 'inventory/get_unities/' + id, function(response) {
+                grid_unities.dataSource.data(response);
+            }, 'json');
     }
     
     function edit_unity(event){

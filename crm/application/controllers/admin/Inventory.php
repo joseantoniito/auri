@@ -173,6 +173,10 @@ class Inventory extends Admin_controller
         }
     }
     
+    public function delete_development_media_item($id){
+        $response = $this->inventory_model->delete_development_media_item($id);
+    }
+    
     public function save_media_item(){
         $fileParam = "files";
         //$uploadRoot = "F:/xampp/htdocs/perfex_crm/crm/uploads/inventory/";
@@ -198,11 +202,18 @@ class Inventory extends Admin_controller
                     $id_type = 2;
                 
                 
-                echo $this->inventory_model->add_media_item([
+                $inserted_id = $this->inventory_model->add_media_item([
                     'url' => "/uploads/inventory/" . $files["name"],
                     'name' => $files["name"],
                     'id_type' => $id_type
                 ]);
+                
+                $success = true;
+                echo json_encode(array(
+                    'success' => $success,
+                    'type' => "save",
+                    'id' => $inserted_id
+                    ));
                 
             } else {
                 // See http://php.net/manual/en/features.file-upload.errors.php
@@ -211,7 +222,32 @@ class Inventory extends Admin_controller
         }
     }
     
+    public function remove_media_item(){
+        //$uploadRoot = "F:/xampp/htdocs/perfex_crm/crm/uploads/inventory/";
+        $uploadRoot = "/home3/rafaq5/public_html/auri/crm/uploads/inventory/";
+        $success = true;
+        $data = $this->input->post();
+        $name = $data["fileNames"];
+        
+        if (isset($data["fileNames"]))
+        {
+            $targetPath = $uploadRoot . basename($data["fileNames"]);
+            if (!unlink($targetPath)) {
+                echo "Error removing file";
+            }
+            echo json_encode(array(
+                'success' => $success,
+                'type' => "remove",
+                'data' => $data
+                ));
+        }
+            
+        
+    }
     
+    function delete_media_item($id){
+        $response = $this->inventory_model->delete_media_item($id);
+    }
     
     //manage unities
     public function item($id = '')
@@ -221,7 +257,8 @@ class Inventory extends Admin_controller
         }
         $data['title'] = 'Propiedad';
         $data['id'] = $id;
-        
+        $data['item_features'] = json_encode(array());
+        $data['item_media_items'] = json_encode(array());
         if($id != ''){
             $item = $this->inventory_model->get_development($id);
             $data['item'] = $item;

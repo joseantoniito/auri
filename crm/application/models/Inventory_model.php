@@ -29,7 +29,6 @@ class Inventory_model extends CRM_Model
         $this->db->insert('tbldevelopments', $data);
         $insert_id = $this->db->insert_id();
         if ($insert_id) {
-            logActivity('New Invoice Item development Added [ID:' . $insert_id . ', ' . $data['status'] . ']');
             return $insert_id;
         }
         return false;
@@ -129,9 +128,26 @@ class Inventory_model extends CRM_Model
             return $insert_id;
         return false;
     }
+    public function delete_media_item($id){
+        $this->db->where('id', $id);
+        $this->db->delete('tblmediaitems');
+        if ($this->db->affected_rows() > 0) {
+            return $id;
+        }
+        return 0;
+    }
         
     public function add_development_media_item($data){
         $this->db->insert('tbldevelopmentmediaitems', $data);
+    }
+    
+    public function delete_development_media_item($id){
+        $this->db->where('id', $id);
+        $this->db->delete('tbldevelopmentmediaitems');
+        if ($this->db->affected_rows() > 0) {
+            return true;
+        }
+        return false;
     }
     
     public function get_development_media_items($id)
