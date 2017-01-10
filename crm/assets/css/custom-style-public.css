@@ -2,6 +2,32 @@ body{
     background-color: #f6f6f6;
 }
 
+.k-listview .title-and-meta{
+    padding: 0 !important;
+}
+.k-listview .title-and-meta .container_{
+    padding: 25px 35px 0;
+}
+
+.k-listview .property-description{
+    padding: 0 !important;
+}
+.k-listview .property-description .container_{
+    padding: 25px 45px 0;
+}
+.k-listview .property-description .container_ #descripcion
+{
+    line-height: 1.715 !important;
+}
+.k-listview .property-description {
+    min-height: 319px !important;
+}
+.k-listview .property-thumbnail img {
+    max-height: 319px !important;
+    min-height: 319px !important;
+}
+
+
 .height_10{
     height: 10px;
 }

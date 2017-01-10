@@ -152,8 +152,8 @@ $(function() {
         $("[href='" + admin_url + "invoices/list_invoices']").hide();
         $("[href='#home_my_projects']").hide();
         $(".home-summary .col-md-6:first-child").hide();
-        $($(".top_stats_wrapper")[0]).parent().hide();
-        $($(".top_stats_wrapper")[2]).parent().hide();
+        $($(".top_stats_wrapper .fa-cubes")).parent().parent().parent().hide();
+        $($(".top_stats_wrapper .fa-balance-scale")).parent().parent().parent().hide();
         $("#invoices_total").hide();
         $(".panel_s.projects-activity").hide();
         $("#projects_status_stats")
