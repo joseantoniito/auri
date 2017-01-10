@@ -7,6 +7,30 @@ class Inventory_model extends CRM_Model
         parent::__construct();
     }
     
+    //manage locations
+    public function get_location_states()
+    {
+        $activo = 1;
+        $this->db->select('id, nombre');
+        $this->db->from('estados');
+        $this->db->where('activo', $activo);
+        return $this->db->get()->result_array();
+    }
+    public function get_location_municipalities($id)
+    {
+        $this->db->select('id, nombre');
+        $this->db->from('municipios');
+        $this->db->where('estado_id', $id);
+        return $this->db->get()->result_array();
+    }
+    public function get_location_colonies($id)
+    {
+        $this->db->select('id, nombre');
+        $this->db->from('localidades');
+        $this->db->where('municipio_id', $id);
+        return $this->db->get()->result_array();
+    }
+    
     //manage developments
     public function get_developments()
     {
@@ -17,7 +41,7 @@ class Inventory_model extends CRM_Model
     
     public function get_development($id)
     {
-        $this->db->select('id, nombre, logotipo, descripcion, id_tipo_desarrollo, id_etapa_desarrollo, total_de_unidades, id_entrega, id_estado, id_municipio, id_colonia, direccion, codigo_postal, id_mostar_ubicacion, clave_interna, precio_desde, superficie_terreno_minima, superficie_terreno_maxima, superficie_contruida_minima, superficie_contruida_maxima, recamaras_total, banios_maximo, medios_banios_maximo, estacionamientos_maximo');
+        $this->db->select('id, nombre, logotipo, descripcion, id_tipo_desarrollo, id_etapa_desarrollo, total_de_unidades, id_entrega, id_estado, id_municipio, id_colonia, direccion, direccion_completa, latitud, longitud, codigo_postal, id_mostar_ubicacion, clave_interna, precio_desde, superficie_terreno_minima, superficie_terreno_maxima, superficie_contruida_minima, superficie_contruida_maxima, recamaras_total, banios_maximo, medios_banios_maximo, estacionamientos_maximo');
         $this->db->from('tbldevelopments');
         $this->db->where('id', $id);
         return $this->db->get()->row();
@@ -128,6 +152,7 @@ class Inventory_model extends CRM_Model
             return $insert_id;
         return false;
     }
+    
     public function delete_media_item($id){
         $this->db->where('id', $id);
         $this->db->delete('tblmediaitems');

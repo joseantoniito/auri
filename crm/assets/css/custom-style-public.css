@@ -2,6 +2,19 @@ body{
     background-color: #f6f6f6;
 }
 
+.height_10{
+    height: 10px;
+}
+.height_20{
+    height: 20px;
+}
+.height_32{
+    height: 32px;
+}
+.height_64{
+    height: 64px;
+}
+
 .header {
     height: auto;
     -webkit-box-shadow: 0 0 8px rgba(0,0,0,0.45);

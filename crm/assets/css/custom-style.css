@@ -2,10 +2,14 @@
     min-width:900px;
 }*/
 
+#map_locations{
+    height: 260px;
+}
+
 #upload_photos_container .k-file-success {
     color: #479b49;
-    /*width: 29%;*/
-    width: 23%;
+    width: 29%;
+    /*width: 23%;*/
     float: left;
 }
 
@@ -16,10 +20,10 @@
 #upload_photos_container .upload_photos_item img{
     display: block;
     width: 100%;
-    /*max-height: 78px;
-    min-height: 78px;*/
-    max-height: 118px;
-    min-height: 118px;
+    max-height: 78px;
+    min-height: 78px;
+    /*max-height: 118px;
+    min-height: 118px;*/
 }
 
 #upload_photos_container .upload_photos_item span{

@@ -61,8 +61,8 @@ $(function() {
         }
         else if(window.location.href.indexOf("/admin/inventory/item") != -1){
             var id = $("[name='item_id']").val()
+            create_locations_dropdowns();
             create_grid_unities(id);
-            
             //development features
             _validate_form($('#development_features_form'), {
                 precio: 'required'
@@ -148,8 +148,119 @@ $(function() {
         
          
         $("[href='" + admin_url + "invoice_items']").attr("href", admin_url + "inventory/");
+        $("[href='" + admin_url + "projects']").hide();
+        $("[href='" + admin_url + "invoices/list_invoices']").hide();
+        $("[href='#home_my_projects']").hide();
+        $(".home-summary .col-md-6:first-child").hide();
+        $($(".top_stats_wrapper")[0]).parent().hide();
+        $($(".top_stats_wrapper")[2]).parent().hide();
+        $("#invoices_total").hide();
+        $(".panel_s.projects-activity").hide();
+        $("#projects_status_stats")
+            .parent().parent().parent().parent().hide();
+        $("#projects_status_stats")
+            .parent().parent().parent().parent().siblings()
+            .attr("class", "col-md-12 col-sm-12");
     });
 
+    //development locations
+    var dropdown_estados, dropdown_municipios, dropdown_colonias, map_locations, geocoder_locations, marker_locations;;
+    function create_locations_dropdowns(){
+        var id_estado = $("[name='id_estado']").val();
+        var id_municipio = $("[name='id_municipio']").val();
+        var id_colonia = $("[name='id_colonia']").val();
+        var latitud = $("[name='latitud']").val();
+        var longitud = $("[name='longitud']").val();
+        
+        dropdown_estados = 
+            $("#dropdown_estados").kendoDropDownList({
+                dataTextField: "nombre",
+                dataValueField: "id",
+                dataSource: [],
+                value: id_estado,
+                change: function(e) {
+                    var id = this.value();
+                    $("[name='id_estado']").val(id);
+                    $.get(admin_url + 'inventory/get_location_municipalities/' + id, function(response) {
+                        dropdown_municipios.setDataSource(response);
+                        dropdown_municipios.value(id_municipio);
+                        dropdown_municipios.trigger("change");
+                    }, 'json');
+                }
+            }).data("kendoDropDownList");
+        dropdown_municipios = 
+            $("#dropdown_municipios").kendoDropDownList({
+                dataTextField: "nombre",
+                dataValueField: "id",
+                dataSource: [],
+                value: id_municipio,
+                change: function(e) {
+                    var id = this.value();
+                    $("[name='id_municipio']").val(id);
+                    $.get(admin_url + 'inventory/get_location_colonies/' + id, function(response) {
+                        dropdown_colonias.setDataSource(response);
+                        dropdown_colonias.value(id_colonia);
+                        dropdown_colonias.trigger("change");
+                    }, 'json');
+                }
+            }).data("kendoDropDownList");
+        dropdown_colonias = 
+            $("#dropdown_colonias").kendoDropDownList({
+                dataTextField: "nombre",
+                dataValueField: "id",
+                dataSource: [],
+                value: id_colonia,
+                change: function(e) {
+                    var id = this.value();
+                    $("[name='id_colonia']").val(id);
+                }
+            }).data("kendoDropDownList");
+        
+        geocoder_locations = new google.maps.Geocoder();
+        var position = {
+            lat: latitud != "0" ? parseFloat(latitud) : -34.397, 
+            lng: longitud != "0" ? parseFloat(longitud) : 150.644
+        };
+        map_locations = new google.maps.Map(document.getElementById('map_locations'), {
+            center: position,
+            zoom: 8
+        });
+        marker_locations = new google.maps.Marker({
+            map: map_locations,
+            position: position
+        });
+        map_locations.setZoom(15);
+        
+        $("#btn_get_position").on("click", function(){
+            var address = 
+                dropdown_estados.text() + " " +
+                dropdown_municipios.text() + " " +
+                dropdown_colonias.text() + " " +
+                $("#direccion").val();
+            $("[name='direccion_completa']").val(address);
+            
+            geocoder_locations.geocode( { 'address': address}, function(results, status) {
+              if (status == google.maps.GeocoderStatus.OK) {
+                var location = results[0].geometry.location;
+                map_locations.setCenter(location);
+                map_locations.setZoom(15);
+                marker_locations.setPosition(location);
+                $("[name='latitud']").val(location.lat());
+                $("[name='longitud']").val(location.lng());
+              } else {
+                alert_float('danger', "Geocode was not successful for the following reason: " + status);
+              }
+            });
+        });
+        
+        $.get(admin_url + 'inventory/get_location_states/', function(response) {
+            dropdown_estados.setDataSource(response);
+            dropdown_estados.value(id_estado);
+            dropdown_estados.trigger("change");
+        }, 'json');
+    }
+
+    //development media items
     function add_development_media_item(id_media_item){
         var id_development = parseInt($("[name='item_id']").val());
         var data = "id_development=" + id_development + "&id_media_item=" +id_media_item;
@@ -189,6 +300,7 @@ $(function() {
         });*/
     }
     
+    //development features
     function create_checkbox_listview(id_container, data, hdn_selected_items, features, id_type_feature){
         
         var selected_items = $.map(features, function(item){ 
@@ -229,7 +341,24 @@ $(function() {
         hdn.val(JSON.stringify(selected));
         console.log(JSON.stringify(selected));
     }
+
+    function manage_development_features(form){
+        //#kendo todo todo
+        var data = $(form).serialize();
+        
+        var url = form.action;
+        $.post(url, data).done(function(response) {
+            response = JSON.parse(response);
+            if (response.success == true) {
+                alert_float('success', response.message);
+            }
+        }).fail(function(data) {
+            alert_float('danger', data.responseText);
+        });
+        return false;
+    }
     
+    //development item
     function create_grid_developments(){
         $.get(admin_url + 'inventory/get_developments/', function(response) {
             
@@ -288,23 +417,7 @@ $(function() {
         return false;
     }
     
-    function manage_development_features(form){
-        //#kendo todo todo
-        var data = $(form).serialize();
-        
-        var url = form.action;
-        $.post(url, data).done(function(response) {
-            response = JSON.parse(response);
-            if (response.success == true) {
-                alert_float('success', response.message);
-            }
-        }).fail(function(data) {
-            alert_float('danger', data.responseText);
-        });
-        return false;
-    }
-    
-    //#kendo unities
+    //development unities
     function create_grid_unities(id){
         
         grid_unities = 

@@ -94,8 +94,8 @@ $(function() {
             load_media_items(item_media_items, id);
 
             $("#nombre").text(item.nombre);
-            $("#direccion").text(item.direccion);
-            $("#direccion2").text(item.direccion);
+            $("#direccion").text(item.direccion_completa);
+            $("#direccion2").text(item.direccion_completa);
             $("#iframeMap").attr("src", "https://maps.google.com/maps?q="+item.direccion+"&ie=UTF8&&output=embed");
             $("#descripcion").text(item.descripcion);
             var tipo_desarrollo = $.grep(items_tipo_desarrollo, function(item_cat){ return item_cat.id == item.id_tipo_desarrollo; })[0].nombre;
@@ -116,15 +116,34 @@ $(function() {
             $("#banios_maximo").text(item.banios_maximo);
             $("#medios_banios_maximo").text(item.medios_banios_maximo);
             $("#estacionamientos_maximo").text(item.estacionamientos_maximo);
-
+            
             create_check_listview("list_view_services", services, item_features, 1);
             create_check_listview("list_view_general_caracteristics", general_caracteristics, item_features, 2);
             create_check_listview("list_view_social_areas", social_areas, item_features, 3);
             create_check_listview("list_view_outsides", outsides, item_features, 4);
             create_check_listview("list_view_amenities", amenities, item_features, 5);
 
+            load_location(item.latitud, item.longitud);
             load_unities(id);
         }, 'json');
+    }
+    
+    var map_locations, marker_locations;
+    function load_location(latitud, longitud){
+        var position = {
+            lat: latitud != "0" ? parseFloat(latitud) : -34.397, 
+            lng: longitud != "0" ? parseFloat(longitud) : 150.644
+        };
+        map_locations = new google.maps.Map(
+            document.getElementById('map_locations'), {
+                center: position,
+                zoom: 8
+            });
+        marker_locations = new google.maps.Marker({
+            map: map_locations,
+            position: position
+        });
+        map_locations.setZoom(15);
     }
     
     function load_unities(id){
@@ -199,7 +218,5 @@ $(function() {
                 }
             }).data("kendoListView");
     }
-    
-    
     
 });

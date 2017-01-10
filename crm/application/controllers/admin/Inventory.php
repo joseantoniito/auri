@@ -9,6 +9,23 @@ class Inventory extends Admin_controller
 
     }
     
+    //manage locations
+    public function get_location_states(){
+        if ($this->input->is_ajax_request()) {
+            echo json_encode($this->inventory_model->get_location_states());
+        }
+    }
+    public function get_location_municipalities($id){
+        if ($this->input->is_ajax_request()) {
+            echo json_encode($this->inventory_model->get_location_municipalities($id));
+        }
+    }
+    public function get_location_colonies($id){
+        if ($this->input->is_ajax_request()) {
+            echo json_encode($this->inventory_model->get_location_colonies($id));
+        }
+    }
+    
     //manage developments
     public function index()
     {
@@ -31,6 +48,7 @@ class Inventory extends Admin_controller
         $this->load->view('admin/inventory/manage', $data);
     }
     
+    //development item
     public function get_developments()
     {
         if ($this->input->is_ajax_request()) {
@@ -116,6 +134,7 @@ class Inventory extends Admin_controller
         //todo: cambiar recursos
     }
     
+    //development features
     public function manage_development_features(){
         if (has_permission('items','','view')) {
             if ($this->input->post()) {
@@ -148,6 +167,7 @@ class Inventory extends Admin_controller
         }
     }
     
+    //development media item
     public function add_development_media_item(){
         if (has_permission('items','','view')) {
             if ($this->input->post()) {
@@ -249,7 +269,7 @@ class Inventory extends Admin_controller
         $response = $this->inventory_model->delete_media_item($id);
     }
     
-    //manage unities
+    //development unities
     public function item($id = '')
     {
         if (!has_permission('items', '', 'view')) {

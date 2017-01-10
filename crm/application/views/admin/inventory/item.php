@@ -44,30 +44,60 @@
                                     <?php echo render_select('id_entrega',$items_tipos_entrega,array('id','nombre'),'Entrega',$value); ?>
                                 </div>
                             </div>
-                            <div class="row padTop32">
-                                <div class="col-md-4">
-                                    <?php $value=( isset($item) ? $item->id_estado : ''); ?>
-                                    <?php echo render_select('id_estado',$items_estados,array('id','nombre'),'Estado',$value); ?>
+                            <div id="container_locations" class="padTop32">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="dropdown_estados" class="control-label">Estados</label>
+                                            <?php $value=( isset($item) ? $item->id_estado : ''); ?>
+                                            <?php echo form_hidden('id_estado',$value); ?>
+                                            <input id="dropdown_estados" value='<?php echo $item->id_estado ?>' />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="dropdown_municipios" class="control-label">Municipios</label>
+                                            <?php $value=( isset($item) ? $item->id_municipio : ''); ?>
+                                            <?php echo form_hidden('id_municipio',$value); ?>
+                                            <input id="dropdown_municipios" value='<?php echo $item->id_municipio ?>' />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="dropdown_colonias" class="control-label">Colonias</label>
+                                            <?php $value=( isset($item) ? $item->id_colonia : ''); ?>
+                                            <?php echo form_hidden('id_colonia',$value); ?>
+                                            <input id="dropdown_colonias" value='<?php echo $item->id_colonia ?>' />
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="col-md-4">
-                                    <?php $value=( isset($item) ? $item->id_municipio : ''); ?>
-                                    <?php echo render_select('id_municipio',$items_municipios,array('id','nombre'),'Municipio',$value); ?>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <?php $value=( isset($item) ? $item->direccion : ''); ?>
+                                        <?php echo render_input( 'direccion', 'Dirección',$value); ?>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <?php $value=( isset($item) ? $item->codigo_postal : ''); ?>
+                                        <?php echo render_input( 'codigo_postal', 'Código Postal',$value); ?>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div style="height:25px;"></div>
+                                        <span id="btn_get_position" class="btn btn-info"> OBTENER </span>
+                                    </div>
                                 </div>
-                                <div class="col-md-4">
-                                    <?php $value=( isset($item) ? $item->id_colonia : ''); ?>
-                                    <?php echo render_select('id_colonia',$items_colonias,array('id','nombre'),'Colonia',$value); ?>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <?php $value=( isset($item) ? $item->latitud : ''); ?>
+                                        <?php echo form_hidden('latitud',$value); ?>
+                                        <?php $value=( isset($item) ? $item->longitud : ''); ?>
+                                        <?php echo form_hidden('longitud',$value); ?>
+                                        <?php $value=( isset($item) ? $item->direccion_completa : ''); ?>
+                                        <?php echo form_hidden('direccion_completa',$value); ?>
+                                        <div id="map_locations" style="height: 260px;"></div>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="col-md-8">
-                                    <?php $value=( isset($item) ? $item->direccion : ''); ?>
-                                    <?php echo render_input( 'direccion', 'Dirección',$value); ?>
-                                </div>
-                                <div class="col-md-4">
-                                    <?php $value=( isset($item) ? $item->codigo_postal : ''); ?>
-                                    <?php echo render_input( 'codigo_postal', 'Código Postal',$value); ?>
-                                </div>
-                            </div>
+                            
 
                             <div class="row padTop32">
                                 <div class="col-md-6">
@@ -201,11 +231,6 @@
                     </div>
                 </div>
                 
-                
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12">
                 <div class="panel_s">
                     <div class="panel-body">
                         <div class="panel-heading">
@@ -230,6 +255,11 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <!-- multimedia -->
             </div>
         </div>
     </div>

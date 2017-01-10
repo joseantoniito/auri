@@ -99,6 +99,7 @@ if($alertclass != ''){
 <link rel="stylesheet" href="//kendo.cdn.telerik.com/2016.1.226/styles/kendo.common-material.min.css" />
 <link rel="stylesheet" href="//kendo.cdn.telerik.com/2016.1.226/styles/kendo.material.min.css" />
 <script src="//kendo.cdn.telerik.com/2016.1.226/js/kendo.all.min.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA8Xq5o6lNl4YyFt0F30E_yas-zDNk3sMg" async="" defer=""></script>
 <?php echo app_script('assets/js','items.js'); ?>
 <?php echo app_stylesheet('assets/css','custom-style.css'); ?>
 
