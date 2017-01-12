@@ -2,27 +2,108 @@ body{
     background-color: #f6f6f6;
 }
 
-.k-listview .title-and-meta{
+#descripcion.hidden-sm{
+    line-height: 1.715;
+    padding-top: 7px;
+}
+
+.search-title {
+    position: absolute;
+    top: 0;
+    z-index: 200;
+    margin: 0;
+    -webkit-transform: translate(0, -100%);
+    -ms-transform: translate(0, -100%);
+    transform: translate(0, -100%);
+}
+.main-advance-search .container{
+    padding-top: 30px !important;
+}
+
+.submit-property-header h2,
+.submit-property-header h3,
+.submit-property-header p,
+.submit-property-placeholder p{
+    color: white !important;
+}
+.submit-property-placeholder h3.submit-property-title{
+    color: #50b848 !important;
+}
+
+.advance-search-form .option-bar .k-dropdown{
+    width: 100%;
+
+}
+.advance-search-form .option-bar .k-dropdown .k-dropdown-wrap{
+    height: 46px;
+}
+.advance-search-form .option-bar .k-dropdown .k-dropdown-wrap .k-input{
+    height: 44px;
+    line-height: 44px;
+}
+.advance-search-form .option-bar .k-dropdown .k-dropdown-wrap .k-icon{
+    margin-top: 16px;
+    margin-bottom: 16px;
+}
+
+
+#carousel_home img,
+#carousel_home1 img{
+    width: 100%;
+    height: 670px;
+}
+
+
+#featured_developments_listview .col-xs-6{
+    padding: 0;
+}
+#featured_developments_listview .col-xs-6 article{
+    margin-left: 15px;
+    margin-right: 15px;
+}
+#featured_developments_listview .col-xs-6 article img{
+    min-height: 209px;
+    max-height: 209px;
+}
+#featured_developments_listview .col-xs-6 article .property-description{
+    width: 268px;
+}
+
+
+
+#sample_developments_listview .col-md-4{
+    padding: 0;
+}
+#sample_developments_listview .col-md-4 article{
+    padding: 0 15px;
+}
+#sample_developments_listview .col-md-4 article img{
+    min-height: 325px !important;
+    max-height: 325px !important;
+}
+
+
+#developments_listview.k-listview .title-and-meta{
     padding: 0 !important;
 }
-.k-listview .title-and-meta .container_{
+#developments_listview.k-listview .title-and-meta .container_{
     padding: 25px 35px 0;
 }
 
-.k-listview .property-description{
+#developments_listview.k-listview .property-description{
     padding: 0 !important;
 }
-.k-listview .property-description .container_{
+#developments_listview.k-listview .property-description .container_{
     padding: 25px 45px 0;
 }
-.k-listview .property-description .container_ #descripcion
+#developments_listview.k-listview .property-description .container_ #descripcion
 {
     line-height: 1.715 !important;
 }
-.k-listview .property-description {
+#developments_listview.k-listview .property-description {
     min-height: 319px !important;
 }
-.k-listview .property-thumbnail img {
+#developments_listview.k-listview .property-thumbnail img {
     max-height: 319px !important;
     min-height: 319px !important;
 }
@@ -133,8 +214,16 @@ body{
     text-decoration: none;
 }
 
-.carousel-inner > .item > img,
-  .carousel-inner > .item > a > img {
+#carousel_home .carousel-inner > .item > img,
+#carousel_home .carousel-inner > .item > a > img {
+      width: 70%;
+      margin: auto;
+      max-height: 585px;
+      min-height: 585px;
+  }
+
+#myCarousel .carousel-inner > .item > img,
+#myCarousel .carousel-inner > .item > a > img {
       width: 70%;
       margin: auto;
       max-height: 585px;

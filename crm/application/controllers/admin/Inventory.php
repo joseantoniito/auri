@@ -199,8 +199,8 @@ class Inventory extends Admin_controller
     
     public function save_media_item(){
         $fileParam = "files";
-        //$uploadRoot = "F:/xampp/htdocs/perfex_crm/crm/uploads/inventory/";
-        $uploadRoot = "/home3/rafaq5/public_html/auri/crm/uploads/inventory/";
+        $uploadRoot = "F:/xampp/htdocs/perfex_crm/crm/uploads/inventory/";
+        //$uploadRoot = "/home3/rafaq5/public_html/auri/crm/uploads/inventory/";
         $files = $_FILES[$fileParam];
         
         if (isset($files['name']))
@@ -243,8 +243,8 @@ class Inventory extends Admin_controller
     }
     
     public function remove_media_item(){
-        //$uploadRoot = "F:/xampp/htdocs/perfex_crm/crm/uploads/inventory/";
-        $uploadRoot = "/home3/rafaq5/public_html/auri/crm/uploads/inventory/";
+        $uploadRoot = "F:/xampp/htdocs/perfex_crm/crm/uploads/inventory/";
+        //$uploadRoot = "/home3/rafaq5/public_html/auri/crm/uploads/inventory/";
         $success = true;
         $data = $this->input->post();
         $name = $data["fileNames"];

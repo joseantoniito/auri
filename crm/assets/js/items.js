@@ -118,7 +118,7 @@ $(function() {
                     autoUpload: true
                 },
                 files: item_media_items,
-                template: "<div class='upload_photos_item'><img src='/crm/uploads/inventory/#:name#' /><span id='lbl_item'>#:name#</span><button type='button' class='k-button k-button-bare k-upload-action'><span class='k-icon k-i-close k-delete' title='Remove'></span></button></div>"
+                template: "<div class='upload_photos_item'><img src='/perfex_crm/crm/uploads/inventory/#:name#' /><span id='lbl_item'>#:name#</span><button type='button' class='k-button k-button-bare k-upload-action'><span class='k-icon k-i-close k-delete' title='Remove'></span></button></div>"
                 ,
                 success: function(e){
                     debugger;

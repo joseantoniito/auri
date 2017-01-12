@@ -67,8 +67,8 @@ $(function() {
 
     $(document).ready(function() {
         //#kendo
-        console.log( "ready!" );
-        if(window.location.href.indexOf("/desarrollo/")){
+        console.log( "ready!", $(window).height());
+        if(window.location.href.indexOf("/desarrollo/") != -1){
             console.log("Load propertie!!!");
             var id = null;
             
@@ -82,10 +82,96 @@ $(function() {
             if(id)
                 load_development(id);
         }
-        if(window.location.href.indexOf("/desarrollo/")){
+        if(window.location.href.indexOf("/listado/") != -1){
             create_developments_listview();
         }
+        if(window.location.href.indexOf("/inicio/") != -1){
+            create_home_developments_listviews();
+            create_locations_dropdowns();
+        }
     });
+    
+    var sample_developments_listview;
+    function create_home_developments_listviews(){
+        $.get(admin_url + 'inventory/get_developments/', function(response) {
+            console.log(response);
+            var sample_developments = response.slice(0, 3);
+            var featured_developments = response.slice(0,4);//(3, 6);
+            load_home_media_items(featured_developments);
+            
+            sample_developments_listview = 
+                $("#sample_developments_listview").kendoListView({
+                    dataSource: sample_developments,
+                    template: kendo.template($("#sample_developments_template").html()),
+                    dataBound: function(e) {
+                        console.log("dataBound");
+                        $.each(e.sender.items(), function(index, item){
+                            item = $(item);
+                            item.find("#descripcion").text(
+                            item.find("#descripcion").text().substring(0,75) + ". . .");
+                        });
+                    }
+            }).data("kendoListView");
+            
+            featured_developments_listview = 
+                $("#featured_developments_listview").kendoListView({
+                    dataSource: featured_developments,
+                    template: kendo.template($("#featured_developments_template").html()),
+                    dataBound: function(e) {
+                        console.log("dataBound");
+                        $.each(e.sender.items(), function(index, item){
+                            item = $(item);
+                            item.find("#descripcion").text(
+                            item.find("#descripcion").text().substring(0,60) + ". . .");
+                        });
+                    }
+            }).data("kendoListView");
+        }, 'json');
+    }
+    
+    var carousel_home_listview;
+    function load_home_media_items(item_media_items, id){
+        carousel_home_listview = 
+                $("#carousel_home").kendoListView({
+                    dataSource: item_media_items,
+                    template: kendo.template($("#carousel_home_template").html()),
+                    dataBound: function(e) {
+                        console.log("dataBound");
+                        var ol = $('#my_carousel_home .carousel-indicators');
+                        $.each(e.sender.items(), function(index, item){
+                            if(index == 0)
+                                $(item).addClass("active");
+                            var li = $("<li></li>")
+                                .attr("data-target", "#myCarousel")
+                                .attr("data-slide-to", index)
+                                .attr("class", index == 0 ? "active" : "");
+                            ol.append(li);
+                            
+                            item = $(item);
+                            item.find("#descripcion").text(
+                            item.find("#descripcion").text().substring(0,100) + ". . .");
+                        });
+                        $('#my_carousel_home.carousel').carousel();
+                    }
+            }).data("kendoListView");
+        
+        /*var list_box = $('#myCarousel .carousel-inner');
+        $.each(item_media_items, function(index, item){
+            var list_box_item = $("<div></div>")
+                .attr("class", "item " + (index == 0 ? "active" : "") )
+                .append($("<img />")
+                    .attr("width", "585")
+                    .attr("height", "585")
+                    .attr("alt", item.nombre)
+                    .attr("src", "/crm" + item.url_imagen_principal)
+                    .attr("_id", item.id)
+                );
+            list_box.append(list_box_item);
+        });*/
+        
+        
+        
+    }
     
     function load_development(id){
         $.get(admin_url + 'inventory/get_development/' + id, function(response) {
@@ -225,8 +311,6 @@ $(function() {
     //list developments
     var developments_listview;
     function create_developments_listview(id_container, data){
-        
-        
         $.get(admin_url + 'inventory/get_developments/', function(response) {
             console.log(response);
             
@@ -270,6 +354,157 @@ $(function() {
                 }
             }).data("kendoListView");
             //developments_listview.setDataSource([]);
+        }, 'json');
+    }
+    
+    var dropdown_estados, dropdown_municipios, dropdown_colonias, map_locations, geocoder_locations, marker_locations;;
+    function create_locations_dropdowns(){
+        var id_estado = $("[name='id_estado']").val();
+        var id_municipio = $("[name='id_municipio']").val();
+        var id_colonia = $("[name='id_colonia']").val();
+        var latitud = $("[name='latitud']").val();
+        var longitud = $("[name='longitud']").val();
+        
+        dropdown_estados = 
+            $("#dropdown_estados").kendoDropDownList({
+                dataTextField: "nombre",
+                dataValueField: "id",
+                dataSource: [],
+                optionLabel: "Estado (Any)",
+                //value: id_estado,
+                change: function(e) {
+                    var id = this.value();
+                    $("[name='id_estado']").val(id);
+                    $.get(admin_url + 'inventory/get_location_municipalities/' + id, function(response) {
+                        dropdown_municipios.setDataSource(response);
+                        //dropdown_municipios.value(id_municipio);
+                        //dropdown_municipios.trigger("change");
+                    }, 'json');
+                }
+            }).data("kendoDropDownList");
+        dropdown_municipios = 
+            $("#dropdown_municipios").kendoDropDownList({
+                dataTextField: "nombre",
+                dataValueField: "id",
+                dataSource: [],
+                optionLabel: "Municipio (Any)",
+                //value: id_municipio,
+                change: function(e) {
+                    var id = this.value();
+                    $("[name='id_municipio']").val(id);
+                    $.get(admin_url + 'inventory/get_location_colonies/' + id, function(response) {
+                        dropdown_colonias.setDataSource(response);
+                        //dropdown_colonias.value(id_colonia);
+                        //dropdown_colonias.trigger("change");
+                    }, 'json');
+                }
+            }).data("kendoDropDownList");
+        dropdown_colonias = 
+            $("#dropdown_colonias").kendoDropDownList({
+                dataTextField: "nombre",
+                dataValueField: "id",
+                dataSource: [],
+                optionLabel: "Colonia (Any)",
+                //value: id_colonia,
+                change: function(e) {
+                    var id = this.value();
+                    $("[name='id_colonia']").val(id);
+                }
+            }).data("kendoDropDownList");
+        var data_10 = [];
+        for(i=1; i<=10; i++)
+            data_10.push({id: 1, nombre: i + ""});
+        var data_money = [
+            {id:1000, nombre:"$1,000"},{id:5000, nombre:"$5,000"},{id:10000, nombre:"$10,000"},{id:50000, nombre:"$50,000"},{id:100000, nombre:"$100,000"},{id:200000, nombre:"$200,000"},{id:300000, nombre:"$300,000"},{id:400000, nombre:"$400,000"},{id:500000, nombre:"$500,000"},{id:600000, nombre:"$600,000"},{id:700000, nombre:"$700,000"},{id:800000, nombre:"$800,000"},{id:900000, nombre:"$900,000"},{id:1000000, nombre:"$1,000,000"},{id:1500000, nombre:"$1,500,000"},{id:2000000, nombre:"$2,000,000"},{id:2500000, nombre:"$2,500,000"},{id:5000000, nombre:"$5,000,000"}
+        ];
+        
+        dropdown_recamaras = 
+            $("#dropdown_recamaras").kendoDropDownList({
+                dataTextField: "nombre",
+                dataValueField: "id",
+                dataSource: data_10,
+                optionLabel: "Recámaras (Any)",
+                change: function(e) {
+                    var id = this.value();
+                    //$("[name='id_colonia']").val(id);
+                }
+            }).data("kendoDropDownList");
+        dropdown_banios = 
+            $("#dropdown_banios").kendoDropDownList({
+                dataTextField: "nombre",
+                dataValueField: "id",
+                dataSource: data_10,
+                optionLabel: "Recámaras (Any)",
+                change: function(e) {
+                    var id = this.value();
+                    //$("[name='id_colonia']").val(id);
+                }
+            }).data("kendoDropDownList");
+        dropdown_precio_minimo = 
+            $("#dropdown_precio_minimo").kendoDropDownList({
+                dataTextField: "nombre",
+                dataValueField: "id",
+                dataSource: data_money,
+                optionLabel: "Precio Min. (Any)",
+                change: function(e) {
+                    var id = this.value();
+                    //$("[name='id_colonia']").val(id);
+                }
+            }).data("kendoDropDownList");
+        dropdown_precio_maximo = 
+            $("#dropdown_precio_maximo").kendoDropDownList({
+                dataTextField: "nombre",
+                dataValueField: "id",
+                dataSource: data_money,
+                optionLabel: "Precio Max. (Any)",
+                change: function(e) {
+                    var id = this.value();
+                    //$("[name='id_colonia']").val(id);
+                }
+            }).data("kendoDropDownList");
+        
+        
+       /* geocoder_locations = new google.maps.Geocoder();
+        var position = {
+            lat: latitud != "0" ? parseFloat(latitud) : -34.397, 
+            lng: longitud != "0" ? parseFloat(longitud) : 150.644
+        };
+        map_locations = new google.maps.Map(document.getElementById('map_locations'), {
+            center: position,
+            zoom: 8
+        });
+        marker_locations = new google.maps.Marker({
+            map: map_locations,
+            position: position
+        });
+        map_locations.setZoom(15);
+        
+        $("#btn_get_position").on("click", function(){
+            var address = 
+                dropdown_estados.text() + " " +
+                dropdown_municipios.text() + " " +
+                dropdown_colonias.text() + " " +
+                $("#direccion").val();
+            $("[name='direccion_completa']").val(address);
+            
+            geocoder_locations.geocode( { 'address': address}, function(results, status) {
+              if (status == google.maps.GeocoderStatus.OK) {
+                var location = results[0].geometry.location;
+                map_locations.setCenter(location);
+                map_locations.setZoom(15);
+                marker_locations.setPosition(location);
+                $("[name='latitud']").val(location.lat());
+                $("[name='longitud']").val(location.lng());
+              } else {
+                alert_float('danger', "Geocode was not successful for the following reason: " + status);
+              }
+            });
+        });*/
+        
+        $.get(admin_url + 'inventory/get_location_states/', function(response) {
+            dropdown_estados.setDataSource(response);
+            //dropdown_estados.value(id_estado);
+            //dropdown_estados.trigger("change");
         }, 'json');
     }
 });

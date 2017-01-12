@@ -1,0 +1,363 @@
+<html>
+	<head>
+		
+	</head>
+	<body>
+        <header class="header">
+            <div class="container flex-header">
+                <div class="logo-header-wrap">
+                    <a href="/" title="Inmuebles24.com" class="logo-header inmuebles24">
+                        <img src="/crm/uploads/company/logo.png">
+                    </a>
+                </div>
+            </div>
+        </header>
+		
+        <!----><script type="text/x-kendo-template" id="carousel_home_template">
+            <div class="item">
+                <div class="slide-overlay hidden-xs container">
+                    <div class="slide-inner-container" style="top: 196.5px;">
+                        <div class="slide-header">
+                            <h3 class="slide-entry-title entry-title">
+                                <a href="/desarrollo/?id=#:id#" rel="bookmark">#:nombre#</a>
+                            </h3>
+                            <div class="price-and-status">
+                                <span class="price">$#:precio_desde#</span>
+                                <a href="http://realplaces3.inspirythemes.biz/property-status/for-sale/">
+                                    <span class="property-status-tag">A la venta</span>
+                                </a>
+                            </div>
+                        </div>
+                        <p id="descripcion" class="hidden-sm">#:descripcion#</p>
+                        <a class="btn-default hidden-sm hidden-md" href="/desarrollo/?id=#:id#">Más Detalles<i class="fa fa-angle-right"></i></a>                    
+                    </div>
+                </div>
+
+                <a href="/desarrollo/?id=#:id#">
+                    <img src="/crm#:url_imagen_principal#" alt="#:nombre#" draggable="false">
+                </a>
+            </div>
+        </script>
+        <div id="my_carousel_home" class="carousel slide">
+            <ol class="carousel-indicators">
+            </ol>
+            <!-- Wrapper for slides -->
+            <div id="carousel_home" class="carousel-inner slider-variation-three" role="listbox">
+            </div>
+            <!-- Left and right controls -->
+            <a class="left carousel-control" href="#my_carousel_home" role="button" data-slide="prev">
+              <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+              <span class="sr-only">Previous</span>
+            </a>
+            <a class="right carousel-control" href="#my_carousel_home" role="button" data-slide="next">
+              <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+              <span class="sr-only">Next</span>
+            </a>
+        </div>
+        
+        <!-- INICIO -->
+        <div id="carousel_home_1" class="slider-variation-three" style="display:none;">
+            <div class="">
+                <div class="slide-overlay hidden-xs container">
+                    <div class="slide-inner-container" style="top: 196.5px;">
+                        <div class="slide-header">
+                            <h3 class="slide-entry-title entry-title">
+                                <a href="http://realplaces3.inspirythemes.biz/property/home-in-merrick-way/" rel="bookmark">Home in Merrick Way</a>
+                            </h3>
+                            <div class="price-and-status">
+                                <span class="price">$540,000</span>
+                                <a href="http://realplaces3.inspirythemes.biz/property-status/for-sale/">
+                                    <span class="property-status-tag">A la venta</span>
+                                </a>
+                            </div>
+                        </div>
+                        <p class="hidden-sm">Enchanting three bedroom, three bath home with spacious one bedroom, one bath cabana, in-laws quarters.…</p>
+                        <a class="btn-default hidden-sm hidden-md" href="http://realplaces3.inspirythemes.biz/property/home-in-merrick-way/">More Details<i class="fa fa-angle-right"></i></a>                    
+                    </div>
+                </div>
+
+                <a href="http://realplaces3.inspirythemes.biz/property/home-in-merrick-way/">
+                    <img src="http://realplaces3.inspirythemes.biz/wp-content/uploads/2015/07/slide-2.jpg" alt="Home in Merrick Way" draggable="false">
+                </a>
+            </div>
+            <ul class="flex-direction-nav"><li class="flex-nav-prev"><a class="flex-prev" href="#"></a></li><li class="flex-nav-next"><a class="flex-next" href="#"></a></li></ul>
+        </div>
+        <!-- FIN -->
+        
+        <div id="content-wrapper" class="site-content-wrapper">
+            <div id="content" class="site-content layout-wide">
+            <main id="main" class="site-main">
+                <section class="advance-search main-advance-search">
+                    <div class="container">
+                        <h3 class="search-title">Busqueda Rápida</h3>    
+                        <form class="advance-search-form" action="/listado/" method="get">
+                            <div class="option-bar property-location">
+                                <!--<select name="location" id="location" data-title="Location" class="search-select select2-hidden-accessible" tabindex="-1" aria-hidden="true">
+                                    <option value="any">Location (Any)</option>
+                                    <option value="miami">Miami</option><option value="little-havana">- Little Havana</option>
+                                    <option value="perrine">- Perrine</option>
+                                    <option value="doral">- Doral</option>
+                                </select>
+                                <span class="select2 select2-container select2-container--default" dir="ltr">
+                                    <span class="selection">
+                                        <span class="select2-selection select2-selection--single" role="combobox" aria-autocomplete="list" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-labelledby="select2-location-container">
+                                            <span class="select2-selection__rendered" id="select2-location-container" title="Location (Any)">Location (Any)</span>
+                                            <span class="select2-selection__arrow" role="presentation"><b role="presentation"></b>
+                                            </span>
+                                        </span>
+                                    </span>
+                                    <span class="dropdown-wrapper" aria-hidden="true"></span>
+                                </span>-->
+                                <input name='id_estado' type="hidden" />
+                                <input id="dropdown_estados" />
+                            </div>
+                            <div class="option-bar property-type">
+                                <input name='id_municipio' type="hidden" />
+                                <input id="dropdown_municipios" />
+                            </div>
+                            <div class="option-bar property-status">
+                                <input name='id_colonia' type="hidden" />
+                                <input id="dropdown_colonias" />
+                            </div>
+                            <div class="option-bar property-keyword">
+                                <input type="text" name="direccion" id="direccion-txt" value="" placeholder="Dirección">
+                            </div>
+                            <div class="option-bar property-id">
+                                <input type="text" name="codigo_postal" id="codigo_postal-txt" value="" placeholder="Código Postal">
+                            </div>
+                            <div class="option-bar property-bedrooms">
+                                <input name='recamaras' type="hidden" />
+                                <input id="dropdown_recamaras" />
+                            </div>
+                            <div class="option-bar property-bathrooms">
+                                <input name='banios' type="hidden" />
+                                <input id="dropdown_banios" />
+                            </div>
+                            <div class="option-bar property-min-price">
+                                <input name='precio_minimo' type="hidden" />
+                                <input id="dropdown_precio_minimo" />
+                            </div>
+                            <div class="option-bar property-max-price">
+                                <input name='precio_maximo' type="hidden" />
+                                <input id="dropdown_precio_maximo" />
+                            </div>
+                            <div class="option-bar property-min-area">
+                                <input type="text" name="min-area" id="min-area" pattern="[0-9]+" value="" placeholder="Min Area (sq ft)" title="Please only provide digits!">
+                            </div>
+                            <div class="option-bar property-max-area">
+                                <input type="text" name="max-area" id="max-area" pattern="[0-9]+" value="" placeholder="Max Area (sq ft)" title="Please only provide digits!">
+                            </div>
+                            <div class="option-bar form-control-buttons">
+                                <input type="submit" value="Buscar" class="form-submit-btn">
+                            </div>        
+                            <div class="extra-search-fields" style="display:none;">
+                                <h5 class="title"><span class="text-wrapper">Looking for certain features</span></h5>
+                                <ul class="features-checkboxes-wrapper list-unstyled clearfix">
+                                    <li><span class="option-set"><input type="checkbox" name="features[]" id="feature-2-stories" value="2-stories"><label for="feature-2-stories">2 Stories<small>(6)</small></label></span></li><li><span class="option-set"><input type="checkbox" name="features[]" id="feature-26-ceilings" value="26-ceilings"><label for="feature-26-ceilings">26' Ceilings<small>(1)</small></label></span></li><li><span class="option-set"><input type="checkbox" name="features[]" id="feature-bike-path" value="bike-path"><label for="feature-bike-path">Bike Path<small>(1)</small></label></span></li><li><span class="option-set"><input type="checkbox" name="features[]" id="feature-central-cooling" value="central-cooling"><label for="feature-central-cooling">Central Cooling<small>(4)</small></label></span></li><li><span class="option-set"><input type="checkbox" name="features[]" id="feature-central-heating" value="central-heating"><label for="feature-central-heating">Central Heating<small>(3)</small></label></span></li><li><span class="option-set"><input type="checkbox" name="features[]" id="feature-dual-sinks" value="dual-sinks"><label for="feature-dual-sinks">Dual Sinks<small>(5)</small></label></span></li><li><span class="option-set"><input type="checkbox" name="features[]" id="feature-electric-range" value="electric-range"><label for="feature-electric-range">Electric Range<small>(5)</small></label></span></li><li><span class="option-set"><input type="checkbox" name="features[]" id="feature-emergency-exit" value="emergency-exit"><label for="feature-emergency-exit">Emergency Exit<small>(2)</small></label></span></li><li><span class="option-set"><input type="checkbox" name="features[]" id="feature-fire-alarm" value="fire-alarm"><label for="feature-fire-alarm">Fire Alarm<small>(3)</small></label></span></li><li><span class="option-set"><input type="checkbox" name="features[]" id="feature-fire-place" value="fire-place"><label for="feature-fire-place">Fire Place<small>(4)</small></label></span></li><li><span class="option-set"><input type="checkbox" name="features[]" id="feature-home-theater" value="home-theater"><label for="feature-home-theater">Home Theater<small>(3)</small></label></span></li><li><span class="option-set"><input type="checkbox" name="features[]" id="feature-hurricane-shutters" value="hurricane-shutters"><label for="feature-hurricane-shutters">Hurricane Shutters<small>(1)</small></label></span></li><li><span class="option-set"><input type="checkbox" name="features[]" id="feature-jog-path" value="jog-path"><label for="feature-jog-path">Jog Path<small>(1)</small></label></span></li><li><span class="option-set"><input type="checkbox" name="features[]" id="feature-laundry-room" value="laundry-room"><label for="feature-laundry-room">Laundry Room<small>(3)</small></label></span></li><li><span class="option-set"><input type="checkbox" name="features[]" id="feature-lawn" value="lawn"><label for="feature-lawn">Lawn<small>(5)</small></label></span></li><li><span class="option-set"><input type="checkbox" name="features[]" id="feature-marble-floors" value="marble-floors"><label for="feature-marble-floors">Marble Floors<small>(5)</small></label></span></li><li><span class="option-set"><input type="checkbox" name="features[]" id="feature-next-to-busy-way" value="next-to-busy-way"><label for="feature-next-to-busy-way">Next To Busy Way<small>(1)</small></label></span></li><li><span class="option-set"><input type="checkbox" name="features[]" id="feature-swimming-pool" value="swimming-pool"><label for="feature-swimming-pool">Swimming Pool<small>(4)</small></label></span></li>            
+                                </ul>
+                            </div>
+                        <!-- .extra-search-fields -->
+                    </form><!-- .advance-search-form -->
+                </div>
+                </section>
+                <div class="property-listing-three fade-in-up ">
+                    <div class="container">
+                        <div class="welcome-text">
+                            <h2 class="title">Lorem ipsum dolor sit amet, consectetur adipiscing elit</h2>
+                            <p>Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>        
+                        </div>
+
+                        <div class="row">
+                            <!----><script type="text/x-kendo-template" id="sample_developments_template">
+                            <div class="col-xs-6 custom-col-xs-12 col-sm-6 col-md-4 fade-in-left ">
+                                <article class="hentry property-listing-three-post image-transition ">
+                                    <div class="property-thumbnail">
+                                        <a href="/desarrollo/?id=#:id#">
+                                            <img width="660" height="600" src="/crm#:url_imagen_principal#" class="img-responsive wp-post-image" alt="">
+                                        </a>
+                                        <a href="/desarrollo/?id=#:id#">
+                                            <span class="property-status">A la venta</span>
+                                        </a>
+                                    </div>
+                                    <div class="property-description">
+                                        <header class="entry-header">
+                                            <h4 class="entry-title">
+                                                <a href="/desarrollo/?id=#:id#" rel="bookmark">#:nombre#</a>
+                                            </h4>
+                                            <div class="price-and-status">
+                                                <span class="price">$#:precio_desde#</span>
+                                            </div>
+                                        </header>
+                                        <p id="descripcion">#:descripcion#</p>
+                                        <div class="property-meta entry-meta clearfix">
+                                            <div class="meta-wrapper">
+                                                <span class="meta-value">#:superficie_terreno_minima# - #:superficie_terreno_maxima#</span>
+                                                <sub class="meta-unit">m2</sub>
+                                            </div>
+                                            <div class="meta-wrapper">
+                                                <span class="meta-value">#:recamaras_total#</span>
+                                                <span class="meta-label">Recámaras</span>
+                                            </div>
+                                            <div class="meta-wrapper">
+                                                <span class="meta-value">#:banios_maximo#</span>
+                                                <span class="meta-label">Baños</span>
+                                            </div>
+                                            <div class="meta-wrapper">
+                                                <span class="meta-value">#:estacionamientos_maximo#</span>
+                                                <span class="meta-label">Estacionam.</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </article>
+                            </div>
+                            </script>
+                            
+                            <div id="sample_developments_listview"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="featured-properties-three fade-in-up ">
+                    <div class="container">
+                        <header class="section-header">
+                            <h3 class="section-title">Desarrollos Destacados</h3>
+                        </header>
+                        <div class="row">
+                            <!----><script type="text/x-kendo-template" id="featured_developments_template">
+                            <div class="custom-col-xs-12 col-xs-6 fade-in-left ">
+                                <article class="hentry featured-property-post clearfix">
+                                    <div class="property-thumbnail">
+                                        <a href="/desarrollo/?id=#:id#">
+                                            <img width="660" height="600" src="/crm#:url_imagen_principal#" class="img-responsive wp-post-image" alt="">
+                                        </a>
+                                        <a href="http://realplaces3.inspirythemes.biz/property-status/for-sale/">
+                                            <span class="property-status">A la venta</span>
+                                        </a>
+                                    </div>
+                                    <div class="property-description">
+                                        <header class="entry-header">
+                                            <h4 class="entry-title">
+                                                <a href="/desarrollo/?id=#:id#" rel="bookmark">#:nombre#</a>
+                                            </h4>
+                                            <div class="price-and-status">
+                                                <span class="price">$#:precio_desde#</span>
+                                            </div>
+                                        </header>
+                                        <p id="descripcion">#:descripcion#</p>
+                                        <div class="property-meta entry-meta clearfix">
+                                            <div class="meta-wrapper">
+                                                <span class="meta-value">#:superficie_terreno_maxima#</span>
+                                                <sub class="meta-unit">m2</sub>
+                                            </div>
+                                            <div class="meta-wrapper">
+                                                <span class="meta-value">#:recamaras_total#</span>
+                                                <span class="meta-label">Recámaras</span>
+                                            </div>
+                                            <div class="meta-wrapper">
+                                                <span class="meta-value">#:banios_maximo#</span>
+                                                <span class="meta-label">Baños</span>
+                                            </div>
+                                            <div class="meta-wrapper">
+                                                <span class="meta-value">#:estacionamientos_maximo#</span>
+                                                <span class="meta-label">Estacionam.</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </article>
+                            </div>
+                            </script>
+                            <div id="featured_developments_listview"></div>
+                        </div>
+                    </div>
+                </div>
+                <section class="submit-property submit-property-two fade-in-up " style="background-color:#202020;">
+                    <div class="container">
+                                <header class="submit-property-header">
+                            <h3 class="sub-title">Lorem</h3><h2 class="title">Ipsum dolor sit amet</h2><p>Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.</p><p>        </p></header>
+
+                                    <div class="row submit-property-placeholders">
+
+                                                <div class="col-sm-4 submit-property-placeholder fade-in-up ">
+                                    <div class="image-wrapper">
+                                        <img src="http://realplaces3.inspirythemes.biz/wp-content/uploads/2016/02/register-icon.png" alt="Icon">
+                                    </div>
+                                    <h3 class="submit-property-title">Lorem ipsum dolor sit amet</h3>
+
+                                    <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                                </div>
+
+                                                <div class="col-sm-4 submit-property-placeholder fade-in-up ">
+                                    <div class="image-wrapper">
+                                        <img src="http://realplaces3.inspirythemes.biz/wp-content/uploads/2016/02/fill-details-icon.png" alt="">
+                                    </div>
+                                    <h3 class="submit-property-title">Lorem ipsum dolor sit amet</h3>
+
+                                    <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                                </div>
+
+                                                <div class="col-sm-4 submit-property-placeholder fade-in-up ">
+                                    <div class="image-wrapper">
+                                        <img src="http://realplaces3.inspirythemes.biz/wp-content/uploads/2016/02/done-icon.png" alt="">
+                                    </div>
+                                    <h3 class="submit-property-title">Lorem ipsum dolor sit amet</h3>
+
+                                    <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                                </div>
+
+                            </div>
+                                        <div class="text-center">
+                                <a class="btn-large btn-green" href="#contacto">Contáctanos</a>
+                            </div>
+
+                    </div>
+                    <!-- .container -->
+                </section><!-
+                <!-- .home-recent-posts -->
+                <section class="partners partners-two fade-in-up ">
+                    <div class="container">
+                        <div class="row zero-horizontal-margin">
+                            <div class="col-xs-12">
+                                <h3 class="title">Duis aute <span>irure</span> dolor in reprehenderit in voluptate </h3>
+                                <ul class="list-grid-layout list-unstyled">
+                                                                        <li>
+                                                    <a href="http://videohive.net/">                                            <img class="img-responsive" src="http://realplaces3.inspirythemes.biz/wp-content/uploads/2015/07/videohive.png" alt="Videohive">
+                                                    </a>                                    </li>
+                                                                                    <li>
+                                                    <a href="http://codecanyon.net/">                                            <img class="img-responsive" src="http://realplaces3.inspirythemes.biz/wp-content/uploads/2015/07/codecanyon.png" alt="Codecanyon">
+                                                    </a>                                    </li>
+                                                                                    <li>
+                                                    <a href="http://audiojungle.net/">                                            <img class="img-responsive" src="http://realplaces3.inspirythemes.biz/wp-content/uploads/2015/07/audiojungle.png" alt="Audiojungle">
+                                                    </a>                                    </li>
+                                                                                    <li>
+                                                    <a href="http://themeforest.net/">                                            <img class="img-responsive" src="http://realplaces3.inspirythemes.biz/wp-content/uploads/2015/07/themeforest.png" alt="Themeforest">
+                                                    </a>                                    </li>
+                                                                                    <li>
+                                                    <a href="http://photodune.net/">                                            <img class="img-responsive" src="http://realplaces3.inspirythemes.biz/wp-content/uploads/2015/07/photodune.png" alt="Photodune">
+                                                    </a>                                    </li>
+                                                    </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </main>
+            </div>
+        </div>
+        
+        <script src="https://code.jquery.com/jquery-latest.min.js" type="text/javascript"></script>
+		<link rel="stylesheet" href="//kendo.cdn.telerik.com/2016.1.226/styles/kendo.common-material.min.css">
+		<link rel="stylesheet" href="//kendo.cdn.telerik.com/2016.1.226/styles/kendo.material.min.css">
+		<script src="//kendo.cdn.telerik.com/2016.1.226/js/kendo.all.min.js"></script>
+		
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+		
+		<script src="/crm/assets/js/items-public.js"></script>
+		<link href="/crm/assets/css/custom-style-public.css" rel="stylesheet">
+		
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA8Xq5o6lNl4YyFt0F30E_yas-zDNk3sMg" async="" defer=""></script>
+        
+        <link rel="stylesheet" href="http://realplaces3.inspirythemes.biz/wp-content/themes/inspiry-real-places/css/main.css?ver=1.4.0" />
+        <link rel="stylesheet" href="http://realplaces3.inspirythemes.biz/wp-content/themes/inspiry-real-places/css/theme.css?ver=1.4.0" />
+        <link rel="stylesheet" href="http://realplaces3.inspirythemes.biz/wp-content/themes/inspiry-real-places/js/select2/select2.css?ver=4.0.0" />
+	</body>
+</html>
