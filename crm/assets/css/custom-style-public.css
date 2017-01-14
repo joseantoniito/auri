@@ -2,6 +2,27 @@ body{
     background-color: #f6f6f6;
 }
 
+.property-features .k-listview{
+    border: 0;
+    padding-left: 20px;
+    display: inline-block;
+    margin-bottom: 20px;
+}
+.property-features .k-listview i{
+    color: #337ab7 !important;
+}
+.property-features .k-listview span{
+    padding-left: 7px;
+}
+.float_item{
+    float: left;
+    margin-left:14px;
+}
+
+#carousel_development img{
+    width: 100%;
+    height: 510px;
+}
 #descripcion.hidden-sm{
     line-height: 1.715;
     padding-top: 7px;

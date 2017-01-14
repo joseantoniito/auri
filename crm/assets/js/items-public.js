@@ -2,7 +2,7 @@ $(function() {
     //#kendo developments
     var window_unity; 
     var grid_unities;
-    var admin_url = "/crm/admin/";
+    var admin_url = "/perfex_crm/crm/";
     
     var services = [
         {id: 1, nombre: 'Circuito cerrado'},
@@ -68,7 +68,8 @@ $(function() {
     $(document).ready(function() {
         //#kendo
         console.log( "ready!", $(window).height());
-        if(window.location.href.indexOf("/desarrollo/") != -1){
+        if(window.location.href.indexOf("/propiedad/") != -1 ||
+           window.location.href.indexOf("/desarrollo/") != -1){
             console.log("Load propertie!!!");
             var id = null;
             
@@ -79,8 +80,14 @@ $(function() {
                     id = arrQueryString[1];
             }
 
-            if(id)
+            if(id){
                 load_development(id);
+                load_similar_developments();
+            }
+            _validate_form($('#leads_form'), {
+                precio: 'required'
+            }, manage_leads);
+                
         }
         if(window.location.href.indexOf("/listado/") != -1){
             create_developments_listview();
@@ -91,13 +98,40 @@ $(function() {
         }
     });
     
+    function manage_leads(form){
+        //#kendo todo todo
+        var data = $(form).serialize();
+        
+        var url = form.action;
+        $.post(url, data).done(function(response) {
+            response = JSON.parse(response);
+            if (response.success == true) {
+                //alert_float
+                alert('success', response.message);
+            }
+        }).fail(function(data) {
+            alert('danger', data.responseText);
+        });
+        return false;
+    }
+    
     var sample_developments_listview;
     function create_home_developments_listviews(){
         $.get(admin_url + 'inventory/get_developments/', function(response) {
             console.log(response);
             var sample_developments = response.slice(0, 3);
             var featured_developments = response.slice(0,4);//(3, 6);
-            load_home_media_items(featured_developments);
+            load_home_media_items(
+                featured_developments,
+                "my_carousel_home",
+                "carousel_home",
+                "carousel_home_template",
+                function(item){
+                    item = $(item);
+                    item.find("#descripcion").text(
+                    item.find("#descripcion").text().substring(0,100) + ". . .");
+                },
+                true);
             
             sample_developments_listview = 
                 $("#sample_developments_listview").kendoListView({
@@ -130,28 +164,39 @@ $(function() {
     }
     
     var carousel_home_listview;
-    function load_home_media_items(item_media_items, id){
-        carousel_home_listview = 
-                $("#carousel_home").kendoListView({
+    function load_home_media_items(item_media_items, id_carousel, id_carousel_listview, id_carousel_template, function_databound, start_slide){
+        /*var id_carousel = "my_carousel_home";
+        var id_carousel_listview = "carousel_home";
+        var id_carousel_template = "carousel_home_template";*/
+        
+        //return
+        //carousel_home_listview =
+                $("#"+id_carousel_listview).kendoListView({
                     dataSource: item_media_items,
-                    template: kendo.template($("#carousel_home_template").html()),
+                    template: kendo.template($("#"+id_carousel_template).html()),
                     dataBound: function(e) {
                         console.log("dataBound");
-                        var ol = $('#my_carousel_home .carousel-indicators');
+                        var ol = $('#'+id_carousel+' .carousel-indicators');
                         $.each(e.sender.items(), function(index, item){
+                            item = $(item);
                             if(index == 0)
-                                $(item).addClass("active");
+                                item.addClass("active");
                             var li = $("<li></li>")
-                                .attr("data-target", "#myCarousel")
+                                .attr("data-target", "#"+id_carousel)
                                 .attr("data-slide-to", index)
                                 .attr("class", index == 0 ? "active" : "");
                             ol.append(li);
                             
-                            item = $(item);
+                            function_databound(item);
+                            /*item = $(item);
                             item.find("#descripcion").text(
-                            item.find("#descripcion").text().substring(0,100) + ". . .");
+                            item.find("#descripcion").text().substring(0,100) + ". . .");*/
                         });
-                        $('#my_carousel_home.carousel').carousel();
+                        $("#"+id_carousel+" .left.carousel-control").attr("href", "#"+id_carousel);
+                        $("#"+id_carousel+" .right.carousel-control").attr("href", "#"+id_carousel);
+                        
+                        if(start_slide)
+                            $('#'+id_carousel+'.carousel').carousel();
                     }
             }).data("kendoListView");
         
@@ -163,7 +208,7 @@ $(function() {
                     .attr("width", "585")
                     .attr("height", "585")
                     .attr("alt", item.nombre)
-                    .attr("src", "/crm" + item.url_imagen_principal)
+                    .attr("src", "/perfex_crm/crm" + item.url_imagen_principal)
                     .attr("_id", item.id)
                 );
             list_box.append(list_box_item);
@@ -180,7 +225,7 @@ $(function() {
             var item_features = response.item_features;
             var item_media_items = response.item_media_items;
             
-            load_media_items(item_media_items, id);
+            load_media_items(item_media_items, "carousel_development");
 
             $("#nombre").text(item.nombre);
             $("#direccion").text(item.direccion_completa);
@@ -188,13 +233,13 @@ $(function() {
             $("#iframeMap").attr("src", "https://maps.google.com/maps?q="+item.direccion+"&ie=UTF8&&output=embed");
             $("#descripcion").text(item.descripcion);
             var tipo_desarrollo = $.grep(items_tipo_desarrollo, function(item_cat){ return item_cat.id == item.id_tipo_desarrollo; })[0].nombre;
-            $("#tipo_desarrollo").text(tipo_desarrollo);
+            $("#tipo_desarrollo").text(tipo_desarrollo.replace("Desarrollo ", ""));
             $("#tipo_desarrollo2").text(tipo_desarrollo);
             $("#etapa_desarrollo").text($.grep(items_etapa_desarrollo, function(item_cat){ return item_cat.id == item.id_etapa_desarrollo; })[0].nombre);
             $("#total_de_unidades").text(item.total_de_unidades);
             $("#tipo_entrega").text($.grep(items_tipos_entrega, function(item_cat){ return item_cat.id == item.id_entrega; })[0].nombre);
             
-            var precio_desde = "MN " + item.precio_desde;
+            var precio_desde = "$" + item.precio_desde;
             $("#precio_desde").text(precio_desde);
             $("#precio_desde2").text(precio_desde);
             $("#superficie_terreno_minima").text(item.superficie_terreno_minima);
@@ -215,6 +260,29 @@ $(function() {
             load_location(item.latitud, item.longitud);
             load_unities(id);
         }, 'json');
+    }
+    
+    function load_similar_developments(){
+        $.get(admin_url + 'inventory/get_developments/', function(response) {
+            console.log(response);
+            load_home_media_items(
+                response, 
+                "my_carousel_similar", 
+                "carousel_similar", 
+                "carousel_similar_developments_template",
+                databound_listview_similar_developments);
+            
+        }, 'json');
+    }
+    
+    function databound_listview_similar_developments(item){
+        item.find(".icon-area svg").attr("xmlns", "http://www.w3.org/2000/svg");
+        item.find(".icon-area svg path").attr("d", 
+            "M46 16v-12c0-1.104-.896-2.001-2-2.001h-12c0-1.103-.896-1.999-2.002-1.999h-11.997c-1.105 0-2.001.896-2.001 1.999h-12c-1.104 0-2 .897-2 2.001v12c-1.104 0-2 .896-2 2v11.999c0 1.104.896 2 2 2v12.001c0 1.104.896 2 2 2h12c0 1.104.896 2 2.001 2h11.997c1.106 0 2.002-.896 2.002-2h12c1.104 0 2-.896 2-2v-12.001c1.104 0 2-.896 2-2v-11.999c0-1.104-.896-2-2-2zm-4.002 23.998c0 1.105-.895 2.002-2 2.002h-31.998c-1.105 0-2-.896-2-2.002v-31.999c0-1.104.895-1.999 2-1.999h31.998c1.105 0 2 .895 2 1.999v31.999zm-5.623-28.908c-.123-.051-.256-.078-.387-.078h-11.39c-.563 0-1.019.453-1.019 1.016 0 .562.456 1.017 1.019 1.017h8.935l-20.5 20.473v-8.926c0-.562-.455-1.017-1.018-1.017-.564 0-1.02.455-1.02 1.017v11.381c0 .562.455 1.016 1.02 1.016h11.39c.562 0 1.017-.454 1.017-1.016 0-.563-.455-1.019-1.017-1.019h-8.933l20.499-20.471v8.924c0 .563.452 1.018 1.018 1.018.561 0 1.016-.455 1.016-1.018v-11.379c0-.132-.025-.264-.076-.387-.107-.249-.304-.448-.554-.551z");
+        
+        item.find(".icon-ptype svg").attr("xmlns", "http://www.w3.org/2000/svg");
+        item.find(".icon-ptype svg path").attr("d", 
+            "M24 48.001c-13.255 0-24-10.745-24-24.001 0-13.254 10.745-24 24-24s24 10.746 24 24c0 13.256-10.745 24.001-24 24.001zm10-27.001l-10-8-10 8v11c0 1.03.888 2.001 2 2.001h3.999v-9h8.001v9h4c1.111 0 2-.839 2-2.001v-11z");
     }
     
     var map_locations, marker_locations;
@@ -259,13 +327,13 @@ $(function() {
         }, 'json');
     }
     
-    function load_media_items(item_media_items, id){
-        var ol = $('#myCarousel .carousel-indicators');
-        var list_box = $('#myCarousel .carousel-inner');
+    function load_media_items(item_media_items, id_carousel){
+        var ol = $('#'+id_carousel+' .carousel-indicators');
+        var list_box = $('#'+id_carousel+' .carousel-inner');
         
         $.each(item_media_items, function(index, item){
             var li = $("<li></li>")
-                .attr("data-target", "#myCarousel")
+                .attr("data-target", "#"+id_carousel)
                 .attr("data-slide-to", index)
                 .attr("class", index == 0 ? "active" : "");
             ol.append(li);
@@ -276,13 +344,13 @@ $(function() {
                     .attr("width", "585")
                     .attr("height", "585")
                     .attr("alt", item.name)
-                    .attr("src", "/crm" + item.url)
+                    .attr("src", "/perfex_crm/crm" + item.url)
                     .attr("_id", item.id)
                 );
             list_box.append(list_box_item);
         });
         
-        $('#myCarousel.carousel').carousel();
+        $('#'+id_carousel+'.carousel').carousel();
         
     }
     
@@ -295,10 +363,13 @@ $(function() {
             return jQuery.inArray(item.id, selected_items) != -1;
         });
         
+        if(data.length == 0)
+            $("#" + id_container).parent().hide();
+        
         chks_services = 
             $("#" + id_container).kendoListView({
                 dataSource: data,
-                template: "<div class='row'><a id='ico_item' _id='' class='qodef-icon-shortcode normal qodef-icon-little'><i class='qodef-icon-font-awesome fa fa-check qodef-icon-element'></i></a><span id='lbl_item'>#:nombre#</span></div>"
+                template: "<div class='float_item'><a id='ico_item' _id='' class='qodef-icon-shortcode normal qodef-icon-little'><i class='qodef-icon-font-awesome fa fa-check qodef-icon-element'></i></a><span id='lbl_item'>#:nombre#</span></div>"
                 ,
                 dataBound: function(e) {
                     console.log("dataBound");
@@ -507,4 +578,80 @@ $(function() {
             //dropdown_estados.trigger("change");
         }, 'json');
     }
+    
+    
+    //utilerias
+    function _validate_form(form, form_rules, submithandler) {
+        $.validator.setDefaults({
+            highlight: function(element) {
+                $(element).closest('.form-group').addClass('has-error');
+            },
+            unhighlight: function(element) {
+                $(element).closest('.form-group').removeClass('has-error');
+            },
+            errorElement: 'p',
+            errorClass: 'text-danger',
+            errorPlacement: function(error, element) {
+                if (element.parent('.input-group').length || element.parents('.chk').length) {
+                    if (!element.parents('.chk').length) {
+                        error.insertAfter(element.parent());
+                    } else {
+                        error.insertAfter(element.parents('.chk'));
+                    }
+                } else {
+                    error.insertAfter(element);
+                }
+            },
+        });
+
+        var f = $(form).validate({
+            rules: form_rules,
+            messages: {
+                email: {
+                    remote: email_exists,
+                },
+            },
+            ignore: [],
+            submitHandler: function(form) {
+                if (typeof(submithandler) !== 'undefined') {
+                    submithandler(form);
+                } else {
+                    return true;
+                }
+            }
+        });
+
+        var custom_required_fields = $(form).find('[data-custom-field-required]');
+        if (custom_required_fields.length > 0) {
+            $.each(custom_required_fields, function() {
+                $(this).rules("add", {
+                    required: true
+                });
+                var name = $(this).attr('name');
+                var label = $(this).parents('.form-group').find('[for="' + name + '"]');
+                if (label.length > 0) {
+                    if (label.find('.req').length == 0) {
+                        label.prepend(' <small class="req text-danger">* </small>');
+                    }
+                }
+            });
+        }
+
+        $.each(form_rules, function(name, rule) {
+            if ((rule == 'required' && !jQuery.isPlainObject(rule)) || (jQuery.isPlainObject(rule) && rule.hasOwnProperty('required'))) {
+                var label = $(form).find('[for="' + name + '"]');
+                if (label.length > 0) {
+                    if (label.find('.req').length == 0) {
+                        label.prepend(' <small class="req text-danger">* </small>');
+                    }
+                }
+            }
+        });
+
+        return false;
+    }
+    
+    function email_exists(){
+    return false;
+}
 });

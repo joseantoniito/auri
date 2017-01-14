@@ -2,6 +2,10 @@
     min-width:900px;
 }*/
 
+#my_carousel_similar img{
+    height:254px;
+}
+
 #map_locations{
     height: 260px;
 }
