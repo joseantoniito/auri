@@ -215,8 +215,8 @@ class Inventory extends Admin_controller
     
     public function save_media_item(){
         $fileParam = "files";
-        $uploadRoot = "F:/xampp/htdocs/perfex_crm/crm/uploads/inventory/";
-        //$uploadRoot = "/home3/rafaq5/public_html/auri/crm/uploads/inventory/";
+        //$uploadRoot = "F:/xampp/htdocs/perfex_crm/crm/uploads/inventory/";
+        $uploadRoot = "/home3/rafaq5/public_html/auri/crm/uploads/inventory/";
         $files = $_FILES[$fileParam];
         
         if (isset($files['name']))
@@ -259,8 +259,8 @@ class Inventory extends Admin_controller
     }
     
     public function remove_media_item(){
-        $uploadRoot = "F:/xampp/htdocs/perfex_crm/crm/uploads/inventory/";
-        //$uploadRoot = "/home3/rafaq5/public_html/auri/crm/uploads/inventory/";
+        //$uploadRoot = "F:/xampp/htdocs/perfex_crm/crm/uploads/inventory/";
+        $uploadRoot = "/home3/rafaq5/public_html/auri/crm/uploads/inventory/";
         $success = true;
         $data = $this->input->post();
         $name = $data["fileNames"];
@@ -404,54 +404,6 @@ class Inventory extends Admin_controller
     }
     
     
-    public function manage_leads()
-    {
-         echo json_encode(array(
-                        'success' => $success,
-                        'message' => $message,
-                        'item'=>$this->inventory_model->get_unity(1),
-                        ));
-        
-        /*if (has_permission('items','','view')) {
-            if ($this->input->post()) {
-                $data = $this->input->post();
-                if ($data['id'] == '') {
-                    if(!has_permission('items','','create')){
-                      header('HTTP/1.0 400 Bad error');
-                      echo _l('access_denied');
-                      die;
-                    }
-                    $id = $this->inventory_model->add_unity($data);
-                    $success = false;
-                    $message = '';
-                    if ($id) {
-                        $success = true;
-                        $message = _l('added_successfuly', _l('invoice_item'));
-                    }
-                    echo json_encode(array(
-                        'success' => $success,
-                        'message' => $message,
-                        'item'=>$this->inventory_model->get_unity($id),
-                        ));
-                } 
-                else {
-                    if(!has_permission('items','','edit')){
-                      header('HTTP/1.0 400 Bad error');
-                      echo _l('access_denied');
-                      die;
-                    }
-                    $success = $this->inventory_model->edit_unity($data);
-                    $message = '';
-                    if ($success) {
-                        $message = _l('updated_successfuly', _l('invoice_item'));
-                    }
-                    echo json_encode(array(
-                        'success' => $success,
-                        'message' => $message,
-                        'item'=>$this->inventory_model->get_unity($data['id']),
-                        ));
-                }
-            }*/
-        }
+    
     
 }

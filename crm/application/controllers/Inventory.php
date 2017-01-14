@@ -66,4 +66,73 @@ class Inventory extends CI_Controller
             echo json_encode($item);
         }
     }
+    
+    //manage leads
+    public function manage_leads()
+    {
+         echo json_encode(array(
+                        'success' => $success,
+                        'message' => $message,
+                        'item'=>$this->inventory_model->get_unity(1),
+                        ));
+        
+        /*if (has_permission('items','','view')) {
+            if ($this->input->post()) {
+                $data = $this->input->post();
+                if ($data['id'] == '') {
+                    if(!has_permission('items','','create')){
+                      header('HTTP/1.0 400 Bad error');
+                      echo _l('access_denied');
+                      die;
+                    }
+                    $id = $this->inventory_model->add_unity($data);
+                    $success = false;
+                    $message = '';
+                    if ($id) {
+                        $success = true;
+                        $message = _l('added_successfuly', _l('invoice_item'));
+                    }
+                    echo json_encode(array(
+                        'success' => $success,
+                        'message' => $message,
+                        'item'=>$this->inventory_model->get_unity($id),
+                        ));
+                } 
+                else {
+                    if(!has_permission('items','','edit')){
+                      header('HTTP/1.0 400 Bad error');
+                      echo _l('access_denied');
+                      die;
+                    }
+                    $success = $this->inventory_model->edit_unity($data);
+                    $message = '';
+                    if ($success) {
+                        $message = _l('updated_successfuly', _l('invoice_item'));
+                    }
+                    echo json_encode(array(
+                        'success' => $success,
+                        'message' => $message,
+                        'item'=>$this->inventory_model->get_unity($data['id']),
+                        ));
+                }
+            }*/
+        }
+    public function add_lead(){
+        
+        if ($this->input->post()) {
+            $data = $this->input->post();
+
+            $success = false;
+            $message = '';
+            if ($this->inventory_model->add_lead($data)) {
+                $success = true;
+                $message = _l('added_successfuly', "multimedia item");
+            };
+            echo json_encode(array(
+                'success' => $success,
+                'message' => $message,
+                'data' => $data
+                ));
+        }
+    }
 }

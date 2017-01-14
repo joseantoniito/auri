@@ -7,7 +7,7 @@
             <div class="container flex-header">
                 <div class="logo-header-wrap">
                     <a href="/" title="Inmuebles24.com" class="logo-header inmuebles24">
-                        <img src="/perfex_crm/crm/uploads/company/logo.png">
+                        <img src="/crm/uploads/company/logo.png">
                     </a>
                 </div>
             </div>
@@ -229,7 +229,7 @@
                                 <div class="agent-content-wrapper agent-common-styles">
                                     <div class="agent-contact-form">
                                         <h3 class="agent-contact-form-title">Contactar Agente</h3>
-                                        <form action="/perfex_crm/crm/admin/inventory/manage_leads" id="leads_form" method="post" accept-charset="utf-8" novalidate="novalidate">
+                                        <form action="/crm/inventory/add_lead" id="leads_form" method="post" accept-charset="utf-8" novalidate="novalidate">
                                             <div class="row">
                                                 <div class="col-sm-6 left-field">
                                                     <input type="text" name="name" placeholder="Nombre" class="required" title="* Please provide your name" aria-required="true">
@@ -240,19 +240,15 @@
                                             </div>
                                             <div class="row">
                                                 <div class="col-sm-12 left-field">
-                                                    <input type="text" name="contact-number" placeholder="Número de Contacto" class="" title="* Please provide your contact number">
+                                                    <input type="text" name="phonenumber" placeholder="Número de Teléfono" class="" title="* Please provide your contact number">
                                                 </div>
                                             </div>    
-                                            <textarea name="message" class="required" placeholder="Mensaje" title="* Please provide your message" aria-required="true"></textarea>
+                                            <textarea name="description" class="required" placeholder="Mensaje" title="* Please provide your message" aria-required="true"></textarea>
                                             <div class="inspiry-recaptcha-wrapper clearfix">
-                                                <div id="inspiry-1"><div style="width: 304px; height: 78px;"><div><iframe src="https://www.google.com/recaptcha/api2/anchor?k=6Leu2goTAAAAAP-2mcJILia9Nz0ju1mgeoiGOebG&amp;co=aHR0cDovL3JlYWxwbGFjZXMzLmluc3Bpcnl0aGVtZXMuYml6Ojgw&amp;hl=en&amp;v=r20170104143828&amp;size=normal&amp;cb=yyt95jxk4uiw" title="recaptcha widget" width="304" height="78" frameborder="0" scrolling="no" name="undefined"></iframe></div><textarea id="g-recaptcha-response-1" name="g-recaptcha-response" class="g-recaptcha-response" style="width: 250px; height: 40px; border: 1px solid #c1c1c1; margin: 10px 25px; padding: 0px; resize: none;  display: none; "></textarea></div></div>
+                                                <div id="inspiry-1"><div style="width: 304px; height: 78px;"><div><iframe src="https://www.google.com/recaptcha/api2/anchor?k=6Leu2goTAAAAAP-2mcJILia9Nz0ju1mgeoiGOebG&amp;co=aHR0cDovL3JlYWxwbGFjZXMzLmluc3Bpcnl0aGVtZXMuYml6Ojgw&amp;hl=en&amp;v=r20170104143828&amp;size=normal&amp;cb=yyt95jxk4uiw" title="recaptcha widget" width="304" height="78" frameborder="0" scrolling="no" name="undefined"></iframe></div><textarea id="g-recaptcha-response-1"  class="g-recaptcha-response" style="width: 250px; height: 40px; border: 1px solid #c1c1c1; margin: 10px 25px; padding: 0px; resize: none;  display: none; "></textarea></div></div>
                                             </div>
-                                            <input type="hidden" name="nonce" value="7e884e7387">
-                                            <input type="hidden" name="target" value="robot@inspirythemes.com">
-                                            <input type="hidden" name="action" value="send_message_to_agent">
-                                            <input type="hidden" name="property_title" value="Villa in Coral Gables">
-                                            <input type="hidden" name="property_permalink" value="http://realplaces3.inspirythemes.biz/property/villa-in-coral-gables/">
-                                            <input type="submit" name="submit" class="agent-submit btn-default btn-round" value="Enviar Mensaje">
+                                            <input type="hidden" name="id_development" value="">
+                                            <input type="submit" class="agent-submit btn-default btn-round" value="Enviar Mensaje">
                                             <img src="http://realplaces3.inspirythemes.biz/wp-content/themes/inspiry-real-places/images/ajax-loader.gif" class="agent-loader" alt="Loading...">
                                             <div class="agent-error"></div>
                                             <div class="agent-message"></div>
@@ -275,7 +271,7 @@
                                                                                   
                                         <figure class="property-thumbnail">
                                             <a href="/desarrollo/?id=#:id#">
-                                                <img width="850" height="570" src="/perfex_crm/crm#:url_imagen_principal#" class="img-responsive wp-post-image" alt="">        
+                                                <img width="850" height="570" src="/crm#:url_imagen_principal#" class="img-responsive wp-post-image" alt="">        
                                             </a>
                                         </figure>
                                         <div class="property-description">
@@ -387,10 +383,10 @@
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
 		
-		<!--<script src="/perfex_crm/crm/assets/js/main.js"></script>-->
-        <script src="/perfex_crm/crm/assets/plugins/jquery-validation/jquery.validate.min.js"></script>
-        <script src="/perfex_crm/crm/assets/js/items-public.js"></script>
-		<link href="/perfex_crm/crm/assets/css/custom-style-public.css" rel="stylesheet">
+		<!--<script src="/crm/assets/js/main.js"></script>-->
+        <script src="/crm/assets/plugins/jquery-validation/jquery.validate.min.js"></script>
+        <script src="/crm/assets/js/items-public.js"></script>
+		<link href="/crm/assets/css/custom-style-public.css" rel="stylesheet">
 		
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
 		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA8Xq5o6lNl4YyFt0F30E_yas-zDNk3sMg" async="" defer=""></script>

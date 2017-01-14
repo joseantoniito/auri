@@ -239,4 +239,18 @@ class Inventory_model extends CRM_Model
         }
         return false;
     }
+    
+    //manage leads
+    public function add_lead($data)
+    {
+        $id_development = $data['id_development'];
+        unset($data['id_development']);
+        unset($data['id']);
+        $this->db->insert('tblleads', $data);
+        $insert_id = $this->db->insert_id();
+        if ($insert_id) {
+            return $insert_id;
+        }
+        return false;
+    }
 }

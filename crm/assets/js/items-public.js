@@ -2,7 +2,7 @@ $(function() {
     //#kendo developments
     var window_unity; 
     var grid_unities;
-    var admin_url = "/perfex_crm/crm/";
+    var admin_url = "/crm/";
     
     var services = [
         {id: 1, nombre: 'Circuito cerrado'},
@@ -92,7 +92,8 @@ $(function() {
         if(window.location.href.indexOf("/listado/") != -1){
             create_developments_listview();
         }
-        if(window.location.href.indexOf("/inicio/") != -1){
+        if(window.location.href.indexOf("/inicio/") != -1 ||
+          window.location.href.indexOf("auri.mastering-marketing.org/") != -1){
             create_home_developments_listviews();
             create_locations_dropdowns();
         }
@@ -101,6 +102,8 @@ $(function() {
     function manage_leads(form){
         //#kendo todo todo
         var data = $(form).serialize();
+        console.log(data.split("&"));
+        //return;
         
         var url = form.action;
         $.post(url, data).done(function(response) {
@@ -118,7 +121,7 @@ $(function() {
     var sample_developments_listview;
     function create_home_developments_listviews(){
         $.get(admin_url + 'inventory/get_developments/', function(response) {
-            console.log(response);
+            
             var sample_developments = response.slice(0, 3);
             var featured_developments = response.slice(0,4);//(3, 6);
             load_home_media_items(
@@ -138,7 +141,7 @@ $(function() {
                     dataSource: sample_developments,
                     template: kendo.template($("#sample_developments_template").html()),
                     dataBound: function(e) {
-                        console.log("dataBound");
+                        
                         $.each(e.sender.items(), function(index, item){
                             item = $(item);
                             item.find("#descripcion").text(
@@ -152,7 +155,7 @@ $(function() {
                     dataSource: featured_developments,
                     template: kendo.template($("#featured_developments_template").html()),
                     dataBound: function(e) {
-                        console.log("dataBound");
+                        
                         $.each(e.sender.items(), function(index, item){
                             item = $(item);
                             item.find("#descripcion").text(
@@ -175,7 +178,7 @@ $(function() {
                     dataSource: item_media_items,
                     template: kendo.template($("#"+id_carousel_template).html()),
                     dataBound: function(e) {
-                        console.log("dataBound");
+                        
                         var ol = $('#'+id_carousel+' .carousel-indicators');
                         $.each(e.sender.items(), function(index, item){
                             item = $(item);
@@ -208,7 +211,7 @@ $(function() {
                     .attr("width", "585")
                     .attr("height", "585")
                     .attr("alt", item.nombre)
-                    .attr("src", "/perfex_crm/crm" + item.url_imagen_principal)
+                    .attr("src", "/crm" + item.url_imagen_principal)
                     .attr("_id", item.id)
                 );
             list_box.append(list_box_item);
@@ -220,13 +223,14 @@ $(function() {
     
     function load_development(id){
         $.get(admin_url + 'inventory/get_development/' + id, function(response) {
-            console.log(response);
+            
             var item = response.item;
             var item_features = response.item_features;
             var item_media_items = response.item_media_items;
             
             load_media_items(item_media_items, "carousel_development");
-
+            
+            $("[name='id_development']").val(id);
             $("#nombre").text(item.nombre);
             $("#direccion").text(item.direccion_completa);
             $("#direccion2").text(item.direccion_completa);
@@ -264,7 +268,6 @@ $(function() {
     
     function load_similar_developments(){
         $.get(admin_url + 'inventory/get_developments/', function(response) {
-            console.log(response);
             load_home_media_items(
                 response, 
                 "my_carousel_similar", 
@@ -305,7 +308,7 @@ $(function() {
     
     function load_unities(id){
         $.get(admin_url + 'inventory/get_unities/' + id, function(response) {
-            console.log(response);
+            
             grid_unities = 
                 $("#grid_unities").kendoGrid({
                     dataSource: response,
@@ -319,7 +322,7 @@ $(function() {
                         template: "<a id='btn_view_unity' href='' class='qodef-icon-shortcode normal qodef-icon-little'><i class='qodef-icon-font-awesome fa fa-eye qodef-icon-element'></i></a>"}
                     ],
                     dataBound: function(e) {
-                        console.log("dataBound");
+                        
                         
                     }
                 }).data("kendoGrid");
@@ -344,7 +347,7 @@ $(function() {
                     .attr("width", "585")
                     .attr("height", "585")
                     .attr("alt", item.name)
-                    .attr("src", "/perfex_crm/crm" + item.url)
+                    .attr("src", "/crm" + item.url)
                     .attr("_id", item.id)
                 );
             list_box.append(list_box_item);
@@ -372,7 +375,7 @@ $(function() {
                 template: "<div class='float_item'><a id='ico_item' _id='' class='qodef-icon-shortcode normal qodef-icon-little'><i class='qodef-icon-font-awesome fa fa-check qodef-icon-element'></i></a><span id='lbl_item'>#:nombre#</span></div>"
                 ,
                 dataBound: function(e) {
-                    console.log("dataBound");
+                    
                     $.each(e.sender.items(), function(index, item){
                     });
                 }
@@ -383,7 +386,7 @@ $(function() {
     var developments_listview;
     function create_developments_listview(id_container, data){
         $.get(admin_url + 'inventory/get_developments/', function(response) {
-            console.log(response);
+            
             
             id_container = "developments_listview";
         developments_listview = 
@@ -391,7 +394,7 @@ $(function() {
                 dataSource: response,
                 template: kendo.template($("#developments_listview_template").html()),//"div> <h1> #:nombre#</h1></div>"
                 dataBound: function(e) {
-                    console.log("dataBound");
+                    
                     $.each(e.sender.items(), function(index, item){
                         item = $(item);
                         

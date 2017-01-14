@@ -124,3 +124,5 @@ ERROR - 2017-01-13 20:56:29 --> Could not find the language line "banios"
 ERROR - 2017-01-13 20:56:29 --> Could not find the language line "precio"
 ERROR - 2017-01-13 20:56:42 --> Severity: Warning --> Missing argument 1 for Inventory::get_location_municipalities(), called in F:\xampp\htdocs\perfex_crm\crm\system\core\CodeIgniter.php on line 529 and defined F:\xampp\htdocs\perfex_crm\crm\application\controllers\admin\Inventory.php 18
 ERROR - 2017-01-13 20:56:42 --> Severity: Notice --> Undefined variable: id F:\xampp\htdocs\perfex_crm\crm\application\controllers\admin\Inventory.php 20
+ERROR - 2017-01-13 21:48:00 --> Could not find the language line "Qualification"
+ERROR - 2017-01-13 22:57:36 --> Query error: Unknown column 'id_development' in 'field list' - Invalid query: INSERT INTO `tblleads` (`name`, `email`, `phonenumber`, `description`, `id_development`) VALUES ('Jose Antonio Sandoval Flores', 'tsandoval@kudosmercadotecnia.com', '4425687391', 'Prueba', '1')
