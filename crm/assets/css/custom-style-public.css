@@ -1,6 +1,13 @@
 body{
     background-color: #f6f6f6;
 }
+#my_carousel_similar img{
+    height:254px;
+}
+
+#development_video{
+  width:100%;  
+}
 
 .property-features .k-listview{
     border: 0;

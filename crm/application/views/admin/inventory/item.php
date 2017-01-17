@@ -16,8 +16,8 @@
                             <?php echo form_hidden('development_id',$id); ?>
                             <?php $value=( isset($item) ? $item->nombre : ''); ?>
                             <?php echo render_input( 'nombre', 'Nombre',$value); ?>
-                            <?php $value=( isset($item) ? $item->logotipo : ''); ?>
-                            <?php echo render_input( 'logotipo', 'Logotipo',$value); ?>
+                            <!--<?php $value=( isset($item) ? $item->logotipo : ''); ?>
+                            <?php echo render_input( 'logotipo', 'Logotipo',$value); ?>-->
                             <?php $value=( isset($item) ? $item->descripcion : ''); ?>
                             <?php echo render_textarea( 'descripcion', 'Descripción',$value); ?>
                             <div class="row padTop32">
@@ -40,8 +40,10 @@
                                     <?php echo render_input( 'total_de_unidades', 'Total de Unidades',$value); ?>
                                 </div>
                                 <div class="col-md-4">
-                                    <?php $value=( isset($item) ? $item->id_entrega : ''); ?>
-                                    <?php echo render_select('id_entrega',$items_tipos_entrega,array('id','nombre'),'Entrega',$value); ?>
+                                    <?php $value=( isset($item) ? $item->entrega : ''); ?>
+                                    <label for="date_picker_entrega" class="control-label">Entrega</label>
+                                    <input name="entrega" id="date_picker_entrega" value="<?php echo $value ?>" />
+                                    <!--<?php echo render_select('id_entrega',$items_tipos_entrega,array('id','nombre'),'Entrega',$value); ?>-->
                                 </div>
                             </div>
                             <div id="container_locations" class="padTop32">
@@ -175,7 +177,7 @@
 
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-default" ><?php echo _l('close'); ?></button>
+                                <button id="btn_close_window_unity" type="button" class="btn btn-default" ><?php echo _l('close'); ?></button>
                                 <button type="submit" class="btn btn-info"><?php echo _l('submit'); ?></button>
                             </div>
                             <?php echo form_close(); ?>
@@ -240,17 +242,26 @@
                         <?php echo form_open('admin/inventory/manage_development_photos',array('id'=>'development_photos_form')); ?>
                             <div id="upload_photos_container" class="row">
                                 <div class="col-md-12">
+                                    <div class="row">
                                     <?php echo form_hidden('id_development',$id); ?>
                                     <?php echo form_hidden('item_media_items', $item_media_items); ?>
                                     
                                     <?php echo form_hidden('ids_multimedia','[1,3]'); ?>
                                     <input name="files" id="upload_photos" type="file" />
-                                    <div class="height_20"></div>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="height_32"></div>
+                                        <div class="panel-heading">
+                                        <h4 class="customer-heading-profile bold margin-b-grey">Video</h4>
+                                        </div>
+                                        <input name="files" id="upload_video" type="file" />
+                                        <div class="height_20"></div>
+                                    </div>
+                                    
                                 </div>
                             </div>
-                            <!--<div class="modal-footer">
-                                    <button type="submit" class="btn btn-info"><?php echo _l('submit'); ?></button>
-                                </div>-->
+                            
                         <?php echo form_close(); ?>
                         </div>
                     </div>

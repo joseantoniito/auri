@@ -142,18 +142,24 @@ class Inventory extends Admin_controller
         }
 
         if (!$id) {
-            redirect(admin_url('invoice_items'));
+            redirect(admin_url('inventory'));
         }
         $response = $this->inventory_model->delete_development($id);
-        if (is_array($response) && isset($response['referenced'])) {
+        /*if (is_array($response) && isset($response['referenced'])) {
             set_alert('warning', _l('is_referenced', _l('invoice_item_development_lowercase')));
-        } else if ($response == true) {
-            set_alert('success', _l('deleted', _l('invoice_item_development')));
+        } else*/ 
+        if ($response == true) {
+            $message = _l('deleted', _l('invoice_item_development'));
         } else {
-            set_alert('warning', _l('problem_deleting', _l('invoice_item_development_lowercase')));
+            $message = _l('problem_deleting', _l('invoice_item_development_lowercase'));
         }
         //redirect(admin_url('invoice_items'));
         //todo: cambiar recursos
+        
+        echo json_encode(array(
+                        'success' => $response,
+                        'message' => $message
+                        ));
     }
     
     //development features

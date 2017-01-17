@@ -76,6 +76,8 @@ $(function() {
             create_checkbox_listview("list_view_outsides", outsides, "ids_outsides", item_features, 4);
             create_checkbox_listview("list_view_amenities", amenities, "ids_amenities", item_features, 5);
             
+            $("#date_picker_entrega").kendoDatePicker({});
+            
             //development unities
             window_unity = 
                 $("#window_unity").kendoWindow({
@@ -87,6 +89,9 @@ $(function() {
                  
                 window_unity.center().open();
             });
+            $("#btn_close_window_unity").on("click", function(){
+                 window_unity.close();
+            });
             _validate_form($('#unity_form'), {
                 address: 'required'
             }, manage_unity);
@@ -97,51 +102,7 @@ $(function() {
             }, manage_invoice_item); 
             
             
-            //development photos
-            var hdn_item_media_items = $("[name='item_media_items']");
-            var item_media_items = JSON.parse(hdn_item_media_items.val());
-            hdn_item_media_items.val("");
-            
-            $.each(item_media_items, function(index, item){
-                item.extension = "." + item.name.split('.')[1];
-            })
-            
-            var initial_files = [
-                { name: "file1.doc", size: 525, extension: ".doc" },
-                { name: "file2.jpg", size: 600, extension: ".jpg" },
-                { name: "file3.xls", size: 720, extension: ".xls" },
-            ];
-            upload_photos = $("#upload_photos").kendoUpload({
-                async: {
-                    saveUrl: admin_url + "inventory/save_media_item",
-                    removeUrl: admin_url + "inventory/remove_media_item",
-                    autoUpload: true
-                },
-                files: item_media_items,
-                template: "<div class='upload_photos_item'><img src='/perfex_crm/crm/uploads/inventory/#:name#' /><span id='lbl_item'>#:name#</span><button type='button' class='k-button k-button-bare k-upload-action'><span class='k-icon k-i-close k-delete' title='Remove'></span></button></div>"
-                ,
-                success: function(e){
-                    debugger;
-                    console.log(e);
-                    if(e.response.type == "save"){
-                        var id_media_item = e.response.id;
-                        if(id_media_item)
-                            add_development_media_item(id_media_item);
-                    }
-                    else if(e.response.type == "remove"){
-                        var id_media_item = e.files[0].id;
-                        delete_development_media_item(id_media_item);
-                    }
-                },
-                error: function(e){
-                    debugger;
-                    console.log(e);
-                },
-                remove: function(e){
-                    console.log("on_remove_files", e);
-                    //e.preventDefault();
-                }
-            }).data("kendoUpload");
+            create_uploads_media_items();
         
             //console.log(upload_photos.getFiles());
         }
@@ -162,6 +123,88 @@ $(function() {
             .parent().parent().parent().parent().siblings()
             .attr("class", "col-md-12 col-sm-12");
     });
+
+    function create_uploads_media_items(){
+        //development photos
+        var hdn_item_media_items = $("[name='item_media_items']");
+        var item_media_items = JSON.parse(hdn_item_media_items.val());
+        hdn_item_media_items.val("");
+
+        $.each(item_media_items, function(index, item){
+            item.extension = "." + item.name.split('.')[1];
+        })
+
+        var initial_files = [
+            { name: "file1.doc", size: 525, extension: ".doc" },
+            { name: "file2.jpg", size: 600, extension: ".jpg" },
+            { name: "file3.xls", size: 720, extension: ".xls" },
+        ];
+        
+        var image_items = $.grep(item_media_items, function(item){
+            return item.id_type == 1;
+        });
+        create_upload_media_item(
+            "upload_photos",
+            image_items, 
+            "<div class='upload_photos_item'><img src='/crm/uploads/inventory/#:name#' /><span id='lbl_item'>#:name#</span><button type='button' class='k-button k-button-bare k-upload-action'><span class='k-icon k-i-close k-delete' title='Remove'></span></button></div>",
+            [".jpg", ".png"]);
+        
+        var video_items = $.grep(item_media_items, function(item){
+            return item.id_type == 2;
+        });
+        create_upload_media_item(
+            "upload_video",
+            video_items, 
+            null,
+            [".mp4"],
+            function(e){
+                console.log(e);
+                if(this.getFiles().length > 0){
+                    alert("Solo puedes cargar un video.");
+                    e.preventDefault();
+                }
+            });
+        
+    }
+    
+    function create_upload_media_item(id_upload, item_media_items, template, allowed_extensions, onSelect){
+        
+        $("#"+id_upload).kendoUpload({
+            async: {
+                saveUrl: admin_url + "inventory/save_media_item",
+                removeUrl: admin_url + "inventory/remove_media_item",
+                autoUpload: true
+            },
+            files: item_media_items,
+            template: template,
+            validation: {
+                allowedExtensions: allowed_extensions,
+            },
+            success: function(e){
+                debugger;
+                console.log(e);
+                if(e.response.type == "save"){
+                    var id_media_item = e.response.id;
+                    if(id_media_item)
+                        add_development_media_item(id_media_item);
+                }
+                else if(e.response.type == "remove"){
+                    var id_media_item = e.files[0].id;
+                    delete_development_media_item(id_media_item);
+                }
+            },
+            error: function(e){
+                debugger;
+                console.log(e);
+            },
+            remove: function(e){
+                console.log("on_remove_files", e);
+                //e.preventDefault();
+            },
+            select: onSelect
+        }).data("kendoUpload");
+    
+    }
 
     //development locations
     var dropdown_estados, dropdown_municipios, dropdown_colonias, map_locations, geocoder_locations, marker_locations;;
@@ -363,7 +406,7 @@ $(function() {
         $.get(admin_url + 'inventory/get_developments/', function(response) {
             
             console.log(response);
-            grid_unities = 
+            //grid_unities = 
                 $("#grid_developments").kendoGrid({
                     dataSource: response,
                     columns: [
@@ -373,7 +416,7 @@ $(function() {
                         {field: "direccion", title: "direccion"},
                         {field: "codigo_postal", title: "codigo_postal"},
                         {field:"id", title:"Acciones", width:"100px", 
-                        template: "<a id='btn_edit_development' href='item/#:id#' class='normal'><i class='fa fa-pencil-square fa_medium'></i></a> <a id='btn_delete_development' class='normal' style='cursor:pointer;'> <i class='fa fa-trash fa_medium'></i> </a><a id='btn_edit_development' href='/desarrollo/?id=#:id#' target='_blank' class='qodef-icon-shortcode normal qodef-icon-little'><i class='fa fa-eye fa_medium'></i></a>"}
+                        template: "<a id='btn_edit_development' href='item/#:id#' class='normal'><i class='fa fa-pencil-square fa_medium'></i></a> <a _id='#:id#' id='btn_delete_development' class='normal' style='cursor:pointer;'> <i class='fa fa-trash fa_medium'></i> </a><a id='btn_edit_development' href='/desarrollo/?id=#:id#' target='_blank' class='qodef-icon-shortcode normal qodef-icon-little'><i class='fa fa-eye fa_medium'></i></a>"}
                     ],
                     dataBound: function(e) {
                         console.log("dataBound");
@@ -392,8 +435,14 @@ $(function() {
          
         var id = $(event.currentTarget).attr("_id");
 
-        $.get(admin_url + 'inventory/delete_unity/' + id, function(response) {
+        $.get(admin_url + 'inventory/delete_development/' + id, function(response) {
             console.log(response); 
+            if (response.success == true) {
+                refresh_grid_developments({ item: {id: id }});
+                alert_float('success', response.message);
+            }
+            else
+                alert_float('danger', response.message);
         }, 'json');
     }
     
@@ -515,5 +564,26 @@ $(function() {
         }
         grid_unities.dataSource.data(data);
         window_unity.close();
+    }    
+
+
+    function refresh_grid_developments(response){
+        grid = $("#grid_developments").data("kendoGrid");
+        var data = grid.dataSource.data();
+        var indexItem = null;
+        var itemInGrid = $.grep(data, function(item, index){ 
+            var ok = item.id == response.item.id;
+            if(ok) indexItem = index;
+            return ok;
+        });
+        
+        if(indexItem == null){
+            data.push(response.item);
+        }
+        else{
+            data.splice(indexItem, 1);
+        }
+        grid.dataSource.data(data);
+        //window_unity.close();
     }    
 });

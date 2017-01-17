@@ -228,8 +228,25 @@ $(function() {
             var item_features = response.item_features;
             var item_media_items = response.item_media_items;
             
-            load_media_items(item_media_items, "carousel_development");
             
+            
+            var image_items = $.grep(item_media_items, function(item){
+                return item.id_type == 1;
+            });
+            load_media_items(image_items, "carousel_development");
+             var video_items = $.grep(item_media_items, function(item){
+                return item.id_type == 2;
+            });
+            if(video_items.length > 0){
+                $(".property-video").show();
+                $(".property-video").append(
+                    $("<video id='development_video' controls='' autoplay='' name='media'><source type='video/mp4' src='/crm/uploads/inventory/"+video_items[0].name+"'></video>")
+                );
+            }
+                
+            /*$("#development_video source").attr("src", "http://localhost/crm/uploads/inventory/"+video_items[0].name);
+            <video id='development_video' controls='' autoplay='' name='media'><source type='video/mp4' src='http://localhost/crm/uploads/inventory/controles-con-baterias-1.mp4'></video>*/
+           
             $("[name='id_development']").val(id);
             $("#nombre").text(item.nombre);
             $("#direccion").text(item.direccion_completa);
@@ -241,7 +258,7 @@ $(function() {
             $("#tipo_desarrollo2").text(tipo_desarrollo);
             $("#etapa_desarrollo").text($.grep(items_etapa_desarrollo, function(item_cat){ return item_cat.id == item.id_etapa_desarrollo; })[0].nombre);
             $("#total_de_unidades").text(item.total_de_unidades);
-            $("#tipo_entrega").text($.grep(items_tipos_entrega, function(item_cat){ return item_cat.id == item.id_entrega; })[0].nombre);
+            /*$("#tipo_entrega").text($.grep(items_tipos_entrega, function(item_cat){ return item_cat.id == item.id_entrega; })[0].nombre);*/
             
             var precio_desde = "$" + item.precio_desde;
             $("#precio_desde").text(precio_desde);
