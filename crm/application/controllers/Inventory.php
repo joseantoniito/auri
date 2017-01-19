@@ -33,6 +33,18 @@ class Inventory extends CI_Controller
             echo json_encode($this->inventory_model->get_developments());
         }
     }
+    
+    public function search_get_developments()
+    {
+        if ($this->input->is_ajax_request()) {
+            $data = $this->input->post();
+            echo json_encode($this->inventory_model->search_get_developments($data));
+            /*echo json_encode(array(
+                'data' => $data,
+                'items' => $this->inventory_model->get_developments($data)
+                ));*/
+        }
+    }
 
     public function get_development($id)
     {

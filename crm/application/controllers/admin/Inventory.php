@@ -70,10 +70,10 @@ class Inventory extends Admin_controller
     //manage developments
     public function index()
     {
-        /*if (!has_permission('items','','view')) {
+        if (!has_permission('items','','view')) {
             access_denied('Invoice Items');
         }
-        if ($this->input->is_ajax_request()) {
+        /*if ($this->input->is_ajax_request()) {
             $this->perfex_base->get_table_data('invoice_items');
         }
         $this->load->model('taxes_model');
@@ -221,8 +221,8 @@ class Inventory extends Admin_controller
     
     public function save_media_item(){
         $fileParam = "files";
-        //$uploadRoot = "F:/xampp/htdocs/perfex_crm/crm/uploads/inventory/";
-        $uploadRoot = "/home3/rafaq5/public_html/auri/crm/uploads/inventory/";
+        $uploadRoot = "F:/xampp/htdocs/perfex_crm/crm/uploads/inventory/";
+        //$uploadRoot = "/home3/rafaq5/public_html/auri/crm/uploads/inventory/";
         $files = $_FILES[$fileParam];
         
         if (isset($files['name']))
@@ -265,8 +265,8 @@ class Inventory extends Admin_controller
     }
     
     public function remove_media_item(){
-        //$uploadRoot = "F:/xampp/htdocs/perfex_crm/crm/uploads/inventory/";
-        $uploadRoot = "/home3/rafaq5/public_html/auri/crm/uploads/inventory/";
+        $uploadRoot = "F:/xampp/htdocs/perfex_crm/crm/uploads/inventory/";
+        //$uploadRoot = "/home3/rafaq5/public_html/auri/crm/uploads/inventory/";
         $success = true;
         $data = $this->input->post();
         $name = $data["fileNames"];
@@ -297,6 +297,10 @@ class Inventory extends Admin_controller
         if (!has_permission('items', '', 'view')) {
             access_denied('items');
         }
+        if($id != '')
+            if(!has_permission('items', '', 'edit'))
+                access_denied('items');
+        
         $data['title'] = 'Propiedad';
         $data['id'] = $id;
         $data['item_features'] = json_encode(array());
@@ -398,18 +402,19 @@ class Inventory extends Admin_controller
             redirect(admin_url('invoice_items'));
         }
         $response = $this->inventory_model->delete_unity($id);
-        if (is_array($response) && isset($response['referenced'])) {
-            set_alert('warning', _l('is_referenced', _l('invoice_item_unity_lowercase')));
-        } else if ($response == true) {
-            set_alert('success', _l('deleted', _l('invoice_item_unity')));
+        if ($response == true) {
+            $message = _l('deleted', _l('invoice_item_unity_lowercase'));
         } else {
-            set_alert('warning', _l('problem_deleting', _l('invoice_item_unity_lowercase')));
+            $message = _l('problem_deleting', _l('invoice_item_unity_lowercase'));
         }
+        
+        echo json_encode(array(
+                        'success' => $response,
+                        'message' => $message
+                        ));
+        
+        
         //redirect(admin_url('invoice_items'));
         //todo: cambiar recursos
     }
-    
-    
-    
-    
 }

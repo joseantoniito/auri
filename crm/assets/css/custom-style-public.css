@@ -1,6 +1,65 @@
 body{
     background-color: #f6f6f6;
 }
+#carousel_development .carousel-indicators{
+    padding: 0!important;
+    margin-left: 0;
+}
+
+.padTopBot48{
+    padding: 48px 0 !important;
+}
+
+#carousel_development .carousel-indicators li{
+    display: inline-block;
+    width: 10px !important;
+    height: 10px !important;
+    margin: 1px;
+    text-indent: -999px;
+    cursor: pointer;
+    border: 1px solid #fff;
+    border-radius: 10px;
+    
+}
+
+.nav-and-title .left.carousel-control{
+    height: 46px;
+    right: 52 !important;
+    left: inherit;
+}
+.nav-and-title .right.carousel-control{
+    height: 46px;
+}
+
+.meta-item-value.custom{
+    font-size: 12px !important;
+    font-weight: bold;
+}
+
+.fa.meta-icon-container{
+    font-size: 2em;
+    color: #0dbae8;
+}
+
+#btn_view_unity{
+    color:#008ece;
+    cursor: pointer;
+}
+
+.k-window-titlebar.k-header{
+    background-color: #0dbae8;
+}
+
+#window_unity{
+   padding: 0 !important; 
+}
+
+#window_unity .property-title-wrapper{
+    min-height: 360px;
+}
+
+
+
 #my_carousel_similar img{
     height:254px;
 }

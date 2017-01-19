@@ -150,8 +150,17 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-5">
-                <div class="panel_s">
+            <div id="additional_features" class="col-md-5">
+                <div id="annoucement" class="panel_s">
+                    <div class="panel-body">
+                        <h4 class="bold no-margin font-medium">
+                         Unidades, Características y Multimedia</h4>
+                        <hr>
+                        <p class="no-margin">Es necesario crear el desarrollo, entonces usted será capaz de insertar las características.</p>
+                    </div>
+                </div>
+                
+                <div id="unitites" class="panel_s" style="display:none;">
                     <div class="panel-body">
                         <div class="panel-heading">
                             <h4 class="customer-heading-profile bold margin-b-grey">Unidades</h4>
@@ -168,13 +177,44 @@
                             <?php echo form_open('admin/inventory/manage_unity',array('id'=>'unity_form')); ?>
                             <?php echo form_hidden( 'item_id',$id); ?>
                             <?php echo form_hidden( 'unity_id', ''); ?>
-                            <div class="panel_s" style="min-height:200px;">
-                                <?php echo render_input('status','status'); ?>
-                                <?php echo render_input('m2_habitables','m2_habitables'); ?>
-                                <?php echo render_input('recamaras','recamaras'); ?>
-                                <?php echo render_input('banios','banios'); ?>
-                                <?php echo render_input('precio','precio'); ?>
-
+                            <div class="panel_s" style="min-height:300px;">
+                                <div id="details" class="row padTop32">
+                                    <div class="col-md-4">
+                                        <?php echo render_input('precio','Precio'); ?>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <?php echo render_input('m2_habitables','m2 Habitables'); ?>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <?php echo render_input('m2_totales','m2 Totales'); ?>
+                                    </div>
+                                </div>
+                                <div id="features" class="row padTop32">
+                                    <div class="col-md-4">
+                                        <label for="balcon" class="control-label">Balcon</label>
+                                        <input type="checkbox" name="balcon" id="balcon" />
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="terraza" class="control-label">Terraza</label>
+                                        <input type="checkbox" name="terraza" id="terraza" />
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="roofgarden" class="control-label">Roof Garden</label>
+                                        <input type="checkbox" name="roofgarden" id="roofgarden" />
+                                    </div>
+                                </div>
+                                <div id="features_2" class="row padTop32">
+                                    <div class="col-md-4">
+                                        <?php echo render_input('recamaras','Recámaras'); ?>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <?php echo render_input('banios','Baños'); ?>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <?php echo render_input('estacionamientos','Estacionam.'); ?>
+                                    </div>
+                                </div>
+                                
                             </div>
                             <div class="modal-footer">
                                 <button id="btn_close_window_unity" type="button" class="btn btn-default" ><?php echo _l('close'); ?></button>
@@ -186,7 +226,7 @@
                     </div>
                 </div>
                 
-                <div class="panel_s">
+                <div id="features" class="panel_s" style="display:none;">
                     <div class="panel-body">
                         <div class="panel-heading">
                             <h4 class="customer-heading-profile bold margin-b-grey">Características</h4>
@@ -233,7 +273,7 @@
                     </div>
                 </div>
                 
-                <div class="panel_s">
+                <div id="multimedia" class="panel_s" style="display:none;">
                     <div class="panel-body">
                         <div class="panel-heading">
                             <h4 class="customer-heading-profile bold margin-b-grey">Multimedia</h4>

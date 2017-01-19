@@ -2,8 +2,9 @@
     min-width:900px;
 }*/
 
-#my_carousel_similar img{
-    height:254px;
+#window_unity .row {
+    display: flex;
+    padding-right: 2%;
 }
 
 #map_locations{

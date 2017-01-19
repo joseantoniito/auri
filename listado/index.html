@@ -7,7 +7,7 @@
             <div class="container flex-header">
                 <div class="logo-header-wrap">
                     <a href="/" title="Inmuebles24.com" class="logo-header inmuebles24">
-                        <img src="/crm/uploads/company/logo.png">
+                        <img src="/perfex_crm/crm/uploads/company/logo.png">
                     </a>
                 </div>
             </div>
@@ -26,7 +26,7 @@
                             
                             <div class="property-thumbnail col-sm-4 zero-horizontal-padding">
                                 <a href="/desarrollo/?id=#:id#">
-                                    <img width="660" height="600" src="/crm#:url_imagen_principal#" class="img-responsive wp-post-image" alt="">
+                                    <img width="660" height="600" src="/perfex_crm/crm#:url_imagen_principal#" class="img-responsive wp-post-image" alt="">
                                 </a>
                             </div><!-- .property-thumbnail -->
 
@@ -40,7 +40,7 @@
                                     </h3>
                                     <div class="price-wrapper hidden-lg">
                                         <span class="prefix-text">Precio</span>
-                                        <span class="price">$#: precio_desde #</span>            
+                                        <span class="price">$#: kendo.toString(parseFloat(precio_desde), "n") #</span>            
                                     </div>
 
                                     <p class="property-address visible-lg">
@@ -107,7 +107,7 @@
                                 <p id="descripcion"> #:descripcion#</p>
                                 <div class="price-wrapper">
                                     <span class="prefix-text">Precio desde</span>
-                                    <span class="price">$#:precio_desde#</span>        
+                                    <span class="price">$#: kendo.toString(parseFloat(precio_desde), "n") #</span>        
                                 </div>
                                 <a class="btn-default" href="/desarrollo/?id=#:id#">
                                     Ver Detalles
@@ -126,15 +126,16 @@
 		</div>
         
         <script src="https://code.jquery.com/jquery-latest.min.js" type="text/javascript"></script>
-		<link rel="stylesheet" href="//kendo.cdn.telerik.com/2016.1.226/styles/kendo.common-material.min.css">
-		<link rel="stylesheet" href="//kendo.cdn.telerik.com/2016.1.226/styles/kendo.material.min.css">
-		<script src="//kendo.cdn.telerik.com/2016.1.226/js/kendo.all.min.js"></script>
+		<link rel="stylesheet" href="http://kendo.cdn.telerik.com/2016.1.226/styles/kendo.common-material.min.css">
+		<link rel="stylesheet" href="http://kendo.cdn.telerik.com/2016.1.226/styles/kendo.material.min.css">
+		<script src="http://kendo.cdn.telerik.com/2016.1.226/js/kendo.all.min.js"></script>
+        <script src="http://kendo.cdn.telerik.com/2016.1.226/js/cultures/kendo.culture.es-MX.min.js"></script>
 		
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
 		
-		<script src="/crm/assets/js/items-public.js"></script>
-		<link href="/crm/assets/css/custom-style-public.css" rel="stylesheet">
+		<script src="/perfex_crm/crm/assets/js/items-public.js"></script>
+		<link href="/perfex_crm/crm/assets/css/custom-style-public.css" rel="stylesheet">
 		
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
 		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA8Xq5o6lNl4YyFt0F30E_yas-zDNk3sMg" async="" defer=""></script>

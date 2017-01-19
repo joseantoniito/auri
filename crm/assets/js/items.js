@@ -7,13 +7,13 @@ $(function() {
         {id: 1, nombre: 'Circuito cerrado'},
         {id: 2, nombre: 'Gimnasio'},
         {id: 3, nombre: 'Internet/Wifi'},
-        {id: 4, nombre: 'Mesa de boliche'},
+        //{id: 4, nombre: 'Mesa de boliche'},
         {id: 5, nombre: 'Planta de emergencia'},
         {id: 6, nombre: 'Área de juegos infantiles'},
         {id: 7, nombre: 'Seguridad contra incendios'},
         {id: 8, nombre: 'Spa'},
         {id: 9, nombre: 'Valet parking'},
-        {id: 10, nombre: 'Conmutador'},
+        //{id: 10, nombre: 'Conmutador'},
     ];
     var general_caracteristics = [
         {id: 1, nombre: 'Acabados de lujo'},
@@ -31,9 +31,9 @@ $(function() {
     ];
     var outsides = [
         {id: 1, nombre: 'Árboles'},
-        {id: 2, nombre: 'Cancha de golf'},
-        {id: 3, nombre: 'Cancha de paddle'},
-        {id: 4, nombre: 'Cancha de squash'},
+        //{id: 2, nombre: 'Cancha de golf'},
+        //{id: 3, nombre: 'Cancha de paddle'},
+        //{id: 4, nombre: 'Cancha de squash'},
         {id: 5, nombre: 'Cancha de tennis'},
         {id: 6, nombre: 'Carril de nado'},
         {id: 7, nombre: 'Estacionamiento de visitas'},
@@ -44,7 +44,7 @@ $(function() {
     var amenities = [
         {id: 1, nombre: 'Bodega(s)'},
         {id: 2, nombre: 'Business Center'},
-        {id: 3, nombre: 'Cine'},
+        //{id: 3, nombre: 'Cine'},
         {id: 4, nombre: 'Salón de fiestas'},
         {id: 5, nombre: 'Salón de usos múltiples'},
         {id: 6, nombre: 'Sauna'},
@@ -52,62 +52,18 @@ $(function() {
     ];
     
     $(document).ready(function() {
-        //#kendo
-        console.log( "ready!" );
+        hide_unnecesary_controls();
         if(window.location.href.indexOf("/admin/inventory/") != -1 &&
           window.location.href.indexOf("/admin/inventory/") == window.location.href.length - 17 ){
-            console.log("Ready developments!!!");
             create_grid_developments();
         }
         else if(window.location.href.indexOf("/admin/inventory/item") != -1){
-            var id = $("[name='item_id']").val()
-            create_locations_dropdowns();
-            create_grid_unities(id);
-            //development features
-            _validate_form($('#development_features_form'), {
-                precio: 'required'
-            }, manage_development_features);
-            var hdn_item_features = $("[name='item_features']");
-            var item_features = JSON.parse(hdn_item_features.val());
-            hdn_item_features.val("");
-            create_checkbox_listview("list_view_services", services, "ids_services", item_features, 1);
-            create_checkbox_listview("list_view_general_caracteristics", general_caracteristics, "ids_general_caracteristics", item_features, 2);
-            create_checkbox_listview("list_view_social_areas", social_areas, "ids_social_areas", item_features, 3);
-            create_checkbox_listview("list_view_outsides", outsides, "ids_outsides", item_features, 4);
-            create_checkbox_listview("list_view_amenities", amenities, "ids_amenities", item_features, 5);
-            
-            $("#date_picker_entrega").kendoDatePicker({});
-            
-            //development unities
-            window_unity = 
-                $("#window_unity").kendoWindow({
-                    width: "600px",
-                    title: "Manage Unity",
-                    visible: false,
-                }).data("kendoWindow");
-            $("#btn_add_unity").on("click", function(sender){
-                 
-                window_unity.center().open();
-            });
-            $("#btn_close_window_unity").on("click", function(){
-                 window_unity.close();
-            });
-            _validate_form($('#unity_form'), {
-                address: 'required'
-            }, manage_unity);
-            
-            //development item
-            _validate_form($('#invoice_item_form_1'), {
-                precio: 'required'
-            }, manage_invoice_item); 
-            
-            
-            create_uploads_media_items();
-        
-            //console.log(upload_photos.getFiles());
+            load_development_info();
         }
-        
-         
+
+    });
+    
+    function hide_unnecesary_controls(){
         $("[href='" + admin_url + "invoice_items']").attr("href", admin_url + "inventory/");
         $("[href='" + admin_url + "projects']").hide();
         $("[href='" + admin_url + "invoices/list_invoices']").hide();
@@ -122,8 +78,33 @@ $(function() {
         $("#projects_status_stats")
             .parent().parent().parent().parent().siblings()
             .attr("class", "col-md-12 col-sm-12");
-    });
-
+    }
+    
+    
+    //development item
+    function load_development_info(){
+        var id = $("[name='item_id']").val()
+        show_additional_features(id);
+        create_locations_dropdowns();
+        _validate_form($('#invoice_item_form_1'), {
+            precio: 'required'
+        }, manage_invoice_item); 
+        $("#date_picker_entrega").kendoDatePicker({});
+        
+        load_development_unities(id);
+        load_development_features();
+        create_uploads_media_items();
+    }
+    
+    function show_additional_features(id){
+        if(id != ''){
+            $("#annoucement").hide();
+            $("#unitites").show();
+            $("#features").show();
+            $("#multimedia").show();
+        }
+    }
+    
     function create_uploads_media_items(){
         //development photos
         var hdn_item_media_items = $("[name='item_media_items']");
@@ -147,7 +128,13 @@ $(function() {
             "upload_photos",
             image_items, 
             "<div class='upload_photos_item'><img src='/crm/uploads/inventory/#:name#' /><span id='lbl_item'>#:name#</span><button type='button' class='k-button k-button-bare k-upload-action'><span class='k-icon k-i-close k-delete' title='Remove'></span></button></div>",
-            [".jpg", ".png"]);
+            [".jpg", ".png"],
+            function(e){
+                console.log(e);
+                if(this.getFiles().length = 0){
+                    //e.preventDefault();
+                }
+            });
         
         var video_items = $.grep(item_media_items, function(item){
             return item.id_type == 2;
@@ -206,6 +193,7 @@ $(function() {
     
     }
 
+  
     //development locations
     var dropdown_estados, dropdown_municipios, dropdown_colonias, map_locations, geocoder_locations, marker_locations;;
     function create_locations_dropdowns(){
@@ -303,6 +291,7 @@ $(function() {
         }, 'json');
     }
 
+
     //development media items
     function add_development_media_item(id_media_item){
         var id_development = parseInt($("[name='item_id']").val());
@@ -342,8 +331,23 @@ $(function() {
             alert_float('danger', data.responseText);
         });*/
     }
-    
+
+
     //development features
+    function load_development_features(){
+         _validate_form($('#development_features_form'), {
+            precio: 'required'
+        }, manage_development_features);
+        var hdn_item_features = $("[name='item_features']");
+        var item_features = JSON.parse(hdn_item_features.val());
+        hdn_item_features.val("");
+        create_checkbox_listview("list_view_services", services, "ids_services", item_features, 1);
+        create_checkbox_listview("list_view_general_caracteristics", general_caracteristics, "ids_general_caracteristics", item_features, 2);
+        create_checkbox_listview("list_view_social_areas", social_areas, "ids_social_areas", item_features, 3);
+        create_checkbox_listview("list_view_outsides", outsides, "ids_outsides", item_features, 4);
+        create_checkbox_listview("list_view_amenities", amenities, "ids_amenities", item_features, 5);
+    }
+
     function create_checkbox_listview(id_container, data, hdn_selected_items, features, id_type_feature){
         
         var selected_items = $.map(features, function(item){ 
@@ -401,72 +405,43 @@ $(function() {
         return false;
     }
     
-    //development item
-    function create_grid_developments(){
-        $.get(admin_url + 'inventory/get_developments/', function(response) {
-            
-            console.log(response);
-            //grid_unities = 
-                $("#grid_developments").kendoGrid({
-                    dataSource: response,
-                    columns: [
-                        {field: "nombre", title: "nombre"},                            
-                        {field: "id_tipo_desarrollo", title: "id_tipo_desarrollo"},
-                        {field: "total_de_unidades", title: "total_de_unidades"},
-                        {field: "direccion", title: "direccion"},
-                        {field: "codigo_postal", title: "codigo_postal"},
-                        {field:"id", title:"Acciones", width:"100px", 
-                        template: "<a id='btn_edit_development' href='item/#:id#' class='normal'><i class='fa fa-pencil-square fa_medium'></i></a> <a _id='#:id#' id='btn_delete_development' class='normal' style='cursor:pointer;'> <i class='fa fa-trash fa_medium'></i> </a><a id='btn_edit_development' href='/desarrollo/?id=#:id#' target='_blank' class='qodef-icon-shortcode normal qodef-icon-little'><i class='fa fa-eye fa_medium'></i></a>"}
-                    ],
-                    dataBound: function(e) {
-                        console.log("dataBound");
-                         
-                        $.each(e.sender.items(), function(index, item){
-                            $(item).find("#btn_delete_development")
-                                .on("click", delete_development);
-                        });
-                    }
-                }).data("kendoGrid");
-            }, 'json');
-    }
-    
-    function delete_development(event){
-        //todo
-         
-        var id = $(event.currentTarget).attr("_id");
 
-        $.get(admin_url + 'inventory/delete_development/' + id, function(response) {
-            console.log(response); 
-            if (response.success == true) {
-                refresh_grid_developments({ item: {id: id }});
-                alert_float('success', response.message);
-            }
-            else
-                alert_float('danger', response.message);
-        }, 'json');
-    }
-    
-    function manage_invoice_item(form){
-        //#kendo todo
-        var data = $(form).serialize();
-        data = data.replace("development_id", "id");
-        var url = form.action;
-        $.post(url, data).done(function(response) {
-            response = JSON.parse(response);
-            $("[name='development_id']").val(response.item.id);
-            $("[name='id_development']").val(response.item.id);
-            $("[name='item_id']").val(response.item.id);
-            
-            if (response.success == true) {
-                alert_float('success', response.message);
-            }
-        }).fail(function(data) {
-            alert_float('danger', data.responseText);
-        });
-        return false;
-    }
-    
     //development unities
+    function load_development_unities(id){
+        create_grid_unities(id);
+        
+        window_unity = 
+            $("#window_unity").kendoWindow({
+                width: "600px",
+                title: "Manage Unity",
+                visible: false,
+                close: function(){
+                    $("[name='unity_id']").val("");
+                    $("#status").val("");
+                    $("#m2_habitables").val("");
+                    $("#recamaras").val("");
+                    $("#banios").val("");
+                    $("#precio").val("");
+
+                    $("#balcon").prop('checked', false);
+                    $("#terraza").prop('checked', false);
+                    $("#roofgarden").prop('checked', false);
+                }
+            }).data("kendoWindow");
+        
+        $("#btn_add_unity").on("click", function(sender){
+            window_unity.center().open();
+        });
+        
+        $("#btn_close_window_unity").on("click", function(){
+             window_unity.close();
+        });
+        
+        _validate_form($('#unity_form'), {
+            address: 'required'
+        }, manage_unity);
+    }
+
     function create_grid_unities(id){
         
         grid_unities = 
@@ -508,11 +483,14 @@ $(function() {
             
             //todo
             $("[name='unity_id']").val(id);
-            $("#status").val(response.status);
             $("#m2_habitables").val(response.m2_habitables);
             $("#recamaras").val(response.recamaras);
             $("#banios").val(response.banios);
             $("#precio").val(response.precio);
+            
+            $("#balcon").prop('checked', response.balcon == "1");
+            $("#terraza").prop('checked', response.terraza == "1");
+            $("#roofgarden").prop('checked', response.roofgarden == "1");
             
              
         }, 'json');
@@ -524,6 +502,12 @@ $(function() {
         var id = $(event.currentTarget).attr("_id");
         $.get(admin_url + 'inventory/delete_unity/' + id, function(response) {
             console.log(response);
+            if (response.success == true) {
+                refresh_grid_unities({ item: {id: id }});
+                alert_float('success', response.message);
+            }
+            else
+                alert_float('danger', response.message);
         }, 'json');
     }
     
@@ -533,6 +517,9 @@ $(function() {
         var data = $(form).serialize();
         data = data.replace("item_id", "id_item");
         data = data.replace("unity_id", "id");
+        data = data.replace("balcon=on", "balcon=1");
+        data = data.replace("terraza=on", "terraza=1");
+        data = data.replace("roofgarden=on", "roofgarden=1");
         var url = form.action;
         $.post(url, data).done(function(response) {
             response = JSON.parse(response);
@@ -549,23 +536,94 @@ $(function() {
     
     function refresh_grid_unities(response){
         var data = grid_unities.dataSource.data();
-        var indexItem;
+        var indexItem = null;
         var itemInGrid = $.grep(data, function(item, index){ 
             var ok = item.id == response.item.id;
             if(ok) indexItem = index;
             return ok;
         });
         
-        if(!indexItem){
+        if(indexItem == null){
             data.push(response.item);
         }
         else{
-            data.splice(indexItem, 1, response.item);
+            data.splice(indexItem, 1);
         }
         grid_unities.dataSource.data(data);
         window_unity.close();
     }    
+     
 
+    //development list items
+    function create_grid_developments(){
+        $.get(admin_url + 'inventory/get_developments/', function(response) {
+            
+            console.log(response);
+            //grid_unities = 
+                $("#grid_developments").kendoGrid({
+                    dataSource: response,
+                    columns: [
+                        {field: "nombre", title: "nombre"},                            
+                        {field: "id_tipo_desarrollo", title: "id_tipo_desarrollo"},
+                        {field: "total_de_unidades", title: "total_de_unidades"},
+                        {field: "direccion", title: "direccion"},
+                        {field: "codigo_postal", title: "codigo_postal"},
+                        {field:"id", title:"Acciones", width:"100px", 
+                        template: "<a id='btn_edit_development' href='item/#:id#' class='normal'><i class='fa fa-pencil-square fa_medium'></i></a> <a _id='#:id#' id='btn_delete_development' class='normal' style='cursor:pointer;'> <i class='fa fa-trash fa_medium'></i> </a><a id='btn_view_development' href='/desarrollo/?id=#:id#' target='_blank' class='qodef-icon-shortcode normal qodef-icon-little'><i class='fa fa-eye fa_medium'></i></a>"}
+                    ],
+                    dataBound: function(e) {
+                        console.log("dataBound");
+                        var has_permission_edit = $("#hdn_has_permission_edit").val() == "1";
+                        
+                        $.each(e.sender.items(), function(index, item){
+                            $(item).find("#btn_delete_development")
+                                .on("click", delete_development)
+                                .css("display", has_permission_edit ? "" : "none");
+                            
+                            $(item).find("#btn_edit_development")
+                                .css("display", has_permission_edit ? "" : "none");
+                        });
+                    }
+                }).data("kendoGrid");
+            }, 'json');
+    }
+    
+    function delete_development(event){
+        //todo
+         
+        var id = $(event.currentTarget).attr("_id");
+
+        $.get(admin_url + 'inventory/delete_development/' + id, function(response) {
+            console.log(response); 
+            if (response.success == true) {
+                refresh_grid_developments({ item: {id: id }});
+                alert_float('success', response.message);
+            }
+            else
+                alert_float('danger', response.message);
+        }, 'json');
+    }
+    
+    function manage_invoice_item(form){
+        //#kendo todo
+        var data = $(form).serialize();
+        data = data.replace("development_id", "id");
+        var url = form.action;
+        $.post(url, data).done(function(response) {
+            response = JSON.parse(response);
+            show_additional_features(response.item.id);
+            $("[name='development_id']").val(response.item.id);
+            $("[name='id_development']").val(response.item.id);
+            $("[name='item_id']").val(response.item.id);
+            
+            if (response.success == true) {
+                alert_float('success', response.message);
+            }
+        }).fail(function(data) {
+            alert_float('danger', data.responseText);
+        });
+        return false;
+    }
 
     function refresh_grid_developments(response){
         grid = $("#grid_developments").data("kendoGrid");
@@ -585,5 +643,5 @@ $(function() {
         }
         grid.dataSource.data(data);
         //window_unity.close();
-    }    
+    }   
 });

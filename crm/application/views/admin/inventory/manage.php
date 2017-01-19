@@ -14,6 +14,8 @@
             <div class="panel_s">
                 <div class="panel-body">
                     <div class="clearfix"></div>
+                    <input id="hdn_has_permission_edit" type="hidden" 
+                           value="<?php echo has_permission('items','','edit') ?>"  />
                     <div id="grid_developments"></div>
                 </div>
             </div>

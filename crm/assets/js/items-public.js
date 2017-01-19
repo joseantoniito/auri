@@ -2,19 +2,19 @@ $(function() {
     //#kendo developments
     var window_unity; 
     var grid_unities;
-    var admin_url = "/crm/";
+    var admin_url = "/perfex_crm/crm/";
     
     var services = [
         {id: 1, nombre: 'Circuito cerrado'},
         {id: 2, nombre: 'Gimnasio'},
         {id: 3, nombre: 'Internet/Wifi'},
-        {id: 4, nombre: 'Mesa de boliche'},
+        //{id: 4, nombre: 'Mesa de boliche'},
         {id: 5, nombre: 'Planta de emergencia'},
         {id: 6, nombre: 'Área de juegos infantiles'},
         {id: 7, nombre: 'Seguridad contra incendios'},
         {id: 8, nombre: 'Spa'},
         {id: 9, nombre: 'Valet parking'},
-        {id: 10, nombre: 'Conmutador'},
+        //{id: 10, nombre: 'Conmutador'},
     ];
     var general_caracteristics = [
         {id: 1, nombre: 'Acabados de lujo'},
@@ -32,9 +32,9 @@ $(function() {
     ];
     var outsides = [
         {id: 1, nombre: 'Árboles'},
-        {id: 2, nombre: 'Cancha de golf'},
-        {id: 3, nombre: 'Cancha de paddle'},
-        {id: 4, nombre: 'Cancha de squash'},
+        //{id: 2, nombre: 'Cancha de golf'},
+        //{id: 3, nombre: 'Cancha de paddle'},
+        //{id: 4, nombre: 'Cancha de squash'},
         {id: 5, nombre: 'Cancha de tennis'},
         {id: 6, nombre: 'Carril de nado'},
         {id: 7, nombre: 'Estacionamiento de visitas'},
@@ -45,7 +45,7 @@ $(function() {
     var amenities = [
         {id: 1, nombre: 'Bodega(s)'},
         {id: 2, nombre: 'Business Center'},
-        {id: 3, nombre: 'Cine'},
+        //{id: 3, nombre: 'Cine'},
         {id: 4, nombre: 'Salón de fiestas'},
         {id: 5, nombre: 'Salón de usos múltiples'},
         {id: 6, nombre: 'Sauna'},
@@ -67,6 +67,7 @@ $(function() {
 
     $(document).ready(function() {
         //#kendo
+        kendo.culture("es-MX");
         console.log( "ready!", $(window).height());
         if(window.location.href.indexOf("/propiedad/") != -1 ||
            window.location.href.indexOf("/desarrollo/") != -1){
@@ -200,6 +201,10 @@ $(function() {
                         
                         if(start_slide)
                             $('#'+id_carousel+'.carousel').carousel();
+                        if(id_carousel == "my_carousel_similar"){
+                            $(".nav-and-title").append($("#my_carousel_similar .left.carousel-control"))
+                            $(".nav-and-title").append($("#my_carousel_similar .right.carousel-control"))
+                        }
                     }
             }).data("kendoListView");
         
@@ -211,7 +216,7 @@ $(function() {
                     .attr("width", "585")
                     .attr("height", "585")
                     .attr("alt", item.nombre)
-                    .attr("src", "/crm" + item.url_imagen_principal)
+                    .attr("src", "/perfex_crm/crm" + item.url_imagen_principal)
                     .attr("_id", item.id)
                 );
             list_box.append(list_box_item);
@@ -227,9 +232,6 @@ $(function() {
             var item = response.item;
             var item_features = response.item_features;
             var item_media_items = response.item_media_items;
-            
-            
-            
             var image_items = $.grep(item_media_items, function(item){
                 return item.id_type == 1;
             });
@@ -240,12 +242,12 @@ $(function() {
             if(video_items.length > 0){
                 $(".property-video").show();
                 $(".property-video").append(
-                    $("<video id='development_video' controls='' autoplay='' name='media'><source type='video/mp4' src='/crm/uploads/inventory/"+video_items[0].name+"'></video>")
+                    $("<video id='development_video' controls='' autoplay='' name='media'><source type='video/mp4' src='/perfex_crm/crm/uploads/inventory/"+video_items[0].name+"'></video>")
                 );
             }
                 
-            /*$("#development_video source").attr("src", "http://localhost/crm/uploads/inventory/"+video_items[0].name);
-            <video id='development_video' controls='' autoplay='' name='media'><source type='video/mp4' src='http://localhost/crm/uploads/inventory/controles-con-baterias-1.mp4'></video>*/
+            /*$("#development_video source").attr("src", "http://localhost/perfex_crm/crm/uploads/inventory/"+video_items[0].name);
+            <video id='development_video' controls='' autoplay='' name='media'><source type='video/mp4' src='http://localhost/perfex_crm/crm/uploads/inventory/controles-con-baterias-1.mp4'></video>*/
            
             $("[name='id_development']").val(id);
             $("#nombre").text(item.nombre);
@@ -258,9 +260,12 @@ $(function() {
             $("#tipo_desarrollo2").text(tipo_desarrollo);
             $("#etapa_desarrollo").text($.grep(items_etapa_desarrollo, function(item_cat){ return item_cat.id == item.id_etapa_desarrollo; })[0].nombre);
             $("#total_de_unidades").text(item.total_de_unidades);
+            if(item.entrega)
+                $("#entrega").text(kendo.toString(new Date(item.entrega),"y"));
+            $("#total_de_unidades").text(item.total_de_unidades);
             /*$("#tipo_entrega").text($.grep(items_tipos_entrega, function(item_cat){ return item_cat.id == item.id_entrega; })[0].nombre);*/
             
-            var precio_desde = "$" + item.precio_desde;
+            var precio_desde = "$" + kendo.toString(parseFloat(item.precio_desde), "n");;
             $("#precio_desde").text(precio_desde);
             $("#precio_desde2").text(precio_desde);
             $("#superficie_terreno_minima").text(item.superficie_terreno_minima);
@@ -323,6 +328,7 @@ $(function() {
         map_locations.setZoom(15);
     }
     
+    var window_unity;
     function load_unities(id){
         $.get(admin_url + 'inventory/get_unities/' + id, function(response) {
             
@@ -336,15 +342,57 @@ $(function() {
                         {field: "banios", title: "Banios"},
                         {field: "precio", title: "Precio"},
                         {field:"id", title:"Acciones", width:"100px", 
-                        template: "<a id='btn_view_unity' href='' class='qodef-icon-shortcode normal qodef-icon-little'><i class='qodef-icon-font-awesome fa fa-eye qodef-icon-element'></i></a>"}
+                        template: "<span _id='#:id#' id='btn_view_unity' href='' class='qodef-icon-shortcode normal qodef-icon-little'><i class='qodef-icon-font-awesome fa fa-eye qodef-icon-element'></i></span>"}
                     ],
                     dataBound: function(e) {
-                        
+                        $.each(e.sender.items(), function(index, item){
+                            $(item).find("#btn_view_unity")
+                                .on("click", { index:index }, load_unitity);
+                        });
                         
                     }
                 }).data("kendoGrid");
 
         }, 'json');
+        
+        window_unity = 
+            $("#window_unity").kendoWindow({
+                width: "600px",
+                title: "Detalles de Unidad",
+                visible: false,
+                modal: true,
+                resizable: false,
+                scrollable: false,
+               
+            }).data("kendoWindow");
+        
+        $("#btn_close_window_unity").on("click", function(){
+             window_unity.close();
+        });
+    }
+    
+    function load_unitity(event){
+        var sender = $(event.currentTarget);
+        var id = sender.attr("_id");
+        var index = event.data.index;
+        var item = grid_unities.dataSource.data()[index];
+        
+        $("#nombre_unity").text($("#nombre").text());
+        
+        $("#m2_totales").text(item.m2_totales);
+        $("#m2_habitables").text(item.m2_habitables);
+        
+        $("#recamaras").text(item.recamaras);
+        $("#banios").text(item.banios);
+        //$("#estacionamientos").text(item.estacionamientos);
+        
+        $("#balcon_container").css("display",item.balcon != "1" ? "none" : "");
+        $("#terraza_container").css("display",item.terraza != "1" ? "none" : "");
+        $("#roofgarden_container").css("display",item.roofgarden != "1" ? "none" : "");
+        
+        $("#precio").text("$"+kendo.toString(parseFloat(item.precio), "n"));
+ 
+        window_unity.center().open();
     }
     
     function load_media_items(item_media_items, id_carousel){
@@ -364,12 +412,14 @@ $(function() {
                     .attr("width", "585")
                     .attr("height", "585")
                     .attr("alt", item.name)
-                    .attr("src", "/crm" + item.url)
+                    .attr("src", "/perfex_crm/crm" + item.url)
                     .attr("_id", item.id)
                 );
             list_box.append(list_box_item);
         });
         
+        $("#"+id_carousel+" .left.carousel-control").attr("href", "#"+id_carousel);
+        $("#"+id_carousel+" .right.carousel-control").attr("href", "#"+id_carousel);
         $('#'+id_carousel+'.carousel').carousel();
         
     }
@@ -402,11 +452,13 @@ $(function() {
     //list developments
     var developments_listview;
     function create_developments_listview(id_container, data){
-        $.get(admin_url + 'inventory/get_developments/', function(response) {
-            
-            
+        
+        data = window.location.href.split('?')[1]
+        $.post(admin_url + 'inventory/search_get_developments', data).done(function(response) {
+            debugger;
+            response = JSON.parse(response);
             id_container = "developments_listview";
-        developments_listview = 
+            developments_listview = 
             $("#" + id_container).kendoListView({
                 dataSource: response,
                 template: kendo.template($("#developments_listview_template").html()),//"div> <h1> #:nombre#</h1></div>"
@@ -445,7 +497,9 @@ $(function() {
                 }
             }).data("kendoListView");
             //developments_listview.setDataSource([]);
-        }, 'json');
+        }).fail(function(data) {
+            alert_float('danger', data.responseText);
+        });;
     }
     
     var dropdown_estados, dropdown_municipios, dropdown_colonias, map_locations, geocoder_locations, marker_locations;;
@@ -461,7 +515,7 @@ $(function() {
                 dataTextField: "nombre",
                 dataValueField: "id",
                 dataSource: [],
-                optionLabel: "Estado (Any)",
+                optionLabel: "Estado ",
                 //value: id_estado,
                 change: function(e) {
                     var id = this.value();
@@ -478,7 +532,7 @@ $(function() {
                 dataTextField: "nombre",
                 dataValueField: "id",
                 dataSource: [],
-                optionLabel: "Municipio (Any)",
+                optionLabel: "Municipio ",
                 //value: id_municipio,
                 change: function(e) {
                     var id = this.value();
@@ -495,7 +549,7 @@ $(function() {
                 dataTextField: "nombre",
                 dataValueField: "id",
                 dataSource: [],
-                optionLabel: "Colonia (Any)",
+                optionLabel: "Colonia ",
                 //value: id_colonia,
                 change: function(e) {
                     var id = this.value();
@@ -504,7 +558,7 @@ $(function() {
             }).data("kendoDropDownList");
         var data_10 = [];
         for(i=1; i<=10; i++)
-            data_10.push({id: 1, nombre: i + ""});
+            data_10.push({id: i, nombre: i + ""});
         var data_money = [
             {id:1000, nombre:"$1,000"},{id:5000, nombre:"$5,000"},{id:10000, nombre:"$10,000"},{id:50000, nombre:"$50,000"},{id:100000, nombre:"$100,000"},{id:200000, nombre:"$200,000"},{id:300000, nombre:"$300,000"},{id:400000, nombre:"$400,000"},{id:500000, nombre:"$500,000"},{id:600000, nombre:"$600,000"},{id:700000, nombre:"$700,000"},{id:800000, nombre:"$800,000"},{id:900000, nombre:"$900,000"},{id:1000000, nombre:"$1,000,000"},{id:1500000, nombre:"$1,500,000"},{id:2000000, nombre:"$2,000,000"},{id:2500000, nombre:"$2,500,000"},{id:5000000, nombre:"$5,000,000"}
         ];
@@ -514,10 +568,10 @@ $(function() {
                 dataTextField: "nombre",
                 dataValueField: "id",
                 dataSource: data_10,
-                optionLabel: "Recámaras (Any)",
+                optionLabel: "Recámaras ",
                 change: function(e) {
                     var id = this.value();
-                    //$("[name='id_colonia']").val(id);
+                    $("[name='recamaras']").val(id);
                 }
             }).data("kendoDropDownList");
         dropdown_banios = 
@@ -525,10 +579,10 @@ $(function() {
                 dataTextField: "nombre",
                 dataValueField: "id",
                 dataSource: data_10,
-                optionLabel: "Recámaras (Any)",
+                optionLabel: "Baños ",
                 change: function(e) {
                     var id = this.value();
-                    //$("[name='id_colonia']").val(id);
+                    $("[name='banios']").val(id);
                 }
             }).data("kendoDropDownList");
         dropdown_precio_minimo = 
@@ -536,10 +590,10 @@ $(function() {
                 dataTextField: "nombre",
                 dataValueField: "id",
                 dataSource: data_money,
-                optionLabel: "Precio Min. (Any)",
+                optionLabel: "Precio Min. ",
                 change: function(e) {
                     var id = this.value();
-                    //$("[name='id_colonia']").val(id);
+                    $("[name='precio_minimo']").val(id);
                 }
             }).data("kendoDropDownList");
         dropdown_precio_maximo = 
@@ -547,10 +601,10 @@ $(function() {
                 dataTextField: "nombre",
                 dataValueField: "id",
                 dataSource: data_money,
-                optionLabel: "Precio Max. (Any)",
+                optionLabel: "Precio Max. ",
                 change: function(e) {
                     var id = this.value();
-                    //$("[name='id_colonia']").val(id);
+                    $("[name='precio_maximo']").val(id);
                 }
             }).data("kendoDropDownList");
         

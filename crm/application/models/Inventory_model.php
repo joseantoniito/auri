@@ -32,6 +32,51 @@ class Inventory_model extends CRM_Model
     }
     
     //manage developments
+    public function search_get_developments($data)
+    {
+        //{"id_estado":"9","id_municipio":"","id_colonia":"","recamaras":"","banios":"","precio_minimo":"","precio_maximo":""}
+                
+        $this->db->select('id, nombre, logotipo, url_imagen_principal, descripcion, id_tipo_desarrollo, id_etapa_desarrollo, total_de_unidades, id_entrega, entrega, id_estado, id_municipio, id_colonia, direccion, direccion_completa, latitud, longitud, codigo_postal, id_mostar_ubicacion, clave_interna, precio_desde, superficie_terreno_minima, superficie_terreno_maxima, superficie_contruida_minima, superficie_contruida_maxima, recamaras_total, banios_maximo, medios_banios_maximo, estacionamientos_maximo');
+        $this->db->from('tbldevelopments');
+        
+        $key = "id_estado";
+        $value = $data[$key];
+        if($value != '')
+            $this->db->where($key, $value);
+         
+        $key = "id_municipio";
+        $value = $data[$key];
+        if($value != '')
+            $this->db->where($key, $value);
+        
+        $key = "id_colonia";
+        $value = $data[$key];
+        if($value != '')
+            $this->db->where($key, $value);
+        
+        $key = "recamaras";
+        $value = $data[$key];
+        if($value != '')
+            $this->db->where("recamaras_total", $value);
+        
+        $key = "banios";
+        $value = $data[$key];
+        if($value != '')
+            $this->db->where('banios_maximo', $value);
+        
+        $key = "precio_minimo";
+        $value = $data[$key];
+        if($value != '')
+            $this->db->where("precio_desde >", $value);
+        
+        $key = "precio_maximo";
+        $value = $data[$key];
+        if($value != '')
+            $this->db->where("precio_desde <", $value);
+        
+        return $this->db->get()->result_array();
+    }
+    
     public function get_developments()
     {
         $this->db->select('id, nombre, logotipo, url_imagen_principal, descripcion, id_tipo_desarrollo, id_etapa_desarrollo, total_de_unidades, id_entrega, entrega, id_estado, id_municipio, id_colonia, direccion, direccion_completa, latitud, longitud, codigo_postal, id_mostar_ubicacion, clave_interna, precio_desde, superficie_terreno_minima, superficie_terreno_maxima, superficie_contruida_minima, superficie_contruida_maxima, recamaras_total, banios_maximo, medios_banios_maximo, estacionamientos_maximo');
@@ -167,6 +212,16 @@ class Inventory_model extends CRM_Model
         
     public function add_development_media_item($data){
         $this->db->insert('tbldevelopmentmediaitems', $data);
+        
+        $this->db->select('id, url, name, id_type');
+        $this->db->from('tblmediaitems');
+        $this->db->join('tbldevelopmentmediaitems', 'tblmediaitems.id = tbldevelopmentmediaitems.id_media_item', 'inner');
+        $this->db->where('id_development', $data["id_development"]);
+        $media_items = $this->db->get()->result_array();
+        if(count($media_items) == 1){
+            $this->db->where('id', $data["id_development"]);
+            $this->db->update('tbldevelopments', ['url_imagen_principal'=> $media_items[0]["url"]]);
+        }
     }
     
     public function delete_development_media_item($id){
@@ -192,7 +247,7 @@ class Inventory_model extends CRM_Model
     //manage unities
     public function get_unities($id)
     {
-        $this->db->select('tblunities.id, id_item, status, unidad, m2_habitables, balcon, terraza, roofgarden, m2_totales, recamaras, banios, precio, enganche_total, reservacion, contrato, num_mensualidades, saldo_de_enganche, mensualidades, credito');
+        $this->db->select('tblunities.id, id_item, status, unidad, m2_habitables, balcon, terraza, roofgarden, m2_totales, recamaras, banios, estacionamientos, precio, enganche_total, reservacion, contrato, num_mensualidades, saldo_de_enganche, mensualidades, credito');
         $this->db->from('tblunities');
         $this->db->join('tbldevelopments', 'tblunities.id_item = tbldevelopments.id', 'inner');
         $this->db->where('id_item', $id);
@@ -213,7 +268,6 @@ class Inventory_model extends CRM_Model
         $this->db->insert('tblunities', $data);
         $insert_id = $this->db->insert_id();
         if ($insert_id) {
-            logActivity('New Invoice Item Unity Added [ID:' . $insert_id . ', ' . $data['status'] . ']');
             return $insert_id;
         }
         return false;
@@ -226,7 +280,6 @@ class Inventory_model extends CRM_Model
         $this->db->where('id', $id);
         $this->db->update('tblunities', $data);
         if ($this->db->affected_rows() > 0) {
-            logActivity('Invoice Item Unity Updated [ID: ' . $id . ', ' . $data['status'] . ']');
             return true;
         }
         return false;
