@@ -2597,6 +2597,8 @@ function init_lead(id) {
     // In case header error
     if (init_lead_modal_data(id)) {
         $('.lead-modal').modal('show');
+        var ret = {ret:true};
+        $(".dataTable").trigger('example',[ret]);
     }
 }
 

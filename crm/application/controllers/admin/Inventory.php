@@ -417,4 +417,111 @@ class Inventory extends Admin_controller
         //redirect(admin_url('invoice_items'));
         //todo: cambiar recursos
     }
+    
+    //assign assessors to developments
+    public function development_assessors()
+    {
+        if (!has_permission('items','','view')) {
+            access_denied('Invoice Items');
+        }
+        $data['title'] = 'Assign assessors to developments';
+        //$data['items'] = json_encode($this->inventory_model->get_developments());
+        $this->load->view('admin/inventory/manage_development_assessors', $data);
+    }
+    
+    public function get_assessors()
+    {
+        if ($this->input->is_ajax_request()) {
+            echo json_encode($this->inventory_model->get_assessors());
+        }
+    }
+    
+    public function get_developments_with_assessors()
+    {
+        if ($this->input->is_ajax_request()) {
+            /*echo json_encode(array(
+                'item' => $item,
+                'item_features' => $this->inventory_model->get_development_features($id),
+                'item_media_items' => $this->inventory_model->get_development_media_items($id)                
+            ));*/
+            $developments = $this->inventory_model->get_developments();
+            
+            $ids_developments = 
+                array_map(function($element) { return $element['id']; }, $developments);
+            
+            $development_assessors = 
+                $this->inventory_model->get_developments_assessors($ids_developments);
+            
+            /*foreach ($developments as $development) {
+                $id_development = $development['id'];
+                $development["assesors"] = array_filter($development_assessors, function($obj){
+                    return $obj["id_development"] == $id_development;
+                }); 
+            }*/
+            
+            echo json_encode(array(
+                    'developments' => $developments,
+                    'development_assessors' => $development_assessors,
+                    ));
+            
+            //echo json_encode($developments);
+        }
+    }
+    
+    public function add_development_assessor(){
+        
+        if ($this->input->post()) {
+            $data = $this->input->post();
+
+            $success = false;
+            $message = '';
+            if ($this->inventory_model->add_development_assessor($data)) {
+                $success = true;
+                $message = _l('added_successfuly', "asesor");
+            };
+            echo json_encode(array(
+                'success' => $success,
+                'message' => $message,
+                'data' => $data
+                ));
+        }
+    }
+    
+    public function delete_development_assessor(){
+        
+        if ($this->input->post()) {
+            $data = $this->input->post();
+
+            $success = false;
+            $message = '';
+            if ($this->inventory_model->delete_development_assessor($data)) {
+                $success = true;
+                $message = _l('deleted', "asesor");
+            };
+            echo json_encode(array(
+                'success' => $success,
+                'message' => $message,
+                'data' => $data
+                ));
+        }
+    }
+    
+    //reservations
+    public function reservations()
+    {
+        if (!has_permission('items','','view')) {
+            access_denied('Invoice Items');
+        }
+        $data['title'] = 'Reservations';
+        //$data['items'] = json_encode($this->inventory_model->get_developments());
+        $this->load->view('admin/inventory/manage_reservations', $data);
+    }
+    
+    public function get_reservations()
+    {
+        if ($this->input->is_ajax_request()) {
+            $data = $this->input->post();
+            echo json_encode($this->inventory_model->get_reservations($data));
+        }
+    }
 }

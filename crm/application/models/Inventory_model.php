@@ -302,11 +302,100 @@ class Inventory_model extends CRM_Model
         $id_development = $data['id_development'];
         unset($data['id_development']);
         unset($data['id']);
-        $this->db->insert('tblleads', $data);
-        $insert_id = $this->db->insert_id();
-        if ($insert_id) {
-            return $insert_id;
+        $status = 1;
+        
+        //validate lead
+        $this->db->select('id');
+        $this->db->from('tblleads');
+        $this->db->like('name', $data["name"]);
+        $lead = $this->db->get()->row();
+        
+        if(is_null($lead))
+        {
+            //insert lead
+            $data["dateadded"] = getdate();
+            $this->db->insert('tblleads', $data);
+            $insert_id = $this->db->insert_id();
+            if ($insert_id) {
+
+                $this->db->insert('tblreservations', [
+                    'id_development' => $id_development,
+                    'id_lead' => $insert_id,
+                    'status' => $status
+                ]);
+
+                return $insert_id;
+            }
+            return false;
+        }
+        else{
+            $this->db->insert('tblreservations', [
+                'id_development' => $id_development,
+                'id_lead' => $lead->id,
+                'status' => $status
+            ]);
+            return $lead->id;
+        }
+        
+    }
+    
+    //staff
+    public function get_assessors()
+    {
+        $this->db->select('staffid, email, firstname, lastname, phonenumber, profile_image');
+        $this->db->from('tblstaff');
+        return $this->db->get()->result_array();
+    }
+
+    public function get_developments_assessors($ids_developments)
+    {
+        $this->db->select('id_development, id_staff, firstname, lastname');
+        $this->db->from('tbldevelopmentassessors');
+        $this->db->join('tblstaff', 'tbldevelopmentassessors.id_staff = tblstaff.staffid', 'inner');
+        $this->db->where_in('id_development', $ids_developments);
+        return $this->db->get()->result_array();
+    }
+    
+    public function add_development_assessor($data)
+    {
+        $this->db->insert('tbldevelopmentassessors', [
+            'id_development' => $data["id_development"],
+            'id_staff' => $data["id_staff"],
+        ]);
+        return true;
+    }
+    
+    public function delete_development_assessor($data)
+    {
+        $this->db->where('id_development', $data["id_development"]);
+        $this->db->where('id_staff', $data["id_staff"]);
+        $this->db->delete('tbldevelopmentassessors');
+        if ($this->db->affected_rows() > 0) {
+            return true;
         }
         return false;
+    }
+    
+    public function get_reservations($data)
+    {
+        
+        $this->db->select('tblreservations.id_development, id_unity, id_lead, tblreservations.status, unidad, nombre, precio, firstname');
+        $this->db->from('tblreservations');
+        $this->db->join('tbldevelopments', 'tblreservations.id_development = tbldevelopments.id', 'inner');
+        $this->db->join('tblunities', 'tblreservations.id_unity = tblunities.id ', 'left');
+        $this->db->join('tbldevelopmentassessors', 'tblreservations.id_development = tbldevelopmentassessors.id_development', 'left');
+        $this->db->join('tblstaff', 'tbldevelopmentassessors.id_staff = tblstaff.staffid', 'left');
+        
+        $key = "status";
+        $value = $data[$key];
+        if($value != '')
+            $this->db->where("tblreservations.status", $value);
+        
+        $key = "id_lead";
+        $value = $data[$key];
+        if($value != '')
+            $this->db->where($key, $value);
+        
+        return $this->db->get()->result_array();
     }
 }

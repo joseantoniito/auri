@@ -1,6 +1,12 @@
 /*#sales_item_modal .modal-content{
     min-width:900px;
 }*/
+.drop_container {
+    width: 478px;
+    height: 95px;
+    position: absolute;
+    z-index: 2;
+}
 
 #window_unity .row {
     display: flex;

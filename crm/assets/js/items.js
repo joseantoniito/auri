@@ -60,7 +60,41 @@ $(function() {
         else if(window.location.href.indexOf("/admin/inventory/item") != -1){
             load_development_info();
         }
+        
+        if(window.location.href.indexOf("/admin/inventory/development_assessors") != -1){
+            load_development_assessors();
+        }
+        
+        if(window.location.href.indexOf("/admin/inventory/reservations") != -1){
+             var data = "status=&id_lead=";
+            create_grid_reservations(data);
+        }
+        if(window.location.href.indexOf("/admin/leads") != -1){
+            
+            $(".dataTable").bind('example',function (evt,ret) { 
+                $(".dataTable [href='#']")
+                //$("[href='#lead_reservations']")
+                    .on("click", function(event){
+                    var id_lead = $("[name='leadid']").val()
+                    str_on_click = $(event.currentTarget).attr("onclick")
+                    id_lead = 
+                        str_on_click.substring(
+                            str_on_click.indexOf('(')+1,
+                            str_on_click.indexOf(')'))
 
+                    var data = "status=&id_lead="+id_lead;
+                    create_grid_reservations(data);
+                }) 
+                //ret.val = false;
+            });
+            setTimeout(function() {
+                //alert("enter");
+                console.log("call function datatable");
+                var ret = {ret:true};
+                $(".dataTable").trigger('example',[ret]);
+            }, 7000);
+            
+        }
     });
     
     function hide_unnecesary_controls(){
@@ -127,7 +161,7 @@ $(function() {
         create_upload_media_item(
             "upload_photos",
             image_items, 
-            "<div class='upload_photos_item'><img src='/crm/uploads/inventory/#:name#' /><span id='lbl_item'>#:name#</span><button type='button' class='k-button k-button-bare k-upload-action'><span class='k-icon k-i-close k-delete' title='Remove'></span></button></div>",
+            "<div class='upload_photos_item'><img src='/perfex_crm/crm/uploads/inventory/#:name#' /><span id='lbl_item'>#:name#</span><button type='button' class='k-button k-button-bare k-upload-action'><span class='k-icon k-i-close k-delete' title='Remove'></span></button></div>",
             [".jpg", ".png"],
             function(e){
                 console.log(e);
@@ -643,5 +677,214 @@ $(function() {
         }
         grid.dataSource.data(data);
         //window_unity.close();
-    }   
+    } 
+
+
+    //development assessors
+    function load_development_assessors(){
+        /*$("#drag1").on('dragstart', function(ev) {
+            console.log(ev);
+            ev = ev.originalEvent;
+            evt.dataTransfer.data("id","123");
+        });*/
+        
+        $.get(admin_url + 'inventory/get_assessors/', function(response) {
+            $("#list_view_assessors").kendoListView({
+                dataSource: response,
+                template: kendo.template($("#assessors_template").html()),
+                dataBound: function(e) {
+                    $.each(e.sender.items(), function(index, item){
+                        item = $(item);
+                        item[0].addEventListener('dragstart', on_drag_start_assessor, false);
+                        item.find("#descripcion").text();
+                        
+                        
+                    });
+                }
+            });
+        }, 'json');
+        
+        $.get(admin_url + 'inventory/get_developments_with_assessors/', function(response) {
+            var idsStaff = $.map(response.development_assessors, function(item){
+                return item.id_staff;
+            });
+            var list_view_staff = $("#list_view_assessors").data("kendoListView");
+            var data_staff = list_view_staff.dataSource.data();
+            data_staff = $.grep(data_staff, function(item){
+                return jQuery.inArray( item.staffid, idsStaff ) == -1;
+            });
+            list_view_staff.dataSource.data(data_staff);
+            
+            $("#list_view_developments").kendoListView({
+                dataSource: response.developments,
+                template: kendo.template($("#developments_template").html()),
+                dataBound: function(e) {
+                    $.each(e.sender.items(), function(index, item){
+                        item = $(item);
+                        item[0].addEventListener('drop', on_drop_assessor, false);
+                        item[0].addEventListener('dragover', on_drag_over_assessor, false);
+                        item.find("#descripcion").text();
+                        
+                        var id_development = item.attr("_id");
+                        var assessors = $.grep(response.development_assessors, function(itemA){
+                            return itemA.id_development == id_development;
+                        });
+                        
+                        
+                        item.find("#list_view_development_assessors").kendoListView({
+                            dataSource: assessors,
+                            template: "<div _id='#:id_staff#' draggable='true'> <h4 id='assessor_name'> #:firstname#</h4></div>",
+                            dataBound: function(e) {
+                                 $.each(e.sender.items(), function(index, item){
+                                    item = $(item);
+                                    item[0].addEventListener('dragstart', on_drag_start_assessor_1, false);
+                                });
+                            }
+                        });
+                    });
+                }
+            });
+        }, 'json');
+        
+        
+        /*$("#drag1")[0].addEventListener('dragstart', on_drag_start, false);
+        
+        $("#div1")[0].addEventListener('drop', on_drop, false);
+        
+        $("#div1")[0].addEventListener('dragover', on_drag_over, false);*/
+    }
+    
+    function on_drag_over_assessor(ev) {
+        ev.preventDefault();
+    }
+
+    function on_drag_start_assessor(ev) {
+        ev.dataTransfer.setData("id_assessor", $(ev.target).attr("_id"));//ev.target.id
+        ev.dataTransfer.setData("name", $(ev.target).find("#assessor_name").text());
+        ev.dataTransfer.setData("type", "add_assessor");
+    }
+
+    function on_drag_start_assessor_1(ev) {
+        ev.dataTransfer.setData("id_assessor", $(ev.target).attr("_id"));//ev.target.id
+        ev.dataTransfer.setData("name", $(ev.target).find("#assessor_name").text());
+        ev.dataTransfer.setData("type", "change_assessor");        
+        ev.dataTransfer.setData("id_development", $(ev.target).parent().attr("_id_dev"));
+    }
+
+    function on_drop_assessor(ev) {
+        ev.preventDefault();
+        var id_assessor = ev.dataTransfer.getData("id_assessor");
+        var name = ev.dataTransfer.getData("name");
+        var type = ev.dataTransfer.getData("type");
+        
+        var sender = $(ev.target).parent();
+        var id_development = sender.attr("_id");
+       
+        list_view_developments = sender.find("#list_view_development_assessors").data("kendoListView");
+        data_list_view_developments = list_view_developments.dataSource.data();
+        data_list_view_developments.push({id_development: id_development, firstname: name, id_staff: id_assessor });
+        //add in db
+         var data = "id_development=" + id_development + "&id_staff=" +id_assessor;
+        $.post(admin_url + 'inventory/add_development_assessor', data).done(function(response) {
+            response = JSON.parse(response);
+            if (response.success == true) {
+                alert_float('success', response.message);
+            }
+        }).fail(function(data) {
+            alert_float('danger', data.responseText);
+        });
+        
+        if(type == "add_assessor"){
+            list_view_assessors = $("#list_view_assessors").data("kendoListView");
+            data_list_view_assessors = list_view_assessors.dataSource.data();
+            indexItem = $.map(data_list_view_assessors, function(obj, index) {
+                if(obj.staffid == id_assessor) {return index;}
+            })[0];
+            data_list_view_assessors.splice(indexItem, 1);
+        }
+        else if(type == "change_assessor"){
+            var id_development_from = ev.dataTransfer.getData("id_development");
+            data_list_view_assessors =
+                $("#list_view_developments")
+                    .find("[_id_dev='"+id_development_from+"']")
+                    .data("kendoListView").dataSource.data();
+            
+            indexItem = $.map(data_list_view_assessors, function(obj, index) {
+                if(obj.id_staff == id_assessor) {return index;}
+            })[0];
+            data_list_view_assessors.splice(indexItem, 1);
+            var data = "id_development=" + id_development_from + "&id_staff=" +id_assessor;
+            //delete in db
+            $.post(admin_url + 'inventory/delete_development_assessor', data).done(function(response) {
+                response = JSON.parse(response);
+                if (response.success == true) {
+                    //alert_float('success', response.message);
+                }
+            }).fail(function(data) {
+                //alert_float('danger', data.responseText);
+            });
+        }
+        //ev.target.appendChild(document.getElementById(data));
+    }
+
+    //reservations
+    function create_grid_reservations(data){
+       
+        $.post(admin_url + 'inventory/get_reservations',data).done(function(response) {
+            response = JSON.parse(response);
+            console.log(response);
+            //grid_unities = 
+                $("#grid_reservations").kendoGrid({
+                    dataSource: response,
+                    columns: [
+                        {field: "unidad", title: "unidad"},                            
+                        {field: "nombre", title: "nombre"},
+                        {field: "precio", title: "precio"},
+                        {field: "firstname", title: "firstname"},
+                        {field: "status", title: "status"},
+                        {field:"id_development", title:"Acciones", width:"100px", 
+                        template: "<span _id='#:id_development#' id='btn_manage' href='' class='qodef-icon-shortcode normal qodef-icon-little'><i class='qodef-icon-font-awesome fa fa-cog qodef-icon-element'></i></span>"}
+                    ],
+                    dataBound: function(e) {
+                        console.log("dataBound");
+                        var has_permission_edit = $("#hdn_has_permission_edit").val() == "1";
+                        
+                        $.each(e.sender.items(), function(index, item){
+                            $(item).find("#btn_manage")
+                                .on("click", { index:index }, edit_reservation);
+                           
+                        });
+                    }
+                }).data("kendoGrid");
+            
+                $("#window_reservation").kendoWindow({
+                    width: "600px",
+                    title: "Reservación",
+                    visible: false,
+                    modal: true,
+                    resizable: false,
+                    scrollable: false,
+                }).data("kendoWindow");
+
+                $("#btn_close_window_reservation").on("click", function(){
+                     $("#window_reservation").data("kendoWindow").close();
+                });
+            }).fail(function(data) {
+            alert_float('danger', data.responseText);
+        });;
+        
+        
+        
+    }
+
+    function edit_reservation(event){
+        var sender = $(event.currentTarget);
+        var id = sender.attr("uid");
+        var index = event.data.index;
+        var item = $("#grid_reservations").data("kendoGrid").dataSource.data()[index];
+        
+        $("#development_name").text(item.nombre);
+        
+        $("#window_reservation").data("kendoWindow").open();
+    }
 });

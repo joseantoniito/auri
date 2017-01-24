@@ -654,6 +654,8 @@ $(function() {
     }
     
     
+    
+    
     //utilerias
     function _validate_form(form, form_rules, submithandler) {
         $.validator.setDefaults({

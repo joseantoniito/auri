@@ -76,6 +76,11 @@
             <?php echo _l('lead_add_edit_activity'); ?>
          </a>
       </li>
+       <li role="presentation">
+         <a href="#lead_reservations" aria-controls="lead_reservations" role="tab" data-toggle="tab">
+            Reservaciones
+         </a>
+      </li>
       <?php } ?>
    </ul>
 </div>
@@ -234,6 +239,9 @@
       <?php $i++; } ?>
    </div>
 </div>
+    <div role="tabpanel" class="tab-pane" id="lead_reservations">
+      <?php $this->load->view('admin/inventory/manage_lead_reservations'); ?>
+   </div>
 <?php } ?>
 </div>
 </div>
