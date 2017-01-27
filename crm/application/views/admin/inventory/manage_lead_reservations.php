@@ -25,23 +25,33 @@
 </div>
 
 <div id="window_reservation">
-    <form action="/perfex_crm/crm/inventory/manage_reservation" id="leads_form" method="post" accept-charset="utf-8" novalidate="novalidate">
-        <input type="hidden" name="id_develpment" />
+    <form action="/perfex_crm/crm/admin/inventory/manage_reservation_lead" id="reservation_form" method="post" accept-charset="utf-8" novalidate="novalidate">
+         <input type="hidden" name="id" />
+        <input type="hidden" name="id_development" />
+        <input type="hidden" name="id_unity" />
         <input type="hidden" name="id_lead" />
+        <input type="hidden" name="id_assessor" />
+        <input type="hidden" name="status" value="2" />
         <div class="panel_s" style="min-height:300px;">
             <div id="details" class="row padTop32">
                 <div class="col-md-12">
                     <label for="dropdown_unities" class="control-label">Desarrollo</label>
                     <span id="development_name"></span>
                 </div>
+            </div>
+            <div class="row">
                 <div class="col-md-12">
                     <label for="dropdown_unities" class="control-label">Unidad</label>
-                    <input type="hidden" name="id_unity" />
+                    <!--<input type="hidden" name="id_unity" />-->
                     <input id="dropdown_unities" value='' />
                 </div>
-                <div class="col-md-4">
-                    
+            </div>
+            <div class="row padTop32">
+                <div class="panel-heading">
+                    <h4 class="customer-heading-profile bold margin-b-grey">Docs</h4>
                 </div>
+                <input name="files" id="upload_docs" type="file" />
+                <div class="height_20"></div>
             </div>
         </div>
         <div class="modal-footer">

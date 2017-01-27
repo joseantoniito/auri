@@ -62,42 +62,24 @@ $(function() {
         }
         
         if(window.location.href.indexOf("/admin/inventory/development_assessors") != -1){
-            load_development_assessors();
+            pre_load_reservation_assessor();
         }
         
         if(window.location.href.indexOf("/admin/inventory/reservations") != -1){
-             var data = "status=&id_lead=";
-            create_grid_reservations(data);
+            load_reservations_admin();
         }
         if(window.location.href.indexOf("/admin/leads") != -1){
-            
-            $(".dataTable").bind('example',function (evt,ret) { 
-                $(".dataTable [href='#']")
-                //$("[href='#lead_reservations']")
-                    .on("click", function(event){
-                    var id_lead = $("[name='leadid']").val()
-                    str_on_click = $(event.currentTarget).attr("onclick")
-                    id_lead = 
-                        str_on_click.substring(
-                            str_on_click.indexOf('(')+1,
-                            str_on_click.indexOf(')'))
-
-                    var data = "status=&id_lead="+id_lead;
-                    create_grid_reservations(data);
-                }) 
-                //ret.val = false;
-            });
-            setTimeout(function() {
-                //alert("enter");
-                console.log("call function datatable");
-                var ret = {ret:true};
-                $(".dataTable").trigger('example',[ret]);
-            }, 7000);
-            
+            pre_load_reservation_assessor();
         }
     });
     
     function hide_unnecesary_controls(){
+        parent = $("[href='" + admin_url + "invoice_items']").parent();
+        parent.append(
+            '<li><a href="'+admin_url+'inventory/reservations">Reservaciones</a></li>"');
+        parent.append(
+            '<li><a href="'+admin_url+'inventory/development_assessors">Asignar asesores</a></li>"');
+            
         $("[href='" + admin_url + "invoice_items']").attr("href", admin_url + "inventory/");
         $("[href='" + admin_url + "projects']").hide();
         $("[href='" + admin_url + "invoices/list_invoices']").hide();
@@ -161,7 +143,7 @@ $(function() {
         create_upload_media_item(
             "upload_photos",
             image_items, 
-            "<div class='upload_photos_item'><img src='/perfex_crm/crm/uploads/inventory/#:name#' /><span id='lbl_item'>#:name#</span><button type='button' class='k-button k-button-bare k-upload-action'><span class='k-icon k-i-close k-delete' title='Remove'></span></button></div>",
+            "<div class='upload_photos_item'><img src='/crm/uploads/inventory/#:name#' /><span id='lbl_item'>#:name#</span><button type='button' class='k-button k-button-bare k-upload-action'><span class='k-icon k-i-close k-delete' title='Remove'></span></button></div>",
             [".jpg", ".png"],
             function(e){
                 console.log(e);
@@ -827,64 +809,321 @@ $(function() {
         //ev.target.appendChild(document.getElementById(data));
     }
 
-    //reservations
-    function create_grid_reservations(data){
-       
+    //desarrollos de interes -reservaciones-
+
+    //reservaciones admins
+    function load_reservations_admin(){
+        var data = "status=&id_lead=";
+        create_grid_reservations(data, data_bound_reservations_admin);
+        
+        _validate_form($('#reservation_form'), {
+            address: 'required'
+        }, manage_reservation);
+        
+        var status_items = [
+            {id: 1, nombre: "Disponible"},
+            {id: 2, nombre: "En validación"},
+            {id: 3, nombre: "Reservado"},
+            {id: 4, nombre: "Vendido"}
+        ];
+        $("#dropdown_status").kendoDropDownList({
+            dataTextField: "nombre",
+            dataValueField: "id",
+            dataSource: status_items,
+            value: null,
+            optionLabel: "Seleccione.. ",
+            change: function(e) {
+                var id = this.value();
+                $("[name='id_status']").val(id);
+                var data = "status="+id+"&id_lead=";
+                create_grid_reservations(data, data_bound_reservations_admin);
+            }
+        }).data("kendoDropDownList");
+    }
+    
+    function data_bound_reservations_admin(e) {
+        console.log("dataBound");
+        var has_permission_edit = $("#hdn_has_permission_edit").val() == "1";
+
+        $.each(e.sender.items(), function(index, item){
+            $(item).find("#btn_manage")
+                .on("click", { index:index }, edit_reservation_admin);
+
+        });
+    }
+
+    function edit_reservation_admin(){
+        var sender = $(event.currentTarget);
+        var id = sender.attr("_id");
+        $.get(admin_url + 'inventory/get_reservation/' + id, function(response) {
+            var item = response.item;
+            var item_docs = response.item_docs;
+            var item_assessors = response.item_assessors;
+            
+            $("[name='id']").val(item.id);
+            $("[name='id_development']").val(item.id_development);
+            $("[name='id_unity']").val(item.id_unity);
+            $("[name='id_lead']").val(item.id_lead);
+            $("[name='id_assessor']").val(item.id_assessor);
+            $("#development_name").text(item.nombre);
+            var next_status = null;
+            $(".reservation_item").hide();
+            if(item.status == "1"){
+                next_status = "1";
+                $("#reservation_avaiable").show();
+                $("#dropdown_assessors").kendoDropDownList({
+                    dataTextField: "firstname",
+                    dataValueField: "staffid",
+                    dataSource: item_assessors,
+                    optionLabel: "Seleccione.. ",
+                    value: item.id_assessor,
+                    change: function(e) {
+                        var id = this.value();
+                        $("[name='id_assessor']").val(id);
+                    }
+                }).data("kendoDropDownList");
+            }
+            if(item.status == "2"){
+                next_status = "3";
+                $("#reservation_in_validation").show();
+                $("#list_view_reservation_docs").kendoListView({
+                    dataSource: item_docs,
+                    template: kendo.template($("#reservation_docs_template").html()),
+                    dataBound: function(e) {
+                        $.each(e.sender.items(), function(index, item){
+                            item = $(item);
+                            item.find("#descripcion").text();
+                        });
+                    }
+                });
+            }
+            
+            $("[name='status']").val(next_status); 
+            $("#window_reservation").data("kendoWindow").open();
+        }, 'json');
+    }
+
+    //reservaciones asesores
+    function pre_load_reservation_assessor(){
+        $(".dataTable").bind('example',function (evt,ret) { 
+            console.log($(".dataTable [href='#']"));
+            //$("[href='#lead_reservations']")
+            $(".dataTable [href='#']")
+                .on("click", function(event){
+                    var id_lead = $("[name='leadid']").val()
+                    str_on_click = $(event.currentTarget).attr("onclick")
+                    id_lead = 
+                        str_on_click.substring(
+                            str_on_click.indexOf('(')+1,
+                            str_on_click.indexOf(')'));
+                    //grid
+                    load_reservation_assessor(id_lead);
+                }) 
+            //ret.val = false;
+        });
+        setTimeout(function() {
+            //alert("enter");
+            console.log("call function datatable");
+            var ret = {ret:true};
+            $(".dataTable").trigger('example',[ret]);
+        }, 7000);
+        
+        
+    }
+    
+    function load_reservation_assessor(id_lead){
+        setTimeout(function() {
+            var data = "status=&id_lead="+id_lead;
+            create_grid_reservations(data, data_bound_reservations_assessor);
+            
+            _validate_form($('#reservation_form'), {
+                address: 'required'
+            }, manage_reservation);
+        }, 3000);
+    }
+    
+    function data_bound_reservations_assessor(e) {
+        console.log("dataBound");
+        var has_permission_edit = $("#hdn_has_permission_edit").val() == "1";
+
+        $.each(e.sender.items(), function(index, item){
+            
+            $(item).find("#btn_manage")
+                .on("click", { index:index }, edit_reservation_assessor);
+
+        });
+    }
+    
+    function edit_reservation_assessor(event){
+        var sender = $(event.currentTarget);
+        var id = sender.attr("_id");
+        //var index = event.data.index;
+        //var item = $("#grid_reservations").data("kendoGrid").dataSource.data()[index];
+        
+        $.get(admin_url + 'inventory/get_reservation/' + id, function(response) {
+            var item = response.item;
+            var item_docs = response.item_docs;
+            var item_unidades_desarrollo = response.item_unidades_desarrollo;
+            
+            $("[name='id']").val(item.id);
+            $("[name='id_development']").val(item.id_development);
+            $("[name='id_unity']").val(item.id_unity);
+            $("[name='id_lead']").val(item.id_lead);
+            $("[name='status']").val(item.status);
+            $("[name='id_assessor']").val(response.staff_id);
+            $("#development_name").text(item.nombre);
+            $("#unity_name").text(item.unidad);
+
+            
+            $("#dropdown_unities").kendoDropDownList({
+                dataTextField: "unidad",
+                dataValueField: "id",
+                dataSource: item_unidades_desarrollo,
+                optionLabel: "Seleccione.. ",
+                value: item.id_unity,
+                change: function(e) {
+                    var id = this.value();
+                    $("[name='id_unity']").val(id);
+                }
+            }).data("kendoDropDownList");
+            
+            $.each(item_docs, function(index, item){
+                item.extension = "." + item.name.split('.')[1];
+            });
+            if($("#upload_docs").data("kendoUpload"))
+                $("#upload_docs").data("kendoUpload").clearAllFiles();
+            $("#upload_docs").kendoUpload({
+                async: {
+                    saveUrl: admin_url + "inventory/save_media_item",
+                    removeUrl: admin_url + "inventory/remove_media_item",
+                    autoUpload: true
+                },
+                files: item_docs,
+                validation: {
+                    allowedExtensions: [".doc", ".docx", ".xls", ".xlslx", "pdf"],
+                },
+                success: function(e){
+                    debugger;
+                    console.log(e);
+                    if(e.response.type == "save"){
+                        var id_media_item = e.response.id;
+                        if(id_media_item)
+                            add_reservation_media_item(id_media_item);
+                    }
+                    else if(e.response.type == "remove"){
+                        var id_media_item = e.files[0].id;
+                        delete_reservation_media_item(id_media_item);
+                    }
+                },
+                error: function(e){
+                    debugger;
+                    console.log(e);
+                }
+            }).data("kendoUpload");
+        
+            $("#window_reservation").data("kendoWindow").open();
+            
+        }, 'json');
+    }
+    
+    function add_reservation_media_item(id_media_item){
+        var id_reservation = $("[name='id']").val();
+        var data = "id_reservation=" + id_reservation + "&id_media_item=" +id_media_item;
+        
+        $.post(admin_url + 'inventory/add_reservation_media_item', data).done(function(response) {
+            response = JSON.parse(response);
+            if (response.success == true) {
+                alert_float('success', response.message);
+            }
+        }).fail(function(data) {
+            alert_float('danger', data.responseText);
+        });
+    }
+
+    function delete_reservation_media_item(id_media_item){
+        $.get(admin_url + 'inventory/delete_reservation_media_item/' + id_media_item, function(response) {
+            console.log(response); 
+            $.get(admin_url + 'inventory/delete_media_item/' + id_media_item, function(response) {
+                console.log(response); 
+                alert_float('success', "Item multimedia eliminado correctamente");  
+            }, 'json');
+            
+        }, 'json');
+    }
+
+    
+    
+    //utilerías desarrollos de interés y otros
+    function create_grid_reservations(data, fn_data_bound){
+        
+        
         $.post(admin_url + 'inventory/get_reservations',data).done(function(response) {
             response = JSON.parse(response);
             console.log(response);
-            //grid_unities = 
-                $("#grid_reservations").kendoGrid({
-                    dataSource: response,
-                    columns: [
-                        {field: "unidad", title: "unidad"},                            
-                        {field: "nombre", title: "nombre"},
-                        {field: "precio", title: "precio"},
-                        {field: "firstname", title: "firstname"},
-                        {field: "status", title: "status"},
-                        {field:"id_development", title:"Acciones", width:"100px", 
-                        template: "<span _id='#:id_development#' id='btn_manage' href='' class='qodef-icon-shortcode normal qodef-icon-little'><i class='qodef-icon-font-awesome fa fa-cog qodef-icon-element'></i></span>"}
-                    ],
-                    dataBound: function(e) {
-                        console.log("dataBound");
-                        var has_permission_edit = $("#hdn_has_permission_edit").val() == "1";
-                        
-                        $.each(e.sender.items(), function(index, item){
-                            $(item).find("#btn_manage")
-                                .on("click", { index:index }, edit_reservation);
-                           
-                        });
-                    }
-                }).data("kendoGrid");
+            console.log($("#grid_reservations"));
+            $("#grid_reservations").kendoGrid({
+                dataSource: response,
+                columns: [
+                    {field: "unidad", title: "unidad"},                            
+                    {field: "nombre", title: "nombre"},
+                    {field: "precio", title: "precio"},
+                    {field: "firstname", title: "firstname"},
+                    {field: "status", title: "status"},
+                    {field:"id", title:"Acciones", width:"100px", 
+                    template: "<span _id='#:id#' id='btn_manage' href='' class='qodef-icon-shortcode normal qodef-icon-little'><i class='qodef-icon-font-awesome fa fa-cog qodef-icon-element'></i></span>"}
+                ],
+                dataBound: fn_data_bound
+            }).data("kendoGrid");   
             
-                $("#window_reservation").kendoWindow({
-                    width: "600px",
-                    title: "Reservación",
-                    visible: false,
-                    modal: true,
-                    resizable: false,
-                    scrollable: false,
-                }).data("kendoWindow");
+            $("#window_reservation").kendoWindow({
+                width: "600px",
+                title: "Reservación",
+                visible: false,
+                modal: true,
+                resizable: false,
+                scrollable: false,
+            }).data("kendoWindow");
 
-                $("#btn_close_window_reservation").on("click", function(){
-                     $("#window_reservation").data("kendoWindow").close();
-                });
-            }).fail(function(data) {
+            $("#btn_close_window_reservation").on("click", function(){
+                 $("#window_reservation").data("kendoWindow").close();
+            });
+        }).fail(function(data) {
             alert_float('danger', data.responseText);
-        });;
-        
-        
-        
-    }
+        }); 
 
-    function edit_reservation(event){
-        var sender = $(event.currentTarget);
-        var id = sender.attr("uid");
-        var index = event.data.index;
-        var item = $("#grid_reservations").data("kendoGrid").dataSource.data()[index];
-        
-        $("#development_name").text(item.nombre);
-        
-        $("#window_reservation").data("kendoWindow").open();
     }
+    function manage_reservation(form) {
+        var data = $(form).serialize();
+        //data = data.replace("item_id", "id_item");
+        var url = form.action;
+        $.post(url, data).done(function(response) {
+            response = JSON.parse(response);
+            if (response.success == true) {
+                refresh_grid_reservations(response);
+                alert_float('success', response.message);
+            }
+        }).fail(function(data) {
+            alert_float('danger', data.responseText);
+        });
+        return false;
+    }
+    function refresh_grid_reservations(response){
+        grid = $("#grid_reservations").data("kendoGrid");
+        var data = grid.dataSource.data();
+        var indexItem = null;
+        var itemInGrid = $.grep(data, function(item, index){ 
+            var ok = item.id == response.item.id;
+            if(ok) indexItem = index;
+            return ok;
+        });
+        
+        if(indexItem == null){
+            data.push(response.item);
+        }
+        else{
+            data.splice(indexItem, 1);
+        }
+        grid.dataSource.data(data);
+        $("#window_reservation").data("kendoWindow").close();
+    }    
 });

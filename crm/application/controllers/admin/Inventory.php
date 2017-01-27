@@ -524,4 +524,102 @@ class Inventory extends Admin_controller
             echo json_encode($this->inventory_model->get_reservations($data));
         }
     }
+    
+    public function get_reservation($id)
+    {
+        if ($this->input->is_ajax_request()) {
+            $item = $this->inventory_model->get_reservation($id);
+            
+            /*$unidades_desarrollo = null;
+            if($item.id_unity == 0) */
+                //$unidades_desarrollo = $this->inventory_model->get_unities($item->id_development);
+            echo json_encode(array(
+                'item' => $item,
+                'item_docs' => $this->inventory_model->get_reservation_docs($id),
+                'id_development' => $item->id_development,
+                'item_unidades_desarrollo' => $this->inventory_model->get_unities($item->id_development),
+                'item_assessors' => $this->inventory_model->get_assessors(),
+                'staff_id' => get_staff_user_id()
+            ));
+        }
+    }
+    
+    public function add_reservation_media_item(){
+        if (has_permission('items','','view')) {
+            if ($this->input->post()) {
+                $data = $this->input->post();
+                
+                if(!has_permission('items','','create')){
+                  header('HTTP/1.0 400 Bad error');
+                  echo _l('access_denied');
+                  die;
+                }
+                $success = false;
+                $message = '';
+                if ($this->inventory_model->add_reservation_media_item($data)) {
+                    $success = true;
+                    $message = _l('added_successfuly', "multimedia item");
+                };
+                echo json_encode(array(
+                    'success' => $success,
+                    'message' => $message,
+                    'data' => $data
+                    ));
+            }
+        }
+    }
+    
+    public function delete_reservation_media_item($id){
+        $response = $this->inventory_model->delete_reservation_media_item($id);
+    }
+    
+    public function manage_reservation_admin()
+    {
+        if (has_permission('items','','view')) {
+            if ($this->input->post()) {
+                $data = $this->input->post();
+                if(!has_permission('items','','edit')){
+                  header('HTTP/1.0 400 Bad error');
+                  echo _l('access_denied');
+                  die;
+                }
+                $success = $this->inventory_model->update_unity_reservation($data);
+                $message = '';
+                if ($success) {
+                    $message = _l('updated_successfuly', "Propiedad reservada");
+                }
+                echo json_encode(array(
+                    'success' => $success,
+                    'message' => $message,
+                    'item' => $data
+                    ));
+                
+            }
+        }
+    }
+    
+    public function manage_reservation_lead()
+    {
+        if (has_permission('items','','view')) {
+            if ($this->input->post()) {
+                $data = $this->input->post();
+                if(!has_permission('items','','edit')){
+                  header('HTTP/1.0 400 Bad error');
+                  echo _l('access_denied');
+                  die;
+                }
+                $success = $this->inventory_model->update_unity_reservation($data);
+                $message = '';
+                if ($success) {
+                    $message = _l('updated_successfuly', "Propiedad reservada");
+                }
+                echo json_encode(array(
+                    'success' => $success,
+                    'message' => $message,
+                    'item' => $data
+                    ));
+                
+            }
+        }
+    }
 }

@@ -225,7 +225,7 @@ class Inventory_model extends CRM_Model
     }
     
     public function delete_development_media_item($id){
-        $this->db->where('id', $id);
+        $this->db->where('id_media_item', $id);
         $this->db->delete('tbldevelopmentmediaitems');
         if ($this->db->affected_rows() > 0) {
             return true;
@@ -313,7 +313,7 @@ class Inventory_model extends CRM_Model
         if(is_null($lead))
         {
             //insert lead
-            $data["dateadded"] = getdate();
+            $data["dateadded"] = "NOW()";
             $this->db->insert('tblleads', $data);
             $insert_id = $this->db->insert_id();
             if ($insert_id) {
@@ -379,7 +379,7 @@ class Inventory_model extends CRM_Model
     public function get_reservations($data)
     {
         
-        $this->db->select('tblreservations.id_development, id_unity, id_lead, tblreservations.status, unidad, nombre, precio, firstname');
+        $this->db->select('tblreservations.id, tblreservations.id_development, id_unity, id_lead, tblreservations.status, unidad, nombre, precio, id_assessor, firstname');
         $this->db->from('tblreservations');
         $this->db->join('tbldevelopments', 'tblreservations.id_development = tbldevelopments.id', 'inner');
         $this->db->join('tblunities', 'tblreservations.id_unity = tblunities.id ', 'left');
@@ -397,5 +397,71 @@ class Inventory_model extends CRM_Model
             $this->db->where($key, $value);
         
         return $this->db->get()->result_array();
+    }
+    
+    public function get_reservation($id){
+        $this->db->select('tblreservations.id, tblreservations.id_development, id_unity, id_lead, tblreservations.status, unidad, nombre, precio, id_assessor, firstname');
+        $this->db->from('tblreservations');
+        $this->db->join('tbldevelopments', 'tblreservations.id_development = tbldevelopments.id', 'inner');
+        $this->db->join('tblunities', 'tblreservations.id_unity = tblunities.id ', 'left');
+        $this->db->join('tbldevelopmentassessors', 'tblreservations.id_development = tbldevelopmentassessors.id_development', 'left');
+        $this->db->join('tblstaff', 'tbldevelopmentassessors.id_staff = tblstaff.staffid', 'left');
+        $this->db->where("tblreservations.id", $id);
+        return $this->db->get()->row();
+    }
+    
+    public function add_reservation_media_item($data){
+        $this->db->insert('tblreservationsdocs', $data);
+        return true;
+    }
+    
+    public function delete_reservation_media_item($id){
+        $this->db->where('id_media_item', $id);
+        $this->db->delete('tblreservationsdocs');
+        if ($this->db->affected_rows() > 0) {
+            return true;
+        }
+        return false;
+    }
+    
+    public function get_reservation_docs($id)
+    {
+        $this->db->select('id, url, name, id_type');
+        $this->db->from('tblmediaitems');
+        $this->db->join('tblreservationsdocs', 'tblmediaitems.id = tblreservationsdocs.id_media_item', 'inner');
+        $this->db->where('id_reservation', $id);
+        return $this->db->get()->result_array();
+    } 
+    
+    public function update_unity_reservation($data){
+        $id = $data['id'];
+        unset($data['id']);
+        $this->db->where('id', $id);
+        $this->db->update('tblreservations', $data);
+        if ($this->db->affected_rows() > 0) {
+            $this->db->where('id', $data['id_unity']);
+            $this->db->update('tblunities', [
+                'status' => $data['status']
+            ]);
+            //todo: if ($this->db->affected_rows() > 0)
+                return true;
+        }
+        return false;
+    }
+    
+    public function set_unity_in_validation($data){
+        $id = $data['id'];
+        unset($data['id']);
+        $this->db->where('id', $id);
+        $this->db->update('tblreservations', $data);
+        if ($this->db->affected_rows() > 0) {
+            $this->db->where('id', $data['id_unity']);
+            $this->db->update('tblunities', [
+                'status' => $data['status']
+            ]);
+            if ($this->db->affected_rows() > 0)
+                return true;
+        }
+        return false;
     }
 }
