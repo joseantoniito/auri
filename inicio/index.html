@@ -22,7 +22,7 @@
                                 <a href="/desarrollo/?id=#:id#" rel="bookmark">#:nombre#</a>
                             </h3>
                             <div class="price-and-status">
-                                <span class="price">$#:precio_desde#</span>
+                                <span class="price">$#:kendo.toString(parseFloat(precio_desde), "n")#</span>
                                 <a href="http://realplaces3.inspirythemes.biz/property-status/for-sale/">
                                     <span class="property-status-tag">A la venta</span>
                                 </a>
@@ -34,7 +34,8 @@
                 </div>
 
                 <a href="/desarrollo/?id=#:id#">
-                    <img src="/perfex_crm/crm#:url_imagen_principal#" alt="#:nombre#" draggable="false">
+                    <!--<div class="img" style="backgroud-image: url('/perfex_crm/crm#:url_imagen_principal#')" >  </div>-->
+                    <img src="/perfex_crm/crm#:url_imagen_principal#" />
                 </a>
             </div>
         </script>
@@ -54,36 +55,7 @@
               <span class="sr-only">Next</span>
             </a>
         </div>
-        
-        <!-- INICIO -->
-        <div id="carousel_home_1" class="slider-variation-three" style="display:none;">
-            <div class="">
-                <div class="slide-overlay hidden-xs container">
-                    <div class="slide-inner-container" style="top: 196.5px;">
-                        <div class="slide-header">
-                            <h3 class="slide-entry-title entry-title">
-                                <a href="http://realplaces3.inspirythemes.biz/property/home-in-merrick-way/" rel="bookmark">Home in Merrick Way</a>
-                            </h3>
-                            <div class="price-and-status">
-                                <span class="price">$540,000</span>
-                                <a href="http://realplaces3.inspirythemes.biz/property-status/for-sale/">
-                                    <span class="property-status-tag">A la venta</span>
-                                </a>
-                            </div>
-                        </div>
-                        <p class="hidden-sm">Enchanting three bedroom, three bath home with spacious one bedroom, one bath cabana, in-laws quarters.…</p>
-                        <a class="btn-default hidden-sm hidden-md" href="http://realplaces3.inspirythemes.biz/property/home-in-merrick-way/">More Details<i class="fa fa-angle-right"></i></a>                    
-                    </div>
-                </div>
-
-                <a href="http://realplaces3.inspirythemes.biz/property/home-in-merrick-way/">
-                    <img src="http://realplaces3.inspirythemes.biz/wp-content/uploads/2015/07/slide-2.jpg" alt="Home in Merrick Way" draggable="false">
-                </a>
-            </div>
-            <ul class="flex-direction-nav"><li class="flex-nav-prev"><a class="flex-prev" href="#"></a></li><li class="flex-nav-next"><a class="flex-next" href="#"></a></li></ul>
-        </div>
-        <!-- FIN -->
-        
+     
         <div id="content-wrapper" class="site-content-wrapper">
             <div id="content" class="site-content layout-wide">
             <main id="main" class="site-main">
@@ -185,7 +157,7 @@
                                                 <a href="/desarrollo/?id=#:id#" rel="bookmark">#:nombre#</a>
                                             </h4>
                                             <div class="price-and-status">
-                                                <span class="price">$#:precio_desde#</span>
+                                                <span class="price">$#:kendo.toString(parseFloat(precio_desde), "n")#</span>
                                             </div>
                                         </header>
                                         <p id="descripcion">#:descripcion#</p>
@@ -239,7 +211,7 @@
                                                 <a href="/desarrollo/?id=#:id#" rel="bookmark">#:nombre#</a>
                                             </h4>
                                             <div class="price-and-status">
-                                                <span class="price">$#:precio_desde#</span>
+                                                <span class="price">$#:kendo.toString(parseFloat(precio_desde), "n")#</span>
                                             </div>
                                         </header>
                                         <p id="descripcion">#:descripcion#</p>

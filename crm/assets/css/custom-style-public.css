@@ -1,6 +1,21 @@
 body{
     background-color: #f6f6f6;
 }
+#dropdown_controls{
+   min-height: 50px;
+}
+#dropdown_controls .k-dropdown{
+    width:100% !important;
+}
+#dropdown_controls .k-select .k-icon{
+    margin-top:10px;
+}
+
+#unity_details,
+#unity_docs,
+#unity_docs img{
+    height: 280px;
+}
 #carousel_development .carousel-indicators{
     padding: 0!important;
     margin-left: 0;
@@ -133,11 +148,14 @@ body{
     margin-bottom: 16px;
 }
 
-
+#carousel_home .img,
 #carousel_home img,
 #carousel_home1 img{
     width: 100%;
     height: 670px;
+    background-position: center center !important;
+    background-repeat: no-repeat !important;
+    background-size: cover !important;
 }
 
 

@@ -39,19 +39,21 @@
                     <span id="development_name"></span>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-md-12">
-                    <label for="dropdown_unities" class="control-label">Unidad</label>
-                    <!--<input type="hidden" name="id_unity" />-->
-                    <input id="dropdown_unities" value='' />
+            <div id="reservation_avaiable" class="row reservation_item">
+                <div class="row">
+                    <div class="col-md-12">
+                        <label for="dropdown_unities" class="control-label">Unidad</label>
+                        <!--<input type="hidden" name="id_unity" />-->
+                        <input id="dropdown_unities" value='' />
+                    </div>
                 </div>
-            </div>
-            <div class="row padTop32">
-                <div class="panel-heading">
-                    <h4 class="customer-heading-profile bold margin-b-grey">Docs</h4>
+                <div class="row padTop32">
+                    <div class="panel-heading">
+                        <h4 class="customer-heading-profile bold margin-b-grey">Docs</h4>
+                    </div>
+                    <input name="files" id="upload_docs" type="file" />
+                    <div class="height_20"></div>
                 </div>
-                <input name="files" id="upload_docs" type="file" />
-                <div class="height_20"></div>
             </div>
         </div>
         <div class="modal-footer">

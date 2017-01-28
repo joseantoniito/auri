@@ -2,7 +2,7 @@ $(function() {
     //#kendo developments
     var window_unity; 
     var grid_unities;
-    var admin_url = "/crm/";
+    var admin_url = "/perfex_crm/crm/";
     
     var services = [
         {id: 1, nombre: 'Circuito cerrado'},
@@ -216,7 +216,7 @@ $(function() {
                     .attr("width", "585")
                     .attr("height", "585")
                     .attr("alt", item.nombre)
-                    .attr("src", "/crm" + item.url_imagen_principal)
+                    .attr("src", "/perfex_crm/crm" + item.url_imagen_principal)
                     .attr("_id", item.id)
                 );
             list_box.append(list_box_item);
@@ -242,12 +242,63 @@ $(function() {
             if(video_items.length > 0){
                 $(".property-video").show();
                 $(".property-video").append(
-                    $("<video id='development_video' controls='' autoplay='' name='media'><source type='video/mp4' src='/crm/uploads/inventory/"+video_items[0].name+"'></video>")
+                    $("<video id='development_video' controls='' name='media'><source type='video/mp4' src='/perfex_crm/crm/uploads/inventory/"+video_items[0].name+"'></video>")
                 );
             }
-                
-            /*$("#development_video source").attr("src", "http://localhost/crm/uploads/inventory/"+video_items[0].name);
-            <video id='development_video' controls='' autoplay='' name='media'><source type='video/mp4' src='http://localhost/crm/uploads/inventory/controles-con-baterias-1.mp4'></video>*/
+            var list_medio_se_entero = [
+                {id: 2, name:"Canal infocasa Izzi"},
+                {id: 3, name:"Revista Reforma"},
+                {id: 4, name:"Periódico Reforma"},
+                {id: 5, name:"Facebook"},
+                {id: 6, name:"Señalamientos"},
+                {id: 7, name:"Volanteo"},
+                {id: 8, name:"De paso"},
+                {id: 9, name:"Inmuebles 24"},
+                {id: 10, name:"Referido"},
+                {id: 11, name:"Página web"},
+                {id: 12, name:"Portal Televisa"},
+                {id: 13, name:"ESPN"},
+                {id: 14, name:"Fox Sports"},
+                {id: 15, name:"Fox Sports 2"},
+                {id: 16, name:"Vivanuncios"},
+                {id: 17, name:"iCasas"},
+                {id: 18, name:"Tu Hogar México"},
+                {id: 19, name:"Correo electrónico"} ,
+                {id: 20, name:"Espectacular"},
+                {id: 21, name:"Golf Center"},
+                {id: 22, name:"Metropoli Patriotismo"}
+            ]
+            $("#dropdown_medio_se_entero").kendoDropDownList({
+                dataTextField: "name",
+                dataValueField: "id",
+                dataSource: list_medio_se_entero,
+                optionLabel: "Medio se entero",
+                value: null,
+                change: function(e) {
+                    var id = this.value();
+                    $("[name='id_medio_se_entero']").val(id);
+                }
+            }).data("kendoDropDownList");
+            
+            var list_forma_de_pago = [
+                {id: 1, name: "Crédito Bancario"},
+                {id: 2, name: "Crédito Infonavit"},
+                {id: 3, name: "Efectivo"},
+            ]
+            $("#dropdown_forma_de_pago").kendoDropDownList({
+                dataTextField: "name",
+                dataValueField: "id",
+                dataSource: list_forma_de_pago,
+                optionLabel: "Forma de pago",
+                value: null,
+                change: function(e) {
+                    var id = this.value();
+                    $("[name='id_forma_de_pago']").val(id);
+                }
+            }).data("kendoDropDownList");
+            
+            /*$("#development_video source").attr("src", "http://localhost/perfex_crm/crm/uploads/inventory/"+video_items[0].name);
+            <video id='development_video' controls='' autoplay='' name='media'><source type='video/mp4' src='http://localhost/perfex_crm/crm/uploads/inventory/controles-con-baterias-1.mp4'></video>*/
            
             $("[name='id_development']").val(id);
             $("#nombre").text(item.nombre);
@@ -286,8 +337,8 @@ $(function() {
             load_location(item.latitud, item.longitud);
             load_unities(id);
         }, 'json');
-    }
     
+    }
     function load_similar_developments(){
         $.get(admin_url + 'inventory/get_developments/', function(response) {
             load_home_media_items(
@@ -366,6 +417,21 @@ $(function() {
                
             }).data("kendoWindow");
         
+        $("#btn_ver_planos").on("click", function(event){
+            var sender = $(event.currentTarget);
+            if($("#unity_details").is(":visible")){
+                $("#unity_details").hide();
+                $("#unity_docs").show();
+                sender.text("Ver Detalles");
+            }
+            else{
+                $("#unity_details").show();
+                $("#unity_docs").hide();
+                sender.text("Ver Planos")
+            }
+            
+        });
+        
         $("#btn_close_window_unity").on("click", function(){
              window_unity.close();
         });
@@ -375,24 +441,34 @@ $(function() {
         var sender = $(event.currentTarget);
         var id = sender.attr("_id");
         var index = event.data.index;
-        var item = grid_unities.dataSource.data()[index];
+        var sender = $(event.currentTarget);
+        var id = sender.attr("_id");
+        $.get(admin_url + 'inventory/get_unity/' + id, function(response) {
+            var item = response.item;
+            var item_media_items = response.item_media_items;
+            
+            $("#nombre_unity").text($("#nombre").text());
         
-        $("#nombre_unity").text($("#nombre").text());
-        
-        $("#m2_totales").text(item.m2_totales);
-        $("#m2_habitables").text(item.m2_habitables);
-        
-        $("#recamaras").text(item.recamaras);
-        $("#banios").text(item.banios);
-        //$("#estacionamientos").text(item.estacionamientos);
-        
-        $("#balcon_container").css("display",item.balcon != "1" ? "none" : "");
-        $("#terraza_container").css("display",item.terraza != "1" ? "none" : "");
-        $("#roofgarden_container").css("display",item.roofgarden != "1" ? "none" : "");
-        
-        $("#precio").text("$"+kendo.toString(parseFloat(item.precio), "n"));
- 
-        window_unity.center().open();
+            $("#m2_totales").text(item.m2_totales);
+            $("#m2_habitables").text(item.m2_habitables);
+
+            $("#recamaras").text(item.recamaras);
+            $("#banios").text(item.banios);
+            //$("#estacionamientos").text(item.estacionamientos);
+
+            $("#balcon_container").css("display",item.balcon != "1" ? "none" : "");
+            $("#terraza_container").css("display",item.terraza != "1" ? "none" : "");
+            $("#roofgarden_container").css("display",item.roofgarden != "1" ? "none" : "");
+
+            $("#precio").text("$"+kendo.toString(parseFloat(item.precio), "n"));
+
+            if(item_media_items.length > 0)
+                $("#img_unity_doc").attr("src","/perfex_crm/crm/" + item_media_items[0].url);
+            
+            
+            window_unity.center().open();
+            
+        }, 'json');
     }
     
     function load_media_items(item_media_items, id_carousel){
@@ -412,7 +488,7 @@ $(function() {
                     .attr("width", "585")
                     .attr("height", "585")
                     .attr("alt", item.name)
-                    .attr("src", "/crm" + item.url)
+                    .attr("src", "/perfex_crm/crm" + item.url)
                     .attr("_id", item.id)
                 );
             list_box.append(list_box_item);
@@ -520,7 +596,7 @@ $(function() {
                 change: function(e) {
                     var id = this.value();
                     $("[name='id_estado']").val(id);
-                    $.get(admin_url + 'inventory/get_location_municipalities/' + id, function(response) {
+                    $.get(admin_url + 'inventory/get_location_municipalities_with_developments/' + id, function(response) {
                         dropdown_municipios.setDataSource(response);
                         //dropdown_municipios.value(id_municipio);
                         //dropdown_municipios.trigger("change");
@@ -537,7 +613,7 @@ $(function() {
                 change: function(e) {
                     var id = this.value();
                     $("[name='id_municipio']").val(id);
-                    $.get(admin_url + 'inventory/get_location_colonies/' + id, function(response) {
+                    $.get(admin_url + 'inventory/get_location_colonies_with_developments/' + id, function(response) {
                         dropdown_colonias.setDataSource(response);
                         //dropdown_colonias.value(id_colonia);
                         //dropdown_colonias.trigger("change");
@@ -646,15 +722,12 @@ $(function() {
             });
         });*/
         
-        $.get(admin_url + 'inventory/get_location_states/', function(response) {
+        $.get(admin_url + 'inventory/get_location_states_with_developments/', function(response) {
             dropdown_estados.setDataSource(response);
             //dropdown_estados.value(id_estado);
             //dropdown_estados.trigger("change");
         }, 'json');
     }
-    
-    
-    
     
     //utilerias
     function _validate_form(form, form_rules, submithandler) {

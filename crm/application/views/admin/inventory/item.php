@@ -214,7 +214,11 @@
                                         <?php echo render_input('estacionamientos','Estacionam.'); ?>
                                     </div>
                                 </div>
-                                
+                                <div id="media_items_planos" class="row padTop32">
+                                    <div class="col-md-12">
+                                       <input name="files" id="upload_planos" type="file" />
+                                    </div>
+                                </div>
                             </div>
                             <div class="modal-footer">
                                 <button id="btn_close_window_unity" type="button" class="btn btn-default" ><?php echo _l('close'); ?></button>

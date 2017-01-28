@@ -40,7 +40,7 @@ class Inventory extends Admin_controller
             echo json_encode(array(
                 'item' => $item,
                 'item_features' => $this->inventory_model->get_development_features($id),
-                'item_media_items' => $this->inventory_model->get_development_media_items($id)                
+                'item_docs' => $this->inventory_model->get_unity_media_items($id)                
             ));
         }
     }
@@ -61,9 +61,12 @@ class Inventory extends Admin_controller
     {
         if ($this->input->is_ajax_request()) {
             $item = $this->inventory_model->get_unity($id);
-            //$item->long_description = nl2br($item->long_description);
-            echo json_encode($item);
+            echo json_encode(array(
+                'item' => $item,
+                'item_media_items' => $this->inventory_model->get_unity_media_items($id)                
+            ));
         }
+        
     }
     
     
@@ -345,7 +348,34 @@ class Inventory extends Admin_controller
         $this->load->view('admin/inventory/item', $data);
     }
     
+    public function add_unity_media_item(){
+        if (has_permission('items','','view')) {
+            if ($this->input->post()) {
+                $data = $this->input->post();
+                
+                if(!has_permission('items','','create')){
+                  header('HTTP/1.0 400 Bad error');
+                  echo _l('access_denied');
+                  die;
+                }
+                $success = false;
+                $message = '';
+                if ($this->inventory_model->add_unity_media_item($data)) {
+                    $success = true;
+                    $message = _l('added_successfuly', "multimedia item");
+                };
+                echo json_encode(array(
+                    'success' => $success,
+                    'message' => $message,
+                    'data' => $data
+                    ));
+            }
+        }
+    }
     
+    public function delete_unity_media_item($id){
+        $response = $this->inventory_model->delete_unity_media_item($id);
+    }
     
     public function manage_unity()
     {

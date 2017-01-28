@@ -11,19 +11,19 @@ class Inventory extends CI_Controller
     }
     
     //manage locations
-    public function get_location_states(){
+    public function get_location_states_with_developments(){
         if ($this->input->is_ajax_request()) {
-            echo json_encode($this->inventory_model->get_location_states());
+            echo json_encode($this->inventory_model->get_location_states_with_developments());
         }
     }
-    public function get_location_municipalities($id){
+    public function get_location_municipalities_with_developments($id){
         if ($this->input->is_ajax_request()) {
-            echo json_encode($this->inventory_model->get_location_municipalities($id));
+            echo json_encode($this->inventory_model->get_location_municipalities_with_developments($id));
         }
     }
-    public function get_location_colonies($id){
+    public function get_location_colonies_with_developments($id){
         if ($this->input->is_ajax_request()) {
-            echo json_encode($this->inventory_model->get_location_colonies($id));
+            echo json_encode($this->inventory_model->get_location_colonies_with_developments($id));
         }
     }
     //development item
@@ -74,8 +74,11 @@ class Inventory extends CI_Controller
     {
         if ($this->input->is_ajax_request()) {
             $item = $this->inventory_model->get_unity($id);
-            //$item->long_description = nl2br($item->long_description);
-            echo json_encode($item);
+            echo json_encode(array(
+                'item' => $item,
+                'item_features' => $this->inventory_model->get_development_features($id),
+                'item_media_items' => $this->inventory_model->get_unity_media_items($id)                
+            ));
         }
     }
     

@@ -30,6 +30,34 @@ class Inventory_model extends CRM_Model
         $this->db->where('municipio_id', $id);
         return $this->db->get()->result_array();
     }
+    //manage locations with developments
+    public function get_location_states_with_developments()
+    {
+        $activo = 1;
+        $this->db->select('estados.id, estados.nombre');
+        $this->db->from('estados');
+        $this->db->join('tbldevelopments', 'estados.id = tbldevelopments.id_estado', 'inner');
+        $this->db->where('activo', $activo);
+        $this->db->group_by('estados.id');
+        return $this->db->get()->result_array();
+    }
+    public function get_location_municipalities_with_developments($id)
+    {
+        $this->db->select('municipios.id, municipios.nombre');
+        $this->db->from('municipios');
+        $this->db->join('tbldevelopments', 'municipios.id = tbldevelopments.id_municipio', 'inner');
+        $this->db->where('estado_id', $id);
+         $this->db->group_by('municipios.id');
+        return $this->db->get()->result_array();
+    }
+    public function get_location_colonies_with_developments($id)
+    {
+        $this->db->select('localidades.id, localidades.nombre');
+        $this->db->from('localidades');
+        $this->db->join('tbldevelopments', 'localidades.id = tbldevelopments.id_colonia', 'inner');
+        $this->db->where('municipio_id', $id);
+        return $this->db->get()->result_array();
+    }
     
     //manage developments
     public function search_get_developments($data)
@@ -262,6 +290,29 @@ class Inventory_model extends CRM_Model
         return $this->db->get()->row();
     }
     
+    public function add_unity_media_item($data){
+        $this->db->insert('tblunitydocs', $data);
+        return true;
+    }
+    
+    public function delete_unity_media_item($id){
+        $this->db->where('id_media_item', $id);
+        $this->db->delete('tblunitydocs');
+        if ($this->db->affected_rows() > 0) {
+            return true;
+        }
+        return false;
+    }
+    
+    public function get_unity_media_items($id)
+    {
+        $this->db->select('id, url, name, id_type');
+        $this->db->from('tblmediaitems');
+        $this->db->join('tblunitydocs', 'tblmediaitems.id = tblunitydocs.id_media_item', 'inner');
+        $this->db->where('id_unity', $id);
+        return $this->db->get()->result_array();
+    }
+        
     public function add_unity($data)
     {
         unset($data['id']);
@@ -300,7 +351,15 @@ class Inventory_model extends CRM_Model
     public function add_lead($data)
     {
         $id_development = $data['id_development'];
+        $id_medio_se_entero = $data["id_medio_se_entero"];
+        $id_forma_de_pago = $data["id_forma_de_pago"];
+        $presupuesto = $data["presupuesto"];
+        $tiempo_estimado_compra = $data["tiempo_estimado_compra"];
         unset($data['id_development']);
+        unset($data['id_medio_se_entero']);
+        unset($data['id_forma_de_pago']);
+        unset($data['presupuesto']);
+        unset($data['tiempo_estimado_compra']);
         unset($data['id']);
         $status = 1;
         
@@ -321,7 +380,11 @@ class Inventory_model extends CRM_Model
                 $this->db->insert('tblreservations', [
                     'id_development' => $id_development,
                     'id_lead' => $insert_id,
-                    'status' => $status
+                    'status' => $status,
+                    'id_medio_se_entero' => $id_medio_se_entero,
+                    'id_forma_de_pago' => $id_forma_de_pago,
+                    'tiempo_estimado_compra' => $tiempo_estimado_compra,
+                    'tiempo_estimado_compra' => $tiempo_estimado_compra,
                 ]);
 
                 return $insert_id;
@@ -332,7 +395,11 @@ class Inventory_model extends CRM_Model
             $this->db->insert('tblreservations', [
                 'id_development' => $id_development,
                 'id_lead' => $lead->id,
-                'status' => $status
+                'status' => $status,
+                'id_medio_se_entero' => $data["id_medio_se_entero"],
+                'id_forma_de_pago' => $data["id_forma_de_pago"],
+                'presupuesto' => $data["presupuesto"],
+                'tiempo_estimado_compra' => $data["tiempo_estimado_compra"],
             ]);
             return $lead->id;
         }

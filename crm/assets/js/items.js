@@ -496,7 +496,8 @@ $(function() {
 
         $.get(admin_url + 'inventory/get_unity/' + id, function(response) {
             console.log(response);
-            
+            var item_planos = response.item_media_items;
+            response = response.item;
             //todo
             $("[name='unity_id']").val(id);
             $("#m2_habitables").val(response.m2_habitables);
@@ -508,10 +509,67 @@ $(function() {
             $("#terraza").prop('checked', response.terraza == "1");
             $("#roofgarden").prop('checked', response.roofgarden == "1");
             
-             
+            $.each(item_planos, function(index, item){
+                item.extension = "." + item.name.split('.')[1];
+            });
+            if($("#upload_planos").data("kendoUpload"))
+                $("#upload_planos").data("kendoUpload").clearAllFiles();
+            $("#upload_planos").kendoUpload({
+                async: {
+                    saveUrl: admin_url + "inventory/save_media_item",
+                    removeUrl: admin_url + "inventory/remove_media_item",
+                    autoUpload: true
+                },
+                files: item_planos,
+                validation: {
+                    allowedExtensions: [".jpg", ".png"],
+                },
+                success: function(e){
+                    debugger;
+                    console.log(e);
+                    if(e.response.type == "save"){
+                        var id_media_item = e.response.id;
+                        if(id_media_item)
+                            add_unity_media_item(id_media_item);
+                    }
+                    else if(e.response.type == "remove"){
+                        var id_media_item = e.files[0].id;
+                        delete_unity_media_item(id_media_item);
+                    }
+                },
+                error: function(e){
+                    debugger;
+                    console.log(e);
+                }
+            }).data("kendoUpload");
         }, 'json');
 
         window_unity.center().open();
+    }
+    
+    function add_unity_media_item(id_media_item){
+        var id_unity = $("[name='unity_id']").val();
+        var data = "id_unity=" + id_unity + "&id_media_item=" +id_media_item;
+        
+        $.post(admin_url + 'inventory/add_unity_media_item', data).done(function(response) {
+            response = JSON.parse(response);
+            if (response.success == true) {
+                alert_float('success', response.message);
+            }
+        }).fail(function(data) {
+            alert_float('danger', data.responseText);
+        });
+    }
+
+    function delete_unity_media_item(id_media_item){
+        $.get(admin_url + 'inventory/delete_unity_media_item/' + id_media_item, function(response) {
+            console.log(response); 
+            $.get(admin_url + 'inventory/delete_media_item/' + id_media_item, function(response) {
+                console.log(response); 
+                alert_float('success', "Item multimedia eliminado correctamente");  
+            }, 'json');
+            
+        }, 'json');
     }
     
     function delete_unity(event){
@@ -973,54 +1031,56 @@ $(function() {
             $("[name='id_assessor']").val(response.staff_id);
             $("#development_name").text(item.nombre);
             $("#unity_name").text(item.unidad);
+            
+            $(".reservation_item").hide();
+            if(item.status == "1"){
+                $("#reservation_avaiable").show();
+                $("#dropdown_unities").kendoDropDownList({
+                    dataTextField: "unidad",
+                    dataValueField: "id",
+                    dataSource: item_unidades_desarrollo,
+                    optionLabel: "Seleccione.. ",
+                    value: item.id_unity,
+                    change: function(e) {
+                        var id = this.value();
+                        $("[name='id_unity']").val(id);
+                    }
+                }).data("kendoDropDownList");
 
-            
-            $("#dropdown_unities").kendoDropDownList({
-                dataTextField: "unidad",
-                dataValueField: "id",
-                dataSource: item_unidades_desarrollo,
-                optionLabel: "Seleccione.. ",
-                value: item.id_unity,
-                change: function(e) {
-                    var id = this.value();
-                    $("[name='id_unity']").val(id);
-                }
-            }).data("kendoDropDownList");
-            
-            $.each(item_docs, function(index, item){
-                item.extension = "." + item.name.split('.')[1];
-            });
-            if($("#upload_docs").data("kendoUpload"))
-                $("#upload_docs").data("kendoUpload").clearAllFiles();
-            $("#upload_docs").kendoUpload({
-                async: {
-                    saveUrl: admin_url + "inventory/save_media_item",
-                    removeUrl: admin_url + "inventory/remove_media_item",
-                    autoUpload: true
-                },
-                files: item_docs,
-                validation: {
-                    allowedExtensions: [".doc", ".docx", ".xls", ".xlslx", "pdf"],
-                },
-                success: function(e){
-                    debugger;
-                    console.log(e);
-                    if(e.response.type == "save"){
-                        var id_media_item = e.response.id;
-                        if(id_media_item)
-                            add_reservation_media_item(id_media_item);
+                $.each(item_docs, function(index, item){
+                    item.extension = "." + item.name.split('.')[1];
+                });
+                if($("#upload_docs").data("kendoUpload"))
+                    $("#upload_docs").data("kendoUpload").clearAllFiles();
+                $("#upload_docs").kendoUpload({
+                    async: {
+                        saveUrl: admin_url + "inventory/save_media_item",
+                        removeUrl: admin_url + "inventory/remove_media_item",
+                        autoUpload: true
+                    },
+                    files: item_docs,
+                    validation: {
+                        allowedExtensions: [".doc", ".docx", ".xls", ".xlslx", "pdf"],
+                    },
+                    success: function(e){
+                        debugger;
+                        console.log(e);
+                        if(e.response.type == "save"){
+                            var id_media_item = e.response.id;
+                            if(id_media_item)
+                                add_reservation_media_item(id_media_item);
+                        }
+                        else if(e.response.type == "remove"){
+                            var id_media_item = e.files[0].id;
+                            delete_reservation_media_item(id_media_item);
+                        }
+                    },
+                    error: function(e){
+                        debugger;
+                        console.log(e);
                     }
-                    else if(e.response.type == "remove"){
-                        var id_media_item = e.files[0].id;
-                        delete_reservation_media_item(id_media_item);
-                    }
-                },
-                error: function(e){
-                    debugger;
-                    console.log(e);
-                }
-            }).data("kendoUpload");
-        
+                }).data("kendoUpload");
+            }
             $("#window_reservation").data("kendoWindow").open();
             
         }, 'json');
