@@ -410,6 +410,7 @@ class Inventory extends Admin_controller
                     $success = $this->inventory_model->edit_unity($data);
                     $message = '';
                     if ($success) {
+                        $success = true;
                         $message = _l('updated_successfuly', _l('invoice_item'));
                     }
                     echo json_encode(array(

@@ -2,7 +2,7 @@ $(function() {
     //#kendo developments
     var window_unity; 
     var grid_unities;
-    var admin_url = "/perfex_crm/crm/";
+    var admin_url = "/crm/";
     
     var services = [
         {id: 1, nombre: 'Circuito cerrado'},
@@ -216,7 +216,7 @@ $(function() {
                     .attr("width", "585")
                     .attr("height", "585")
                     .attr("alt", item.nombre)
-                    .attr("src", "/perfex_crm/crm" + item.url_imagen_principal)
+                    .attr("src", "/crm" + item.url_imagen_principal)
                     .attr("_id", item.id)
                 );
             list_box.append(list_box_item);
@@ -242,7 +242,7 @@ $(function() {
             if(video_items.length > 0){
                 $(".property-video").show();
                 $(".property-video").append(
-                    $("<video id='development_video' controls='' name='media'><source type='video/mp4' src='/perfex_crm/crm/uploads/inventory/"+video_items[0].name+"'></video>")
+                    $("<video id='development_video' controls='' name='media'><source type='video/mp4' src='/crm/uploads/inventory/"+video_items[0].name+"'></video>")
                 );
             }
             var list_medio_se_entero = [
@@ -297,8 +297,8 @@ $(function() {
                 }
             }).data("kendoDropDownList");
             
-            /*$("#development_video source").attr("src", "http://localhost/perfex_crm/crm/uploads/inventory/"+video_items[0].name);
-            <video id='development_video' controls='' autoplay='' name='media'><source type='video/mp4' src='http://localhost/perfex_crm/crm/uploads/inventory/controles-con-baterias-1.mp4'></video>*/
+            /*$("#development_video source").attr("src", "http://localhost/crm/uploads/inventory/"+video_items[0].name);
+            <video id='development_video' controls='' autoplay='' name='media'><source type='video/mp4' src='http://localhost/crm/uploads/inventory/controles-con-baterias-1.mp4'></video>*/
            
             $("[name='id_development']").val(id);
             $("#nombre").text(item.nombre);
@@ -463,7 +463,7 @@ $(function() {
             $("#precio").text("$"+kendo.toString(parseFloat(item.precio), "n"));
 
             if(item_media_items.length > 0)
-                $("#img_unity_doc").attr("src","/perfex_crm/crm/" + item_media_items[0].url);
+                $("#img_unity_doc").attr("src","/crm/" + item_media_items[0].url);
             
             
             window_unity.center().open();
@@ -488,7 +488,7 @@ $(function() {
                     .attr("width", "585")
                     .attr("height", "585")
                     .attr("alt", item.name)
-                    .attr("src", "/perfex_crm/crm" + item.url)
+                    .attr("src", "/crm" + item.url)
                     .attr("_id", item.id)
                 );
             list_box.append(list_box_item);

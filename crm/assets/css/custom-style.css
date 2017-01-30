@@ -1,6 +1,69 @@
 /*#sales_item_modal .modal-content{
     min-width:900px;
 }*/
+aside .metis-menu{
+    background-image: url(/perfex_crm/crm/uploads/side-bar-menu-bgr.jpg) !important;
+}
+aside .metis-menu li{
+    background-color: rgba(0, 126, 186, 0.5);
+}
+aside .metis-menu li.active{
+    background-color: rgba(0, 0, 0, 1) !important;
+}
+
+#list_view_developments .col-md-10,
+#list_view_developments .col-md-2,
+#list_view_developments .col-md-6
+{
+    padding: 0;
+}
+
+
+#list_view_development_assessors .row .col-md-6{
+    padding-top: 7px !important;
+}
+
+#list_view_developments .row{
+    margin:7px 0;
+    border: grey 1px dashed;
+    border-radius ;
+}
+
+
+#list_view_developments .col-md-2 img{
+    height:64px;
+    width:64px;
+    margin: 14px 7px;
+}
+
+.list_view_assessors .row,
+.list_view_assessors .col-md-6{
+    padding: 7px 0 !important;
+}
+
+.list_view_assessors h4,
+.list_view_assessors img
+{
+    float: left !important;
+    color: #0094DA;
+    padding-left:10px;
+}
+.list_view_assessors img{
+    width: 32px;
+}
+
+
+.img_radius{
+    /*border: solid 5px #DF6626;*/
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    border-radius: 50%;
+    -webkit-transition: all 0.5s linear 0s;
+    -moz-transition: all 0.5s linear 0s;
+    -o-transition: all 0.5s linear 0s;
+    transition: all 0.5s linear 0s;
+}
+
 .drop_container {
     width: 478px;
     height: 95px;

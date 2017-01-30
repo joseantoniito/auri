@@ -2,7 +2,29 @@
 <div id="wrapper">
   <div class="content">
     <div class="row">
-      <div class="col-md-6">
+        <div id="assessors_container" class="col-md-4">
+            <div class="panel_s">
+                <div class="panel-body">
+                    <div class="clearfix"></div>
+                    <input id="hdn_has_permission_edit" type="hidden" 
+                           value="<?php echo has_permission('items','','edit') ?>"  />
+                    <div id="list_view_assessors" class="list_view_assessors"></div>
+
+                    <!----><script type="text/x-kendo-template" id="assessors_template">
+                    <div class="row" draggable="true" _id="#:staffid#">
+                        <div class="col-md-8">
+                            <img src="#:'/perfex_crm/crm/uploads/staff_profile_images/' + staffid + '/small_' + profile_image #" class="img_radius" >
+                            <h4 id="assessor_name">#:firstname#</h4>
+                        </div>
+                        <div class="col-md-4">
+                        </div>
+                    </div>
+                    </script>
+                </div>
+            </div>
+        </div>
+        
+      <div id="developments_container" class="col-md-8">
             <div class="panel_s">
                 <div class="panel-body">
                     <div class="clearfix"></div>
@@ -14,13 +36,11 @@
                     <!----><script type="text/x-kendo-template" id="developments_template">
                     <div class="row" _id="#:id#">
                         <div class="drop_container"></div>
-                        <div class="col-md-8">
-                            <h4>#:nombre#</h4>
-                            <br>
-                            <p>#:descripcion.substring(0,75)#</p>
+                        <div class="col-md-2">
+                            <img src="/perfex_crm/crm/#: logo #" alt="#:nombre#" />
                         </div>
-                        <div class="col-md-4">
-                            <div _id_dev="#:id#" id="list_view_development_assessors"></div>
+                        <div class="col-md-10">
+                            <div _id_dev="#:id#" id="list_view_development_assessors" class="list_view_assessors"></div>
                         </div>
                     </div>
                     </script>
@@ -41,29 +61,6 @@
                         border: 1px solid #aaaaaa;
                     }
                     </style>-->
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="panel_s">
-                <div class="panel-body">
-                    <div class="clearfix"></div>
-                    <input id="hdn_has_permission_edit" type="hidden" 
-                           value="<?php echo has_permission('items','','edit') ?>"  />
-                    <div id="list_view_assessors"></div>
-                    
-                    <!----><script type="text/x-kendo-template" id="assessors_template">
-                    <div class="row" draggable="true" _id="#:staffid#">
-                        <div class="col-md-8">
-                            <h4 id="assessor_name">#:firstname#</h4>
-                            <br>
-                            <p>#:email#</p>
-                            <p>#:phonenumber#</p>
-                        </div>
-                        <div class="col-md-4">
-                        </div>
-                    </div>
-                    </script>
                 </div>
             </div>
         </div>

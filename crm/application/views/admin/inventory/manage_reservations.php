@@ -18,7 +18,8 @@
                            value="<?php echo has_permission('items','','edit') ?>"  />
                     
                     <div class="row">
-                        <label for="dropdown_status" class="control-label">Status</label>
+                        <label for="dropdown_status" class="control-label"
+                               style="padding-left: 24px;">Status</label>
                         <input id="dropdown_status" value='' />
                     </div>
                     <div class="row padTop32">
@@ -31,7 +32,7 @@
   </div>
 </div>
 <div id="window_reservation">
-    <form action="/perfex_crm/crm/admin/inventory/manage_reservation_admin" id="reservation_form" method="post" accept-charset="utf-8" novalidate="novalidate">
+    <?php echo form_open('admin/inventory/manage_reservation_admin',array('id'=>'reservation_form')); ?>
         <input type="hidden" name="id" />
         <input type="hidden" name="id_development" />
         <input type="hidden" name="id_unity" />
@@ -76,7 +77,7 @@
             <button id="btn_close_window_reservation" type="button" class="btn btn-default" ><?php echo _l('close'); ?></button>
             <button type="submit" class="btn btn-info"><?php echo _l('submit'); ?></button>
         </div>
-    </form>
+    <?php echo form_close(); ?>
 </div>
   
   

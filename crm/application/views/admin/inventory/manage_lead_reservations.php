@@ -25,7 +25,7 @@
 </div>
 
 <div id="window_reservation">
-    <form action="/perfex_crm/crm/admin/inventory/manage_reservation_lead" id="reservation_form" method="post" accept-charset="utf-8" novalidate="novalidate">
+    <?php echo form_open('admin/inventory/manage_reservation_lead',array('id'=>'reservation_form')); ?>
          <input type="hidden" name="id" />
         <input type="hidden" name="id_development" />
         <input type="hidden" name="id_unity" />
@@ -60,7 +60,7 @@
             <button id="btn_close_window_reservation" type="button" class="btn btn-default" ><?php echo _l('close'); ?></button>
             <button type="submit" class="btn btn-info"><?php echo _l('submit'); ?></button>
         </div>
-    </form>
+    <?php echo form_close(); ?>
 </div>
   
 

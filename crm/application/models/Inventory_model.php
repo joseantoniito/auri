@@ -284,7 +284,7 @@ class Inventory_model extends CRM_Model
     
     public function get_unity($id)
     {
-        $this->db->select('id, id_item, status, unidad, m2_habitables, balcon, terraza, roofgarden, m2_totales, recamaras, banios, precio, enganche_total, reservacion, contrato, num_mensualidades, saldo_de_enganche, mensualidades, credito');
+        $this->db->select('id, id_item, status, unidad, m2_habitables, balcon, terraza, roofgarden, m2_totales, recamaras, banios, estacionamientos, precio, enganche_total, reservacion, contrato, num_mensualidades, saldo_de_enganche, mensualidades, credito');
         $this->db->from('tblunities');
         $this->db->where('id', $id);
         return $this->db->get()->row();
@@ -416,7 +416,7 @@ class Inventory_model extends CRM_Model
 
     public function get_developments_assessors($ids_developments)
     {
-        $this->db->select('id_development, id_staff, firstname, lastname');
+        $this->db->select('id_development, id_staff, staffid, email, firstname, lastname, phonenumber, profile_image');
         $this->db->from('tbldevelopmentassessors');
         $this->db->join('tblstaff', 'tbldevelopmentassessors.id_staff = tblstaff.staffid', 'inner');
         $this->db->where_in('id_development', $ids_developments);
@@ -503,6 +503,7 @@ class Inventory_model extends CRM_Model
     public function update_unity_reservation($data){
         $id = $data['id'];
         unset($data['id']);
+        unset($data['files']);
         $this->db->where('id', $id);
         $this->db->update('tblreservations', $data);
         if ($this->db->affected_rows() > 0) {

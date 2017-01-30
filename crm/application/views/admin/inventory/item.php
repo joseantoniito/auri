@@ -179,13 +179,18 @@
                             <?php echo form_hidden( 'unity_id', ''); ?>
                             <div class="panel_s" style="min-height:300px;">
                                 <div id="details" class="row padTop32">
-                                    <div class="col-md-4">
+                                    <div class="col-md-6">
                                         <?php echo render_input('precio','Precio'); ?>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-6">
+                                        <?php echo render_input('unidad','Unidad'); ?>
+                                    </div>
+                                </div>
+                                <div id="details2" class="row padTop32">
+                                    <div class="col-md-6">
                                         <?php echo render_input('m2_habitables','m2 Habitables'); ?>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-6">
                                         <?php echo render_input('m2_totales','m2 Totales'); ?>
                                     </div>
                                 </div>
@@ -216,6 +221,7 @@
                                 </div>
                                 <div id="media_items_planos" class="row padTop32">
                                     <div class="col-md-12">
+                                        <input id="hdn_unity_media_items" type="hidden" />
                                        <input name="files" id="upload_planos" type="file" />
                                     </div>
                                 </div>

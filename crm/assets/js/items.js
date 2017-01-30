@@ -62,7 +62,7 @@ $(function() {
         }
         
         if(window.location.href.indexOf("/admin/inventory/development_assessors") != -1){
-            pre_load_reservation_assessor();
+            load_development_assessors();
         }
         
         if(window.location.href.indexOf("/admin/inventory/reservations") != -1){
@@ -74,11 +74,11 @@ $(function() {
     });
     
     function hide_unnecesary_controls(){
-        parent = $("[href='" + admin_url + "invoice_items']").parent();
+        parent = $("[href='" + admin_url + "invoice_items']").parent().parent();
         parent.append(
-            '<li><a href="'+admin_url+'inventory/reservations">Reservaciones</a></li>"');
+            '<li><a href="'+admin_url+'inventory/reservations">Propiedades de Interés</a></li>');
         parent.append(
-            '<li><a href="'+admin_url+'inventory/development_assessors">Asignar asesores</a></li>"');
+            '<li><a href="'+admin_url+'inventory/development_assessors">Asignar Asesores</a></li>');
             
         $("[href='" + admin_url + "invoice_items']").attr("href", admin_url + "inventory/");
         $("[href='" + admin_url + "projects']").hide();
@@ -438,10 +438,17 @@ $(function() {
                     $("#recamaras").val("");
                     $("#banios").val("");
                     $("#precio").val("");
+                    $("#unidad").val("");
 
                     $("#balcon").prop('checked', false);
                     $("#terraza").prop('checked', false);
                     $("#roofgarden").prop('checked', false);
+                    
+                    if($("#upload_planos").data("kendoUpload")){
+                         $("#upload_planos").data("kendoUpload").clearAllFiles();
+                         $("#upload_planos").data("kendoUpload").destroy();
+                    }
+                    $(".k-dropzone em").remove();
                 }
             }).data("kendoWindow");
         
@@ -456,6 +463,22 @@ $(function() {
         _validate_form($('#unity_form'), {
             address: 'required'
         }, manage_unity);
+        
+        $("[name='unity_id']").bind('add_unity_media_item',function (evt,ret) { 
+            id_media_item = ret.id_media_item;
+            var id_unity = $("[name='unity_id']").val();
+            var data = "id_unity=" + id_unity + "&id_media_item=" +id_media_item;
+            
+            $.post(admin_url + 'inventory/add_unity_media_item', data).done(function(response) {
+                response = JSON.parse(response);
+                if (response.success == true) {
+                    alert_float('success', response.message);
+                }
+            }).fail(function(data) {
+                alert_float('danger', data.responseText);
+            });
+            
+        });
     }
 
     function create_grid_unities(id){
@@ -464,7 +487,7 @@ $(function() {
                 $("#grid_unities").kendoGrid({
                     dataSource: [],
                     columns: [
-                        {field: "status", title: "Status"},                            
+                        {field: "unidad", title: "Unidad"},                            
                         {field: "m2_habitables", title: "m2 Habitables"},
                         //{field: "recamaras", title: "Recámaras"},
                         //{field: "banios", title: "Baños"},
@@ -491,7 +514,7 @@ $(function() {
     }
     
     function edit_unity(event){
-         
+        $("#hdn_unity_media_items").val("");
         var id = $(event.currentTarget).attr("_id");
 
         $.get(admin_url + 'inventory/get_unity/' + id, function(response) {
@@ -509,11 +532,18 @@ $(function() {
             $("#terraza").prop('checked', response.terraza == "1");
             $("#roofgarden").prop('checked', response.roofgarden == "1");
             
+            $("#unidad").val(response.unidad);
+            $("#m2_totales").val(response.m2_totales);
+            $("#estacionamientos").val(response.estacionamientos);
+            
             $.each(item_planos, function(index, item){
                 item.extension = "." + item.name.split('.')[1];
             });
-            if($("#upload_planos").data("kendoUpload"))
-                $("#upload_planos").data("kendoUpload").clearAllFiles();
+            if($("#upload_planos").data("kendoUpload")){
+                 $("#upload_planos").data("kendoUpload").clearAllFiles();
+                 $("#upload_planos").data("kendoUpload").destroy();
+            }
+               
             $("#upload_planos").kendoUpload({
                 async: {
                     saveUrl: admin_url + "inventory/save_media_item",
@@ -548,17 +578,14 @@ $(function() {
     }
     
     function add_unity_media_item(id_media_item){
-        var id_unity = $("[name='unity_id']").val();
-        var data = "id_unity=" + id_unity + "&id_media_item=" +id_media_item;
         
-        $.post(admin_url + 'inventory/add_unity_media_item', data).done(function(response) {
-            response = JSON.parse(response);
-            if (response.success == true) {
-                alert_float('success', response.message);
-            }
-        }).fail(function(data) {
-            alert_float('danger', data.responseText);
-        });
+        if( $("[name='unity_id']").val() ){
+            var ret = { id_media_item: id_media_item };
+            $("[name='unity_id']").trigger('add_unity_media_item', [ret]);
+        }
+        else
+            $("#hdn_unity_media_items").val( 
+                 $("#hdn_unity_media_items").val() + id_media_item + "," );
     }
 
     function delete_unity_media_item(id_media_item){
@@ -577,7 +604,7 @@ $(function() {
         $.get(admin_url + 'inventory/delete_unity/' + id, function(response) {
             console.log(response);
             if (response.success == true) {
-                refresh_grid_unities({ item: {id: id }});
+                refresh_grid_unities({ item: {id: id }}, true);
                 alert_float('success', response.message);
             }
             else
@@ -598,6 +625,15 @@ $(function() {
         $.post(url, data).done(function(response) {
             response = JSON.parse(response);
             if (response.success == true) {
+                
+                if($("#hdn_unity_media_items").val() != ""){
+                    var unity_media_items = $("#hdn_unity_media_items").val().split(',');
+                    $.each(unity_media_items, function(index, id_media_item){
+                        var ret = { id_media_item: id_media_item };
+                        $("[name='unity_id']").trigger('add_unity_media_item', [ret]);
+                    })
+                }
+                
                 refresh_grid_unities(response);
                 alert_float('success', response.message);
             }
@@ -608,7 +644,7 @@ $(function() {
         return false;
     }
     
-    function refresh_grid_unities(response){
+    function refresh_grid_unities(response, delete_item){
         var data = grid_unities.dataSource.data();
         var indexItem = null;
         var itemInGrid = $.grep(data, function(item, index){ 
@@ -621,7 +657,10 @@ $(function() {
             data.push(response.item);
         }
         else{
-            data.splice(indexItem, 1);
+            if(!delete_item)
+                data.splice(indexItem, 1, response.item);
+            else
+                data.splice(indexItem, 1);
         }
         grid_unities.dataSource.data(data);
         window_unity.close();
@@ -745,7 +784,7 @@ $(function() {
         }, 'json');
         
         $.get(admin_url + 'inventory/get_developments_with_assessors/', function(response) {
-            var idsStaff = $.map(response.development_assessors, function(item){
+            /*var idsStaff = $.map(response.development_assessors, function(item){
                 return item.id_staff;
             });
             var list_view_staff = $("#list_view_assessors").data("kendoListView");
@@ -753,7 +792,7 @@ $(function() {
             data_staff = $.grep(data_staff, function(item){
                 return jQuery.inArray( item.staffid, idsStaff ) == -1;
             });
-            list_view_staff.dataSource.data(data_staff);
+            list_view_staff.dataSource.data(data_staff);*/
             
             $("#list_view_developments").kendoListView({
                 dataSource: response.developments,
@@ -773,7 +812,10 @@ $(function() {
                         
                         item.find("#list_view_development_assessors").kendoListView({
                             dataSource: assessors,
-                            template: "<div _id='#:id_staff#' draggable='true'> <h4 id='assessor_name'> #:firstname#</h4></div>",
+                            template: 
+                            "<div _id='#:id_staff#' draggable='true' class='col-md-6'> \
+                            <img src='#:'/perfex_crm/crm/uploads/staff_profile_images/' + staffid + '/small_' + profile_image #' class='img_radius' >\
+                            <h4 id='assessor_name'>#:firstname#</h4></div>",
                             dataBound: function(e) {
                                  $.each(e.sender.items(), function(index, item){
                                     item = $(item);
@@ -835,12 +877,12 @@ $(function() {
         });
         
         if(type == "add_assessor"){
-            list_view_assessors = $("#list_view_assessors").data("kendoListView");
+            /*list_view_assessors = $("#list_view_assessors").data("kendoListView");
             data_list_view_assessors = list_view_assessors.dataSource.data();
             indexItem = $.map(data_list_view_assessors, function(obj, index) {
                 if(obj.staffid == id_assessor) {return index;}
             })[0];
-            data_list_view_assessors.splice(indexItem, 1);
+            data_list_view_assessors.splice(indexItem, 1);*/
         }
         else if(type == "change_assessor"){
             var id_development_from = ev.dataTransfer.getData("id_development");
@@ -955,6 +997,9 @@ $(function() {
                     }
                 });
             }
+            if(item.status == "3"){
+                next_status = "4";
+            }
             
             $("[name='status']").val(next_status); 
             $("#window_reservation").data("kendoWindow").open();
@@ -1033,8 +1078,11 @@ $(function() {
             $("#unity_name").text(item.unidad);
             
             $(".reservation_item").hide();
+            $("#window_reservation [type='submit']").hide();
             if(item.status == "1"){
+                $("[name='status']").val("2");
                 $("#reservation_avaiable").show();
+                $("#window_reservation [type='submit']").show();
                 $("#dropdown_unities").kendoDropDownList({
                     dataTextField: "unidad",
                     dataValueField: "id",
@@ -1050,8 +1098,11 @@ $(function() {
                 $.each(item_docs, function(index, item){
                     item.extension = "." + item.name.split('.')[1];
                 });
-                if($("#upload_docs").data("kendoUpload"))
+                if($("#upload_docs").data("kendoUpload")){
                     $("#upload_docs").data("kendoUpload").clearAllFiles();
+                    $("#upload_docs").data("kendoUpload").destroy();
+                }
+                    
                 $("#upload_docs").kendoUpload({
                     async: {
                         saveUrl: admin_url + "inventory/save_media_item",
@@ -1120,15 +1171,18 @@ $(function() {
         $.post(admin_url + 'inventory/get_reservations',data).done(function(response) {
             response = JSON.parse(response);
             console.log(response);
+            $.each(response, function(index, item){
+               item.nombre_status = get_nombre_status(item.status); 
+            });
             console.log($("#grid_reservations"));
             $("#grid_reservations").kendoGrid({
                 dataSource: response,
                 columns: [
-                    {field: "unidad", title: "unidad"},                            
-                    {field: "nombre", title: "nombre"},
+                    {field: "unidad", title: "Unidad"},                            
+                    {field: "nombre", title: "Nombre"},
                     {field: "precio", title: "precio"},
-                    {field: "firstname", title: "firstname"},
-                    {field: "status", title: "status"},
+                    {field: "firstname", title: "Asesor"},
+                    {field: "nombre_status", title: "Status"},
                     {field:"id", title:"Acciones", width:"100px", 
                     template: "<span _id='#:id#' id='btn_manage' href='' class='qodef-icon-shortcode normal qodef-icon-little'><i class='qodef-icon-font-awesome fa fa-cog qodef-icon-element'></i></span>"}
                 ],
@@ -1167,7 +1221,7 @@ $(function() {
         });
         return false;
     }
-    function refresh_grid_reservations(response){
+    function refresh_grid_reservations(response, delete_item){
         grid = $("#grid_reservations").data("kendoGrid");
         var data = grid.dataSource.data();
         var indexItem = null;
@@ -1181,9 +1235,25 @@ $(function() {
             data.push(response.item);
         }
         else{
-            data.splice(indexItem, 1);
+            if(!delete_item)
+                data.splice(indexItem, 1, response.item);
+            else
+                data.splice(indexItem, 1);
         }
         grid.dataSource.data(data);
         $("#window_reservation").data("kendoWindow").close();
     }    
+    
+    function get_nombre_status(status){
+        var str = "";
+        if(status == "1")
+            str = "Disponible";
+        else if(status == "2")
+            str = "En Validacion";
+        else if(status == "3")
+            str = "Reservado";
+        else if(status == "4")
+            str = "Vendido";
+        return str;
+    }
 });
