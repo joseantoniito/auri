@@ -57,7 +57,7 @@
                     <div id="list_view_reservation_docs"></div>
                     <script type="text/x-kendo-template"  id="reservation_docs_template">
                         <div class="col-md-3">
-                            <a href="/crm/#:url#" target="_blank">
+                            <a href="/perfex_crm/crm/#:url#" target="_blank">
                                 <span>#:name#</span> 
                             </a>
                             <span>#:name.split('.')[name.split('.').length - 1]#</span> 

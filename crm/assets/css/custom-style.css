@@ -2,7 +2,7 @@
     min-width:900px;
 }*/
 aside .metis-menu{
-    background-image: url(/perfex_crm/crm/uploads/side-bar-menu-bgr.jpg) !important;
+    background-image: url(/crm/uploads/side-bar-menu-bgr.jpg) !important;
 }
 aside .metis-menu li{
     background-color: rgba(0, 126, 186, 0.5);

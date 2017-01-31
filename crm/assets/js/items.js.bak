@@ -1186,6 +1186,7 @@ $(function() {
             $("#grid_reservations").kendoGrid({
                 dataSource: response,
                 columns: [
+					{field: "id", title: "Id", visible: false},  
                     {field: "unidad", title: "Unidad"},                            
                     {field: "nombre", title: "Nombre"},
                     {field: "precio", title: "precio"},

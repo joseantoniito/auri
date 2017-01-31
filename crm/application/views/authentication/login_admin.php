@@ -1,5 +1,5 @@
 <?php $this->load->view('authentication/includes/head.php'); ?>
-<body class="login_admin" style="background-image: url(/perfex_crm/crm/uploads/login-bgr.jpg);">
+<body class="login_admin" style="background-image: url(/crm/uploads/login-bgr.jpg);">
  <div id="contenedor" class="container" style="background-color: rgba(0, 126, 186, 0.5);width: 100%;">
      <script>
         window.onload = function() {
