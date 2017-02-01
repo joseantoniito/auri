@@ -46,6 +46,7 @@
          </a>
       </li>
       <?php } ?>
+      <!--
       <li role="presentation">
          <a href="#tab_proposals_leads" onclick="initDataTable('.table-proposals-lead', admin_url + 'proposals/proposal_relations/' + <?php echo $lead->id; ?> + '/lead','undefined', 'undefined','undefined',[4,'DESC']);" aria-controls="tab_proposals_leads" role="tab" data-toggle="tab">
             <?php echo _l('proposals'); ?>
@@ -75,10 +76,10 @@
          <a href="#lead_activity" aria-controls="lead_activity" role="tab" data-toggle="tab">
             <?php echo _l('lead_add_edit_activity'); ?>
          </a>
-      </li>
+      </li>-->
        <li role="presentation">
          <a href="#lead_reservations" aria-controls="lead_reservations" role="tab" data-toggle="tab">
-            Reservaciones
+            Propiedades de Interés
          </a>
       </li>
       <?php } ?>
@@ -135,7 +136,7 @@
     </div>
  </div>
 </div>
-<div role="tabpanel" class="tab-pane" id="tab_proposals_leads">
+<!--<div role="tabpanel" class="tab-pane" id="tab_proposals_leads">
    <?php if(has_permission('proposals','','create')){ ?>
    <a href="<?php echo admin_url('proposals/proposal?rel_type=lead&rel_id='.$lead->id); ?>" class="btn btn-info mbot25"><?php echo _l('new_proposal'); ?></a>
    <?php } ?>
@@ -238,7 +239,7 @@
       </div>
       <?php $i++; } ?>
    </div>
-</div>
+</div>-->
     <div role="tabpanel" class="tab-pane" id="lead_reservations">
       <?php $this->load->view('admin/inventory/manage_lead_reservations'); ?>
    </div>

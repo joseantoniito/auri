@@ -11,6 +11,12 @@
 
             </div>
             <?php } ?>
+            <div class="panel_s" style="">
+                <div class="panel-body _buttons">
+                    <h2 style="color:#0094DA;margin:0;">Propiedades de Interés</h2>
+                </div>
+            </div>
+          
             <div class="panel_s">
                 <div class="panel-body">
                     <div class="clearfix"></div>

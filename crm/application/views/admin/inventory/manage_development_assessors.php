@@ -13,6 +13,7 @@
                     <!----><script type="text/x-kendo-template" id="assessors_template">
                     <div class="row" draggable="true" _id="#:staffid#">
                         <div class="col-md-8">
+                            <span class="draganddrop"></span>
                             <img  _src='#: profile_image #' src="#:'/crm/uploads/staff_profile_images/' + staffid + '/small_' + profile_image #" class="img_radius" >
                             <h4 id="assessor_name">#:firstname#</h4>
                         </div>

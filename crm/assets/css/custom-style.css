@@ -1,16 +1,58 @@
 /*#sales_item_modal .modal-content{
     min-width:900px;
 }*/
+.draganddrop {
+  display: inline-block;
+  border-top: 2px solid #ccc;
+  width: 25px;
+  padding-top: 2px;
+  cursor: -webkit-grab;
+  cursor: -moz-grab;
+  float: left;
+  margin-top: 10px;
+  margin-left: 5px;
+}
+.draganddrop:before, .draganddrop:after {
+    display: block;
+    content: "";
+    border-top: 2px solid #ccc;
+    padding-top: 2px;
+}
+#top_search input::-webkit-input-placeholder, #top_search_button i{
+    color:white !important;
+}
+.k-grid-header{
+    padding-right: 0 !important;
+}
+.k-window-titlebar.k-header {
+    background-color: #0dbae8;
+}
+.k-grid-header th{
+    text-transform: capitalize;
+}
 
 aside .metis-menu{
     background-image: url(/crm/uploads/side-bar-menu-bgr.jpg) !important;
+    height:795px;
 }
 aside .metis-menu li{
-    background-color: rgba(0, 126, 186, 0.5);
+    /* background-color: rgba(0, 126, 186, 0.5); */
+    background-color: transparent;
 }
 aside .metis-menu li.active{
-    background-color: rgba(0, 0, 0, 1) !important;
+    background-color: transparent !important;
 }
+aside .metis-menu li.active ul li a{
+    color: white !important;
+    border-bottom: white solid 1px;
+}
+aside .metis-menu li.active ul li a:hover{
+    color: black !important;
+}
+
+
+
+
 
 #list_view_developments .col-md-10,
 #list_view_developments .col-md-2,
@@ -69,7 +111,7 @@ aside .metis-menu li.active{
     width: 478px;
     height: 95px;
     position: absolute;
-    z-index: 2;
+    z-index: 0;
 }
 
 #window_unity .row {

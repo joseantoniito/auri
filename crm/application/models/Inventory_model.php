@@ -464,6 +464,11 @@ class Inventory_model extends CRM_Model
         if($value != '')
             $this->db->where($key, $value);
         
+        $key = "top";
+        $value = $data[$key];
+        if($value != '')
+            $this->db->limit($value);
+        
         return $this->db->get()->result_array();
     }
     
