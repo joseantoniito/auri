@@ -408,7 +408,7 @@ $(function() {
         
         window_unity = 
             $("#window_unity").kendoWindow({
-                width: "600px",
+                width: "800px",
                 title: "Detalles de Unidad",
                 visible: false,
                 modal: true,
@@ -434,6 +434,31 @@ $(function() {
         
         $("#btn_close_window_unity").on("click", function(){
              window_unity.close();
+        });
+        $("#window_planos").show();
+        
+        $("#img_unity_doc").on("click", function(event){
+            //if($("#window_planos").data("kendoWindow"))
+            //$("#window_planos").data("kendoWindow").destroy();
+            
+            $("#img_unity_doc_big").attr("src", $("#img_unity_doc").attr("src"));
+            
+            $("#window_planos").kendoWindow({
+                width: $("#img_unity_doc_big").width() + "px",
+                title: "",
+                visible: false,
+                modal: true,
+                resizable: false,
+                scrollable: false,
+            }).data("kendoWindow").center().open();
+            
+            $("#close_window_planos").show();
+            $("#close_window_planos").on("click", function(event){
+                $("#window_planos").data("kendoWindow").close();
+            })
+            
+            $("#window_planos").siblings(".k-header").hide();
+            $("#window_planos").parent(".k-window").css("padding-top", "0");
         });
     }
     
@@ -462,8 +487,12 @@ $(function() {
 
             $("#precio").text("$"+kendo.toString(parseFloat(item.precio), "n"));
 
-            if(item_media_items.length > 0)
+            if(item_media_items.length > 0){
                 $("#img_unity_doc").attr("src","/crm/" + item_media_items[0].url);
+            }
+            else
+                $("#img_unity_doc").attr("src","");
+                
             
             
             window_unity.center().open();

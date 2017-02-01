@@ -1,6 +1,36 @@
 body{
     background-color: #f6f6f6;
 }
+#window_unity #unity_details,
+#window_unity #unity_docs{
+    padding-left: 0;
+    padding-right: 0;
+}
+#window_unity .property-title-wrapper{
+    background-color:white;
+    color: #444;
+}
+#window_unity .single-property-wrapper{
+    padding-bottom:32px;
+}
+
+#window_planos i.fa{
+    position: absolute;
+    right:5px;
+    top:5px;
+    display: none;
+}
+
+.qodef-logo-wrapper a img{
+    width:200px;
+    height:66px;
+    margin-top: -5px;
+}
+footer img{
+    width:250px;
+    height:82px;
+}
+
 #dropdown_controls{
    min-height: 50px;
 }

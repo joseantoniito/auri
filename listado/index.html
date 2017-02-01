@@ -82,14 +82,14 @@
                                         <i class="meta-item-icon icon-ptype"><svg  class="meta-icon-container" width="30" height="30" viewBox="0 0 48 48"><path class="meta-icon" fill-rule="evenodd" clip-rule="evenodd" fill="0DBAE8" d=""></path></svg></i>
                                         <div class="meta-inner-wrapper">
                                             <span class="meta-item-label">Tipo de desarrollo</span>
-                                            <span class="meta-item-value">#: id_tipo_desarrollo #</span>
+                                            <span class="meta-item-value">#: id_tipo_desarrollo == "1" ? "Horizontal" : "Vertical"#</span>
                                         </div>
                                     </div>
                                     <div class="meta-item">
-                                        <i class="meta-item-icon icon-tag"><svg class="meta-icon-container" width="30" height="30" viewBox="0 0 48 48"><path class="meta-icon" fill-rule="evenodd" clip-rule="evenodd" fill="0DBAE8" d=""></path></svg></i>
+                                        <i class="fa fa-key meta-icon-container"></i>
                                         <div class="meta-inner-wrapper">
                                             <span class="meta-item-label">Entrega</span>
-                                            <span class="meta-item-value">#: id_entrega#</span>
+                                            <span class="meta-item-value">#: !!entrega ? kendo.toString(new Date(entrega),"y") : "" #</span>
                                         </div>
                                     </div>
                                 </div>

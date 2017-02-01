@@ -512,12 +512,27 @@ class Inventory_model extends CRM_Model
             $this->db->update('tblunities', [
                 'status' => $data['status']
             ]);
+            
+            $status = $data['status'];
+            $status_lead = 1;
+            if($status == '2')//en validación
+                $status_lead = '4';// > recorrido
+            else if($status == '3')//reservado
+                $status_lead = '5';// > reservación
+            else if($status == '4')//vendido
+                $status_lead = '6';// > cierre
+            
+            $this->db->where('id', $data['id_lead']);  
+            $this->db->update('tblleads', [
+                'status' => $status_lead
+            ]);
             //todo: if ($this->db->affected_rows() > 0)
-                return true;
+            return true;
         }
         return false;
     }
     
+    //no se ocupa
     public function set_unity_in_validation($data){
         $id = $data['id'];
         unset($data['id']);
