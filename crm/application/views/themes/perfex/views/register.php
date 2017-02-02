@@ -11,7 +11,7 @@
                 <div class="row">
                     <div class="col-md-6">
                         <h4 class="bold"><?php echo _l('client_register_contact_info'); ?></h4>
-                        <div class="form-group">
+                        <div class="form-group mtop15">
                             <label class="control-label" for="firstname"><?php echo _l('clients_firstname'); ?></label>
                             <input type="text" class="form-control" name="firstname" id="firstname" value="<?php echo set_value('firstname'); ?>">
                             <?php echo form_error('firstname'); ?>
@@ -31,6 +31,10 @@
                             <input type="text" class="form-control" name="contact_phonenumber" id="contact_phonenumber" value="<?php echo set_value('contact_phonenumber'); ?>">
                         </div>
                         <div class="form-group">
+                            <label class="control-label" for="website"><?php echo _l('client_website'); ?></label>
+                            <input type="text" class="form-control" name="website" id="website" value="<?php echo set_value('website'); ?>">
+                        </div>
+                        <div class="form-group">
                             <label class="control-label" for="title"><?php echo _l('contact_position'); ?></label>
                             <input type="text" class="form-control" name="title" id="title" value="<?php echo set_value('title'); ?>">
                         </div>
@@ -48,7 +52,7 @@
                     </div>
                     <div class="col-md-6">
                         <h4 class="bold"><?php echo _l('client_register_company_info'); ?></h4>
-                        <div class="form-group">
+                        <div class="form-group mtop15">
                             <label class="control-label" for="company"><?php echo _l('clients_company'); ?></label>
                             <input type="text" class="form-control" name="company" id="company" value="<?php echo set_value('company'); ?>">
                              <?php echo form_error('company'); ?>

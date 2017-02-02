@@ -33,11 +33,26 @@ function is_empty_customer_company($id){
         if($row->company == ''){
             return true;
         }
-
         return false;
     }
-
     return true;
+}
+function get_project_name_by_id($id){
+
+    $CI = &get_instance();
+    $CI->db->select('name');
+    $CI->db->where('id',$id);
+    $project = $CI->db->get('tblprojects')->row();
+    if($project){
+        return $project->name;
+    }
+
+    return '';
+}
+function get_customer_profile_file_sharing($where = array()){
+    $CI = &get_instance();
+    $CI->db->where($where);
+    return $CI->db->get('tblcustomerfiles_shares')->result_array();
 }
 /**
  * Check if field is used in table
@@ -71,13 +86,15 @@ function add_views_tracking($rel_type,$rel_id){
                 return false;
             }
         }
-        }
+    }
 
-        $CI->db->insert('tblviewstracking',array(
-            'rel_id'=>$rel_id,
-            'rel_type'=>$rel_type,
-            'date'=>date('Y-m-d H:i:s'),
-            'view_ip'=>$CI->input->ip_address()));
+    do_action('before_insert_views_tracking',array('rel_id'=>$rel_id,'rel_type'=>$rel_type));
+
+    $CI->db->insert('tblviewstracking',array(
+        'rel_id'=>$rel_id,
+        'rel_type'=>$rel_type,
+        'date'=>date('Y-m-d H:i:s'),
+        'view_ip'=>$CI->input->ip_address()));
 
 }
 function get_views_tracking($rel_type,$rel_id){
@@ -143,7 +160,9 @@ function get_primary_contact_user_id($userid){
 function get_option($name)
 {
     $CI =& get_instance();
-    $CI->load->library('perfex_base');
+    if(!class_exists('perfex_base')){
+        $CI->load->library('perfex_base');
+    }
     return $CI->perfex_base->get_option($name);
 }
 /**
@@ -811,10 +830,7 @@ function get_relation_data($type, $rel_id = '', $connection_type = '', $connecti
     }
     $data = array();
     if ($type == 'customer' || $type == 'customers') {
-        $CI->load->model('clients_model');
-
         $where_clients = 'tblclients.active=1';
-
         if($connection_id != ''){
             if($connection_type == 'proposal'){
                 $where_clients = 'CASE
@@ -830,7 +846,7 @@ function get_relation_data($type, $rel_id = '', $connection_type = '', $connecti
         }
 
         if($q){
-            $where_clients .= ' AND (company LIKE "%'.$q.'%" OR CONCAT(firstname, " ", lastname) LIKE "%'.$q.'%")';
+            $where_clients .= ' AND (company LIKE "%'.$q.'%" OR CONCAT(firstname, " ", lastname) LIKE "%'.$q.'%" OR email LIKE "%'.$q.'%")';
         }
 
         $data = $CI->clients_model->get($rel_id,$where_clients);
@@ -895,12 +911,6 @@ function get_relation_data($type, $rel_id = '', $connection_type = '', $connecti
             $search = $CI->misc_model->_search_proposals($q);
             $data = $search['result'];
         }
-    } else if ($type == 'tasks') {
-        $CI->load->model('tasks_model');
-        $data = $CI->tasks_model->get($rel_id);
-    } else if ($type == 'staff') {
-        $CI->load->model('staff_model');
-        $data = $CI->staff_model->get($rel_id);
     } else if ($type == 'project') {
         if($rel_id != ''){
             $CI->load->model('projects_model');
@@ -1068,7 +1078,7 @@ function get_relation_values($relation, $type)
  * @param  boolean $include_inactive inactive groups all articles if passed true
  * @return array
  */
-function get_all_knowledge_base_articles_grouped($only_customers = true)
+function get_all_knowledge_base_articles_grouped($only_customers = true,$where = array())
 {
     $CI =& get_instance();
     $CI->load->model('knowledge_base_model');
@@ -1082,6 +1092,7 @@ function get_all_knowledge_base_articles_grouped($only_customers = true)
         if($only_customers == true){
             $CI->db->where('staff_article',0);
         }
+        $CI->db->where($where);
         $CI->db->order_by('article_order', 'asc');
         $articles = $CI->db->get()->result_array();
         if (count($articles) == 0) {

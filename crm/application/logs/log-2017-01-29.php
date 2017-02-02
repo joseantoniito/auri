@@ -1,96 +1,56 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed'); ?>
 
-ERROR - 2017-01-29 04:52:48 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-29 04:52:48 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-29 04:53:19 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-29 04:53:20 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-29 04:54:01 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-29 04:54:03 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-29 04:54:43 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-29 04:54:43 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-29 04:58:00 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-29 04:58:02 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-29 04:59:58 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-29 04:59:58 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-29 05:01:03 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-29 05:01:03 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-29 05:23:00 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-29 05:23:02 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-29 06:06:41 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-29 06:06:42 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-29 06:10:44 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-29 06:10:44 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-29 06:17:20 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-29 06:17:23 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-29 06:26:41 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-29 06:26:41 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-29 06:27:15 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-29 06:27:15 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-29 06:41:08 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-29 06:41:10 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-29 06:45:22 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-29 06:45:22 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-29 06:45:59 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-29 06:45:59 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-29 06:46:26 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-29 06:46:29 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-29 06:47:02 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-29 06:47:02 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-29 06:47:55 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-29 06:48:00 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-29 00:01:59 --> Could not find the language line "Nombre"
-ERROR - 2017-01-29 00:01:59 --> Could not find the language line "Logotipo"
-ERROR - 2017-01-29 00:01:59 --> Could not find the language line "Descripción"
-ERROR - 2017-01-29 00:01:59 --> Could not find the language line "Tipo de desarrollo"
-ERROR - 2017-01-29 00:01:59 --> Could not find the language line "Etapa de desarrollo"
-ERROR - 2017-01-29 00:01:59 --> Could not find the language line "Precio Desde"
-ERROR - 2017-01-29 00:01:59 --> Could not find the language line "Total de Unidades"
-ERROR - 2017-01-29 00:01:59 --> Could not find the language line "Entrega"
-ERROR - 2017-01-29 00:01:59 --> Could not find the language line "Dirección"
-ERROR - 2017-01-29 00:01:59 --> Could not find the language line "Código Postal"
-ERROR - 2017-01-29 00:01:59 --> Could not find the language line "Superficie de Terreno Mínima"
-ERROR - 2017-01-29 00:01:59 --> Could not find the language line "Superficie de Terreno Máxima"
-ERROR - 2017-01-29 00:01:59 --> Could not find the language line "Superficie Construida Mínima"
-ERROR - 2017-01-29 00:01:59 --> Could not find the language line "Superficie Construida Máxima"
-ERROR - 2017-01-29 00:01:59 --> Could not find the language line "Total de Recámaras"
-ERROR - 2017-01-29 00:01:59 --> Could not find the language line "Máximo de Baños"
-ERROR - 2017-01-29 00:01:59 --> Could not find the language line "Máximo de Medio-Baños"
-ERROR - 2017-01-29 00:01:59 --> Could not find the language line "Máximo de Estacionamientos"
-ERROR - 2017-01-29 00:01:59 --> Could not find the language line "Precio"
-ERROR - 2017-01-29 00:01:59 --> Could not find the language line "Unidad"
-ERROR - 2017-01-29 00:01:59 --> Could not find the language line "m2 Habitables"
-ERROR - 2017-01-29 00:01:59 --> Could not find the language line "m2 Totales"
-ERROR - 2017-01-29 00:01:59 --> Could not find the language line "Recámaras"
-ERROR - 2017-01-29 00:01:59 --> Could not find the language line "Baños"
-ERROR - 2017-01-29 00:01:59 --> Could not find the language line "Estacionam."
-ERROR - 2017-01-29 07:02:06 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-29 07:02:06 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-29 00:12:12 --> Could not find the language line "Nombre"
-ERROR - 2017-01-29 00:12:12 --> Could not find the language line "Logotipo"
-ERROR - 2017-01-29 00:12:12 --> Could not find the language line "Descripción"
-ERROR - 2017-01-29 00:12:12 --> Could not find the language line "Tipo de desarrollo"
-ERROR - 2017-01-29 00:12:12 --> Could not find the language line "Etapa de desarrollo"
-ERROR - 2017-01-29 00:12:12 --> Could not find the language line "Precio Desde"
-ERROR - 2017-01-29 00:12:12 --> Could not find the language line "Total de Unidades"
-ERROR - 2017-01-29 00:12:12 --> Could not find the language line "Entrega"
-ERROR - 2017-01-29 00:12:12 --> Could not find the language line "Dirección"
-ERROR - 2017-01-29 00:12:12 --> Could not find the language line "Código Postal"
-ERROR - 2017-01-29 00:12:12 --> Could not find the language line "Superficie de Terreno Mínima"
-ERROR - 2017-01-29 00:12:12 --> Could not find the language line "Superficie de Terreno Máxima"
-ERROR - 2017-01-29 00:12:12 --> Could not find the language line "Superficie Construida Mínima"
-ERROR - 2017-01-29 00:12:12 --> Could not find the language line "Superficie Construida Máxima"
-ERROR - 2017-01-29 00:12:12 --> Could not find the language line "Total de Recámaras"
-ERROR - 2017-01-29 00:12:12 --> Could not find the language line "Máximo de Baños"
-ERROR - 2017-01-29 00:12:12 --> Could not find the language line "Máximo de Medio-Baños"
-ERROR - 2017-01-29 00:12:12 --> Could not find the language line "Máximo de Estacionamientos"
-ERROR - 2017-01-29 00:12:12 --> Could not find the language line "Precio"
-ERROR - 2017-01-29 00:12:12 --> Could not find the language line "Unidad"
-ERROR - 2017-01-29 00:12:12 --> Could not find the language line "m2 Habitables"
-ERROR - 2017-01-29 00:12:12 --> Could not find the language line "m2 Totales"
-ERROR - 2017-01-29 00:12:12 --> Could not find the language line "Recámaras"
-ERROR - 2017-01-29 00:12:12 --> Could not find the language line "Baños"
-ERROR - 2017-01-29 00:12:12 --> Could not find the language line "Estacionam."
-ERROR - 2017-01-29 07:12:20 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-29 07:12:20 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-29 23:59:14 --> Query error: Unknown column 'files' in 'field list' - Invalid query: UPDATE `tblreservations` SET `id_development` = '3', `id_unity` = '13', `id_lead` = '4', `id_assessor` = '1', `status` = '2', `files` = 'desarrollo-1-3.png'
-WHERE `id` = '3'
+ERROR - 2017-01-29 10:23:04 --> Severity: Warning --> Missing argument 1 for Inventory::get_location_colonies_with_developments() /home3/rafaq5/public_html/auri/crm/application/controllers/Inventory.php 24
+ERROR - 2017-01-29 10:23:04 --> Severity: Notice --> Undefined variable: id /home3/rafaq5/public_html/auri/crm/application/controllers/Inventory.php 26
+ERROR - 2017-01-29 10:32:00 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-29 10:32:00 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-29 10:32:31 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-29 10:32:31 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-29 10:32:31 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-29 10:32:32 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-29 10:32:38 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-29 10:32:38 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-29 10:32:38 --> Could not find the language line "Qualification"
+ERROR - 2017-01-29 10:32:50 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-29 10:32:50 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-29 10:32:50 --> Could not find the language line "Qualification"
+ERROR - 2017-01-29 10:33:20 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-29 10:33:20 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-29 10:33:27 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-29 10:33:27 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-29 10:33:51 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-29 10:33:51 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-29 10:33:51 --> Could not find the language line "cf_translate_invoice_name"
+ERROR - 2017-01-29 10:33:52 --> Could not find the language line "cf_translate_invoice_name"
+ERROR - 2017-01-29 10:33:56 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-29 10:33:56 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-29 11:28:40 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-29 11:28:40 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-29 11:28:45 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-29 11:28:46 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-29 11:33:54 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-29 11:33:54 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-29 11:34:06 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-29 11:34:06 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-29 11:34:32 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-29 11:34:32 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-29 17:07:51 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-29 17:07:51 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-29 17:07:58 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-29 17:07:58 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-29 17:08:26 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-29 17:08:26 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-29 17:08:48 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-29 17:08:48 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-29 17:08:52 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-29 17:08:52 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-29 17:08:58 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-29 17:08:58 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-29 21:50:18 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-29 21:50:18 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-29 21:50:22 --> 404 Page Not Found: Assets/plugins
+ERROR - 2017-01-29 21:50:44 --> 404 Page Not Found: Assets/plugins
+ERROR - 2017-01-29 21:55:07 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-29 21:55:07 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-29 21:55:10 --> 404 Page Not Found: Assets/plugins
+ERROR - 2017-01-29 21:55:11 --> 404 Page Not Found: Assets/plugins

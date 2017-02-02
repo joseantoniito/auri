@@ -171,7 +171,7 @@ class Roles_model extends CRM_Model
 
             if($update_staff_permissions == true){
                 $this->load->model('staff_model');
-                $staff = $this->staff_model->get();
+                $staff = $this->staff_model->get('','',array('role'=>$id));
                 foreach($staff as $m){
                     if($this->staff_model->update_permissions($permissions,$m['staffid'])){
                         $affectedRows++;

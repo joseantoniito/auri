@@ -137,6 +137,7 @@ function init_color_pickers() {
              format: date_format,
              timepicker: false,
              lazyInit: true,
+             scrollInput:false,
              dayOfWeekStart:calendar_first_day,
          };
          var max_date = $(this).data('date-end-date');
@@ -154,6 +155,7 @@ function init_color_pickers() {
          opt_time = {
              format: date_format + ' H:i',
              lazyInit: true,
+             scrollInput:false,
              dayOfWeekStart:calendar_first_day,
          };
          var max_date = $(this).data('date-end-date');

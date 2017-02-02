@@ -6,7 +6,6 @@ class Projects extends Admin_controller
     {
         parent::__construct();
         $this->load->model('projects_model');
-        $this->load->model('tasks_model');
         $this->load->model('currencies_model');
         $this->load->helper('date');
     }
@@ -142,6 +141,7 @@ class Projects extends Admin_controller
             }
 
             $data['currency']                  = $this->projects_model->get_currency($id);
+
             $data['project_total_days']        = round((human_to_unix($data['project']->deadline . ' 00:00') - human_to_unix($data['project']->start_date . ' 00:00')) / 3600 / 24);
             $data['project_days_left']         = $data['project_total_days'];
             $data['project_time_left_percent'] = 100;
@@ -220,6 +220,9 @@ class Projects extends Admin_controller
             $data['estimate_statuses'] = $this->estimates_model->get_statuses();
             $data['estimateid'] = '';
             $data['switch_pipeline'] = '';
+            $hook_data = do_action('project_group_access_admin',array('id'=>$project->id,'view'=>$view,'all_data'=>$data));
+            $data = $hook_data['all_data'];
+            $view = $hook_data['view'];
             $data['group_view']            = $this->load->view('admin/projects/' . $view, $data, true);
 
             $data['projects_assets']       = true;
@@ -237,11 +240,11 @@ class Projects extends Admin_controller
         if($this->input->is_ajax_request()){
             if(has_permission('projects','','create') || has_permission('projects','','edit')){
 
-                $message = _l('project_marked_as_failed',_l('project_status_'.$this->input->post('status_id')));
+                $message = _l('project_marked_as_failed',project_status_by_id($this->input->post('status_id')));
                 $success = $this->projects_model->mark_as($this->input->post());
 
                 if($success){
-                    $message = _l('project_marked_as_success',_l('project_status_'.$this->input->post('status_id')));
+                    $message = _l('project_marked_as_success',project_status_by_id($this->input->post('status_id')));
                 }
 
             }
@@ -281,7 +284,11 @@ class Projects extends Admin_controller
 
            $data['tasks'] = $this->projects_model->get_tasks($id,array(),false);
            $data['total_logged_time'] = seconds_to_time_format($this->projects_model->total_logged_time($project->id));
+           if($project->deadline){
            $data['total_days'] =  round((human_to_unix($project->deadline . ' 00:00') - human_to_unix($project->start_date . ' 00:00')) / 3600 / 24);
+           } else {
+                $data['total_days'] = '/';
+           }
            $data['total_members'] = count($members);
            $data['total_tickets'] = total_rows('tbltickets',array('project_id'=>$id));
            $data['total_invoices'] = total_rows('tblinvoices',array('project_id'=>$id));

@@ -32,16 +32,18 @@
                      ?>
                <tr>
                   <td class="bold"><?php echo _l('project_status'); ?></td>
-                  <td><?php echo _l('project_status_'.$project->status); ?></td>
+                  <td><?php echo project_status_by_id($project->status); ?></td>
                </tr>
                <tr>
                   <td class="bold"><?php echo _l('project_start_date'); ?></td>
                   <td><?php echo _d($project->start_date); ?></td>
                </tr>
+               <?php if($project->deadline){ ?>
                <tr>
                   <td class="bold"><?php echo _l('project_deadline'); ?></td>
                   <td><?php echo _d($project->deadline); ?></td>
                </tr>
+               <?php } ?>
                <?php if($project->billing_type == 1 && $project->settings->view_task_total_logged_time == 1){ ?>
                <tr>
                   <td class="bold"><?php echo _l('project_overview_total_logged_hours'); ?></td>
@@ -73,6 +75,7 @@
    <div class="col-md-12">
       <hr />
    </div>
+   <?php if($project->deadline){ ?>
    <div class="col-md-6">
       <div class="progress no-margin project-overview-progress-bar">
          <div class="progress-bar progress-bar-warning no-percent-text" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 0%" data-percent="<?php echo $project_time_left_percent; ?>">
@@ -80,10 +83,11 @@
          </div>
       </div>
    </div>
+   <?php } ?>
    <div class="visible-xs">
       <div class="mtop15"></div>
    </div>
-   <div class="col-md-6">
+   <div class="col-md-<?php echo ($project->deadline ? 6 : 12); ?>">
       <div class="progress no-margin project-overview-progress-bar">
          <div class="progress-bar light-green-bg no-percent-text" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 0%" data-percent="<?php echo $tasks_not_completed_progress; ?>">
             <span class="project-progress-number"><?php echo $tasks_not_completed; ?> / <?php echo $total_tasks; ?> <?php echo _l('project_open_tasks'); ?></span>

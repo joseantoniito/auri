@@ -3339,9 +3339,39 @@ $lang['search_ajax_searching'] = 'Searching...';
 $lang['search_ajax_initialized'] = 'Start typing to search';
 $lang['lead_description'] = 'Description';
 $lang['lead_website'] = 'Website';
+$lang['invoice_activity_auto_converted_from_estimate'] = 'Invoice auto created from estimate with number %s';
 $lang['hour_of_day_perform_auto_operations'] = 'Hour of day to perform automatic operations';
 $lang['hour_of_day_perform_auto_operations_format'] = '24 hours format eq. 9 for 9am or 15 for 3pm.';
 $lang['inv_hour_of_day_perform_auto_operations_help'] = 'Used for recurring invoices, overdue notices etc..';
 $lang['use_minified_files'] = 'Use minified files version for css and js (only system files)';
+
+# Version 1.5.0
+$lang['logo_favicon_changed_notice'] = 'Logo or Favicon change detected. If you still see the original CRM logo try to clear your browser cache';
+$lang['kb_search_articles'] = 'Search Knowledge Base Articles';
+$lang['kb_search'] = 'Search';
+$lang['have_a_question'] = 'Have a question?';
+$lang['card_expiration_year'] = 'Expiration Year';
+$lang['card_expiration_month'] = 'Expiration Month';
+$lang['client_website'] = 'Website';
+$lang['search_project_members'] = 'Search Project Members...';
+$lang['cf_translate_input_link_title'] = 'Title';
+$lang['cf_translate_input_link_url'] = 'URL';
+$lang['cf_translate_input_link_tip'] = 'Click here to add link';
+$lang['task_edit_delte_timesheet_notice'] = 'Timesheet task is %s, you cant %s the timesheet.';
+$lang['department_username'] = 'IMAP Username';
+$lang['department_username_help'] = 'Only fill this field if your IMAP server use username to login instead email address. Note that you will still need to add email address.';
+$lang['total_tickets_deleted'] = 'Total tickets deleted: %s';
+
+# Version 1.5.1
+$lang['ticket_linked_to_project'] = 'This ticket is linked to project: %s';
+$lang['only_own_files_contacts'] = 'Contacts see only own files uploaded in customer area';
+$lang['only_own_files_contacts_help'] = 'If you share the file manually from customer profile to other contacts they wil be able to see the file.';
+$lang['share_file_with'] = 'Share File With';
+$lang['file_share_visibility_notice'] = 'This file is not shared with contacts, toggle visibility again to reload';
+$lang['share_file_with_show'] = 'This file is shared with: %s';
+$lang['allow_primary_contact_to_view_edit_billing_and_shipping'] = 'Allow primary contact to view/edit billing & shipping details';
+$lang['estimate_due_after'] = 'Estimate Due After (days)';
+
+
 
 

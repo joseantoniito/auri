@@ -1,4 +1,4 @@
-<aside id="menu" class="animated fadeIn sidebar">
+<aside id="menu" class="sidebar">
  <ul class="nav metis-menu" id="side-menu">
   <li class="dashboard_user">
    <?php echo _l('welcome_top',$_staff->firstname); ?> <i class="fa fa-power-off top-left-logout pull-right" data-toggle="tooltip" data-title="<?php echo _l('nav_logout'); ?>" data-placement="left" onclick="logout(); return false;"></i>
@@ -16,7 +16,7 @@
 <?php if($total_qa_removed != count($_quick_actions)){ ?>
 <li class="quick-links">
   <div class="dropdown dropdown-quick-links">
-  <a href="#" class="dropdown-toggle" id="dropdownQuickLinks" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+    <a href="#" class="dropdown-toggle" id="dropdownQuickLinks" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
      <i class="fa fa-gavel" aria-hidden="true"></i>
    </a>
    <ul class="dropdown-menu" aria-labelledby="dropdownQuickLinks">
@@ -93,7 +93,6 @@ if($total_sub_items_removed == count($item->children)){
   $remove_main_menu = true;
 }
 } else {
-                      // child items removed
   if($item->url == '#'){continue;}
   $url = $item->url;
 }
@@ -105,7 +104,7 @@ if(!_startsWith($url,'http://') && $url != '#'){
  $url = admin_url($url);
 }
 ?>
-<li>
+<li class="menu-item-<?php echo $item->id; ?>">
  <a href="<?php echo $url; ?>" aria-expanded="false"><i class="<?php echo $item->icon; ?> menu-icon"></i>
    <?php echo _l($item->name); ?>
    <?php if($submenu == true){ ?>
@@ -129,7 +128,7 @@ if(!_startsWith($url,'http://') && $url != '#'){
    $url = admin_url($url);
  }
  ?>
- <li><a href="<?php echo $url; ?>">
+ <li class="sub-menu-item-<?php echo $submenu->id; ?>"><a href="<?php echo $url; ?>">
    <?php if(!empty($submenu->icon)){ ?>
    <i class="<?php echo $submenu->icon; ?> menu-icon"></i>
    <?php } ?>
@@ -146,21 +145,21 @@ do_action('after_render_single_aside_menu',$m); ?>
 <?php do_action('after_render_aside_menu'); ?>
 <?php if((is_staff_member() || is_admin()) && $this->perfex_base->show_setup_menu() == true){ ?>
 <li<?php if(get_option('show_setup_menu_item_only_on_hover') == 1) { echo ' style="display:none;"'; } ?> id="setup-menu-item">
- <a href="#" class="open-customizer"><i class="fa fa-cog menu-icon"></i>
-   <?php echo _l('setting_bar_heading'); ?></a>
-   <?php } ?>
- </li>
- <?php if(count($_pinned_projects) > 0){ ?>
- <li class="pinned-separator"></li>
- <?php foreach($_pinned_projects as $_pinned_project){ ?>
- <li class="pinned_project">
-   <a href="<?php echo admin_url('projects/view/'.$_pinned_project['id']); ?>" data-toggle="tooltip" data-title="<?php echo _l('pinned_project'); ?>"><?php echo $_pinned_project['name']; ?></a>
-   <div class="col-md-12">
-    <div class="progress progress-bar-mini">
-     <div class="progress-bar no-percent-text not-dynamic" role="progressbar" data-percent="<?php echo $_pinned_project['progress']; ?>" style="width: <?php echo $_pinned_project['progress']; ?>%;">
-     </div>
+<a href="#" class="open-customizer"><i class="fa fa-cog menu-icon"></i>
+ <?php echo _l('setting_bar_heading'); ?></a>
+ <?php } ?>
+</li>
+<?php if(count($_pinned_projects) > 0){ ?>
+<li class="pinned-separator"></li>
+<?php foreach($_pinned_projects as $_pinned_project){ ?>
+<li class="pinned_project">
+ <a href="<?php echo admin_url('projects/view/'.$_pinned_project['id']); ?>" data-toggle="tooltip" data-title="<?php echo _l('pinned_project'); ?>"><?php echo $_pinned_project['name']; ?></a>
+ <div class="col-md-12">
+  <div class="progress progress-bar-mini">
+   <div class="progress-bar no-percent-text not-dynamic" role="progressbar" data-percent="<?php echo $_pinned_project['progress']; ?>" style="width: <?php echo $_pinned_project['progress']; ?>%;">
    </div>
  </div>
+</div>
 </li>
 <?php } ?>
 <?php } ?>

@@ -69,7 +69,7 @@
                             <div class="col-md-12">
                                 <div class="row">
                                     <div class="col-md-3">
-                                        <label for="timesheet_task_id"><?php echo _l('project_timesheet_user'); ?></label>
+                                        <label for="timesheet_staff_id"><?php echo _l('project_timesheet_user'); ?></label>
                                     </div>
                                     <div class="col-md-9">
                                         <select name="timesheet_staff_id" id="timesheet_staff_id" class="selectpicker" data-live-search="true" data-width="100%" data-none-selected-text="-">

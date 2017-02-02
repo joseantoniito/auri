@@ -1,93 +1,278 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed'); ?>
 
-ERROR - 2017-01-30 03:19:12 --> 404 Page Not Found: Assets/plugins
-<?php defined('BASEPATH') OR exit('No direct script access allowed'); ?>
-
-ERROR - 2017-01-30 03:19:12 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 03:19:33 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 03:19:33 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 03:21:17 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 03:21:23 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 03:21:57 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 03:22:00 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 03:22:54 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 03:22:54 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 03:24:44 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 03:24:47 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 03:27:02 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 03:27:04 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 03:27:43 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 03:27:43 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 03:31:17 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 03:31:17 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 03:35:37 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 03:35:40 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 03:36:32 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 03:36:35 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 03:42:56 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 03:42:56 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 03:43:13 --> 404 Page Not Found: Uploads/staff_profile_images
-ERROR - 2017-01-30 03:43:13 --> 404 Page Not Found: Uploads/staff_profile_images
-ERROR - 2017-01-30 03:43:13 --> 404 Page Not Found: Uploads/staff_profile_images
-ERROR - 2017-01-30 03:43:30 --> 404 Page Not Found: Uploads/staff_profile_images
-ERROR - 2017-01-30 03:44:29 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 03:44:29 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 03:44:44 --> 404 Page Not Found: Uploads/staff_profile_images
-ERROR - 2017-01-30 03:45:04 --> 404 Page Not Found: Uploads/staff_profile_images
-ERROR - 2017-01-30 03:56:52 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 03:56:52 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 03:57:05 --> 404 Page Not Found: Uploads/staff_profile_images
-ERROR - 2017-01-30 03:59:42 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 03:59:42 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 03:59:53 --> 404 Page Not Found: Uploads/staff_profile_images
-ERROR - 2017-01-30 04:11:17 --> 404 Page Not Found: Uploads/staff_profile_images
-ERROR - 2017-01-30 04:20:25 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 04:20:30 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 04:20:34 --> 404 Page Not Found: Uploads/staff_profile_images
-ERROR - 2017-01-30 04:22:07 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 04:22:07 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 04:22:29 --> 404 Page Not Found: Uploads/staff_profile_images
-ERROR - 2017-01-30 04:24:44 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 04:24:44 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 04:24:54 --> 404 Page Not Found: Uploads/staff_profile_images
-ERROR - 2017-01-30 04:24:57 --> 404 Page Not Found: Uploads/staff_profile_images
-ERROR - 2017-01-30 04:36:29 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 04:36:29 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 04:37:20 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 04:37:20 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 04:37:29 --> 404 Page Not Found: Uploads/staff_profile_images
-ERROR - 2017-01-30 04:37:30 --> 404 Page Not Found: Uploads/staff_profile_images
-ERROR - 2017-01-30 06:26:34 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 06:26:34 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 06:33:02 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 06:33:03 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 06:37:01 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 06:37:06 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 06:46:02 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 06:46:02 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 06:54:33 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 06:54:34 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 06:58:02 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 06:58:03 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 07:03:27 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 07:03:27 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 07:04:44 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 07:04:44 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 07:06:45 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 07:06:45 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 07:35:35 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 07:35:35 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 07:50:51 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 07:50:51 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 07:53:00 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 07:53:01 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 08:00:36 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 08:00:41 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 08:01:54 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 08:01:56 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 08:03:09 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 08:03:11 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 08:09:57 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 08:09:58 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 08:18:27 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-30 08:18:28 --> 404 Page Not Found: Assets/plugins
+ERROR - 2017-01-30 10:44:09 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-30 10:44:09 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-30 10:45:08 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-30 10:45:08 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-30 11:18:49 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-30 11:18:49 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-30 11:20:16 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-30 11:20:16 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-30 11:20:16 --> Could not find the language line "Nombre"
+ERROR - 2017-01-30 11:20:16 --> Could not find the language line "Logotipo"
+ERROR - 2017-01-30 11:20:16 --> Could not find the language line "Descripción"
+ERROR - 2017-01-30 11:20:16 --> Could not find the language line "Tipo de desarrollo"
+ERROR - 2017-01-30 11:20:16 --> Could not find the language line "Etapa de desarrollo"
+ERROR - 2017-01-30 11:20:16 --> Could not find the language line "Precio Desde"
+ERROR - 2017-01-30 11:20:16 --> Could not find the language line "Total de Unidades"
+ERROR - 2017-01-30 11:20:16 --> Could not find the language line "Entrega"
+ERROR - 2017-01-30 11:20:16 --> Could not find the language line "Dirección"
+ERROR - 2017-01-30 11:20:16 --> Could not find the language line "Código Postal"
+ERROR - 2017-01-30 11:20:16 --> Could not find the language line "Superficie de Terreno Mínima"
+ERROR - 2017-01-30 11:20:16 --> Could not find the language line "Superficie de Terreno Máxima"
+ERROR - 2017-01-30 11:20:16 --> Could not find the language line "Superficie Construida Mínima"
+ERROR - 2017-01-30 11:20:16 --> Could not find the language line "Superficie Construida Máxima"
+ERROR - 2017-01-30 11:20:16 --> Could not find the language line "Total de Recámaras"
+ERROR - 2017-01-30 11:20:16 --> Could not find the language line "Máximo de Baños"
+ERROR - 2017-01-30 11:20:16 --> Could not find the language line "Máximo de Medio-Baños"
+ERROR - 2017-01-30 11:20:16 --> Could not find the language line "Máximo de Estacionamientos"
+ERROR - 2017-01-30 11:20:16 --> Could not find the language line "Precio"
+ERROR - 2017-01-30 11:20:16 --> Could not find the language line "Unidad"
+ERROR - 2017-01-30 11:20:16 --> Could not find the language line "m2 Habitables"
+ERROR - 2017-01-30 11:20:16 --> Could not find the language line "m2 Totales"
+ERROR - 2017-01-30 11:20:16 --> Could not find the language line "Recámaras"
+ERROR - 2017-01-30 11:20:16 --> Could not find the language line "Baños"
+ERROR - 2017-01-30 11:20:16 --> Could not find the language line "Estacionam."
+ERROR - 2017-01-30 11:25:40 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-30 11:25:40 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-30 11:26:28 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-30 11:26:28 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-30 11:26:37 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-30 11:26:37 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-30 11:26:37 --> Could not find the language line "Nombre"
+ERROR - 2017-01-30 11:26:37 --> Could not find the language line "Logotipo"
+ERROR - 2017-01-30 11:26:37 --> Could not find the language line "Descripción"
+ERROR - 2017-01-30 11:26:37 --> Could not find the language line "Tipo de desarrollo"
+ERROR - 2017-01-30 11:26:37 --> Could not find the language line "Etapa de desarrollo"
+ERROR - 2017-01-30 11:26:37 --> Could not find the language line "Precio Desde"
+ERROR - 2017-01-30 11:26:37 --> Could not find the language line "Total de Unidades"
+ERROR - 2017-01-30 11:26:37 --> Could not find the language line "Entrega"
+ERROR - 2017-01-30 11:26:37 --> Could not find the language line "Dirección"
+ERROR - 2017-01-30 11:26:37 --> Could not find the language line "Código Postal"
+ERROR - 2017-01-30 11:26:37 --> Could not find the language line "Superficie de Terreno Mínima"
+ERROR - 2017-01-30 11:26:37 --> Could not find the language line "Superficie de Terreno Máxima"
+ERROR - 2017-01-30 11:26:37 --> Could not find the language line "Superficie Construida Mínima"
+ERROR - 2017-01-30 11:26:37 --> Could not find the language line "Superficie Construida Máxima"
+ERROR - 2017-01-30 11:26:37 --> Could not find the language line "Total de Recámaras"
+ERROR - 2017-01-30 11:26:37 --> Could not find the language line "Máximo de Baños"
+ERROR - 2017-01-30 11:26:37 --> Could not find the language line "Máximo de Medio-Baños"
+ERROR - 2017-01-30 11:26:37 --> Could not find the language line "Máximo de Estacionamientos"
+ERROR - 2017-01-30 11:26:37 --> Could not find the language line "Precio"
+ERROR - 2017-01-30 11:26:37 --> Could not find the language line "Unidad"
+ERROR - 2017-01-30 11:26:37 --> Could not find the language line "m2 Habitables"
+ERROR - 2017-01-30 11:26:37 --> Could not find the language line "m2 Totales"
+ERROR - 2017-01-30 11:26:37 --> Could not find the language line "Recámaras"
+ERROR - 2017-01-30 11:26:37 --> Could not find the language line "Baños"
+ERROR - 2017-01-30 11:26:37 --> Could not find the language line "Estacionam."
+ERROR - 2017-01-30 11:29:01 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-30 11:29:01 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-30 11:29:30 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-30 11:29:30 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-30 11:29:33 --> 404 Page Not Found: Assets/plugins
+ERROR - 2017-01-30 11:29:33 --> 404 Page Not Found: Assets/plugins
+ERROR - 2017-01-30 11:41:08 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-30 11:41:08 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-30 11:41:11 --> 404 Page Not Found: Assets/plugins
+ERROR - 2017-01-30 11:41:14 --> 404 Page Not Found: Assets/plugins
+ERROR - 2017-01-30 11:47:49 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-30 11:47:49 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-30 11:47:49 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-30 11:47:49 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-30 11:47:49 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-30 11:47:49 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-30 11:47:52 --> 404 Page Not Found: Assets/plugins
+ERROR - 2017-01-30 11:47:55 --> 404 Page Not Found: Assets/plugins
+ERROR - 2017-01-30 11:51:13 --> 404 Page Not Found: Uploads/staff_profile_images
+ERROR - 2017-01-30 11:51:54 --> 404 Page Not Found: Uploads/staff_profile_images
+ERROR - 2017-01-30 11:53:50 --> 404 Page Not Found: Uploads/staff_profile_images
+ERROR - 2017-01-30 11:53:50 --> 404 Page Not Found: Uploads/staff_profile_images
+ERROR - 2017-01-30 11:57:09 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-30 11:57:09 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-30 12:00:04 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-30 12:00:04 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-30 12:00:04 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-30 12:00:04 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-30 12:00:05 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-30 12:00:05 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-30 12:00:08 --> 404 Page Not Found: Assets/plugins
+ERROR - 2017-01-30 12:00:10 --> 404 Page Not Found: Assets/plugins
+ERROR - 2017-01-30 12:02:05 --> 404 Page Not Found: Uploads/staff_profile_images
+ERROR - 2017-01-30 12:02:32 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-30 12:02:32 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-30 12:02:34 --> 404 Page Not Found: Assets/plugins
+ERROR - 2017-01-30 12:02:35 --> 404 Page Not Found: Assets/plugins
+ERROR - 2017-01-30 12:11:07 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-30 12:11:07 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-30 12:11:35 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-30 12:11:35 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-30 12:11:35 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-30 12:11:41 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-30 12:12:11 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-30 12:12:11 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-30 12:12:11 --> Could not find the language line "Qualification"
+ERROR - 2017-01-30 12:12:24 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-30 12:12:24 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-30 12:12:24 --> Could not find the language line "Qualification"
+ERROR - 2017-01-30 12:12:31 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-30 12:12:31 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-30 12:12:31 --> Could not find the language line "Qualification"
+ERROR - 2017-01-30 12:12:38 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-30 12:12:38 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-30 12:12:38 --> Could not find the language line "Qualification"
+ERROR - 2017-01-30 12:13:10 --> 404 Page Not Found: Assets/plugins
+ERROR - 2017-01-30 12:13:10 --> 404 Page Not Found: Assets/plugins
+ERROR - 2017-01-30 12:13:21 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-30 12:13:21 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-30 12:15:22 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-30 12:15:22 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-30 12:16:45 --> 404 Page Not Found: Assets/plugins
+ERROR - 2017-01-30 12:16:45 --> 404 Page Not Found: Assets/plugins
+ERROR - 2017-01-30 12:17:05 --> 404 Page Not Found: Assets/plugins
+ERROR - 2017-01-30 12:17:05 --> 404 Page Not Found: Assets/plugins
+ERROR - 2017-01-30 12:23:56 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-30 12:23:56 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-30 12:24:01 --> 404 Page Not Found: Assets/plugins
+ERROR - 2017-01-30 12:24:01 --> 404 Page Not Found: Assets/plugins
+ERROR - 2017-01-30 12:24:27 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-30 12:24:27 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-30 12:24:27 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-30 12:24:33 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-30 12:24:56 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-30 12:24:56 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-30 12:27:41 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-30 12:27:41 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-30 12:40:02 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-30 12:40:02 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-30 12:45:49 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-30 12:45:49 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-30 12:45:51 --> 404 Page Not Found: Assets/plugins
+ERROR - 2017-01-30 12:45:51 --> 404 Page Not Found: Assets/plugins
+ERROR - 2017-01-30 13:02:56 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-30 13:02:56 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-30 14:53:24 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-30 14:53:24 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-30 14:53:57 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-30 14:53:57 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-30 14:53:57 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-30 14:54:08 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-30 15:09:49 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-30 15:09:49 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-30 15:10:25 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-30 15:10:25 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-30 15:10:25 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-30 15:10:29 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-30 15:10:44 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-30 15:10:44 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-30 15:11:04 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-30 15:11:04 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-30 15:11:04 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-30 15:11:07 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-30 15:11:30 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-30 15:11:30 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-30 15:11:30 --> Could not find the language line "Qualification"
+ERROR - 2017-01-30 15:12:46 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-30 15:12:46 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-30 15:13:36 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-30 15:13:36 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-30 15:13:36 --> Could not find the language line "Qualification"
+ERROR - 2017-01-30 15:14:12 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-30 15:14:12 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-30 15:15:35 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-30 15:15:35 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-30 15:15:35 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-30 15:15:41 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-30 15:16:18 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-30 15:16:18 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-30 15:16:18 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-30 15:16:23 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-30 15:17:10 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-30 15:17:10 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-30 15:17:52 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-30 15:17:52 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-30 15:17:52 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-30 15:17:57 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-30 15:18:40 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-30 15:18:40 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-30 15:18:40 --> Could not find the language line "Qualification"
+ERROR - 2017-01-30 15:20:13 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-30 15:20:13 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-30 15:20:13 --> Could not find the language line "Qualification"
+ERROR - 2017-01-30 15:20:32 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-30 15:20:32 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-30 15:28:37 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-30 15:28:37 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-30 15:28:37 --> Could not find the language line "Qualification"
+ERROR - 2017-01-30 15:30:30 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-30 15:30:30 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-30 15:30:30 --> Could not find the language line "Qualification"
+ERROR - 2017-01-30 15:31:00 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-30 15:31:00 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-30 15:31:00 --> Could not find the language line "Qualification"
+ERROR - 2017-01-30 15:31:01 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-30 15:31:21 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-30 15:31:42 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-30 15:31:42 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-30 15:31:42 --> Could not find the language line "Qualification"
+ERROR - 2017-01-30 15:31:49 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-30 15:31:49 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-30 15:33:18 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-30 15:33:18 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-30 15:33:24 --> Could not find the language line "cf_translate_invoice_name"
+ERROR - 2017-01-30 15:33:24 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-30 15:33:24 --> Could not find the language line "CC"
+ERROR - 2017-01-30 15:34:48 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-30 15:34:48 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-30 15:34:54 --> Could not find the language line "cf_translate_invoice_name"
+ERROR - 2017-01-30 15:34:54 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-30 15:34:54 --> Could not find the language line "CC"
+ERROR - 2017-01-30 15:35:16 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-30 15:35:16 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-30 15:35:46 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-30 15:35:46 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-30 15:35:51 --> Could not find the language line "cf_translate_invoice_name"
+ERROR - 2017-01-30 15:35:51 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-30 15:35:51 --> Could not find the language line "CC"
+ERROR - 2017-01-30 15:36:52 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-30 15:36:52 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-30 15:37:05 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-30 15:37:05 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-30 15:37:13 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-30 15:37:13 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-30 15:37:13 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-30 15:37:16 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-30 15:37:50 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-30 15:37:50 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-30 15:37:50 --> Could not find the language line "Qualification"
+ERROR - 2017-01-30 15:37:51 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-30 15:37:51 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-30 15:37:51 --> Could not find the language line "Qualification"
+ERROR - 2017-01-30 15:38:37 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-30 15:38:37 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-30 15:38:37 --> Could not find the language line "Qualification"
+ERROR - 2017-01-30 16:19:57 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-30 16:19:57 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-30 16:20:08 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-30 16:20:08 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-30 16:20:14 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-30 16:20:14 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-30 16:47:00 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-30 16:47:00 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-30 16:47:00 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-30 16:47:10 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-30 16:47:48 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-30 16:47:48 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-30 16:48:37 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-30 16:48:37 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-30 16:48:37 --> Could not find the language line "Qualification"
+ERROR - 2017-01-30 16:54:33 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-30 16:54:33 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-30 16:57:07 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-30 16:57:07 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-30 17:00:47 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-30 17:00:47 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-30 17:02:45 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-30 17:02:45 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-30 17:02:46 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-30 17:02:46 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-30 17:05:38 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-30 17:05:38 --> Could not find the language line "Desarrollos"

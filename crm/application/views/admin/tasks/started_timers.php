@@ -22,7 +22,6 @@ foreach($_started_timers as $timer){
     $i++;
 }
 
-$this->load->model('tasks_model');
 $assigned_staff_tasks_top = $this->tasks_model->get_tasks_by_staff_id(get_staff_user_id(),'status !=5 AND id NOT IN (select task_id FROM tbltaskstimers WHERE staff_id = '.get_staff_user_id().' AND end_time IS NULL)');
 
 if(count($assigned_staff_tasks_top) > 0){

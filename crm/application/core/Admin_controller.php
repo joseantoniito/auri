@@ -18,8 +18,8 @@ class Admin_controller extends CRM_Controller
             die;
         }
 
-        if(CI_VERSION != '3.1.2'){
-            echo '<h2>Additionaly you will need to replace the <b>system</b> folder. We updated Codeigniter to 3.1.2.</h2>';
+        if(CI_VERSION != '3.1.3'){
+            echo '<h2>Additionaly you will need to replace the <b>system</b> folder. We updated Codeigniter to 3.1.3.</h2>';
             echo '<p>From the newest downloaded files upload the <b>system</b> folder to your Perfex CRM installation directory.';
             die;
         }
@@ -45,8 +45,10 @@ class Admin_controller extends CRM_Controller
         // Check for just updates message
         add_action('before_start_render_content', 'show_just_updated_message');
 
+
         // Do not check on ajax requests
         if(!$this->input->is_ajax_request()){
+            add_action('before_start_render_content', 'show_development_mode_message');
 
             if (is_admin() && ENVIRONMENT == 'production') {
                 if ($this->config->item('encryption_key') === '') {
@@ -58,7 +60,6 @@ class Admin_controller extends CRM_Controller
 
             // Check if cron is required to be setup for some features
             add_action('before_start_render_content', 'is_cron_setup_required');
-
         }
 
         $this->load->model('staff_model');

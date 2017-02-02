@@ -36,16 +36,7 @@ foreach ( $rResult as $aRow )
         } else if($aColumns[$i] == 'name'){
             $_data = '<a href="'.admin_url('projects/view/'.$aRow['id']).'">'.$_data.'</a>';
         } else if($aColumns[$i] == 'status'){
-          if($_data == 1){
-            $label = 'default';
-          } else if($_data == 2){
-            $label = 'info';
-          } else if($_data == 3){
-             $label = 'warning';
-          } else {
-             $label = 'success';
-          }
-          $status = '<span class="label label-'.$label.' inline-block">'._l('project_status_'.$_data).'</span>';
+          $status = '<span class="label label-'.project_status_color_class($_data).' project-status-'.project_status_color_class($_data).' inline-block">'.project_status_by_id($_data).'</span>';
           $_data = $status;
       }
 

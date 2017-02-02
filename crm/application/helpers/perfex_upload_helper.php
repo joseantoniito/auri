@@ -661,11 +661,14 @@ function handle_staff_profile_image_upload($staff_id = '')
  * Check for staff profile image
  * @return boolean
  */
-function handle_contact_profile_image_upload()
+function handle_contact_profile_image_upload($contact_id = '')
 {
     if (isset($_FILES['profile_image']['name']) && $_FILES['profile_image']['name'] != '') {
         do_action('before_upload_contact_profile_image');
-        $path        = get_upload_path_by_type('contact_profile_images') . get_contact_user_id() . '/';
+        if($contact_id == ''){
+            $contact_id = get_contact_user_id();
+        }
+        $path        = get_upload_path_by_type('contact_profile_images') . $contact_id . '/';
         // Get the temp file path
         $tmpFilePath = $_FILES['profile_image']['tmp_name'];
         // Make sure we have a filepath
@@ -711,7 +714,8 @@ function handle_contact_profile_image_upload()
                 $config['height']         = 32;
                 $CI->image_lib->initialize($config);
                 $CI->image_lib->resize();
-                $CI->db->where('id', get_contact_user_id());
+
+                $CI->db->where('id', $contact_id);
                 $CI->db->update('tblcontacts', array(
                     'profile_image' => $filename
                 ));

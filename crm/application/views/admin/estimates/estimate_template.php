@@ -147,7 +147,7 @@
                     <?php echo render_date_input('date','estimate_add_edit_date',$value); ?>
                   </div>
                   <div class="col-md-6">
-                    <?php $value = (isset($estimate) ? _d($estimate->expirydate) : ''); ?>
+                   <?php $value = (isset($estimate) ? _d($estimate->expirydate) : (get_option('estimate_due_after') != 0) ? _d(date('Y-m-d', strtotime('+' . get_option('estimate_due_after') . ' DAY', strtotime(date('Y-m-d'))))) : ''); ?>
                     <?php echo render_date_input('expirydate','estimate_add_edit_expirydate',$value); ?>
                   </div>
                 </div>

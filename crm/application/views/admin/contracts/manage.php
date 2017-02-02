@@ -176,7 +176,7 @@
         var headers_contracts = $('.table-contracts').find('th');
         var not_sortable_contracts = (headers_contracts.length - 1);
 
-        initDataTable('.table-contracts', window.location.href, [not_sortable_contracts], [not_sortable_contracts], ContractsServerParams);
+        initDataTable('.table-contracts', window.location.href, [not_sortable_contracts], [not_sortable_contracts], ContractsServerParams,<?php echo do_action('contracts_table_default_order',json_encode(array(5,'ASC'))); ?>);
         new Chart($('#contracts-by-type-chart'), {
             type: 'bar',
             data: <?php echo $chart_types; ?>,
@@ -187,12 +187,12 @@
                     yAxes: [{
                         display: true,
                         ticks: {
-            suggestedMin: 0, // minimum will be 0, unless there is a lower value.
-        }
-    }]
-}
-}
-});
+                            suggestedMin: 0,
+                        }
+                    }]
+                }
+            }
+        });
         new Chart($('#contracts-value-by-type-chart'), {
             type: 'line',
             data: <?php echo $chart_types_values; ?>,
@@ -203,12 +203,12 @@
                     yAxes: [{
                         display: true,
                         ticks: {
-            suggestedMin: 0, // minimum will be 0, unless there is a lower value.
-        }
-    }]
-}
-}
-});
+                            suggestedMin: 0,
+                        }
+                    }]
+                }
+            }
+        });
     });
 </script>
 </body>

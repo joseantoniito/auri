@@ -27,6 +27,15 @@ if (!function_exists('endsWith')) {
     }
 }
 /**
+ * Check if there is html in string
+ */
+if(!function_exists('is_html')){
+  function is_html($string)
+  {
+    return preg_match("/<[^<]+>/",$string,$m) != 0;
+  }
+}
+/**
  * Get string after specific charcter/word
  * @param  string $string    string from where to get
  * @param  substring $substring search for

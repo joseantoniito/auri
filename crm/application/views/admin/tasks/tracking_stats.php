@@ -6,7 +6,9 @@
                 <h4 class="modal-title"><?php echo _l('task_statistics'); ?></h4>
             </div>
             <div class="modal-body">
-                <canvas class="chart" id="task-tracking-stats-chart" style="height:500px;"></canvas>
+                <div class="relative" style="min-height:250px;max-height:250px;">
+                    <canvas id="task-tracking-stats-chart" height="250"></canvas>
+                </div>
             </div>
         </div>
         <!-- /.modal-content -->

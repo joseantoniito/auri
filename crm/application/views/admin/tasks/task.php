@@ -31,7 +31,7 @@
               <?php } ?>
               <?php
               if(isset($task) && $task->billed == 1){
-               echo '<p class="text-success no-margin">'._l('task_is_billed','<a href="'.admin_url('invoices/list_invoices/'.$task->invoice_id).'" target="_blank">'.format_invoice_number($task->invoice_id)). '</a></p>';
+               echo '<p class="text-success no-margin">'._l('task_is_billed','<a href="'.admin_url('invoices/list_invoices/'.$task->invoice_id).'" target="_blank">'.format_invoice_number($task->invoice_id)). '</a></p><br />';
              }
              ?>
              <div class="checkbox checkbox-primary no-mtop checkbox-inline">
@@ -42,15 +42,14 @@
               <input type="checkbox" id="task_is_billable" name="billable" <?php if(isset($task)){if($task->billable == 1){echo 'checked';}} else {echo 'checked';}; ?>>
               <label for="task_is_billable" data-toggle="tooltip" data-placement="bottom" title="<?php echo _l('task_billable_help'); ?>"><?php echo _l('task_billable'); ?></label>
             </div>
-            <div class="task-visible-to-customer checkbox checkbox-inline checkbox-primary hide">
+            <div class="task-visible-to-customer checkbox checkbox-inline checkbox-primary<?php if((isset($task) && $task->rel_type != 'project') || !isset($task) || (isset($task) && $task->rel_type == 'project' && total_rows('tblprojectsettings',array('project_id'=>$task->rel_id,'name'=>'view_tasks','value'=>0)) > 0)){echo ' hide';} ?>">
               <input type="checkbox" id="task_visible_to_client" name="visible_to_client" <?php if(isset($task)){if($task->visible_to_client == 1){echo 'checked';}} ?>>
               <label for="task_visible_to_client"><?php echo _l('task_visible_to_client'); ?></label>
             </div>
             <hr />
-
             <?php $value = (isset($task) ? $task->name : ''); ?>
             <?php echo render_input('name','task_add_edit_subject',$value); ?>
-            <div class="task-hours hide">
+            <div class="task-hours<?php if(isset($task) && $task->rel_type == 'project' && total_rows('tblprojects',array('id'=>$task->rel_id,'billing_type'=>3)) == 0){echo ' hide';} ?>">
               <?php $value = (isset($task) ? $task->hourly_rate : 0); ?>
               <?php echo render_input('hourly_rate','task_hourly_rate',$value); ?>
             </div>
@@ -89,11 +88,11 @@
                   <option value="2" <?php if(isset($task) && $task->priority == 2 || !isset($task) && get_option('default_task_priority') == 2){echo 'selected';} ?>><?php echo _l('task_priority_medium'); ?></option>
                   <option value="3" <?php if(isset($task) && $task->priority == 3 || !isset($task) && get_option('default_task_priority') == 3){echo 'selected';} ?>><?php echo _l('task_priority_high'); ?></option>
                   <option value="4" <?php if(isset($task) && $task->priority == 4 || !isset($task) && get_option('default_task_priority') == 4){echo 'selected';} ?>><?php echo _l('task_priority_urgent'); ?></option>
+                  <?php do_action('task_priorities_select',(isset($task)?$task:0)); ?>
                 </select>
               </div>
             </div>
             <div class="col-md-6">
-
               <div class="form-group">
                <label for="repeat_every" class="control-label"><?php echo _l('task_repeat_every'); ?></label>
                <select name="repeat_every" id="repeat_every" class="selectpicker" data-width="100%" data-none-selected-text="<?php echo _l('dropdown_non_selected_tex'); ?>">
@@ -198,8 +197,10 @@
  _milestone_selected_data = undefined;
 
  $(function(){
-  $( "body" )
-    .off( "change", "#rel_id" );
+
+  $( "body" ).off( "change", "#rel_id" );
+
+  custom_fields_hyperlink();
 
   _validate_form($('#task-form'), {
     name: 'required',
@@ -220,6 +221,7 @@
     } else {
       _rel_id_wrapper.addClass('hide');
     }
+    init_project_details(_rel_type.val());
   });
 
   init_datepicker();
@@ -261,6 +263,7 @@
   <?php } ?>
 
   function task_rel_select(){
+    clearInterval(autocheck_notifications_timer_id);
     var options = {
       ajax: {
         url: admin_url + 'misc/get_relation_data',
@@ -276,12 +279,12 @@
          }
        },
        locale: {
-        emptyTitle: '<?php echo htmlentities(_l('search_ajax_empty')); ?>',
-        statusInitialized: '<?php echo htmlentities(_l('search_ajax_initialized')); ?>',
-        statusSearching:'<?php echo htmlentities(_l('search_ajax_searching')); ?>',
-        statusNoResults:'<?php echo htmlentities(_l('not_results_found')); ?>',
-        searchPlaceholder:'<?php echo htmlentities(_l('search_ajax_placeholder')); ?>',
-        currentlySelected:'<?php echo htmlentities(_l('currently_selected')); ?>',
+        emptyTitle: "<?php echo _l('search_ajax_empty'); ?>",
+        statusInitialized: "<?php echo _l('search_ajax_initialized'); ?>",
+        statusSearching:"<?php echo _l('search_ajax_searching'); ?>",
+        statusNoResults:"<?php echo _l('not_results_found'); ?>",
+        searchPlaceholder:"<?php echo _l('search_ajax_placeholder'); ?>",
+        currentlySelected:"<?php echo _l('currently_selected'); ?>",
       },
       requestDelay:500,
       cache:false,

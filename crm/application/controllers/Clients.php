@@ -5,8 +5,8 @@ class Clients extends Clients_controller
     function __construct()
     {
         parent::__construct();
-        do_action('after_clients_area_init');
         $this->form_validation->set_error_delimiters('<p class="text-danger alert-validation">', '</p>');
+        do_action('after_clients_area_init');
     }
     public function index()
     {
@@ -72,6 +72,7 @@ class Clients extends Clients_controller
         }
 
         $data['projects'] = $this->projects_model->get('', $where);
+        $data['project_statuses'] = $this->projects_model->get_project_statuses();
         $data['title']    = _l('clients_my_projects');
         $this->data       = $data;
         $this->view       = 'projects';
@@ -275,20 +276,23 @@ class Clients extends Clients_controller
             redirect(site_url('clients/login'));
         }
 
-        $data['files'] = $this->clients_model->get_customer_files(get_client_user_id(), array(
-            'visible_to_customer' => 1
-        ));
+        $files_where = 'visible_to_customer = 1 AND id IN (SELECT file_id FROM tblcustomerfiles_shares WHERE contact_id ='.get_contact_user_id().')';
 
+        $files_where = do_action('customers_area_files_where',$files_where);
+
+        $files = $this->clients_model->get_customer_files(get_client_user_id(), $files_where);
+
+        $data['files'] = $files;
         $this->data = $data;
         $this->view = 'files';
         $this->layout();
     }
     public function upload_files()
     {
-
         if (!is_client_logged_in()) {
             redirect(site_url('clients/login'));
         }
+
         if ($this->input->post('external')) {
             $file                        = $this->input->post('files');
             $file[0]['staffid']          = 0;
@@ -325,7 +329,6 @@ class Clients extends Clients_controller
             } else if ($type == 'task') {
                 $file = $this->misc_model->get_file($id);
                 if ($file->contact_id == get_contact_user_id()) {
-                    $this->load->model('tasks_model');
                     $this->tasks_model->remove_task_attachment($id);
                     set_alert('success', _l('deleted', _l('file')));
                 }
@@ -448,10 +451,12 @@ class Clients extends Clients_controller
         $this->use_navigation = false;
         $this->use_submenu    = false;
         $data['title']        = $proposal->subject;
-        $data['proposal']     = $proposal;
+        $data['proposal'] = do_action('proposal_html_pdf_data',$proposal);
         $data['bodyclass']    = 'proposal proposal-view';
         $data['comments']     = $this->proposals_model->get_comments($id);
         add_views_tracking('proposal', $id);
+        do_action('proposal_html_viewed',$id);
+        $data['exclude_reset_css'] = true;
         $this->data = $data;
         $this->view = 'viewproposal';
         $this->layout();
@@ -665,11 +670,12 @@ class Clients extends Clients_controller
         $this->use_navigation  = false;
         $this->use_submenu     = false;
         $data['hash']          = $hash;
-        $data['invoice']       = $invoice;
+        $data['invoice']       = do_action('invoice_html_pdf_data',$invoice);
         $data['bodyclass']     = 'viewinvoice';
         $this->data            = $data;
         $this->view            = 'invoicehtml';
         add_views_tracking('invoice', $id);
+        do_action('invoice_html_viewed',$id);
         $this->layout();
     }
     public function viewestimate($id, $hash)
@@ -719,11 +725,12 @@ class Clients extends Clients_controller
         $this->use_navigation = false;
         $this->use_submenu    = false;
         $data['hash']         = $hash;
-        $data['estimate']     = $estimate;
+        $data['estimate']       = do_action('estimate_html_pdf_data',$estimate);
         $data['bodyclass']    = 'viewestimate';
         $this->data           = $data;
         $this->view           = 'estimatehtml';
         add_views_tracking('estimate', $id);
+        do_action('estimate_html_viewed',$id);
         $this->layout();
     }
     public function estimates($status = '')
@@ -964,9 +971,11 @@ class Clients extends Clients_controller
                 }
                 $clientid = $this->clients_model->add($data, true);
                 if ($clientid) {
+                    do_action('after_client_register',$clientid);
                     $this->load->model('authentication_model');
                     $logged_in = $this->authentication_model->login($this->input->post('email'), $this->input->post('password'), false, false);
                     if ($logged_in) {
+                        do_action('after_client_register_logged_in',$clientid);
                         set_alert('success', _l('clients_successfully_registered'));
                     } else {
                         set_alert('warning', _l('clients_account_created_but_not_logged_in'));
@@ -1056,6 +1065,14 @@ class Clients extends Clients_controller
     {
         if ((get_option('use_knowledge_base') == 1 && !is_client_logged_in() && get_option('knowledge_base_without_registration') == 1) || (get_option('use_knowledge_base') == 1 && is_client_logged_in()) || is_staff_logged_in()) {
             $data = array();
+            $where_kb = array();
+            if($this->input->get('groupid')){
+                $where_kb = 'articlegroup ='.$this->input->get('groupid');
+            } else if($this->input->get('kb_q')){
+                $where_kb = '(subject LIKE "%'.$this->input->get('kb_q').'%" OR description LIKE "%'.$this->input->get('kb_q').'%")';
+            }
+            $data['groups'] = get_all_knowledge_base_articles_grouped(true,$where_kb);
+            $data['knowledge_base_search'] = true;
             if ($slug == '' || $this->input->get('groupid')) {
                 $data['title'] = _l('clients_knowledge_base');
                 $this->view    = 'knowledge_base';

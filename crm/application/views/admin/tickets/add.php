@@ -35,7 +35,7 @@
 								</div>
 								<div class="col-md-6">
 									<?php $priorities['callback_translate'] = 'ticket_priority_translate';
-									echo render_select('priority',$priorities,array('priorityid','name'),'ticket_settings_priority'); ?>
+									echo render_select('priority',$priorities,array('priorityid','name'),'ticket_settings_priority',do_action('new_ticket_priority_selected',2)); ?>
 									<div class="form-group">
 									<label for="project_id"><?php echo _l('project'); ?></label>
 										<select name="project_id" id="project_id" class="selectpicker" data-width="100%" data-live-search="true" data-none-selected-text="<?php echo _l('dropdown_non_selected_tex'); ?>">

@@ -10,7 +10,7 @@ if ($lead['status'] == $status['id']) { ?>
     <div class="panel-body lead-body">
         <div class="row">
             <div class="col-md-12 lead-name">
-                <a href="#" onclick="init_lead(<?php echo $lead['id']; ?>);return false;">
+                <a href="<?php echo admin_url('leads/index/'.$lead['id']); ?>" onclick="init_lead(<?php echo $lead['id']; ?>);return false;">
                     <span class="inline-block mtop10 mbot10 full-width">#<?php echo $lead['id'] . ' - ' . $lead['lead_name']; ?></span>
                 </a>
             </div>

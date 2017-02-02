@@ -92,6 +92,7 @@ class Departments extends Admin_controller
         $email = $this->input->post('email');
         $password = $this->input->post('password');
         $host = $this->input->post('host');
+        $imap_username = $this->input->post('username');
         if($this->input->post('encryption')){
             $encryption = $this->input->post('encryption');
         } else {
@@ -99,6 +100,11 @@ class Departments extends Admin_controller
         }
         require_once(APPPATH . 'third_party/php-imap/Imap.php');
         $mailbox    = $host;
+        if($imap_username != ''){
+            $username = $imap_username;
+        } else {
+            $username = $email;
+        }
         $username   = $email;
         $password   = $password;
         $encryption = $encryption;
@@ -109,6 +115,5 @@ class Departments extends Admin_controller
             } else {
                echo json_encode(array('alert_type'=>'warning','message'=>$imap->getError()));
            }
-
     }
 }

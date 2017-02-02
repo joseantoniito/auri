@@ -43,6 +43,11 @@ if (is_numeric($clientid)) {
 if(!has_permission('expenses','','view')){
     array_push($where,'AND tblexpenses.addedfrom='.get_staff_user_id());
 }
+
+$aColumns = do_action('expenses_table_sql_columns',$aColumns);
+$join = do_action('expenses_table_sql_join',$join);
+$where = do_action('expenses_table_sql_where',$where);
+
 $sIndexColumn = "id";
 $sTable       = 'tblexpenses';
 $result       = data_tables_init($aColumns, $sIndexColumn, $sTable, $join, $where, array(
@@ -71,7 +76,7 @@ foreach ($rResult as $aRow) {
             if (is_numeric($clientid)) {
                 $_data = '<a href="' . admin_url('expenses/list_expenses/' . $aRow['tblexpenses.id']) . '">' . $aRow['category_name'] . '</a>';
             } else {
-                $_data = '<a href="#" onclick="init_expense(' . $aRow['tblexpenses.id'] . ');return false;">' . $aRow['category_name'] . '</a>';
+                $_data = '<a href="' . admin_url('expenses/list_expenses/' . $aRow['tblexpenses.id']) . '" onclick="init_expense(' . $aRow['tblexpenses.id'] . ');return false;">' . $aRow['category_name'] . '</a>';
             }
             if ($aRow['billable'] == 1) {
                 if ($aRow['invoiceid'] == NULL) {
@@ -108,7 +113,7 @@ foreach ($rResult as $aRow) {
             $_data = '<a href="'.admin_url('projects/view/'.$aRow['project_id']).'">'.$aRow['project_name'].'</a>';
         } else if($aColumns[$i] == 'file_name'){
             if(!empty($_data)){
-                $_data=  '<a href="'.site_url('download/file/expense/'.$aRow['id']).'">'.$_data.'</a>';
+                $_data=  '<a href="'.site_url('download/file/expense/'.$aRow['tblexpenses.id']).'">'.$_data.'</a>';
             }
         } else if($aColumns[$i] == 'date'){
             $_data = _d($_data);
@@ -124,6 +129,10 @@ foreach ($rResult as $aRow) {
                  $_data = _d($_data);
             }
         }
+
+        $hook_data = do_action('expenses_tr_data_output',array('output'=>$_data,'column'=>$aColumns[$i],'id'=>$aRow['tblexpenses.id']));
+        $_data = $hook_data['output'];
+
         $row[] = $_data;
     }
     $output['aaData'][] = $row;

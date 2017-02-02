@@ -19,8 +19,9 @@
   <link href="<?php echo base_url('assets/css/custom.css'); ?>" rel="stylesheet">
   <?php } ?>
   <?php render_custom_styles(array('general','buttons')); ?>
+  <?php do_action('app_web_to_lead_form_head'); ?>
 </head>
-<body>
+<body class="web-to-lead">
   <div class="container-fluid">
     <div class="row">
       <div class="col-md-12">
@@ -92,97 +93,103 @@
 <script src="<?php echo base_url('assets/plugins/jquery/jquery.min.js'); ?>"></script>
 <script src="<?php echo base_url('assets/plugins/bootstrap/js/bootstrap.min.js'); ?>"></script>
 <script src="<?php echo base_url('assets/plugins/jquery-validation/jquery.validate.min.js'); ?>"></script>
-<?php if(file_exists(FCPATH.'assets/plugins/jquery-validation/localization/messages_'.$locale_key.'.min.js')){ ?>
+<?php
+if($locale_key != 'en'){
+if(file_exists(FCPATH.'assets/plugins/jquery-validation/localization/messages_'.$locale_key.'.min.js')){ ?>
 <script src="<?php echo base_url('assets/plugins/jquery-validation/localization/messages_'.$locale_key.'.min.js'); ?>"></script>
-<?php } ?>
+<?php } else if(file_exists(FCPATH.'assets/plugins/jquery-validation/localization/messages_'.$locale_key.'_'.strtoupper($locale_key).'.min.js')){ ?>
+<script src="<?php echo base_url('assets/plugins/jquery-validation/localization/messages_'.$locale_key.'_'.strtoupper($locale_key).'.min.js'); ?>"></script>
+<?php } } ?>
 <script src="<?php echo base_url('assets/plugins/datetimepicker/jquery.datetimepicker.full.min.js'); ?>"></script>
 <script src="<?php echo base_url('assets/plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.min.js'); ?>"></script>
 <script>
  var form_id = '#<?php echo $form->form_key; ?>';
- $(function(){
+ $(function() {
 
-  $('body').tooltip({
-    selector: '[data-toggle="tooltip"]'
-  });
+     $('body').tooltip({
+         selector: '[data-toggle="tooltip"]'
+     });
 
-  $('body').find('.colorpicker-input').colorpicker({
-    format: "hex"
-  });
+     $('body').find('.colorpicker-input').colorpicker({
+         format: "hex"
+     });
 
-  $('.datepicker').datetimepicker({
-    format: '<?php echo $dateformat; ?>',
-    timepicker: false,
-    lazyInit: true,
-    dayOfWeekStart: '<?php echo get_option('calendar_first_day'); ?>',
-  });
+     $('.datepicker').datetimepicker({
+         format: '<?php echo $dateformat; ?>',
+         timepicker: false,
+         lazyInit: true,
+         dayOfWeekStart: '<?php echo get_option('calendar_first_day '); ?>',
+     });
 
-  $.validator.setDefaults({
-    highlight: function(element) {
-      $(element).closest('.form-group').addClass('has-error');
-    },
-    unhighlight: function(element) {
-      $(element).closest('.form-group').removeClass('has-error');
-    },
-    errorElement: 'p',
-    errorClass: 'text-danger',
-    errorPlacement: function(error, element) {
-      if (element.parent('.input-group').length || element.parents('.chk').length) {
-        if (!element.parents('.chk').length) {
-          error.insertAfter(element.parent());
-        } else {
-          error.insertAfter(element.parents('.chk'));
-        }
-      } else {
-        error.insertAfter(element);
-      }
-    },
-  });
+     $.validator.setDefaults({
+         highlight: function(element) {
+             $(element).closest('.form-group').addClass('has-error');
+         },
+         unhighlight: function(element) {
+             $(element).closest('.form-group').removeClass('has-error');
+         },
+         errorElement: 'p',
+         errorClass: 'text-danger',
+         errorPlacement: function(error, element) {
+             if (element.parent('.input-group').length || element.parents('.chk').length) {
+                 if (!element.parents('.chk').length) {
+                     error.insertAfter(element.parent());
+                 } else {
+                     error.insertAfter(element.parents('.chk'));
+                 }
+             } else {
+                 error.insertAfter(element);
+             }
+         },
+     });
 
-  var validateOptions = {};
+     var validateOptions = {};
 
 
-  validateOptions.submitHandler = function (form) {
-   var formURL = $(form).attr("action");
-   var formData = $(form)[0];
-   var formData = new FormData(formData);
-
-   $.ajax({
-    type: 'POST',
-    data:formData ,
-    mimeType: "multipart/form-data",
-    contentType: false,
-    cache: false,
-    processData: false,
-    url: formURL,
-    success: function (response) {
-      response = JSON.parse(response);
-      if (response.success == false) {
-$('#recaptcha_response_field').html(response.message); // error message
-} else if(response.success == true) {
-  $(form_id).remove();
- $('#response').html(response.message);
-    $('html,body').animate({
-                scrollTop: $("#online_payment_form").offset().top},
-                'slow');
-} else {
-  $('#response').html('Something went wrong...');
-}
-if(typeof(grecaptcha) != 'undefined'){
-  grecaptcha.reset();
-}
-},
-fail:function(data){
-  if(typeof(grecaptcha) != 'undefined'){
-    grecaptcha.reset();
-  }
-  $('#response').html(data.responseText);
-}
-});
-   return false;
- }
- $(form_id).validate(validateOptions);
-
-});
+     validateOptions.submitHandler = function(form) {
+         var formURL = $(form).attr("action");
+         var formData = $(form)[0];
+         var formData = new FormData(formData);
+         $.ajax({
+             type: 'POST',
+             data: formData,
+             mimeType: "multipart/form-data",
+             contentType: false,
+             cache: false,
+             processData: false,
+             url: formURL,
+             success: function(response) {
+                 response = JSON.parse(response);
+                 // In case action hook is used to redirect
+                 if (response.redirect_url) {
+                     window.top.location.href = response.redirect_url;
+                 }
+                 if (response.success == false) {
+                     $('#recaptcha_response_field').html(response.message); // error message
+                 } else if (response.success == true) {
+                     $(form_id).remove();
+                     $('#response').html(response.message);
+                     $('html,body').animate({
+                             scrollTop: $("#online_payment_form").offset().top
+                         },
+                         'slow');
+                 } else {
+                     $('#response').html('Something went wrong...');
+                 }
+                 if (typeof(grecaptcha) != 'undefined') {
+                     grecaptcha.reset();
+                 }
+             },
+             fail: function(data) {
+                 if (typeof(grecaptcha) != 'undefined') {
+                     grecaptcha.reset();
+                 }
+                 $('#response').html(data.responseText);
+             }
+         });
+         return false;
+     }
+     $(form_id).validate(validateOptions);
+ });
 </script>
-
 </html>

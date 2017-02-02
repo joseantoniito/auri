@@ -23,8 +23,7 @@
 									<i class="fa fa-plus add_predefined_reply"></i>
 								</a>
 								<div class="hide message">
-									<p><?php echo clear_textarea_breaks($predefined_reply['message']); ?>
-									</p>
+									<?php echo $predefined_reply['message']; ?>
 								</div>
 							</li>
 							<?php } ?>

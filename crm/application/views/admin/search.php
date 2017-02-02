@@ -40,7 +40,7 @@
                 $output = '<a href="'.admin_url('contracts/contract/'.$_result['id']).'">'.$_result['subject'].'</a>';
                 break;
                 case 'invoice_payment_records':
-                $output = '<a href="'.admin_url('payments/payment/'.$_result['paymentid']).'">#'.$_result['paymentid'].'</a>';
+                $output = '<a href="'.admin_url('payments/payment/'.$_result['paymentid']).'">#'.$_result['paymentid'].'<span class="pull-right">'.date('Y',strtotime($_result['date'])).'</span></a>';
                 break;
                 case 'invoices':
                 $output = '<a href="'.admin_url('invoices/list_invoices/'.$_result['invoiceid']).'">'.format_invoice_number($_result['invoiceid']).'<span class="pull-right">'.date('Y',strtotime($_result['date'])).'</span></a>';
@@ -60,7 +60,7 @@
                 case 'custom_fields':
                 $rel_data   = get_relation_data($_result['fieldto'], $_result['relid']);
                 $rel_values = get_relation_values($rel_data, $_result['fieldto']);
-                $output      = '<a data-toggle="tooltip" class="pull-left" title="' . ucfirst($_result['fieldto']) . '" href="' . $rel_values['link'] . '">' . $rel_values['name'] . '</a>';
+                $output      = '<a class="pull-left" href="' . $rel_values['link'] . '">' . $rel_values['name'] .'<span class="pull-right">'._l($_result['fieldto']).'</span></a>';
                 break;
                 case 'invoice_items':
                 $output = '<a href="'.admin_url('invoices/list_invoices/'.$_result['rel_id']).'">'.format_invoice_number($_result['rel_id']);

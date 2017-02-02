@@ -19,7 +19,32 @@ function clear_textarea_breaks($text)
     return $_text;
 }
 
+function nl2br_save_html($string)
+{
+    if(! preg_match("#</.*>#", $string)) // avoid looping if no tags in the string.
+        return nl2br($string);
+
+    $string = str_replace(array("\r\n", "\r", "\n"), "\n", $string);
+
+    $lines=explode("\n", $string);
+    $output='';
+    foreach($lines as $line)
+    {
+        $line = rtrim($line);
+        if(! preg_match("#</?[^/<>]*>$#", $line)) // See if the line finished with has an html opening or closing tag
+            $line .= '<br />';
+        $output .= $line . "\n";
+    }
+
+    return $output;
+}
+
 function app_stylesheet($path,$filename){
+
+    if(file_exists(FCPATH.$path.'/my_'.$filename)){
+        $filename = 'my_'.$filename;
+    }
+
     if(get_option('use_minified_files') == 1){
         $original_file_name = $filename;
         $_temp = explode('.',$filename);
@@ -31,14 +56,22 @@ function app_stylesheet($path,$filename){
             $filename .= $t.'.';
         }
         $filename.= 'min.'.$extension;
-        if(!file_exists($path.'/'.$filename)){
+
+        if(!file_exists(FCPATH.$path.'/'.$filename)){
             $filename = $original_file_name;
         }
+    }
+    if(file_exists(FCPATH.$path.'my_'.$filename)){
+        $filename = 'my_'.$filename;
     }
     return '<link href="'.base_url($path.'/'.$filename).'" rel="stylesheet">'.PHP_EOL;
 }
 
 function app_script($path,$filename){
+
+    if(file_exists(FCPATH.$path.'/my_'.$filename)){
+        $filename = 'my_'.$filename;
+    }
 
     if(get_option('use_minified_files') == 1){
         $original_file_name = $filename;
@@ -127,11 +160,6 @@ function init_relation_tasks_table($table_attributes = array())
         _l('task_status')
     );
 
-    if (has_permission('tasks', '', 'create') || has_permission('tasks', '', 'edit')) {
-        array_push($table_data, _l('task_billable'));
-        array_push($table_data, _l('task_billed'));
-    }
-
     $custom_fields = get_custom_fields('tasks', array(
         'show_on_table' => 1
     ));
@@ -139,6 +167,8 @@ function init_relation_tasks_table($table_attributes = array())
     foreach ($custom_fields as $field) {
         array_push($table_data, $field['name']);
     }
+
+    $table_data = do_action('tasks_related_table_columns',$table_data);
 
     array_push($table_data, _l('options'));
     $name = 'rel-tasks';
@@ -199,8 +229,10 @@ function init_relation_options($data, $type, $rel_id = '')
                 }
             }
         } else if ($type == 'lead') {
-            if ($relation['assigned'] != get_staff_user_id() && $relation['addedfrom'] != get_staff_user_id() && $relation['is_public'] != 1 && $rel_id != $relation_values['id']) {
-                continue;
+            if(!$is_admin){
+                if ($relation['assigned'] != get_staff_user_id() && $relation['addedfrom'] != get_staff_user_id() && $relation['is_public'] != 1 && $rel_id != $relation_values['id']) {
+                    continue;
+                }
             }
         } else if ($type == 'customer') {
             if (!$has_permission_customers_view && !have_assigned_customers() && $rel_id != $relation_values['id']) {
@@ -300,18 +332,44 @@ function get_task_priority_class($id)
     }
     return $class;
 }
-function get_project_label($status)
+/**
+ * Deprecated
+ * @param  mixed  $id
+ * @param  boolean $replace_default_by_muted
+ * @return string
+ */
+function get_project_label($id, $replace_default_by_muted = false)
 {
-    if ($status == 1) {
-        $label = 'muted';
-    } else if ($status == 2) {
-        $label = 'info';
-    } else if ($status == 3) {
-        $label = 'warning';
+    return project_status_color_class($id,$replace_default_by_muted);
+}
+
+function project_status_color_class($id,$replace_default_by_muted = false){
+   if ($id == 1) {
+        $class = 'default';
+        if($replace_default_by_muted == true){
+            $class = 'muted';
+        }
+    } else if ($id == 2) {
+        $class = 'info';
+    } else if ($id == 3) {
+        $class = 'warning';
     } else {
-        $label = 'success';
+        $class = 'success';
     }
 
+    $hook_data = do_action('project_status_color_class', array(
+        'id' => $id,
+        'class' => $class
+    ));
+
+    $class     = $hook_data['class'];
+    return $class;
+}
+
+function project_status_by_id($id, $replace_default_by_muted = false){
+    $label = _l('project_status_'.$id);
+    $hook_data = do_action('project_status_label',array('id'=>$id,'label'=>$label));
+    $label = $hook_data['label'];
     return $label;
 }
 function render_input($name, $label = '', $value = '', $type = 'text', $input_attrs = array(), $form_group_attr = array(), $form_group_class = '', $input_class = '')
@@ -817,9 +875,9 @@ function AdminTicketsTableStructure($name = '', $bulk_action = false)
 }
 function get_status_label($id)
 {
-    if ($id == 1) {
-        $label = 'default';
-    } else if ($id == 2) {
+    $label = 'default';
+
+    if ($id == 2) {
         $label = 'light-green';
     } else if ($id == 3) {
         $label = 'default';
@@ -829,15 +887,18 @@ function get_status_label($id)
         $label = 'success';
     } else if ($id == 6) {
         $label = 'warning';
-    } else {
-        $label = '';
     }
 
+    $hook_data = do_action('task_status_label',array('label'=>$label,'status_id'=>$id));
+    $label = $hook_data['label'];
     return $label;
 }
 function format_task_status($id, $text = false, $clean = false)
 {
     $status_name = _l('task_status_' . $id);
+    $hook_data = do_action('task_status_name',array('current'=>$status_name,'status_id'=>$id));
+    $status_name = $hook_data['current'];
+
     if ($clean == true) {
         return $status_name;
     }
@@ -852,83 +913,105 @@ function format_task_status($id, $text = false, $clean = false)
 
     return '<span class="inline-block ' . $class . '">' . $status_name . '</span>';
 }
+if(!function_exists('get_table_items_and_taxes')) {
 
-function get_table_items_and_taxes($items, $type, $admin_preview = false)
-{
-    $result['html']    = '';
-    $result['taxes']   = array();
-    $_calculated_taxes = array();
-    $i                 = 1;
-    foreach ($items as $item) {
-        $_item             = '';
-        $tr_sortable       = '';
-        $td_first_sortable = '';
-        if ($admin_preview == true) {
-            $tr_sortable       = ' class="sortable" data-item-id="' . $item['id'] . '"';
-            $td_first_sortable = ' class="dragger item_no"';
-        }
+    function get_table_items_and_taxes($items, $type, $admin_preview = false)
+    {
+        $result['html']    = '';
+        $result['taxes']   = array();
+        $_calculated_taxes = array();
+        $i                 = 1;
+        foreach ($items as $item) {
+            $_item             = '';
+            $tr_attrs       = '';
+            $td_first_sortable = '';
+            if ($admin_preview == true) {
+                $tr_attrs       = ' class="sortable" data-item-id="' . $item['id'] . '"';
+                $td_first_sortable = ' class="dragger item_no"';
+            }
 
-        $_item .= '<tr' . $tr_sortable . '>';
-        $_item .= '<td' . $td_first_sortable . ' align="center">' . $i . '</td>';
-        $_item .= '<td class="description" align="left;"><span class="bold">' . $item['description'] . '</span><br /><span style="color:#777;">' . $item['long_description'] . '</span></td>';
-        $_item .= '<td align="right">' . floatVal($item['qty']);
-        if ($item['unit']) {
-            $_item .= ' ' . $item['unit'];
-        }
-        $_item .= '</td>';
-        $_item .= '<td align="right">' . _format_number($item['rate']) . '</td>';
-        if (get_option('show_tax_per_item') == 1) {
-            $_item .= '<td align="right">';
-        }
-        $item_taxes = array();
-        if ($type == 'proposal') {
-            $item_taxes = get_proposal_item_taxes($item['id']);
-        } else if ($type == 'estimate') {
-            $item_taxes = get_estimate_item_taxes($item['id']);
-        } else if ($type == 'invoice') {
-            $item_taxes = get_invoice_item_taxes($item['id']);
-        }
-        if (count($item_taxes) > 0) {
-            foreach ($item_taxes as $tax) {
-                $calc_tax     = 0;
-                $tax_not_calc = false;
-                if (!in_array($tax['taxname'], $_calculated_taxes)) {
-                    array_push($_calculated_taxes, $tax['taxname']);
-                    $tax_not_calc = true;
+            if(class_exists('pdf')){
+                $font_size = get_option('pdf_font_size');
+                if($font_size == ''){
+                    $font_size = 10;
                 }
-                if ($tax_not_calc == true) {
-                    $result['taxes'][$tax['taxname']]          = array();
-                    $result['taxes'][$tax['taxname']]['total'] = array();
-                    array_push($result['taxes'][$tax['taxname']]['total'], (($item['qty'] * $item['rate']) / 100 * $tax['taxrate']));
-                    $result['taxes'][$tax['taxname']]['tax_name'] = $tax['taxname'];
-                    $result['taxes'][$tax['taxname']]['taxrate']  = $tax['taxrate'];
-                } else {
-                    array_push($result['taxes'][$tax['taxname']]['total'], (($item['qty'] * $item['rate']) / 100 * $tax['taxrate']));
-                }
-                if (get_option('show_tax_per_item') == 1) {
-                    if ((count($item_taxes) > 1 && get_option('remove_tax_name_from_item_table') == false) || get_option('remove_tax_name_from_item_table') == false || mutiple_taxes_found_for_item($item_taxes)) {
-                        $_item .= str_replace('|', ' ', $tax['taxname']) . '%<br />';
+
+                $tr_attrs .= ' style="font-size:'.($font_size+4).'px;"';
+            }
+
+            $_item .= '<tr' . $tr_attrs . '>';
+            $_item .= '<td' . $td_first_sortable . ' align="center">' . $i . '</td>';
+            $_item .= '<td class="description" align="left;"><span class="bold">' . $item['description'] . '</span><br /><span style="color:#777;">' . $item['long_description'] . '</span></td>';
+            $_item .= '<td align="right">' . floatVal($item['qty']);
+            if ($item['unit']) {
+                $_item .= ' ' . $item['unit'];
+            }
+            $_item .= '</td>';
+            $_item .= '<td align="right">' . _format_number($item['rate']) . '</td>';
+            if (get_option('show_tax_per_item') == 1) {
+                $_item .= '<td align="right">';
+            }
+            $item_taxes = array();
+            if ($type == 'proposal') {
+                $item_taxes = get_proposal_item_taxes($item['id']);
+            } else if ($type == 'estimate') {
+                $item_taxes = get_estimate_item_taxes($item['id']);
+            } else if ($type == 'invoice') {
+                $item_taxes = get_invoice_item_taxes($item['id']);
+            }
+            if (count($item_taxes) > 0) {
+                foreach ($item_taxes as $tax) {
+                    $calc_tax     = 0;
+                    $tax_not_calc = false;
+                    if (!in_array($tax['taxname'], $_calculated_taxes)) {
+                        array_push($_calculated_taxes, $tax['taxname']);
+                        $tax_not_calc = true;
+                    }
+                    if ($tax_not_calc == true) {
+                        $result['taxes'][$tax['taxname']]          = array();
+                        $result['taxes'][$tax['taxname']]['total'] = array();
+                        array_push($result['taxes'][$tax['taxname']]['total'], (($item['qty'] * $item['rate']) / 100 * $tax['taxrate']));
+                        $result['taxes'][$tax['taxname']]['tax_name'] = $tax['taxname'];
+                        $result['taxes'][$tax['taxname']]['taxrate']  = $tax['taxrate'];
                     } else {
-                        $_item .= $tax['taxrate'] . '%';
+                        array_push($result['taxes'][$tax['taxname']]['total'], (($item['qty'] * $item['rate']) / 100 * $tax['taxrate']));
+                    }
+                    if (get_option('show_tax_per_item') == 1) {
+
+                        $item_tax = '';
+
+                        if ((count($item_taxes) > 1 && get_option('remove_tax_name_from_item_table') == false) || get_option('remove_tax_name_from_item_table') == false || mutiple_taxes_found_for_item($item_taxes)) {
+                            $item_tax = str_replace('|', ' ', $tax['taxname']) . '%<br />';
+                        } else {
+                            $item_tax .= $tax['taxrate'] . '%';
+                        }
+
+                        $hook_data = array('final_tax_html'=>$item_tax,'item_taxes'=>$item_taxes,'item_id'=>$item['id']);
+                        $hook_data = do_action('item_tax_table_row',$hook_data);
+                        $item_tax = $hook_data['final_tax_html'];
+                        $_item .= $item_tax;
+
                     }
                 }
+            } else {
+                if (get_option('show_tax_per_item') == 1) {
+                    $hook_data = array('final_tax_html'=>'0%','item_taxes'=>$item_taxes,'item_id'=>$item['id']);
+                    $hook_data = do_action('item_tax_table_row',$hook_data);
+                    $_item .= $hook_data['final_tax_html'];
+                }
             }
-        } else {
             if (get_option('show_tax_per_item') == 1) {
-                $_item .= '0%';
+                $_item .= '</td>';
             }
+            $_item .= '<td class="amount" align="right">' . _format_number(($item['qty'] * $item['rate'])) . '</td>';
+            $_item .= '</tr>';
+            $result['html'] .= $_item;
+            $i++;
         }
-        if (get_option('show_tax_per_item') == 1) {
-            $_item .= '</td>';
-        }
-        $_item .= '<td class="amount" align="right">' . _format_number(($item['qty'] * $item['rate'])) . '</td>';
-        $_item .= '</tr>';
-        $result['html'] .= $_item;
-        $i++;
+       return do_action('before_return_table_items_html_and_taxes',$result);
     }
-    return $result;
-}
 
+}
 /**
  * Deprecated
  */

@@ -77,7 +77,7 @@
            var paymentReceivedReportsTable = $(this).DataTable();
            var sums = paymentReceivedReportsTable.ajax.json().sums;
            $(this).find('tfoot').addClass('bold');
-           $(this).find('tfoot td').eq(0).html("<?php echo htmlentities(_l('invoice_total')); ?>");
+           $(this).find('tfoot td').eq(0).html("<?php echo _l('invoice_total'); ?>");
            $(this).find('tfoot td.total').html(sums.total_amount);
        });
 
@@ -85,7 +85,7 @@
            var invoiceReportsTable = $(this).DataTable();
            var sums = invoiceReportsTable.ajax.json().sums;
            $(this).find('tfoot').addClass('bold');
-           $(this).find('tfoot td').eq(0).html("<?php echo htmlentities(_l('invoice_total')); ?>");
+           $(this).find('tfoot td').eq(0).html("<?php echo _l('invoice_total'); ?>");
            $(this).find('tfoot td.subtotal').html(sums.subtotal);
            $(this).find('tfoot td.total').html(sums.total);
            $(this).find('tfoot td.total_tax').html(sums.total_tax);
@@ -98,7 +98,7 @@
            var estimatesReportsTable = $(this).DataTable();
            var sums = estimatesReportsTable.ajax.json().sums;
            $(this).find('tfoot').addClass('bold');
-           $(this).find('tfoot td').eq(0).html("<?php echo htmlentities(_l('invoice_total')); ?>");
+           $(this).find('tfoot td').eq(0).html("<?php echo _l('invoice_total'); ?>");
            $(this).find('tfoot td.subtotal').html(sums.subtotal);
            $(this).find('tfoot td.total').html(sums.total);
            $(this).find('tfoot td.total_tax').html(sums.total_tax);
@@ -138,7 +138,6 @@
        } else if (type == 'customers-report') {
            report_customers.removeClass('hide');
        } else if (type == 'customers-group') {
-        console.log('ok')
            $('.customers-group-gen').removeClass('hide');
        } else if (type == 'invoices-report') {
            report_invoices.removeClass('hide');

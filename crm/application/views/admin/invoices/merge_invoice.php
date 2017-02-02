@@ -17,5 +17,4 @@ if(count($invoices_to_merge) > 0){ ?>
             <label for="cancel_merged_invoices"><i class="fa fa-question-circle" data-toggle="tooltip" data-title="<?php echo _l('invoice_merge_number_warning'); ?>" data-placement="bottom"></i> <?php echo _l('invoices_merge_cancel_merged_invoices'); ?></label>
         </div>
     </p>
-
 <?php } ?>

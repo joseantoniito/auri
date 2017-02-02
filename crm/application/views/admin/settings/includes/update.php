@@ -26,13 +26,6 @@
       <div class="update_app_wrapper" data-wait-text="<?php echo _l('wait_text'); ?>" data-original-text="<?php echo _l('update_now'); ?>">
          <?php if(count($update_errors) == 0){ ?>
          <a href="#" id="update_app" class="btn btn-success"><?php echo _l('update_now'); ?></a>
-         <?php } else { ?>
-         <p class="text-danger">Please fix the errors listed below to perform an update.</p>
-         <?php foreach($update_errors as $error){ ?>
-         <div class="alert alert-danger">
-            <?php echo $error; ?>
-         </div>
-         <?php } ?>
          <?php } ?>
       </div>
       <div id="update_messages" class="mtop25 text-left">
@@ -40,8 +33,16 @@
       <?php } else { ?>
       <h3 class="bold mbot20 text-success"><i class="fa fa-exclamation-circle" aria-hidden="true"></i> <?php echo _l('using_latest_version'); ?></h3>
       <?php } ?>
+      <?php if(count($update_errors) > 0){ ?>
+      <p class="text-danger">Please fix the errors listed below.</p>
+      <?php foreach($update_errors as $error){ ?>
+      <div class="alert alert-danger">
+         <?php echo $error; ?>
+      </div>
+      <?php } ?>
+      <?php } ?>
       <?php if(isset($update_info->additional_data)){
          echo $update_info->additional_data;
-         } ?>
+      } ?>
    </div>
 </div>

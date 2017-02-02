@@ -56,7 +56,7 @@ class Settings_model extends CRM_Model
                 continue;
             }
             if ($name == 'email_signature') {
-                $val = nl2br($val);
+                $val = nl2br_save_html($val);
             } else if ($name == 'default_tax') {
                 $_temp_val = $val;
                 $val       = '';

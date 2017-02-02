@@ -27,6 +27,7 @@
 </div>
 <?php $this->load->view('admin/invoice_items/item'); ?>
 <script>
+    custom_fields_hyperlink();
     init_selectpicker();
     init_datepicker();
     init_color_pickers();

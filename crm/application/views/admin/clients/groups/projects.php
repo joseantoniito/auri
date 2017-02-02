@@ -15,7 +15,7 @@
         <?php $where = ($_where == '' ? '' : $_where.' AND ').'status = '.$status. ' AND clientid='.$client->userid; ?>
         <?php echo total_rows('tblprojects',$where); ?>
       </h3>
-      <span class="text-<?php echo get_project_label($status); ?>"><?php echo _l('project_status_'.$status); ?></span>
+      <span class="text-<?php echo project_status_color_class($status,true); ?>"><?php echo project_status_by_id($status); ?></span>
     </div>
   </div>
 </div>

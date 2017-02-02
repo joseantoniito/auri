@@ -9,7 +9,7 @@
                     <?php echo $title; ?>
                     </h4>
                     <hr />
-                    <p class="company_field_info text-info<?php if(isset($custom_field) && $custom_field->fieldto != 'company' || !isset($custom_field)){echo ' hide';} ?>"><?php echo _l('custom_field_company_info'); ?></p>
+                    <p class="mbot25 company_field_info text-info<?php if(isset($custom_field) && $custom_field->fieldto != 'company' || !isset($custom_field)){echo ' hide';} ?>"><?php echo _l('custom_field_company_info'); ?></p>
                         <?php if(isset($custom_field)){ ?>
                         <a href="<?php echo admin_url('custom_fields/field'); ?>" class="btn btn-success pull-left mbot20 display-block"><?php echo _l('new_custom_field'); ?></a>
                         <div class="clearfix"></div>
@@ -52,6 +52,7 @@
                         <option value="date_picker" <?php if(isset($custom_field) && $custom_field->type == 'date_picker'){echo 'selected';} ?>>Date Picker</option>
                         <option value="select" <?php if(isset($custom_field) && $custom_field->type == 'select'){echo 'selected';} ?>>Select</option>
                         <option value="checkbox" <?php if(isset($custom_field) && $custom_field->type == 'checkbox'){echo 'selected';} ?>>Checkbox</option>
+                        <option value="link" <?php if(isset($custom_field) && $custom_field->type == 'link'){echo 'selected';} ?>>Hyperlink</option>
                     </select>
                     <div class="clearfix mbot15"></div>
                     <div id="options_wrapper" class="<?php if(!isset($custom_field) || isset($custom_field) && $custom_field->type != 'select' && $custom_field->type != 'checkbox'){echo 'hide';} ?>">

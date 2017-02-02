@@ -14,11 +14,11 @@ class CRM_Controller extends CI_Controller
         $this->db->reconnect();
         $timezone = get_option('default_timezone');
         date_default_timezone_set($timezone);
-
+        do_action('perfex_init');
     }
     private function check_installation()
     {
-        if (is_dir(FCPATH . 'install')) {
+        if (is_dir(FCPATH . 'install') && ENVIRONMENT != 'development') {
             echo '<h3>Delete the install folder</h3>';
             die;
         }

@@ -3,6 +3,9 @@
  <div class="content accounting-template">
   <div class="row">
    <?php
+   if(isset($proposal)){
+    echo form_hidden('isedit',$proposal->id);
+   }
    $rel_type = '';
    $rel_id = '';
    if(isset($proposal) || ($this->input->get('rel_id') && $this->input->get('rel_type'))){
@@ -280,6 +283,7 @@
     <?php } ?>
   });
  function proposal_rel_id_select(){
+  clearInterval(autocheck_notifications_timer_id);
   var options = {
     ajax: {
       url: admin_url + 'misc/get_relation_data',
@@ -295,12 +299,12 @@
        }
      },
      locale: {
-      emptyTitle: '<?php echo htmlentities(_l('search_ajax_empty')); ?>',
-      statusInitialized: '<?php echo htmlentities(_l('search_ajax_initialized')); ?>',
-      statusSearching:'<?php echo htmlentities(_l('search_ajax_searching')); ?>',
-      statusNoResults:'<?php echo htmlentities(_l('not_results_found')); ?>',
-      searchPlaceholder:'<?php echo htmlentities(_l('search_ajax_placeholder')); ?>',
-      currentlySelected:'<?php echo htmlentities(_l('currently_selected')); ?>',
+      emptyTitle: "<?php echo _l('search_ajax_empty'); ?>",
+      statusInitialized: "<?php echo _l('search_ajax_initialized'); ?>",
+      statusSearching:"<?php echo _l('search_ajax_searching'); ?>",
+      statusNoResults:"<?php echo _l('not_results_found'); ?>",
+      searchPlaceholder:"<?php echo _l('search_ajax_placeholder'); ?>",
+      currentlySelected:"<?php echo _l('currently_selected'); ?>",
     },
     requestDelay:500,
     cache:false,

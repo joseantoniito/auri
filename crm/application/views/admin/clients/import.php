@@ -1,5 +1,12 @@
 <?php
 $client_contacts_fields = $this->db->list_fields('tblcontacts');
+$i = 0;
+foreach($client_contacts_fields as $cf){
+  if($cf == 'phonenumber'){
+    $client_contacts_fields[$i] = 'contact_phonenumber';
+  }
+  $i++;
+}
 $client_db_fields = $this->db->list_fields('tblclients');
 $custom_fields = get_custom_fields('customers');
 if($this->input->post('download_sample') === 'true'){
@@ -74,7 +81,7 @@ if($this->input->post('download_sample') === 'true'){
                         if(in_array($field,$not_importable)){continue;}
                         ?>
                         <?php $total_fields++; ?>
-                        <th class="bold"> <?php if($field == 'company' && get_option('company_is_required') == 1){echo '<span class="text-danger">*</span>';} ?><?php echo str_replace('_',' ',ucfirst($field)); ?></th>
+                        <th class="bold"> <?php if($field == 'company' && get_option('company_is_required') == 1){echo '<span class="text-danger">* </span>';} ?><?php echo str_replace('_',' ',ucfirst($field)); ?></th>
                         <?php } ?>
                         <?php foreach($custom_fields as $field){ ?>
                         <?php $total_fields++; ?>

@@ -9,6 +9,28 @@ var delay = (function() {
     };
 })();
 
+$.validator.setDefaults({
+    highlight: function(element) {
+        $(element).closest('.form-group').addClass('has-error');
+    },
+    unhighlight: function(element) {
+        $(element).closest('.form-group').removeClass('has-error');
+    },
+    errorElement: 'p',
+    errorClass: 'text-danger',
+    errorPlacement: function(error, element) {
+        if (element.parent('.input-group').length || element.parents('.chk').length) {
+            if (!element.parents('.chk').length) {
+                error.insertAfter(element.parent());
+            } else {
+                error.insertAfter(element.parents('.chk'));
+            }
+        } else {
+            error.insertAfter(element);
+        }
+    },
+});
+
 function merge_field_format_url(url, node, on_save, name) {
     // Merge fields url
     if (url.indexOf("{") > -1 && url.indexOf("}") > -1) {
@@ -35,6 +57,7 @@ var original_top_search_val,
     tab_active = get_url_param('tab'),
     tab_group = get_url_param('group'),
     side_bar = $('#side-menu'),
+    content_wrapper = $('#wrapper'),
     setup_menu = $('#setup-menu-wrapper'),
     menu_href_selector,
     activity_log_table = $('.table-activity-log'),
@@ -54,7 +77,8 @@ var original_top_search_val,
         '.table-estimates',
         '.table-proposals',
         '.table-expenses',
-    ];
+    ],
+    setup_menu_item = $('#setup-menu-item');
 Dropzone.options.newsFeedDropzone = false;
 $(window).on("resize click", function() {
     // Add special class to minimalize page elements when screen is less than 768px
@@ -73,16 +97,17 @@ $(function() {
         }
     });
 
-    if(show_setup_menu_item_only_on_hover == 1 && !is_mobile()){
-    side_bar.hover(
-        function() {
-            setTimeout(function(){
-                $( '#setup-menu-item' ).css( "display", "block" );
-            },300);
-        }, function() {
-            $( '#setup-menu-item' ).css( "display", "none" );
-        }
-    );
+    if (show_setup_menu_item_only_on_hover == 1 && !is_mobile()) {
+        side_bar.hover(
+            function() {
+                setTimeout(function() {
+                    setup_menu_item.css("display", "block");
+                }, 300);
+            },
+            function() {
+                setup_menu_item.css("display", "none");
+            }
+        );
     }
 
     if (alerts.length > 0) {
@@ -127,6 +152,8 @@ $(function() {
         }
         switch_field(this);
     });
+    /* Custom fields hyperlink */
+    custom_fields_hyperlink();
     // Init lightboxes if found
     init_lightbox();
     // Init progress bars
@@ -162,7 +189,7 @@ $(function() {
 
     $('[data-can-view-own],[data-can-view]').on('change', function() {
         var is_own_attr = $(this).attr('data-can-view-own');
-        view_chk_selector =$(this).parents('tr').find('td input['+(typeof is_own_attr !== typeof undefined && is_own_attr !== false ? 'data-can-view' : 'data-can-view-own')+']');
+        view_chk_selector = $(this).parents('tr').find('td input[' + (typeof is_own_attr !== typeof undefined && is_own_attr !== false ? 'data-can-view' : 'data-can-view-own') + ']');
         view_chk_selector.prop('checked', false);
         if ($(this).prop('checked') == true) {
             view_chk_selector.prop('disabled', true);
@@ -171,13 +198,12 @@ $(function() {
         }
     });
 
-
     /* Tasks */
-
     // Init single task data
     if (typeof(taskid) !== 'undefined' && taskid !== '') {
         init_task_modal(taskid);
     }
+
     $('body').on('change', 'input[name="checklist-box"]', function() {
         var checked = $(this).prop('checked');
         if (checked == true) {
@@ -188,6 +214,10 @@ $(function() {
         var listid = $(this).parents('.checklist').data('checklist-id');
         $.get(admin_url + 'tasks/checkbox_action/' + listid + '/' + val);
         recalculate_checklist_items_progress();
+    });
+
+    $("body").on('keyup paste click', "textarea[name='checklist-description']", function(e) {
+        do_task_checklist_items_height($(this));
     });
 
     $('body').on('click', '.task-single-delete-timesheet', function(e) {
@@ -271,13 +301,19 @@ $(function() {
         if (typeof(_ticket_message) != 'undefined') {
             _ticket_message = undefined;
         }
-        taskid = '';
+        $('body #_task_modal .datepicker').datetimepicker('destroy');
     });
 
     // Fix the modal left column height when task modal open
     $('body').on('shown.bs.modal', '.task-modal-single', function() {
         fix_task_modal_left_col_height();
         $(document).off('focusin.modal');
+    });
+
+    $('body').on('hidden.bs.modal', '.task-modal-single', function() {
+        if (typeof(taskAttachmentDropzone) != 'undefined') {
+            taskAttachmentDropzone.destroy();
+        }
     });
 
     // when click close modal task tracking stats fix to do not close both modals
@@ -300,12 +336,12 @@ $(function() {
         var data = {};
         data.assignee = $('select[name="select-assignees"]').val();
         if (data.assignee != '') {
-            data.taskid = taskid;
+            data.taskid = $(this).attr('data-task-id');
             $.post(admin_url + 'tasks/add_task_assignees', data).done(function(response) {
                 $('body').find('.dt-loader').remove();
                 response = JSON.parse(response);
                 reload_tasks_tables();
-                init_task_modal(taskid);
+                init_task_modal(data.taskid);
             });
         }
     });
@@ -315,28 +351,31 @@ $(function() {
         var data = {};
         data.follower = $('select[name="select-followers"]').val();
         if (data.follower != '') {
-            data.taskid = taskid;
+            data.taskid = $(this).attr('data-task-id');
             $('body').append('<div class="dt-loader"></div>');
             $.post(admin_url + 'tasks/add_task_followers', data).done(function(response) {
                 response = JSON.parse(response);
                 $('body').find('.dt-loader').remove();
-                init_task_modal(taskid);
+                init_task_modal(data.taskid);
             });
         }
     });
 
-    $('body').on('show.bs.modal', '#task-tracking-stats-modal', function(event) {
+    $('body').on('show.bs.modal', '#task-tracking-stats-modal', function() {
+        var tracking_chart_selector = $('body').find('#task-tracking-stats-chart');
         setTimeout(function() {
-            tracking_chart = new Chart($('body').find('#task-tracking-stats-chart'), {
+            if(typeof(task_track_chart) != 'undefined'){
+                task_track_chart.destroy();
+            }
+            task_track_chart = new Chart(tracking_chart_selector, {
                 type: 'line',
                 data: task_tracking_stats_data,
-            }, 1000);
-        });
+                options:{responsive:true,maintainAspectRatio:false}
+            });
+        },800);
     });
 
     /* Tasks End */
-
-
     $('body').on('shown.bs.modal', '#sync_data_proposal_data', function() {
         if ($('#sync_data_proposal_data').data('rel-type') == 'lead') {
             $('.lead-modal .modal-content').eq(0).css('height', ($('#sync_data_proposal_data .modal-content').height() + 80) + 'px').css('overflow-x', 'hidden');
@@ -352,6 +391,7 @@ $(function() {
     if (typeof(c_leadid) != 'undefined' && c_leadid != '') {
         init_lead(c_leadid);
     }
+
     // Status color change
     $('body').on('click', '.leads-kan-ban .cpicker', function() {
         var color = $(this).data('color');
@@ -389,19 +429,20 @@ $(function() {
         }
     });
 
-     $('input[name="notify_type"]').on('change', function() {
-            var val = $(this).val();
-            if (val == 'specific_staff') {
-                $('#specific_staff_notify').removeClass('hide');
-                $('#role_notify').addClass('hide');
-            } else if(val == 'roles') {
-                $('#specific_staff_notify').addClass('hide');
-                $('#role_notify').removeClass('hide');
-            } else if(val == 'assigned'){
-                $('#specific_staff_notify').addClass('hide');
-                $('#role_notify').addClass('hide');
-            }
-        });
+    $('input[name="notify_type"]').on('change', function() {
+        var val = $(this).val();
+        if (val == 'specific_staff') {
+            $('#specific_staff_notify').removeClass('hide');
+            $('#role_notify').addClass('hide');
+        } else if (val == 'roles') {
+            $('#specific_staff_notify').addClass('hide');
+            $('#role_notify').removeClass('hide');
+        } else if (val == 'assigned') {
+            $('#specific_staff_notify').addClass('hide');
+            $('#role_notify').addClass('hide');
+        }
+    });
+
     // Auto focus the lead name if user is adding new lead
     $('body').on('shown.bs.modal', '.lead-modal', function(e) {
         if ($('body').find('.lead-modal input[name="leadid"]').length == 0) {
@@ -416,6 +457,10 @@ $(function() {
         // clear the hash
         if (!$('.lead-modal').is(':visible')) {
             history.pushState("", document.title, window.location.pathname + window.location.search);
+        }
+        $('body .lead-modal .datetimepicker').datetimepicker('destroy');
+        if (typeof(leadAttachmentsDropzone) != 'undefined') {
+            leadAttachmentsDropzone.destroy();
         }
     });
 
@@ -444,12 +489,12 @@ $(function() {
 
     // Add additional server params $_POST
     var LeadsServerParams = {
-            "custom_view": "[name='custom_view']",
-            "assigned": "[name='view_assigned']",
-            "status": "[name='view_status']",
-            "source": "[name='view_source']",
-        }
-        // Init the table
+        "custom_view": "[name='custom_view']",
+        "assigned": "[name='view_assigned']",
+        "status": "[name='view_status']",
+        "source": "[name='view_source']",
+    }
+    // Init the table
     var headers_leads = $('.table-leads').find('th');
     var not_sortable_leads = (headers_leads.length - 1);
     initDataTable('.table-leads', admin_url + 'leads?table_leads=true', [not_sortable_leads, 0], [not_sortable_leads, 0], LeadsServerParams, [9, 'DESC']);
@@ -517,7 +562,8 @@ $(function() {
     $('form').not('#single-ticket-form,#calendar-event-form,#proposal-form').areYouSure();
 
     // Check for active class in sidebar links
-    $.each(side_bar.find('li > a'), function(i, data) {
+    var sidebar_links = side_bar.find('li > a');
+    $.each(sidebar_links, function(i, data) {
         var href = $(data).attr('href');
         // Check if the url matches so we can add the active class
         if (location == href) {
@@ -539,7 +585,8 @@ $(function() {
 
     // Check for customizer active class
     if (setup_menu.hasClass('display-block')) {
-        $.each(setup_menu.find('li > a'), function(i, data) {
+        var setup_menu_links = setup_menu.find('li > a');
+        $.each(setup_menu_links, function(i, data) {
             var href = $(data).attr('href');
             if (location == href) {
                 menu_href_selector = 'a[href="' + href + '"]';
@@ -565,7 +612,7 @@ $(function() {
     });
     // Check if is mobile to clone the searchbar to the body so can be visible on mobile
     if (is_mobile()) {
-        $('#wrapper').on('click', function() {
+        content_wrapper.on('click', function() {
             if ($('body').hasClass('show-sidebar')) {
                 $('body').removeClass('show-sidebar');
             }
@@ -578,16 +625,14 @@ $(function() {
     // Top search input fetch results
     $('#search_input').on('keyup paste', function() {
         var q = $(this).val().trim();
-        var wrapper = $('#wrapper');
         var search_results = $('#search_results');
         var top_search_button = $('#top_search_button button');
 
-        if(q.length < 3){
+        if (q.length < 2) {
             return;
         }
-
         if (q == '') {
-            wrapper.unhighlight();
+            content_wrapper.unhighlight();
             search_results.html('');
             original_top_search_val = '';
             top_search_button.html('<i class="fa fa-search"></i>');
@@ -603,9 +648,9 @@ $(function() {
             $.post(admin_url + 'misc/search', {
                 q: q
             }).done(function(results) {
-                wrapper.unhighlight();
+                content_wrapper.unhighlight();
                 search_results.html(results);
-                wrapper.highlight(q);
+                content_wrapper.highlight(q);
                 original_top_search_val = q;
             });
         }, 700);
@@ -824,7 +869,6 @@ $(function() {
 
     // Set notifications to read when notifictions dropdown is opened
     $('.notifications-icon,.notifications-wrapper').on('click', function() {
-        console.log(autocheck_notifications_timer_id)
         clearInterval(autocheck_notifications_timer_id);
         $.post(admin_url + 'misc/set_notifications_read').done(function(response) {
             response = JSON.parse(response);
@@ -848,37 +892,50 @@ $(function() {
     }
 
     // Tables
-
     init_table_tickets();
     init_table_announcements();
     init_table_staff_projects();
 
     // Ticket pipe log and system activity log
     initDataTable('.table-activity-log', window.location.href, 'undefined', 'undefined', 'undefined', [1, 'DESC']);
-    // Invoices additional server params
-    var Invoices_Estimates_ServerParams = {};
-    $.each($('._hidden_inputs._filters input'), function() {
-        Invoices_Estimates_ServerParams[$(this).attr('name')] = '[name="' + $(this).attr('name') + '"]';
-    });
+    if ($('.table-invoices').length > 0 || $('.table-estimates').length > 0) {
+        // Invoices additional server params
+        var Invoices_Estimates_ServerParams = {};
+        var Invoices_Estimates_Filter = $('._hidden_inputs._filters input')
+        $.each(Invoices_Estimates_Filter, function() {
+            Invoices_Estimates_ServerParams[$(this).attr('name')] = '[name="' + $(this).attr('name') + '"]';
+        });
+        // Invoices tables
+        _table_api = initDataTable('.table-invoices', admin_url + 'invoices/list_invoices', 'undefined', 'undefined', Invoices_Estimates_ServerParams, [
+            [3, 'DESC'],
+            [0, 'DESC']
+        ]);
 
-    // Invoices tables
-    _table_api = initDataTable('.table-invoices', admin_url + 'invoices/list_invoices', 'undefined', 'undefined', Invoices_Estimates_ServerParams, [
-        [3, 'DESC'],
-        [0, 'DESC']
-    ]);
+        // Set year hidden for invoices
+        if (_table_api) {
+            _table_api.column(3).visible(false, false).columns.adjust();
+        }
 
-    // Set year hidden for invoices
-    if (_table_api) {
-        _table_api.column(3).visible(false, false).columns.adjust();
+        // Estimates table
+        _table_api = initDataTable('.table-estimates', admin_url + 'estimates/list_estimates', 'undefined', 'undefined', Invoices_Estimates_ServerParams, [
+            [3, 'DESC'],
+            [0, 'DESC']
+        ]);
+
+        // Set year hidden for estimates
+        if (_table_api) {
+            _table_api.column(3).visible(false, false).columns.adjust();
+        }
     }
 
-    var TasksServerParams = {};
-
-    $.each($('._hidden_inputs._filters._tasks_filters input'), function() {
+    var TasksServerParams = {},
+        Tasks_Filters;
+    Tasks_Filters = $('._hidden_inputs._filters._tasks_filters input');
+    $.each(Tasks_Filters, function() {
         TasksServerParams[$(this).attr('name')] = '[name="' + $(this).attr('name') + '"]';
     });
-
     _tns = [($('.table-tasks').find('th').length - 1)];
+
     var tasks_sort = 2;
     var _tasks_table_url = admin_url + 'tasks';
     if ($('body').hasClass('tasks_page')) {
@@ -888,20 +945,7 @@ $(function() {
     }
 
     _table_api = initDataTable('.table-tasks', _tasks_table_url, _tns, _tns, TasksServerParams, [tasks_sort, 'ASC']);
-
     if (_table_api && $('body').hasClass('home')) {
-        _table_api.column(3).visible(false, false).columns.adjust();
-        _table_api.column(4).visible(false, false).columns.adjust();
-        _table_api.column(_tns[0]).visible(false, false).columns.adjust();
-    }
-
-    // Estimates table
-    _table_api = initDataTable('.table-estimates', admin_url + 'estimates/list_estimates', 'undefined', 'undefined', Invoices_Estimates_ServerParams, [
-        [3, 'DESC'],
-        [0, 'DESC']
-    ]);
-    // Set year hidden for estimates
-    if (_table_api) {
         _table_api.column(3).visible(false, false).columns.adjust();
     }
 
@@ -926,18 +970,21 @@ $(function() {
         window.location.href = admin_url + 'todo/change_todo_status/' + $(this).val() + '/' + finished;
     });
 
-    // Makes todos sortable
-    var todos_sortable = $(".todos-sortable").sortable({
-        connectWith: ".todo",
-        items: "li",
-        handle: '.dragger',
-        appendTo: "body",
-        update: function(event, ui) {
-            if (this === ui.item.parent()[0]) {
-                update_todo_items();
+    var todos_sortable = $(".todos-sortable");
+    if (todos_sortable.length > 0) {
+        // Makes todos sortable
+        todos_sortable = todos_sortable.sortable({
+            connectWith: ".todo",
+            items: "li",
+            handle: '.dragger',
+            appendTo: "body",
+            update: function(event, ui) {
+                if (this === ui.item.parent()[0]) {
+                    update_todo_items();
+                }
             }
-        }
-    });
+        });
+    }
 
     /* NEWSFEED JS */
     $('body').on('click', '.open_newsfeed,.close_newsfeed', function(e) {
@@ -967,7 +1014,6 @@ $(function() {
         $('#newsfeed').toggleClass('hide');
         $('body').toggleClass('noscroll');
     });
-
 
     if ($('[data-newsfeed-auto]').length > 0) {
         $('.open_newsfeed').click();
@@ -1048,7 +1094,8 @@ function init_lightbox() {
 }
 // Progress bar animation load
 function init_progress_bars() {
-    $('.progress .progress-bar').each(function() {
+    var progress_bars = $('.progress .progress-bar');
+    progress_bars.each(function() {
         var bar = $(this);
         var perc = bar.attr("data-percent");
         bar.css('width', (perc) + '%');
@@ -1066,7 +1113,6 @@ function get_url_param(param) {
             vars[key] = value !== undefined ? value : '';
         }
     );
-
     if (param) {
         return vars[param] ? vars[param] : null;
     }
@@ -1080,18 +1126,18 @@ function mainWrapperHeightFix() {
     var contentH = $(".content").height();
     var h = $(document).outerHeight(true) - headerH + 'px';
     setup_menu.css('min-height', h);
-    $('#wrapper').css('min-height', $(document).outerHeight(true) - headerH + 'px');
+    content_wrapper.css('min-height', $(document).outerHeight(true) - headerH + 'px');
     // Set new height when contnet height is less then navigation
     if (contentH < navigationH) {
-        $("#wrapper").css("min-height", navigationH + 'px');
+        content_wrapper.css("min-height", navigationH + 'px');
     }
     // Set new height when contnet height is less then navigation and navigation is less then window
     if (contentH < navigationH && navigationH < $(window).height()) {
-        $("#wrapper").css("min-height", $(window).height() - headerH + 'px');
+        content_wrapper.css("min-height", $(window).height() - headerH + 'px');
     }
     // Set new height when contnet is higher then navigation but less then window
     if (contentH > navigationH && contentH < $(window).height()) {
-        $("#wrapper").css("min-height", $(window).height() - headerH + 'px');
+        content_wrapper.css("min-height", $(window).height() - headerH + 'px');
     }
 }
 
@@ -1126,27 +1172,6 @@ function switch_field(field) {
 }
 // General validate form function
 function _validate_form(form, form_rules, submithandler) {
-    $.validator.setDefaults({
-        highlight: function(element) {
-            $(element).closest('.form-group').addClass('has-error');
-        },
-        unhighlight: function(element) {
-            $(element).closest('.form-group').removeClass('has-error');
-        },
-        errorElement: 'p',
-        errorClass: 'text-danger',
-        errorPlacement: function(error, element) {
-            if (element.parent('.input-group').length || element.parents('.chk').length) {
-                if (!element.parents('.chk').length) {
-                    error.insertAfter(element.parent());
-                } else {
-                    error.insertAfter(element.parents('.chk'));
-                }
-            } else {
-                error.insertAfter(element);
-            }
-        },
-    });
 
     var f = $(form).validate({
         rules: form_rules,
@@ -1166,6 +1191,7 @@ function _validate_form(form, form_rules, submithandler) {
     });
 
     var custom_required_fields = $(form).find('[data-custom-field-required]');
+
     if (custom_required_fields.length > 0) {
         $.each(custom_required_fields, function() {
             $(this).rules("add", {
@@ -1216,7 +1242,7 @@ function slideToggle(selector, callback) {
     // Set all progress bar to 0 percent
     var progress_bars = $('.progress-bar').not('.not-dynamic');
     if (progress_bars.length > 0) {
-        $('.progress .progress-bar').each(function() {
+        progress_bars.each(function() {
             $(this).css('width', 0 + '%');
             $(this).text(0 + '%');
         });
@@ -1236,9 +1262,10 @@ function alert_float(type, message) {
     aId = 'alert_float_' + aId;
     el = $('<div id="' + aId + '" class="float-alert animated fadeInRight col-xs-11 col-sm-4 alert alert-' + type + '"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><span class="fa fa-bell-o" data-notify="icon"></span><span class="alert-title">' + message + '</span></div>');
     $('body').append(el);
-
     setTimeout(function() {
-        $('#' + aId).hide('fast', function(){ $('#' + aId).remove(); });
+        $('#' + aId).hide('fast', function() {
+            $('#' + aId).remove();
+        });
     }, 4500);
 }
 
@@ -1246,16 +1273,22 @@ function init_rel_tasks_table(rel_id, rel_type, selector) {
     if (typeof(selector) == 'undefined') {
         selector = '.table-rel-tasks';
     }
-    var TasksServerParams = {};
-    $.each($('._hidden_inputs._filters._tasks_filters input'), function() {
+    if ($('body').find(selector).length == 0) {
+        return;
+    }
+    var TasksServerParams = {},
+        not_sortable_tasks, Tasks_Filters;
+    Tasks_Filters = $('._hidden_inputs._filters._tasks_filters input');
+    $.each(Tasks_Filters, function() {
         TasksServerParams[$(this).attr('name')] = '[name="' + $(this).attr('name') + '"]';
     });
-    var not_sortable_tasks = ($('body').find(selector).find('th').length - 1);
+    not_sortable_tasks = ($('body').find(selector).find('th').length - 1);
     initDataTable(selector, admin_url + 'tasks/init_relation_tasks/' + rel_id + '/' + rel_type, [not_sortable_tasks], [not_sortable_tasks], TasksServerParams, [2, 'ASC']);
 }
 
 function get_dt_export_buttons(table) {
-    return [{
+
+    var table_buttons_options = [{
         extend: 'collection',
         text: dt_button_export,
         className: 'btn btn-default-dt-options',
@@ -1264,17 +1297,15 @@ function get_dt_export_buttons(table) {
             text: dt_button_excel,
             footer: true,
             exportOptions: {
-                columns: [':visible'],
+                columns: [':visible:not(.not-export)'],
             }
-
-        }, {
+        },{
             extend: 'csvHtml5',
             text: dt_button_csv,
             footer: true,
             exportOptions: {
-                columns: [':visible']
-            }
-
+                columns: [':visible:not(.not-export)']
+          }
         }, {
             extend: 'pdfHtml5',
             text: dt_button_pdf,
@@ -1286,27 +1317,34 @@ function get_dt_export_buttons(table) {
                 var columns = table_api.columns().visible();
                 var columns_total = columns.length;
                 var pdf_widths = [];
+                var total_visible_columns = 0;
                 for (i = 0; i < columns_total; i++) {
                     // Is only visible column
                     if (columns[i] == true) {
-                        pdf_widths.push('*');
+                        total_visible_columns++;
                     }
                 }
-                doc.styles.tableHeader.alignment = 'left'
-                doc.styles.tableHeader.margin = [5, 5, 5, 5]
-                doc.content[1].table.widths = pdf_widths;
+                setTimeout(function(){
+                    if(total_visible_columns <=5 ){
+                        for (i = 0; i < total_visible_columns; i++) {
+                            pdf_widths.push((735 / total_visible_columns));
+                        }
+                    doc.content[1].table.widths = pdf_widths;
+                    }
+                },10);
+                doc.styles.tableHeader.alignment = 'left';
+                doc.styles.tableHeader.margin = [5, 5, 5, 5];
                 doc.pageMargins = [12, 12, 12, 12];
-
             },
             exportOptions: {
-                columns: [':visible'],
+                columns: [':visible:not(.not-export)'],
             }
         }, {
             extend: 'print',
             text: dt_button_print,
             footer: true,
             exportOptions: {
-                columns: [':visible'],
+                columns: [':visible:not(.not-export)'],
             }
         }],
     }, {
@@ -1320,7 +1358,11 @@ function get_dt_export_buttons(table) {
         action: function(e, dt, node, config) {
             dt.ajax.reload();
         }
-    }, ];
+    }];
+    if(show_table_columns_visibility == 0){
+        delete table_buttons_options[1];
+    }
+    return table_buttons_options;
 }
 
 function initDataTableOffline(dt_table) {
@@ -1338,6 +1380,17 @@ function initDataTableOffline(dt_table) {
         "responsive": true,
         "autoWidth": false,
         "order": [0, 'DESC'],
+        "initComplete": function(settings, json) {
+            var t_export = $(selector);
+            var th_last_child = t_export.find('thead th:last-child');
+            var th_first_child = t_export.find('thead th:first-child');
+            if(th_last_child.text().trim() == options_string_translate){
+               th_last_child.addClass('not-export');
+            }
+            if(th_first_child.find('input[type="checkbox"]').length > 0){
+                th_first_child.addClass('not-export');
+            }
+        },
         dom: "<'mbot25'B><'row'><'row'<'col-md-6'l><'col-md-6'f>r>t<'row'<'col-md-4'i>><'row'<'#colvis'>p>",
     }
 
@@ -1427,6 +1480,17 @@ function initDataTable(table, url, notsearchable, notsortable, fnserverparams, d
             $(nRow).attr('data-title', aData.Data_Title)
             $(nRow).attr('data-toggle', aData.Data_Toggle)
         },
+        "initComplete": function(settings, json) {
+            var t_export = $(table);
+            var th_last_child = t_export.find('thead th:last-child');
+            var th_first_child = t_export.find('thead th:first-child');
+            if(th_last_child.text().trim() == options_string_translate){
+               th_last_child.addClass('not-export');
+            }
+            if(th_first_child.find('input[type="checkbox"]').length > 0){
+                th_first_child.addClass('not-export');
+            }
+         },
         "order": defaultorder,
         "ajax": {
             "url": url,
@@ -1443,7 +1507,7 @@ function initDataTable(table, url, notsearchable, notsortable, fnserverparams, d
     var tableApi = table.DataTable();
 
     var hiddenHeadings = $(table).find('th.not_visible');
-    $.each(hiddenHeadings,function(){
+    $.each(hiddenHeadings, function() {
         tableApi.columns(this.cellIndex).visible(false, false);
     });
     // Fix for hidden tables colspan not correct if the table is empty
@@ -1528,21 +1592,26 @@ function delete_todo_item(list, id) {
 // Edit todo item
 function edit_todo_item(id) {
     $.get(admin_url + 'todo/get_by_id/' + id, function(response) {
-        $('#__todo').find('input[name="todoid"]').val(response.todoid);
-        $('#__todo').find('textarea[name="description"]').val(response.description);
-        $('#__todo').modal('show');
+        var todo_modal = $('#__todo');
+        todo_modal.find('input[name="todoid"]').val(response.todoid);
+        todo_modal.find('textarea[name="description"]').val(response.description);
+        todo_modal.modal('show');
     }, 'json');
 }
 // Date picker init with selected timeformat from settings
 function init_datepicker() {
     var datepickers = $('.datepicker');
     var datetimepickers = $('.datetimepicker');
+    if (datetimepickers.length == 0 && datepickers.length == 0) {
+        return;
+    }
     var opt;
     // Datepicker without time
     $.each(datepickers, function() {
         var opt = {
             format: date_format,
             timepicker: false,
+            scrollInput: false,
             lazyInit: true,
             dayOfWeekStart: calendar_first_day,
         };
@@ -1564,6 +1633,7 @@ function init_datepicker() {
         opt_time = {
             format: date_format + ' H:i',
             lazyInit: true,
+            scrollInput: false,
             dayOfWeekStart: calendar_first_day,
         };
         // Check in case the input have date-end-date or date-min-date
@@ -1577,11 +1647,6 @@ function init_datepicker() {
         }
         // Init the picker
         $(this).datetimepicker(opt_time);
-    });
-    // Option of user click on the icon calendar the datepicker to be shown
-    $('.calendar-icon').on('click', function() {
-        $(this).parents('.date').find('.datepicker').datetimepicker('show');
-        $(this).parents('.date').find('.datetimepicker').datetimepicker('show');
     });
 }
 // Init color pickers
@@ -1665,13 +1730,22 @@ function init_roles_permissions(roleid, user_changed) {
     var permissions = $('table.roles').find('tr');
     $.get(admin_url + 'misc/get_role_permissions_ajax/' + roleid).done(function(response) {
         response = JSON.parse(response);
+        var can_view_st, can_view_own_st;
         $.each(permissions, function() {
             var permissionid = $(this).data('id');
             var row = $(this);
             $.each(response, function(i, obj) {
                 if (permissionid == obj.permissionid) {
-                    row.find('[data-can-view]').prop('checked', (obj.can_view == 1 ? true : false)).change();
-                    row.find('[data-can-view-own]').prop('checked', (obj.can_view_own == 1 ? true : false)).change();
+                    can_view_st = (obj.can_view == 1 ? true : false);
+                    can_view_own_st = (obj.can_view_own == 1 ? true : false)
+                    row.find('[data-can-view]').prop('checked', can_view_st);
+                    if (can_view_st == true) {
+                        row.find('[data-can-view]').change();
+                    }
+                    row.find('[data-can-view-own]').prop('checked', can_view_own_st);
+                    if (can_view_own_st == true) {
+                        row.find('[data-can-view-own]').change();
+                    }
                     row.find('[data-can-edit]').prop('checked', (obj.can_edit == 1 ? true : false));
                     row.find('[data-can-create]').prop('checked', (obj.can_create == 1 ? true : false));
                     row.find('[data-can-delete]').prop('checked', (obj.can_delete == 1 ? true : false));
@@ -1787,8 +1861,11 @@ function init_editor(selector, settings) {
     if (typeof(selector) == 'undefined') {
         selector = '.tinymce';
     }
-
-    $.each($(selector), function() {
+    var _editor_selector_check = $(selector);
+    if (_editor_selector_check.length == 0) {
+        return;
+    }
+    $.each(_editor_selector_check, function() {
         if ($(this).hasClass('tinymce-manual')) {
             $(this).removeClass('tinymce');
         }
@@ -1802,6 +1879,12 @@ function init_editor(selector, settings) {
         skin: 'perfex',
         language: tinymce_lang,
         relative_urls: false,
+        inline_styles: true,
+        verify_html: false,
+        cleanup: false,
+        valid_elements: '+*[*]',
+        valid_children: "+body[style], +style[type]",
+        apply_source_formatting: false,
         remove_script_host: false,
         removed_menuitems: 'newdocument',
         forced_root_block: false,
@@ -1810,6 +1893,45 @@ function init_editor(selector, settings) {
             // Default fontsize is 14
             ed.on('init', function() {
                 this.getDoc().body.style.fontSize = '14px';
+            });
+
+            ed.addMenuItem('codesample', {
+                text: 'Insert/Edit code sample',
+                context: 'insert',
+                icon: 'codesample',
+                onclick: function() {
+                    tinyMCE.execCommand('codesample');
+                }
+            });
+
+            ed.addButton('alignment', {
+                type: 'listbox',
+                text: tinymce.util.I18n.translate('Alignment'),
+                icon: false,
+                onselect: function(e) {
+                    tinyMCE.execCommand(this.value());
+                },
+                values: [{
+                        icon: 'alignleft',
+                        value: 'JustifyLeft'
+                    },
+                    {
+                        icon: 'alignright',
+                        value: 'JustifyRight'
+                    },
+                    {
+                        icon: 'aligncenter',
+                        value: 'JustifyCenter'
+                    },
+                    {
+                        icon: 'alignjustify',
+                        value: 'JustifyFull'
+                    },
+                ],
+                onPostRender: function() {
+                    // Select the firts item by default
+                    this.value('JustifyLeft');
+                }
             });
         },
         table_default_styles: {
@@ -1829,7 +1951,7 @@ function init_editor(selector, settings) {
             'media nonbreaking save table contextmenu directionality',
             'paste textcolor colorpicker textpattern'
         ],
-        toolbar1: 'fontselect fontsizeselect  insertfile | bold italic | alignleft aligncenter alignright alignjustify | rtl media image | forecolor backcolor link outdent indent bullist numlist | codesample',
+        toolbar1: 'fontselect fontsizeselect | alignment bold italic | image | forecolor backcolor link bullist numlist rtl',
         file_browser_callback: elFinderBrowser,
     };
     // Add the rtl to the settings if is true
@@ -1841,7 +1963,6 @@ function init_editor(selector, settings) {
             _settings[key] = settings[key];
         }
     }
-
     // Init the editor
     var editor = tinymce.init(_settings);
     return editor;
@@ -2597,8 +2718,6 @@ function init_lead(id) {
     // In case header error
     if (init_lead_modal_data(id)) {
         $('.lead-modal').modal('show');
-        var ret = {ret:true};
-        $(".dataTable").trigger('example',[ret]);
     }
 }
 
@@ -2666,7 +2785,7 @@ function validate_lead_convert_to_client_form() {
         }
 
     };
-    if(company_is_required == 1){
+    if (company_is_required == 1) {
         rules_convert_lead.company = 'required';
     }
     _validate_form($('#lead_to_client_form'), rules_convert_lead);
@@ -2828,7 +2947,7 @@ function leads_kanban_update(ui, object) {
 
         data.order = order;
         setTimeout(function() {
-               $.post(admin_url + 'leads/update_kan_ban_lead_status', data).done(function(response) {
+            $.post(admin_url + 'leads/update_kan_ban_lead_status', data).done(function(response) {
                 check_kanban_empty_col('[data-lead-id]');
             });
         }, 200);
@@ -3038,10 +3157,15 @@ function init_table_tickets(manual) {
         return false;
     }
 
-    var tickets_not_sortable = $('.tickets-table').find('th').length - 1;
-    var TicketServerParams = {};
+    if ($('body').find('.tickets-table').length == 0) {
+        return;
+    }
 
-    $.each($('._hidden_inputs._filters.tickets_filters input'), function() {
+    var tickets_not_sortable = $('.tickets-table').find('th').length - 1;
+    var TicketServerParams = {},
+        Tickets_Filters = $('._hidden_inputs._filters.tickets_filters input');
+
+    $.each(Tickets_Filters, function() {
         TicketServerParams[$(this).attr('name')] = '[name="' + $(this).attr('name') + '"]';
     });
 
@@ -3064,19 +3188,43 @@ function init_table_staff_projects(manual) {
     if (typeof(manual) == 'undefined' && $('body').hasClass('home')) {
         return false;
     }
-    var staffProjectsParams = {};
-    $.each($('._hidden_inputs._filters.staff_projects_filter input'), function() {
+
+    if ($('body').find('.table-staff-projects').length == 0) {
+        return;
+    }
+
+    var staffProjectsParams = {},
+        Staff_Projects_Filters = $('._hidden_inputs._filters.staff_projects_filter input');
+    $.each(Staff_Projects_Filters, function() {
         staffProjectsParams[$(this).attr('name')] = '[name="' + $(this).attr('name') + '"]';
     });
 
     initDataTable('.table-staff-projects', admin_url + 'projects/staff_projects', 'undefined', 'undefined', staffProjectsParams, [2, 'ASC']);
 }
 
+function do_task_checklist_items_height(task_checklist_items) {
+    if (typeof(task_checklist_items) == 'undefined') {
+        task_checklist_items = $('body').find("textarea[name='checklist-description']");
+    }
+
+    $.each(task_checklist_items, function() {
+        var val = $(this).val();
+        if ($(this).outerHeight() < this.scrollHeight + parseFloat($(this).css("borderTopWidth")) + parseFloat($(this).css("borderBottomWidth"))) {
+            $(this).height(0).height(this.scrollHeight);
+            $(this).parents('.checklist').height(this.scrollHeight);
+        }
+        if (val == '') {
+            $(this).removeAttr('style');
+            $(this).parents('.checklist').removeAttr('style');
+        }
+    });
+}
 
 function recalculate_checklist_items_progress() {
     var total_finished = $('input[name="checklist-box"]:checked').length;
     var total_checklist_items = $('input[name="checklist-box"]').length;
-    var percent = 0;
+    var percent = 0,
+        task_progress_bar = $('.task-progress-bar');
     if (total_checklist_items == 0) {
         // remove the heading for checklist items
         $('body').find('.chk-heading').remove();
@@ -3085,14 +3233,14 @@ function recalculate_checklist_items_progress() {
         $('#task-no-checklist-items').addClass('hide');
     }
     if (total_checklist_items > 2) {
-        $('.task-progress-bar').parents('.progress').removeClass('hide');
+        task_progress_bar.parents('.progress').removeClass('hide');
         percent = (total_finished * 100) / total_checklist_items;
     } else {
-        $('.task-progress-bar').parents('.progress').addClass('hide');
+        task_progress_bar.parents('.progress').addClass('hide');
         return false;
     }
-    $('.task-progress-bar').css('width', percent.toFixed(2) + '%');
-    $('.task-progress-bar').text(percent.toFixed(2) + '%');
+    task_progress_bar.css('width', percent.toFixed(2) + '%');
+    task_progress_bar.text(percent.toFixed(2) + '%');
 }
 
 function delete_checklist_item(id, field) {
@@ -3109,17 +3257,17 @@ function delete_checklist_item(id, field) {
     }
 }
 
-function add_task_checklist_item() {
+function add_task_checklist_item(task_id) {
     $.post(admin_url + 'tasks/add_checklist_item', {
-        taskid: taskid
+        taskid: task_id
     }).done(function() {
-        init_tasks_checklist_items(true);
+        init_tasks_checklist_items(true, task_id);
     });
 }
 
-function init_tasks_checklist_items(is_new) {
+function init_tasks_checklist_items(is_new, task_id) {
     $.post(admin_url + 'tasks/init_checklist_items', {
-        taskid: taskid
+        taskid: task_id
     }).done(function(data) {
         $('#checklist-items').html(data);
         if (typeof(is_new) != 'undefined') {
@@ -3148,12 +3296,12 @@ function remove_task_attachment(link, id) {
     }
 }
 
-function add_task_comment() {
+function add_task_comment(task_id) {
     var data = {};
     data.content = tinyMCE.activeEditor.getContent();
-    data.taskid = taskid;
+    data.taskid = task_id;
     $.post(admin_url + 'tasks/add_task_comment', data).done(function(response) {
-        init_task_modal(taskid);
+        init_task_modal(task_id);
     });
 }
 // Deletes task comment from database
@@ -3170,31 +3318,31 @@ function remove_task_comment(commentid) {
     }
 }
 // Remove task assignee
-function remove_assignee(id, taskid) {
+function remove_assignee(id, task_id) {
     var r = confirm(confirm_action_prompt);
     if (r == false) {
         return false;
     } else {
-        $.get(admin_url + 'tasks/remove_assignee/' + id + '/' + taskid, function(response) {
+        $.get(admin_url + 'tasks/remove_assignee/' + id + '/' + task_id, function(response) {
             if (response.success == true) {
                 alert_float('success', response.message);
             } else {
                 alert_float('warning', response.message);
             }
-            init_task_modal(taskid);
+            init_task_modal(task_id);
         }, 'json');
     }
 }
 // Remove task follower
-function remove_follower(id, taskid) {
+function remove_follower(id, task_id) {
     var r = confirm(confirm_action_prompt);
     if (r == false) {
         return false;
     } else {
-        $.get(admin_url + 'tasks/remove_follower/' + id + '/' + taskid, function(response) {
+        $.get(admin_url + 'tasks/remove_follower/' + id + '/' + task_id, function(response) {
             if (response.success == true) {
                 alert_float('success', response.message);
-                init_task_modal(taskid);
+                init_task_modal(task_id);
             }
         }, 'json');
     }
@@ -3259,7 +3407,7 @@ function new_task(url) {
         _url = url;
     }
     $.get(_url, function(response) {
-        $('#_task').html(response)
+        $('#_task').html(response);
         $('body').find('#_task_modal').modal({
             show: true,
             backdrop: 'static'
@@ -3277,11 +3425,8 @@ function new_task_from_relation(table, rel_type, rel_id) {
 }
 
 // Go to edit view
-function edit_task(_task_id) {
-    if (typeof(_task_id) != 'undefined') {
-        taskid = _task_id;
-    }
-    $.get(admin_url + 'tasks/task/' + taskid, function(response) {
+function edit_task(task_id) {
+    $.get(admin_url + 'tasks/task/' + task_id, function(response) {
         $('#_task').html(response)
         $('.task-modal-single').modal('hide');
         $('body').find('#_task_modal').modal({
@@ -3302,21 +3447,10 @@ function task_form_handler(form) {
         }
         if (!$('body').hasClass('project')) {
             $('#_task_modal').modal('hide');
+            init_task_modal(response.id);
             reload_tasks_tables();
-            if (response.id) {
-                init_task_modal(response.id);
-                taskid = response.id;
-            } else {
-                init_task_modal(taskid);
-            }
         } else {
             $('#_task_modal').modal('hide');
-            var _r_task_id;
-            if (response.id) {
-                _r_task_id = response.id;
-            } else {
-                _r_task_id = taskid;
-            }
             // reload page on project area
             var location = window.location.href;
             var parameters = new Array();
@@ -3325,7 +3459,7 @@ function task_form_handler(form) {
             if (group) {
                 parameters['group'] = group;
             }
-            parameters['taskid'] = _r_task_id;
+            parameters['taskid'] = response.id;
             window.location.href = buildUrl(location[0], parameters)
         }
     }).fail(function(error) {
@@ -3350,19 +3484,20 @@ function timer_action(e, task_id, timer_id) {
     }, 'json');
 }
 
-function init_task_modal(taskid) {
+function init_task_modal(task_id) {
     tinymce.remove('#task_comment');
     $.post(admin_url + 'tasks/get_task_data/', {
-        taskid: taskid
+        taskid: task_id
     }).done(function(response) {
-        taskid = taskid;
         $('.task-modal-single .data').html(response);
         init_editor('#task_comment', {
             height: 150
         });
-        init_tasks_checklist_items();
-        $('.task-modal-single').modal('show');
-        fix_task_modal_left_col_height();
+        init_tasks_checklist_items(false, task_id);
+        setTimeout(function() {
+            $('.task-modal-single').modal('show');
+            fix_task_modal_left_col_height();
+        }, 150);
     }).fail(function(data) {
         $('.task-modal-single').modal('hide');
         alert_float('danger', data.responseText);
@@ -3404,7 +3539,7 @@ function cancel_edit_comment(id) {
     edit_wrapper.next().removeClass('hide');
 }
 
-function save_edited_comment(id) {
+function save_edited_comment(id, task_id) {
     tinymce.triggerSave();
     var data = {};
     data.id = id;
@@ -3413,7 +3548,7 @@ function save_edited_comment(id) {
         response = JSON.parse(response);
         if (response.success == true) {
             alert_float('success', response.message);
-            init_task_modal(taskid);
+            init_task_modal(task_id);
         } else {
             cancel_edit_comment(id);
         }
@@ -3443,7 +3578,6 @@ function fix_task_modal_left_col_height() {
 function tasks_kanban_update(ui, object) {
     if (object === ui.item.parent()[0]) {
         var status = $(ui.item.parent()[0]).data('task-status-id');
-        var taskid = $(ui.item).data('task-id');
         var tasks = $(ui.item.parent()[0]).find('[data-task-id]');
 
         var data = {};
@@ -3454,7 +3588,7 @@ function tasks_kanban_update(ui, object) {
             i++;
         });
 
-        task_mark_as(status, taskid);
+        task_mark_as(status, $(ui.item).data('task-id'));
         check_kanban_empty_col('[data-task-id]');
         setTimeout(function() {
             $.post(admin_url + 'tasks/update_order', data);
@@ -3467,12 +3601,14 @@ function tasks_kanban() {
 }
 
 function edit_task_inline_description(e, id) {
+
     tinyMCE.remove('#task_view_description');
 
     if ($(e).hasClass('editor-initiated')) {
         $(e).removeClass('editor-initiated');
         return;
     }
+
     $(e).addClass('editor-initiated');
     tinymce.init({
         selector: '#task_view_description',

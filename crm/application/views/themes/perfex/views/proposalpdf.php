@@ -17,8 +17,6 @@ if($tag != ''){
 }
 
 $pdf_logo_url = pdf_logo_url();
-// Fix for logo width on proposal PDF
-$pdf_logo_url = str_replace(get_option('pdf_logo_width').'px',(get_option('pdf_logo_width')+50).'px',$pdf_logo_url);
 $pdf->writeHTMLCell(($dimensions['wk'] - ($dimensions['rm'] + $dimensions['lm'])), '', '', '', $pdf_logo_url, 0, 1, false, true, 'L', true);
 
 // Get Y position for the separation

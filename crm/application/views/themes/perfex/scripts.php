@@ -7,8 +7,11 @@
 <script src="<?php echo base_url('assets/plugins/datatables/datatables.min.js'); ?>"></script>
 <script src="<?php echo base_url('assets/plugins/jquery-validation/jquery.validate.min.js'); ?>"></script>
 <script src="<?php echo base_url('assets/plugins/jquery-validation/additional-methods.min.js'); ?>"></script>
-<?php if(file_exists(FCPATH.'assets/plugins/jquery-validation/localization/messages_'.$locale.'.min.js')){ ?>
+<?php
+if(file_exists(FCPATH.'assets/plugins/jquery-validation/localization/messages_'.$locale.'.min.js')){ ?>
 <script src="<?php echo base_url('assets/plugins/jquery-validation/localization/messages_'.$locale.'.min.js'); ?>"></script>
+<?php } else if(file_exists(FCPATH.'assets/plugins/jquery-validation/localization/messages_'.$locale.'_'.strtoupper($locale).'.min.js')){ ?>
+<script src="<?php echo base_url('assets/plugins/jquery-validation/localization/messages_'.$locale.'_'.strtoupper($locale).'.min.js'); ?>"></script>
 <?php } ?>
 <script src="<?php echo base_url('assets/plugins/datetimepicker/jquery.datetimepicker.full.min.js'); ?>"></script>
 <script src="<?php echo base_url('assets/plugins/Chart.js/Chart.min.js'); ?>" type="text/javascript"></script>
@@ -30,7 +33,6 @@
 <script src="<?php echo base_url('assets/plugins/fullcalendar/locale/'.$locale.'.js'); ?>"></script>
 <?php } ?>
 <?php echo app_script(template_assets_path().'/js','clients.js'); ?>
-<?php echo app_script(template_assets_path().'/js','client-report.js'); ?>
 <?php } ?>
 <?php
 // DONT REMOVE THIS LINE

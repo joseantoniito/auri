@@ -14,11 +14,11 @@
         <div id="dropbox-chooser-files"></div>
     </div>
     <?php } ?>
-
     <?php if(count($files) == 0){ ?>
+    <hr />
     <p class="no-margin"><?php echo _l('no_files_found'); ?></p>
     <?php } else { ?>
-    <div class="table-responsive">
+    <div class="table-responsive mtop15">
         <table class="table dt-table" data-order-col="1" data-order-type="desc">
          <thead>
             <tr>

@@ -22,13 +22,19 @@ class Staff extends Admin_controller
     /* Add new staff member or edit existing */
     public function member($id = '')
     {
+        do_action('staff_member_edit_view_profile',$id);
+
         $this->load->model('departments_model');
         if ($this->input->post()) {
+            $data = $this->input->post();
+            // Dont do XSS clean here.
+            $data['email_signature'] = $this->input->post('email_signature',FALSE);
+
             if ($id == '') {
                 if (!has_permission('staff', '', 'create')) {
                     access_denied('staff');
                 }
-                $id = $this->staff_model->add($this->input->post());
+                $id = $this->staff_model->add($data);
                 if ($id) {
                     handle_staff_profile_image_upload($id);
                     set_alert('success', _l('added_successfuly', _l('staff_member')));
@@ -39,7 +45,7 @@ class Staff extends Admin_controller
                     access_denied('staff');
                 }
                 handle_staff_profile_image_upload($id);
-                $response = $this->staff_model->update($this->input->post(), $id);
+                $response = $this->staff_model->update($data, $id);
                 if(is_array($response)){
                     if(isset($response['cant_remove_main_admin'])){
                         set_alert('warning', _l('staff_cant_remove_main_admin'));
@@ -104,7 +110,11 @@ class Staff extends Admin_controller
     {
         if ($this->input->post()) {
             handle_staff_profile_image_upload();
-            $success = $this->staff_model->update_profile($this->input->post(), get_staff_user_id());
+            $data = $this->input->post();
+            // Dont do XSS clean here.
+            $data['email_signature'] = $data['email_signature'] = $this->input->post('email_signature',FALSE);
+
+            $success = $this->staff_model->update_profile($data, get_staff_user_id());
             if ($success) {
                 set_alert('success', _l('staff_profile_updated'));
             }
@@ -164,6 +174,8 @@ class Staff extends Admin_controller
         if ($id == '') {
             $id = get_staff_user_id();
         }
+
+        do_action('staff_profile_access',$id);
 
         $data['logged_time'] = $this->staff_model->get_logged_time_data($id);
         $data['staff_p'] = $this->staff_model->get($id);

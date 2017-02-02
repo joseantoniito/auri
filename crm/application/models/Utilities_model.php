@@ -105,6 +105,17 @@ class Utilities_model extends CRM_Model
             $has_contact_permission_contracts = has_contact_permission('contracts',$contact_id);
             $has_contact_permission_projects = has_contact_permission('projects',$contact_id);
         }
+
+        $hook_data = array('data'=>$data,'client_data'=>$client_data);
+
+        if($client_data == true){
+            $hook_data['client_id'] = $client_id;
+            $hook_data['contact_id'] = $contact_id;
+        }
+
+        $hook_data = do_action('before_fetch_events',$hook_data);
+        $data = $hook_data['data'];
+
         if (get_option('show_invoices_on_calendar') == 1) {
             $this->db->select('duedate as date,number,id,clientid,hash');
             $this->db->from('tblinvoices');
@@ -389,7 +400,6 @@ class Utilities_model extends CRM_Model
         $this->load->model('projects_model');
         $this->db->select('name as title,deadline,start_date,id,clientid');
         $this->db->from('tblprojects');
-        $this->db->where('deadline IS NOT NULL');
         if($client_data){
             $this->db->where('clientid',$client_id);
         }
@@ -398,7 +408,7 @@ class Utilities_model extends CRM_Model
             $rel_showcase = '';
 
             if(!$client_data){
-                if (!$this->projects_model->is_member($project['id'])) {
+                if (!$this->projects_model->is_member($project['id']) && !$is_admin) {
                     continue;
                 }
                 $this->db->select('CASE company WHEN "" THEN (SELECT CONCAT(firstname, " ", lastname) FROM tblcontacts WHERE userid = tblclients.userid and is_primary = 1) ELSE company END as company');
@@ -419,7 +429,13 @@ class Utilities_model extends CRM_Model
             } else {
               $_project['url']      = site_url('clients/project/' . $project['id']);
             }
-            $_project['date']     = $project['deadline'];
+
+            if($project['deadline']){
+                $_project['date']     = $project['deadline'];
+            } else {
+                $_project['date']     = $project['start_date'];
+            }
+
             array_push($data, $_project);
         }
     }

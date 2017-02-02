@@ -28,6 +28,9 @@ foreach ($custom_fields as $field) {
   array_push($join, 'LEFT JOIN tblcustomfieldsvalues as ctable_' . $i . ' ON tblclients.userid = ctable_' . $i . '.relid AND ctable_' . $i . '.fieldto="' . $field['fieldto'] . '" AND ctable_' . $i . '.fieldid=' . $field['id']);
   $i++;
 }
+
+$aColumns = do_action('customers_table_sql_columns',$aColumns);
+
 $sIndexColumn = "userid";
 $sTable       = 'tblclients';
 
@@ -176,6 +179,10 @@ foreach ($rResult as $aRow) {
            $_data = _d($_data);
        }
    }
+
+   $hook_data = do_action('customers_tr_data_output',array('output'=>$_data,'column'=>$aColumns[$i],'id'=>$aRow['userid']));
+   $_data = $hook_data['output'];
+
    $row[] = $_data;
 }
 

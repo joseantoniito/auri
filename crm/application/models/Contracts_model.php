@@ -182,7 +182,6 @@ class Contracts_model extends CRM_Model
             $this->db->where('contractid', $id);
             $this->db->delete('tblcontractrenewals');
             // Get related tasks
-            $this->load->model('tasks_model');
             $this->db->where('rel_type', 'contract');
             $this->db->where('rel_id', $id);
             $tasks = $this->db->get('tblstafftasks')->result_array();

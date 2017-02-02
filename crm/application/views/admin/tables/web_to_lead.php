@@ -1,6 +1,6 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
-$aColumns = array('name','(SELECT COUNT(id) FROM tblleads WHERE tblleads.from_form_id = tblwebtolead.id)','dateadded');
+$aColumns = array('id','name','(SELECT COUNT(id) FROM tblleads WHERE tblleads.from_form_id = tblwebtolead.id)','dateadded');
 
 $sIndexColumn = "id";
 $sTable = 'tblwebtolead';

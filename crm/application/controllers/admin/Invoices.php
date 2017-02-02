@@ -54,7 +54,6 @@ class Invoices extends Admin_controller
             }
 
             $data['projects']    = $this->projects_model->get('',$where_projects);
-            $this->load->model('tasks_model');
             $data['billable_tasks'] = $this->tasks_model->get_billable_tasks($customer_id);
             $_data['invoices_to_merge'] = $this->invoices_model->check_for_merge_invoice($customer_id, $current_invoice);
             $data['merge_info']         = $this->load->view('admin/invoices/merge_invoice', $_data, true);
@@ -191,11 +190,12 @@ class Invoices extends Admin_controller
             access_denied('invoices');
         }
         if ($this->input->post()) {
+            $invoice_data = $this->input->post(NULL,FALSE);
             if ($id == '') {
                 if (!has_permission('invoices', '', 'create')) {
                     access_denied('invoices');
                 }
-                $id = $this->invoices_model->add($this->input->post());
+                $id = $this->invoices_model->add($invoice_data);
                 if ($id) {
                     set_alert('success', _l('added_successfuly', _l('invoice')));
                     redirect(admin_url('invoices/list_invoices/' . $id));
@@ -204,7 +204,7 @@ class Invoices extends Admin_controller
                 if (!has_permission('invoices', '', 'edit')) {
                     access_denied('invoices');
                 }
-                $success = $this->invoices_model->update($this->input->post(), $id);
+                $success = $this->invoices_model->update($invoice_data, $id);
                 if ($success) {
                     set_alert('success', _l('updated_successfuly', _l('invoice')));
                 }
@@ -242,7 +242,6 @@ class Invoices extends Admin_controller
         $this->load->model('invoice_items_model');
         $data['items'] = $this->invoice_items_model->get_grouped();
         $data['items_groups'] = $this->invoice_items_model->get_groups();
-        $this->load->model('tasks_model');
 
         $this->load->model('currencies_model');
         $data['currencies'] = $this->currencies_model->get();

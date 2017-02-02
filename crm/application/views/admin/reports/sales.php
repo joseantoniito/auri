@@ -91,7 +91,7 @@
                   <?php echo _l('reports_sales_generated_report'); ?>
                </div>
                <div class="panel-body">
-                   <div class="relative chart-income" style="max-height:400px;">
+                  <div class="relative chart-income" style="max-height:400px;">
                         <canvas id="chart-income" class="animated fadeIn" height="400"></canvas>
                   </div>
                   <div class="relative chart-payment-modes" style="max-height:400px;">

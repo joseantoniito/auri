@@ -174,7 +174,7 @@
                   <?php echo render_date_input('date','invoice_add_edit_date',$value); ?>
                 </div>
                 <div class="col-md-6">
-                  <?php $value = (isset($invoice) ? _d($invoice->duedate) : _d(date('Y-m-d', strtotime('+' . get_option('invoice_due_after') . ' DAY', strtotime(date('Y-m-d')))))); ?>
+                  <?php $value = (isset($invoice) ? _d($invoice->duedate) : (get_option('invoice_due_after') != 0) ? _d(date('Y-m-d', strtotime('+' . get_option('invoice_due_after') . ' DAY', strtotime(date('Y-m-d'))))) : ''); ?>
                   <?php echo render_date_input('duedate','invoice_add_edit_duedate',$value); ?>
                 </div>
               </div>
@@ -189,13 +189,16 @@
                 <label for="allowed_payment_modes" class="control-label"><?php echo _l('invoice_add_edit_allowed_payment_modes'); ?></label>
                 <br />
                 <?php if(count($payment_modes) > 0){ ?>
-                <?php foreach($payment_modes as $mode){
-                 $checked = '';
-                 if(isset($invoice)){
-                   if($invoice->allowed_payment_modes){
-                     foreach(unserialize($invoice->allowed_payment_modes) as $_allowed_payment_mode){
-                       if($_allowed_payment_mode == $mode['id']){
-                         $checked = 'checked';
+                 <?php foreach($payment_modes as $mode){
+                   $checked = '';
+                   if(isset($invoice)){
+                     if($invoice->allowed_payment_modes){
+                      $inv_modes = unserialize($invoice->allowed_payment_modes);
+                      if(is_array($inv_modes)) {
+                       foreach($inv_modes as $_allowed_payment_mode){
+                         if($_allowed_payment_mode == $mode['id']){
+                           $checked = 'checked';
+                         }
                        }
                      }
                    }
@@ -328,8 +331,7 @@
 <?php echo render_textarea('adminnote','invoice_add_edit_admin_note',$value); ?>
 </div>
 </div>
-<?php
-         // Check if any recuring invoices are made from this invoice
+<?php // Check if any recuring invoices are made from this invoice
 if(isset($invoice) && ($invoice->recurring !== 0 && $invoice->last_recurring_date != NULL)){ ?>
 <?php if(count($invoice_recurring_invoices)){ ?>
 <div class="col-md-12">
@@ -350,12 +352,12 @@ if(isset($invoice) && ($invoice->recurring !== 0 && $invoice->last_recurring_dat
   <div class="row">
    <div class="col-md-4">
      <div class="form-group mbot25">
-      <select name="item_select" class="selectpicker no-margin" data-width="100%" id="item_select" data-none-selected-text="<?php echo _l('add_item'); ?>">
+      <select name="item_select" class="selectpicker no-margin" data-width="100%" id="item_select" data-none-selected-text="<?php echo _l('add_item'); ?>" data-live-search="true">
         <option value=""></option>
         <?php foreach($items as $group_id=>$_items){ ?>
         <optgroup data-group-id="<?php echo $group_id; ?>" label="<?php echo $_items[0]['group_name']; ?>">
          <?php foreach($_items as $item){ ?>
-         <option value="<?php echo $item['id']; ?>">(<?php echo _format_number($item['rate']); ; ?>) <?php echo $item['description']; ?></option>
+         <option value="<?php echo $item['id']; ?>" data-subtext="<?php echo strip_tags(mb_substr($item['long_description'],0,200)).'...'; ?>">(<?php echo _format_number($item['rate']); ; ?>) <?php echo $item['description']; ?></option>
          <?php } ?>
        </optgroup>
        <?php } ?>

@@ -138,7 +138,7 @@ class Clients extends Admin_controller
 
         $this->load->model('projects_model');
         $data['project_statuses'] = $this->projects_model->get_project_statuses();
-
+        $data['contacts'] = $this->clients_model->get_contacts($id);
 
 
         $data['title'] = $title;
@@ -172,6 +172,7 @@ class Clients extends Admin_controller
                 $message = '';
                 $success = false;
                 if ($id) {
+                    handle_contact_profile_image_upload($id);
                     $success = true;
                     $message = _l('added_successfuly', _l('contact'));
                 }
@@ -210,7 +211,10 @@ class Clients extends Admin_controller
                         $message = _l('updated_successfuly', _l('contact'));
                     }
                 }
-
+                if(handle_contact_profile_image_upload($contact_id) && !$updated){
+                    $message = _l('updated_successfuly', _l('contact'));
+                    $success = true;
+                }
                 if ($updated == true) {
                     $contact = $this->clients_model->get_contact($contact_id);
                     if (total_rows('tblproposals', array(
@@ -250,6 +254,35 @@ class Clients extends Admin_controller
         $data['customer_permissions'] = $this->perfex_base->get_contact_permissions();
         $data['title']                = $title;
         $this->load->view('admin/clients/modals/contact', $data);
+    }
+    public function update_file_share_visibility(){
+        if($this->input->post()){
+
+          $file_id =$this->input->post('file_id');
+          $share_contacts_id = array();
+
+          if($this->input->post('share_contacts_id')){
+             $share_contacts_id = $this->input->post('share_contacts_id');
+          }
+
+          $this->db->where('file_id',$file_id);
+          $this->db->delete('tblcustomerfiles_shares');
+
+          foreach($share_contacts_id as $share_contact_id){
+            $this->db->insert('tblcustomerfiles_shares',array('file_id'=>$file_id,'contact_id'=>$share_contact_id));
+          }
+
+        }
+    }
+    public function delete_contact_profile_image($contact_id){
+        do_action('before_remove_contact_profile_image');
+        if (file_exists(get_upload_path_by_type('contact_profile_images') . $contact_id)) {
+            delete_dir(get_upload_path_by_type('contact_profile_images') . $contact_id);
+        }
+        $this->db->where('id', $contact_id);
+        $this->db->update('tblcontacts', array(
+            'profile_image' => NULL
+        ));
     }
     public function mark_as_active($id)
     {
@@ -612,6 +645,7 @@ class Clients extends Admin_controller
                         while ($row = fgetcsv($fd)) {
                             $rows[] = $row;
                         }
+
                         $data['total_rows_post'] = count($rows);
                         fclose($fd);
                         if (count($rows) <= 1) {
@@ -625,6 +659,13 @@ class Clients extends Admin_controller
                             }
                         }
                         $client_contacts_fields = $this->db->list_fields('tblcontacts');
+                        $i = 0;
+                        foreach($client_contacts_fields as $cf){
+                            if($cf == 'phonenumber'){
+                                $client_contacts_fields[$i] = 'contact_phonenumber';
+                            }
+                            $i++;
+                        }
                         $db_temp_fields         = $this->db->list_fields('tblclients');
                         $db_temp_fields         = array_merge($client_contacts_fields, $db_temp_fields);
                         $db_fields              = array();
@@ -636,11 +677,13 @@ class Clients extends Admin_controller
                         }
                         $custom_fields = get_custom_fields('customers');
                         $_row_simulate = 0;
+
                         $required      = array(
                             'firstname',
                             'lastname',
                             'email'
                         );
+
                         if (get_option('company_is_required') == 1) {
                             array_push($required, 'company');
                         }
@@ -681,6 +724,7 @@ class Clients extends Admin_controller
                                 }
                                 $insert[$db_fields[$i]] = $row[$i];
                             }
+
                             if ($duplicate == true) {
                                 continue;
                             }

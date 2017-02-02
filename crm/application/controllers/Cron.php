@@ -13,6 +13,7 @@ class Cron extends CRM_Controller
     {
         $last_cron_run = get_option('last_cron_run');
         if(time() > ($last_cron_run + 300) || $last_cron_run == ''){
+          do_action('cron_run');
           $this->cron_model->run();
         }
    }

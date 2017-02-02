@@ -51,14 +51,14 @@ $autoload['packages'] = array();
 |
 | Prototype:
 |
-|	$autoload['libraries'] = array('database', 'email', 'session');
+|   $autoload['libraries'] = array('database', 'email', 'session');
 |
 | You can also supply an alternative library name to be assigned
 | in the controller:
 |
-|	$autoload['libraries'] = array('user_agent' => 'ua');
+|   $autoload['libraries'] = array('user_agent' => 'ua');
 */
-$autoload['libraries'] = array( 'encryption','email', 'action_hooks', 'perfex_base' );
+$autoload['libraries'] = array( 'encryption','email', 'encoding_lib', 'action_hooks', 'perfex_base' );
 $CI = &get_instance();
 
 array_unshift($autoload['libraries'],'database');
@@ -82,7 +82,7 @@ foreach($gateways as $gateway){
 |
 | Prototype:
 |
-|	$autoload['drivers'] = array('cache');
+|   $autoload['drivers'] = array('cache');
 */
 $autoload['drivers'] = array();
 array_push($autoload['drivers'],'session');
@@ -94,7 +94,7 @@ array_push($autoload['drivers'],'session');
 | -------------------------------------------------------------------
 | Prototype:
 |
-|	$autoload['helper'] = array('url', 'file');
+|   $autoload['helper'] = array('url', 'file');
 */
 $autoload['helper'] = array(
         'url',
@@ -124,7 +124,7 @@ if(file_exists(APPPATH.'helpers/my_functions_helper.php')){
 | -------------------------------------------------------------------
 | Prototype:
 |
-|	$autoload['config'] = array('config1', 'config2');
+|   $autoload['config'] = array('config1', 'config2');
 |
 | NOTE: This item is intended for use ONLY if you have created custom
 | config files.  Otherwise, leave it blank.
@@ -138,7 +138,7 @@ $autoload['config'] = array();
 | -------------------------------------------------------------------
 | Prototype:
 |
-|	$autoload['language'] = array('lang1', 'lang2');
+|   $autoload['language'] = array('lang1', 'lang2');
 |
 | NOTE: Do not include the "_lang" part of your file.  For example
 | "codeigniter_lang.php" would be referenced as array('codeigniter');
@@ -152,11 +152,11 @@ $autoload['language'] = array('english');
 | -------------------------------------------------------------------
 | Prototype:
 |
-|	$autoload['model'] = array('first_model', 'second_model');
+|   $autoload['model'] = array('first_model', 'second_model');
 |
 | You can also supply an alternative model name to be assigned
 | in the controller:
 |
-|	$autoload['model'] = array('first_model' => 'first');
+|   $autoload['model'] = array('first_model' => 'first');
 */
-$autoload['model'] = array('misc_model','roles_model','clients_model','tasks_model');
+$autoload['model'] = array( 'misc_model' , 'roles_model' , 'clients_model' , 'tasks_model' );

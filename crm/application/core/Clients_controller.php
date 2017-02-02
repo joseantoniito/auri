@@ -14,7 +14,9 @@ class Clients_controller extends CRM_Controller
     function __construct()
     {
         parent::__construct();
+
         $language = load_client_language();
+
         $this->load->library('form_validation');
         $this->form_validation->set_message('required', _l('form_validation_required'));
         $this->form_validation->set_message('valid_email', _l('form_validation_valid_email'));
@@ -39,6 +41,7 @@ class Clients_controller extends CRM_Controller
             'ticket_statuses' => $this->tickets_model->get_ticket_status(),
             'currencies' => $this->currencies_model->get(),
             'locale'=>get_locale_key($language),
+            'language'=>$language,
             'total_undismissed_announcements'=>$this->announcements_model->get_total_undismissed_announcements(),
             );
 

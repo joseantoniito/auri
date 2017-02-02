@@ -52,7 +52,7 @@
               ?>
               <tr>
                 <td class="bold"><?php echo _l('project_status'); ?></td>
-                <td><?php echo _l('project_status_'.$project->status); ?></td>
+                <td><?php echo project_status_by_id($project->status); ?></td>
               </tr>
               <tr>
                 <td class="bold"><?php echo _l('project_datecreated'); ?></td>
@@ -62,10 +62,12 @@
                 <td class="bold"><?php echo _l('project_start_date'); ?></td>
                 <td><?php echo _d($project->start_date); ?></td>
               </tr>
+              <?php if($project->deadline){ ?>
               <tr>
                 <td class="bold"><?php echo _l('project_deadline'); ?></td>
                 <td><?php echo _d($project->deadline); ?></td>
               </tr>
+              <?php } ?>
               <?php if($project->billing_type == 1 && (has_permission('projects','','create'))){ ?>
               <tr>
                 <td class="bold"><?php echo _l('project_overview_total_logged_hours'); ?></td>
@@ -96,9 +98,11 @@
       <div class="clearfix"></div>
     </div>
   </div>
+
   <div class="col-md-6 project-overview-column">
     <?php $project_time_left_percent = round($project_time_left_percent,2); ?>
     <div class="row project-progress-bars">
+      <?php if($project->deadline){ ?>
       <div class="col-md-6">
         <div class="row">
           <div class="col-md-9">
@@ -119,7 +123,8 @@
       </div>
     </div>
   </div>
-  <div class="col-md-6">
+  <?php } ?>
+  <div class="col-md-<?php echo ($project->deadline ? 6 : 12); ?>">
     <?php $tasks_not_completed_progress = round($tasks_not_completed_progress,2); ?>
     <div class="row">
       <div class="col-md-9">

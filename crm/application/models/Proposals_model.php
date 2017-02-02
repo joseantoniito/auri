@@ -907,7 +907,6 @@ class Proposals_model extends CRM_Model
             $this->db->where('proposalid', $id);
             $this->db->delete('tblproposalcomments');
             // Get related tasks
-            $this->load->model('tasks_model');
             $this->db->where('rel_type', 'proposal');
             $this->db->where('rel_id', $id);
 

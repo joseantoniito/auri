@@ -26,12 +26,16 @@ foreach ($custom_fields as $field) {
 if (count($custom_fields) > 4) {
     @$this->_instance->db->query('SET SQL_BIG_SELECTS=1');
 }
-$result  = data_tables_init($aColumns, $sIndexColumn, $sTable, $join, array(), array(
+
+$where = do_action('staff_table_sql_where',array());
+
+$result  = data_tables_init($aColumns, $sIndexColumn, $sTable, $join, $where, array(
     'profile_image',
     'lastname',
     'staffid',
     'admin'
     ));
+
 $output  = $result['output'];
 $rResult = $result['rResult'];
 

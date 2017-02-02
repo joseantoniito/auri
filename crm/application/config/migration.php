@@ -68,7 +68,7 @@ $config['migration_auto_latest'] = FALSE;
 | be upgraded / downgraded to.
 |
 */
-$config['migration_version'] = 140; // 1.4.0
+$config['migration_version'] = 151; // 1.5.1
 
 /*
 |--------------------------------------------------------------------------

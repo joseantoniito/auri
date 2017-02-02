@@ -10,7 +10,7 @@
          </div>
          <div class="modal-body">
             <?php echo form_hidden('leadid',$lead->id); ?>
-            <?php if(strpos($lead->name,' ') !== false){
+            <?php if(mb_strpos($lead->name,' ') !== false){
                $_temp = explode(' ',$lead->name);
                $firstname = $_temp[0];
                if(isset($_temp[2])){
@@ -29,6 +29,7 @@
            <?php echo render_input('email','lead_convert_to_email',$lead->email); ?>
            <?php echo render_input('company','lead_company',$lead->company); ?>
            <?php echo render_input('phonenumber','lead_convert_to_client_phone',$lead->phonenumber); ?>
+           <?php echo render_input('website','client_website',$lead->website); ?>
            <?php echo render_input('address','client_address',$lead->address); ?>
            <?php echo render_input('city','client_city',$lead->city); ?>
            <?php echo render_input('state','client_state',$lead->state); ?>

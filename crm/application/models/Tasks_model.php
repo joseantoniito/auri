@@ -45,8 +45,11 @@ class Tasks_model extends CRM_Model
             $task->attachments     = $this->get_task_attachments($id);
             $task->timesheets      = $this->get_timesheeets($id);
             $task->checklist_items = $this->get_checklist_items($id);
+            if($task->rel_type == 'project'){
+                $task->project_data = $this->projects_model->get($task->rel_id);
+            }
         }
-        return $task;
+        return do_action('get_task', $task);
     }
     public function do_kanban_query($status, $search = '', $page = 1, $count = false, $where = array())
     {
@@ -102,13 +105,10 @@ class Tasks_model extends CRM_Model
 
     public function is_task_billed($id)
     {
-        $this->db->where('id', $id);
-        $this->db->where('billed', 1);
-        $row = $this->db->get('tblstafftasks')->row();
-        if ($row) {
-            return true;
-        }
-        return false;
+        return (total_rows('tblstafftasks', array(
+            'id' => $id,
+            'billed' => 1
+        )) > 0 ? TRUE : FALSE);
     }
 
 
@@ -173,7 +173,7 @@ class Tasks_model extends CRM_Model
                             $_at[0]['thumbnailLink'] = $at['thumbnail_link'];
                         }
                     }
-                    $this->add_attachment_to_database($insert_id, $_at, $external);
+                    $this->add_attachment_to_database($insert_id, $_at, $external, false);
                 }
             }
             $this->copy_task_custom_fields($data['copy_from'], $insert_id);
@@ -694,10 +694,12 @@ class Tasks_model extends CRM_Model
                 );
 
                 $this->db->select('name');
-                $this->db->where('id',$data['taskid']);
-                $task_name = $this->db->get('tblstafftasks')->row()->name;
-                $notification_data['additional_data'] = serialize(array($task_name));
-                if($integration){
+                $this->db->where('id', $data['taskid']);
+                $task_name                            = $this->db->get('tblstafftasks')->row()->name;
+                $notification_data['additional_data'] = serialize(array(
+                    $task_name
+                ));
+                if ($integration) {
                     $notification_data['fromcompany'] = 1;
                 }
                 add_notification($notification_data);
@@ -786,16 +788,18 @@ class Tasks_model extends CRM_Model
      * @param mixed $taskid     task id
      * @param array $attachment attachment data
      */
-    public function add_attachment_to_database($rel_id, $attachment, $external = false)
+    public function add_attachment_to_database($rel_id, $attachment, $external = false, $notification = true)
     {
         if ($this->misc_model->add_attachment_to_database($rel_id, 'task', $attachment, $external)) {
             $task = $this->get($rel_id);
             if ($task->rel_type == 'project') {
                 $this->projects_model->log_activity($task->rel_id, 'project_activity_new_task_attachment', $task->name, $task->visible_to_client);
             }
-            $description = 'not_task_new_attachment';
-            $this->_send_task_responsible_users_notification($description, $rel_id, false, 'task-added-attachment');
-            $this->_send_customer_contacts_notification($rel_id, 'task-added-attachment-to-contacts');
+            if ($notification == true) {
+                $description = 'not_task_new_attachment';
+                $this->_send_task_responsible_users_notification($description, $rel_id, false, 'task-added-attachment');
+                $this->_send_customer_contacts_notification($rel_id, 'task-added-attachment-to-contacts');
+            }
             return true;
         }
         return false;
@@ -833,13 +837,16 @@ class Tasks_model extends CRM_Model
      */
     public function get_task_comments($id)
     {
+        $task_comments_order = do_action('task_comments_order', 'ASC');
+
         $this->db->select('id,dateadded,content,tblstaff.firstname,tblstaff.lastname,tblstafftaskcomments.staffid,tblstafftaskcomments.contact_id as contact_id');
         $this->db->from('tblstafftaskcomments');
         $this->db->join('tblstaff', 'tblstaff.staffid = tblstafftaskcomments.staffid', 'left');
         $this->db->where('taskid', $id);
-        $this->db->order_by('dateadded', 'asc');
+        $this->db->order_by('dateadded', $task_comments_order);
         return $this->db->get()->result_array();
     }
+
     public function edit_comment($data)
     {
         // Check if user really creator
@@ -1033,7 +1040,7 @@ class Tasks_model extends CRM_Model
      * @param  mixed $id taskid
      * @return boolean
      */
-    public function delete_task($id,$log_activity = TRUE)
+    public function delete_task($id, $log_activity = TRUE)
     {
         $task = $this->get($id);
         $this->db->where('id', $id);

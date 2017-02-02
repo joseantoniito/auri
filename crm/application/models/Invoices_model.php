@@ -31,12 +31,12 @@ class Invoices_model extends CRM_Model
             $this->db->where('tblinvoices' . '.id', $id);
             $invoice = $this->db->get()->row();
             if ($invoice) {
-                $invoice->items                                 = $this->get_invoice_items($id);
-                $invoice->attachments                           = $this->get_attachments($id);
+                $invoice->items       = $this->get_invoice_items($id);
+                $invoice->attachments = $this->get_attachments($id);
 
-                if($invoice->project_id != 0){
-                   $this->load->model('projects_model');
-                   $invoice->project_data = $this->projects_model->get($invoice->project_id);
+                if ($invoice->project_id != 0) {
+                    $this->load->model('projects_model');
+                    $invoice->project_data = $this->projects_model->get($invoice->project_id);
                 }
 
                 $invoice->visible_attachments_to_customer_found = false;
@@ -154,7 +154,7 @@ class Invoices_model extends CRM_Model
         $result['paid']    = array();
         $result['overdue'] = array();
 
-        $has_permission_view = has_permission('invoices','','view');
+        $has_permission_view = has_permission('invoices', '', 'view');
 
         for ($i = 1; $i <= 3; $i++) {
             $this->db->select('id,total');
@@ -162,6 +162,8 @@ class Invoices_model extends CRM_Model
             $this->db->where('currency', $currencyid);
             // Exclude cancelled invoices
             $this->db->where('status !=', 5);
+            $this->db->where('status !=', 6);
+
             if (isset($data['project_id']) && $data['project_id'] != '') {
                 $this->db->where('project_id', $data['project_id']);
             } else if (isset($data['customer_id']) && $data['customer_id'] != '') {
@@ -184,8 +186,8 @@ class Invoices_model extends CRM_Model
                 }
             }
 
-            if(!$has_permission_view){
-                $this->db->where('addedfrom',get_staff_user_id());
+            if (!$has_permission_view) {
+                $this->db->where('addedfrom', get_staff_user_id());
             }
 
             $invoices = $this->db->get()->result_array();
@@ -226,9 +228,9 @@ class Invoices_model extends CRM_Model
      */
     public function add($data, $expense = false)
     {
-        $data['prefix'] = get_option('invoice_prefix');
+        $data['prefix']        = get_option('invoice_prefix');
         $data['number_format'] = get_option('invoice_number_format');
-        if(isset($data['save_as_draft'])){
+        if (isset($data['save_as_draft'])) {
             $data['status'] = 6;
             unset($data['save_as_draft']);
         }
@@ -256,9 +258,9 @@ class Invoices_model extends CRM_Model
             unset($data['cancel_merged_invoices']);
         }
 
-        if((isset($data['adjustment']) && !is_numeric($data['adjustment'])) || !isset($data['adjustment'])){
+        if ((isset($data['adjustment']) && !is_numeric($data['adjustment'])) || !isset($data['adjustment'])) {
             $data['adjustment'] = 0;
-        } else if(isset($data['adjustment']) && is_numeric($data['adjustment'])) {
+        } else if (isset($data['adjustment']) && is_numeric($data['adjustment'])) {
             $data['adjustment'] = number_format($data['adjustment'], 2, '.', '');
         }
 
@@ -278,18 +280,18 @@ class Invoices_model extends CRM_Model
             'expense_id',
             'repeat_every_custom',
             'repeat_type_custom',
-            'bill_expenses',
+            'bill_expenses'
         );
 
-        if(isset($data['recurring'])) {
-            if($data['recurring'] == 'custom'){
-                $data['recurring_type'] = $data['repeat_type_custom'];
+        if (isset($data['recurring'])) {
+            if ($data['recurring'] == 'custom') {
+                $data['recurring_type']   = $data['repeat_type_custom'];
                 $data['custom_recurring'] = 1;
-                $data['recurring'] = $data['repeat_every_custom'];
+                $data['recurring']        = $data['repeat_every_custom'];
             }
         } else {
             $data['custom_recurring'] = 0;
-            $data['recurring'] = 0;
+            $data['recurring']        = 0;
         }
 
         foreach ($unsetters as $unseter) {
@@ -324,7 +326,7 @@ class Invoices_model extends CRM_Model
             $data['sale_agent'] = 0;
         }
 
-        if(isset($data['cancel_overdue_reminders'])){
+        if (isset($data['cancel_overdue_reminders'])) {
             $data['cancel_overdue_reminders'] = 1;
         } else {
             $data['cancel_overdue_reminders'] = 0;
@@ -386,6 +388,12 @@ class Invoices_model extends CRM_Model
         $this->db->insert('tblinvoices', $data);
         $insert_id = $this->db->insert_id();
         if ($insert_id) {
+
+            // Update next invoice number in settings
+            $this->db->where('name', 'next_invoice_number');
+            $this->db->set('value', 'value+1', FALSE);
+            $this->db->update('tbloptions');
+
             if (isset($custom_fields)) {
                 handle_custom_fields_post($insert_id, $custom_fields);
             }
@@ -413,8 +421,8 @@ class Invoices_model extends CRM_Model
                                 'adminnote' => $admin_note
                             ));
                             // Delete the old items related from the merged invoice
-                            foreach($or_merge->items as $or_merge_item){
-                                $this->db->where('item_id',$or_merge_item['id']);
+                            foreach ($or_merge->items as $or_merge_item) {
+                                $this->db->where('item_id', $or_merge_item['id']);
                                 $this->db->delete('tblitemsrelated');
                             }
                         }
@@ -451,7 +459,6 @@ class Invoices_model extends CRM_Model
                 }
             }
             if (isset($billed_tasks)) {
-                $this->load->model('tasks_model');
                 foreach ($billed_tasks as $key => $tasks) {
                     foreach ($tasks as $t) {
                         $_task      = $this->tasks_model->get($t);
@@ -460,7 +467,7 @@ class Invoices_model extends CRM_Model
                             'invoice_id' => $insert_id
                         );
                         if ($_task->status != 5) {
-                            $_task_data['status']     = 5;
+                            $_task_data['status']       = 5;
                             $_task_data['datefinished'] = date('Y-m-d H:i:s');
                         }
                         $this->db->where('id', $t);
@@ -479,11 +486,9 @@ class Invoices_model extends CRM_Model
                     }
                 }
             }
-            // Update next invoice number in settings
-            $this->db->where('name', 'next_invoice_number');
-            $this->db->set('value', 'value+1', FALSE);
-            $this->db->update('tbloptions');
+
             update_invoice_status($insert_id);
+
             if (count($items) > 0) {
                 foreach ($items as $key => $item) {
                     $this->db->insert('tblitems_in', array(
@@ -492,7 +497,7 @@ class Invoices_model extends CRM_Model
                         'qty' => $item['qty'],
                         'rate' => number_format($item['rate'], 2, '.', ''),
                         'rel_id' => $insert_id,
-                        'rel_type'=>'invoice',
+                        'rel_type' => 'invoice',
                         'item_order' => $item['order'],
                         'unit' => $item['unit']
                     ));
@@ -517,22 +522,22 @@ class Invoices_model extends CRM_Model
                                 ));
                             }
                         }
-                        if(isset($item['taxname']) && is_array($item['taxname'])){
-                        foreach ($item['taxname'] as $taxname) {
-                            if ($taxname != '') {
-                                $_temp    = explode('|', $taxname);
-                                $tax_name = $_temp[0];
-                                $tax_rate = $_temp[1];
-                                $this->db->insert('tblitemstax', array(
-                                    'itemid' => $itemid,
-                                    'taxrate' => $tax_rate,
-                                    'taxname' => $tax_name,
-                                    'rel_id' => $insert_id,
-                                    'rel_type' => 'invoice'
-                                ));
+                        if (isset($item['taxname']) && is_array($item['taxname'])) {
+                            foreach ($item['taxname'] as $taxname) {
+                                if ($taxname != '') {
+                                    $_temp    = explode('|', $taxname);
+                                    $tax_name = $_temp[0];
+                                    $tax_rate = $_temp[1];
+                                    $this->db->insert('tblitemstax', array(
+                                        'itemid' => $itemid,
+                                        'taxrate' => $tax_rate,
+                                        'taxname' => $tax_name,
+                                        'rel_id' => $insert_id,
+                                        'rel_type' => 'invoice'
+                                    ));
+                                }
                             }
                         }
-                    }
                     }
                 }
             }
@@ -596,13 +601,14 @@ class Invoices_model extends CRM_Model
             'total_tax' => $total_tax
         ));
     }
-    public function get_expenses_to_bill($clientid){
+    public function get_expenses_to_bill($clientid)
+    {
         $this->load->model('expenses_model');
-        $where = 'billable=1 AND clientid='.$clientid.' AND invoiceid IS NULL';
-        if(!has_permission('expenses','','view')){
-            $where .=' AND addedfrom='.get_staff_user_id();
+        $where = 'billable=1 AND clientid=' . $clientid . ' AND invoiceid IS NULL';
+        if (!has_permission('expenses', '', 'view')) {
+            $where .= ' AND addedfrom=' . get_staff_user_id();
         }
-        return $this->expenses_model->get('',$where);
+        return $this->expenses_model->get('', $where);
     }
     public function check_for_merge_invoice($client_id, $current_invoice)
     {
@@ -619,15 +625,15 @@ class Invoices_model extends CRM_Model
         $statuses = array(
             1,
             4,
-            6,
+            6
         );
 
-        $has_permission_view = has_permission('invoices','','view');
+        $has_permission_view = has_permission('invoices', '', 'view');
         $this->db->select('id');
         $this->db->where('clientid', $client_id);
         $this->db->where('STATUS IN (' . implode(', ', $statuses) . ')');
-        if(!$has_permission_view){
-            $this->db->where('addedfrom',get_staff_user_id());
+        if (!$has_permission_view) {
+            $this->db->where('addedfrom', get_staff_user_id());
         }
         if ($current_invoice != 'undefined') {
             $this->db->where('id !=', $current_invoice);
@@ -658,8 +664,8 @@ class Invoices_model extends CRM_Model
                 $new_invoice_data['duedate'] = _d(date('Y-m-d', strtotime('+' . get_option('invoice_due_after') . ' DAY', strtotime(date('Y-m-d')))));
             }
         }
-        $new_invoice_data['save_as_draft']  = true;
-        $new_invoice_data['recurring_type']  = $_invoice->recurring_type;
+        $new_invoice_data['save_as_draft']     = true;
+        $new_invoice_data['recurring_type']    = $_invoice->recurring_type;
         $new_invoice_data['custom_recurring']  = $_invoice->custom_recurring;
         $new_invoice_data['show_quantity_as']  = $_invoice->show_quantity_as;
         $new_invoice_data['currency']          = $_invoice->currency;
@@ -701,7 +707,7 @@ class Invoices_model extends CRM_Model
             $new_invoice_data['newitems'][$key]['description']      = $item['description'];
             $new_invoice_data['newitems'][$key]['long_description'] = clear_textarea_breaks($item['long_description']);
             $new_invoice_data['newitems'][$key]['qty']              = $item['qty'];
-            $new_invoice_data['newitems'][$key]['unit']              = $item['unit'];
+            $new_invoice_data['newitems'][$key]['unit']             = $item['unit'];
             $new_invoice_data['newitems'][$key]['taxname']          = array();
             $taxes                                                  = get_invoice_item_taxes($item['id']);
             foreach ($taxes as $tax) {
@@ -714,8 +720,10 @@ class Invoices_model extends CRM_Model
         }
         $id = $this->invoices_model->add($new_invoice_data);
         if ($id) {
-            $this->db->where('id',$id);
-            $this->db->update('tblinvoices',array('cancel_overdue_reminders'=>$_invoice->cancel_overdue_reminders));
+            $this->db->where('id', $id);
+            $this->db->update('tblinvoices', array(
+                'cancel_overdue_reminders' => $_invoice->cancel_overdue_reminders
+            ));
 
             $custom_fields = get_custom_fields('invoice');
             foreach ($custom_fields as $field) {
@@ -746,7 +754,7 @@ class Invoices_model extends CRM_Model
         $original_invoice = $this->get($id);
 
         // From the top checkboxes bill expenses to merge in invoice, no need for this in the update function
-        if(isset($data['bill_expenses'])){
+        if (isset($data['bill_expenses'])) {
             unset($data['bill_expenses']);
         }
 
@@ -762,7 +770,7 @@ class Invoices_model extends CRM_Model
             $data['project_id'] = 0;
         }
 
-        if ($data['recurring_ends_on'] == '' || $data['recurring'] == 0) {
+        if ($data['recurring_ends_on'] == '') {
             $data['recurring_ends_on'] = NULL;
         } else {
             $data['recurring_ends_on'] = to_sql_date($data['recurring_ends_on']);
@@ -783,25 +791,25 @@ class Invoices_model extends CRM_Model
             unset($data['billed_expenses']);
         }
 
-        if(isset($data['cancel_overdue_reminders'])){
+        if (isset($data['cancel_overdue_reminders'])) {
             $data['cancel_overdue_reminders'] = 1;
         } else {
             $data['cancel_overdue_reminders'] = 0;
         }
 
-        if(isset($data['recurring'])) {
-            if($data['recurring'] == 'custom'){
-                $data['recurring_type'] = $data['repeat_type_custom'];
+        if (isset($data['recurring'])) {
+            if ($data['recurring'] == 'custom') {
+                $data['recurring_type']   = $data['repeat_type_custom'];
                 $data['custom_recurring'] = 1;
-                $data['recurring'] = $data['repeat_every_custom'];
+                $data['recurring']        = $data['repeat_every_custom'];
             } else {
-                $data['recurring_type'] = NULL;
+                $data['recurring_type']   = NULL;
                 $data['custom_recurring'] = 0;
             }
         } else {
             $data['custom_recurring'] = 0;
-            $data['recurring'] = 0;
-            $data['recurring_type'] = NULL;
+            $data['recurring']        = 0;
+            $data['recurring_type']   = NULL;
         }
 
         unset($data['currency_symbol']);
@@ -834,9 +842,9 @@ class Invoices_model extends CRM_Model
             unset($data['newitems']);
         }
 
-        if((isset($data['adjustment']) && !is_numeric($data['adjustment'])) || !isset($data['adjustment'])){
+        if ((isset($data['adjustment']) && !is_numeric($data['adjustment'])) || !isset($data['adjustment'])) {
             $data['adjustment'] = 0;
-        } else if(isset($data['adjustment']) && is_numeric($data['adjustment'])) {
+        } else if (isset($data['adjustment']) && is_numeric($data['adjustment'])) {
             $data['adjustment'] = number_format($data['adjustment'], 2, '.', '');
         }
 
@@ -899,7 +907,6 @@ class Invoices_model extends CRM_Model
         $items                 = $_data['items'];
         $data                  = $_data['data'];
         if (isset($billed_tasks)) {
-            $this->load->model('tasks_model');
             foreach ($billed_tasks as $key => $tasks) {
                 foreach ($tasks as $t) {
                     $_task      = $this->tasks_model->get($t);
@@ -908,7 +915,7 @@ class Invoices_model extends CRM_Model
                         'invoice_id' => $id
                     );
                     if ($_task->status != 5) {
-                        $_task_data['status']     = 5;
+                        $_task_data['status']       = 5;
                         $_task_data['datefinished'] = date('Y-m-d H:i:s');
                     }
                     $this->db->where('id', $t);
@@ -989,7 +996,7 @@ class Invoices_model extends CRM_Model
                 $this->db->where('id', $invoice_item_id);
                 $this->db->update('tblitems_in', array(
                     'item_order' => $item['order'],
-                     'unit' => $item['unit']
+                    'unit' => $item['unit']
                 ));
                 if ($this->db->affected_rows() > 0) {
                     $affectedRows++;
@@ -1049,14 +1056,14 @@ class Invoices_model extends CRM_Model
                                 'taxname' => $tax_name,
                                 'itemid' => $invoice_item_id,
                                 'taxrate' => $tax_rate,
-                                'rel_type'=>'invoice'
+                                'rel_type' => 'invoice'
                             )) == 0) {
                                 $this->db->insert('tblitemstax', array(
                                     'taxrate' => $tax_rate,
                                     'taxname' => $tax_name,
                                     'itemid' => $invoice_item_id,
                                     'rel_id' => $id,
-                                    'rel_type'=>'invoice'
+                                    'rel_type' => 'invoice'
                                 ));
                                 if ($this->db->affected_rows() > 0) {
                                     $affectedRows++;
@@ -1068,7 +1075,7 @@ class Invoices_model extends CRM_Model
                 // Check for item rate change
                 $this->db->where('id', $invoice_item_id);
                 $this->db->update('tblitems_in', array(
-                    'rate' => number_format($item['rate'], 2, '.', ''),
+                    'rate' => number_format($item['rate'], 2, '.', '')
                 ));
                 if ($this->db->affected_rows() > 0) {
                     $this->log_invoice_activity($id, 'invoice_estimate_activity_updated_item_rate', false, serialize(array(
@@ -1100,9 +1107,9 @@ class Invoices_model extends CRM_Model
                     'qty' => $item['qty'],
                     'rate' => number_format($item['rate'], 2, '.', ''),
                     'rel_id' => $id,
-                    'rel_type'=>'invoice',
+                    'rel_type' => 'invoice',
                     'item_order' => $item['order'],
-                    'unit'=>$item['unit']
+                    'unit' => $item['unit']
                 ));
                 $new_item_added = $this->db->insert_id();
                 if ($new_item_added) {
@@ -1133,7 +1140,7 @@ class Invoices_model extends CRM_Model
                                 'taxname' => $tax_name,
                                 'itemid' => $new_item_added,
                                 'rel_id' => $id,
-                                'rel_type'=>'invoice'
+                                'rel_type' => 'invoice'
                             ));
                         }
                     }
@@ -1234,23 +1241,23 @@ class Invoices_model extends CRM_Model
     public function delete_attachment($id)
     {
         $attachment = $this->get_attachments('', $id);
-        $deleted = false;
-        if($attachment){
-            if(empty($attachment->external)){
+        $deleted    = false;
+        if ($attachment) {
+            if (empty($attachment->external)) {
                 unlink(get_upload_path_by_type('invoice') . $attachment->rel_id . '/' . $attachment->file_name);
             }
             $this->db->where('id', $attachment->id);
             $this->db->delete('tblfiles');
-            if($this->db->affected_rows() > 0){
-                $deleted    = true;
+            if ($this->db->affected_rows() > 0) {
+                $deleted = true;
                 logActivity('Invoice Attachment Deleted [InvoiceID: ' . $attachment->rel_id . ']');
             }
 
-            if(is_dir(get_upload_path_by_type('invoice') . $attachment->rel_id)){
+            if (is_dir(get_upload_path_by_type('invoice') . $attachment->rel_id)) {
                 // Check if no attachments left, so we can delete the folder also
                 $other_attachments = list_files(get_upload_path_by_type('invoice') . $attachment->rel_id);
                 if (count($other_attachments) == 0) {
-                // okey only index.html so we can delete the folder also
+                    // okey only index.html so we can delete the folder also
                     delete_dir(get_upload_path_by_type('invoice') . $attachment->rel_id);
                 }
             }
@@ -1326,7 +1333,7 @@ class Invoices_model extends CRM_Model
 
             $items = $this->get_invoice_items($id);
             $this->db->where('rel_id', $id);
-            $this->db->where('rel_type','invoice');
+            $this->db->where('rel_type', 'invoice');
             $this->db->delete('tblitems_in');
 
             foreach ($items as $item) {
@@ -1340,8 +1347,10 @@ class Invoices_model extends CRM_Model
             $this->db->where('rel_type', 'invoice');
             $this->db->delete('tblsalesactivity');
 
-            $this->db->where('is_recurring_from',$id);
-            $this->db->update('tblinvoices',array('is_recurring_from'=>NULL));
+            $this->db->where('is_recurring_from', $id);
+            $this->db->update('tblinvoices', array(
+                'is_recurring_from' => NULL
+            ));
 
             // Delete the custom field values
             $this->db->where('relid', $id);
@@ -1368,7 +1377,6 @@ class Invoices_model extends CRM_Model
                 $this->delete_attachment($attachment['id']);
             }
             // Get related tasks
-            $this->load->model('tasks_model');
             $this->db->where('rel_type', 'invoice');
             $this->db->where('rel_id', $id);
             $tasks = $this->db->get('tblstafftasks')->result_array();
@@ -1385,7 +1393,7 @@ class Invoices_model extends CRM_Model
      * @param  mixed $manually is staff manualy marking this invoice as sent
      * @return  boolean
      */
-    public function set_invoice_sent($id, $manually = false, $emails_sent = array(),$is_status_updated = false)
+    public function set_invoice_sent($id, $manually = false, $emails_sent = array(), $is_status_updated = false)
     {
         $this->db->where('id', $id);
         $this->db->update('tblinvoices', array(
@@ -1409,12 +1417,12 @@ class Invoices_model extends CRM_Model
                 $description              = 'invoice_activity_sent_to_client';
             } else {
                 $additional_activity_data = serialize(array());
-                $description = 'invoice_activity_marked_as_sent';
+                $description              = 'invoice_activity_marked_as_sent';
             }
         }
 
-        if($is_status_updated == false){
-            update_invoice_status($id,true);
+        if ($is_status_updated == false) {
+            update_invoice_status($id, true);
         }
 
         $this->log_invoice_activity($id, $description, false, $additional_activity_data);
@@ -1510,8 +1518,8 @@ class Invoices_model extends CRM_Model
         }
 
         if (is_array($sent_to) && count($sent_to) > 0) {
-            $status_updated = update_invoice_status($invoice->id,true,true);
-            $i = 0;
+            $status_updated = update_invoice_status($invoice->id, true, true);
+            $i              = 0;
             foreach ($sent_to as $contact_id) {
                 if ($contact_id != '') {
                     if ($attachpdf) {
@@ -1539,10 +1547,10 @@ class Invoices_model extends CRM_Model
 
                     $merge_fields = array_merge($merge_fields, get_invoice_merge_fields($invoice->id));
                     // Send cc only for the first contact
-                    if(!empty($cc) && $i > 0){
+                    if (!empty($cc) && $i > 0) {
                         $cc = '';
                     }
-                    if ($this->emails_model->send_email_template($template, $contact->email, $merge_fields,'',$cc)) {
+                    if ($this->emails_model->send_email_template($template, $contact->email, $merge_fields, '', $cc)) {
                         $send = true;
                         array_push($emails_sent, $contact->email);
                     }
@@ -1553,13 +1561,15 @@ class Invoices_model extends CRM_Model
             return false;
         }
         if ($send) {
-            $this->set_invoice_sent($id, false, $emails_sent,true);
+            $this->set_invoice_sent($id, false, $emails_sent, true);
             return true;
         } else {
             // In case the invoice not sended and the status was draft and the invoiec status is updated before send return back to draft status
-            if($invoice->status == 6 && $status_updated !== false){
-                $this->db->where('id',$invoice->id);
-                $this->db->update('tblinvoices',array('status'=>6));
+            if ($invoice->status == 6 && $status_updated !== false) {
+                $this->db->where('id', $invoice->id);
+                $this->db->update('tblinvoices', array(
+                    'status' => 6
+                ));
             }
         }
         return false;
@@ -1583,22 +1593,22 @@ class Invoices_model extends CRM_Model
      */
     public function log_invoice_activity($id, $description = '', $client = false, $additional_data = '')
     {
-        $staffid = get_staff_user_id();
+        $staffid   = get_staff_user_id();
         $full_name = get_staff_full_name(get_staff_user_id());
         if (DEFINED('CRON')) {
-            $staffid = '[CRON]';
+            $staffid   = '[CRON]';
             $full_name = '[CRON]';
         } else if ($client == true) {
-            $staffid = NULL;
+            $staffid   = NULL;
             $full_name = '';
         }
         $this->db->insert('tblsalesactivity', array(
             'description' => $description,
             'date' => date('Y-m-d H:i:s'),
             'rel_id' => $id,
-            'rel_type'=>'invoice',
+            'rel_type' => 'invoice',
             'staffid' => $staffid,
-            'full_name'=>$full_name,
+            'full_name' => $full_name,
             'additional_data' => $additional_data
         ));
     }

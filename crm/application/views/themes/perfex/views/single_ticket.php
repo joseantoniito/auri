@@ -196,3 +196,7 @@
     </div>
 
 </div>
+<?php if(count($ticket_replies) > 1){ ?>
+<a href="#top" id="toplink">↑</a>
+<a href="#bot" id="botlink">↓</a>
+<?php } ?>

@@ -17,6 +17,7 @@
                             _l('custom_field_dt_field_name'),
                             _l('custom_field_dt_field_to'),
                             _l('custom_field_dt_field_type'),
+                            _l('kb_article_slug'),
                             _l('custom_field_add_edit_active'),
                             _l('options')
                             ),'custom-fields'); ?>

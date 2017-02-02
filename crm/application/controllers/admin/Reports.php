@@ -20,9 +20,6 @@ class Reports extends Admin_controller
     /* See knowledge base article reports*/
     public function knowledge_base_articles()
     {
-        if (get_option('use_knowledge_base') == 0) {
-            redirect(site_url('admin'));
-        }
         $this->load->model('knowledge_base_model');
         $data['groups'] = $this->knowledge_base_model->get_kbg();
         $data['title']  = _l('kb_reports');

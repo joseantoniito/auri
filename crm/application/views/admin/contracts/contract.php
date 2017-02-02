@@ -88,7 +88,7 @@
                   <?php echo _l('tasks'); ?>
                 </a>
               </li>
-              <li class="pull-right" role="presentation">
+              <li role="presentation">
                 <a href="#" onclick="contract_full_view(); return false;" data-toggle="tooltip" data-title="<?php echo _l('toggle_full_view'); ?>" class="toggle_view">
                   <i class="fa fa-expand"></i></a>
                 </li>
@@ -249,7 +249,9 @@
      dictDefaultMessage:drop_files_here_to_upload,
      dictFallbackMessage:browser_not_support_drag_and_drop,
      dictRemoveFile:remove_file,
+     dictFileTooBig: file_exceds_maxfile_size_in_form,
      dictMaxFilesExceeded:you_can_not_upload_any_more_files,
+     maxFilesize: max_php_ini_upload_size.replace(/\D/g, ''),
      success:function(file){
       if (this.getUploadingFiles().length === 0 && this.getQueuedFiles().length === 0) {
        var location = window.location.href;
@@ -287,6 +289,12 @@
     skin: 'perfex',
     relative_urls: false,
     remove_script_host: false,
+    inline_styles : true,
+    verify_html : false,
+    cleanup : false,
+    valid_elements : '+*[*]',
+    valid_children : "+body[style], +style[type]",
+    apply_source_formatting : false,
     file_browser_callback: elFinderBrowser,
     table_class_list: [{
      title: 'Flat',
@@ -306,12 +314,13 @@
    removed_menuitems: 'newdocument',
    fontsize_formats: '8pt 10pt 12pt 14pt 18pt 24pt 36pt',
    plugins: [
-   'advlist autolink autoresize lists link image charmap hr anchor',
+   'advlist pagebreak autolink autoresize lists link image charmap hr anchor',
    'searchreplace wordcount visualblocks visualchars code fullscreen',
    'media nonbreaking save table contextmenu directionality',
    'paste textcolor colorpicker textpattern'
    ],
    autoresize_bottom_margin: 50,
+   pagebreak_separator: '<p pagebreak="true"></p>',
    toolbar1: 'save_button fontselect fontsizeselect insertfile | styleselect',
    toolbar2:'bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent',
    toolbar3: 'media image | forecolor backcolor link ',

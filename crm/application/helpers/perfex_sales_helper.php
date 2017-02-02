@@ -11,14 +11,14 @@ function is_using_multiple_currencies($table = 'tblinvoices')
     $CI->load->model('currencies_model');
     $currencies            = $CI->currencies_model->get();
     $total_currencies_used = 0;
-    $other_then_base = false;
-    $base_found = false;
+    $other_then_base       = false;
+    $base_found            = false;
     foreach ($currencies as $currency) {
         $CI->db->where('currency', $currency['id']);
         $total = $CI->db->count_all_results($table);
         if ($total > 0) {
             $total_currencies_used++;
-            if($currency['isdefault'] == 0){
+            if ($currency['isdefault'] == 0) {
                 $other_then_base = true;
             } else {
                 $base_found = true;
@@ -28,7 +28,7 @@ function is_using_multiple_currencies($table = 'tblinvoices')
 
     if ($total_currencies_used > 1 && $base_found == true && $other_then_base == true) {
         return true;
-    } else if($total_currencies_used == 1 && $base_found == false && $other_then_base == true){
+    } else if ($total_currencies_used == 1 && $base_found == false && $other_then_base == true) {
         return true;
     } else if ($total_currencies_used == 0 || $total_currencies_used == 1) {
         return false;
@@ -138,7 +138,7 @@ function check_estimate_restrictions($id, $hash)
     if (!is_staff_logged_in()) {
         if (get_option('view_estimate_only_logged_in') == 1) {
             if ($estimate->clientid != get_client_user_id()) {
-               show_404();
+                show_404();
             }
         }
     }
@@ -160,7 +160,7 @@ function check_proposal_restrictions($id, $hash)
  * @param  mixed $total
  * @return string
  */
-function _format_number($total,$force_checking_zero_decimals = false)
+function _format_number($total, $force_checking_zero_decimals = false)
 {
     if (!is_numeric($total)) {
         return false;
@@ -169,9 +169,9 @@ function _format_number($total,$force_checking_zero_decimals = false)
     $thousand_separator = get_option('thousand_separator');
 
     $d = 2;
-    $d = do_action('number_decimals',$d);
-    if(get_option('remove_decimals_on_zero') == 1 || $force_checking_zero_decimals == true){
-        if(!is_decimal($total)){
+    $d = do_action('number_decimals', $d);
+    if (get_option('remove_decimals_on_zero') == 1 || $force_checking_zero_decimals == true) {
+        if (!is_decimal($total)) {
             $d = 0;
         }
     }
@@ -212,10 +212,10 @@ function format_money($total, $symbol = '')
     $decimal_separator  = get_option('decimal_separator');
     $thousand_separator = get_option('thousand_separator');
     $currency_placement = get_option('currency_placement');
-    $d = 2;
-    $d = do_action('money_decimals',$d);
-    if(get_option('remove_decimals_on_zero') == 1){
-        if(!is_decimal($total)){
+    $d                  = 2;
+    $d                  = do_action('money_decimals', $d);
+    if (get_option('remove_decimals_on_zero') == 1) {
+        if (!is_decimal($total)) {
             $d = 0;
         }
     }
@@ -225,18 +225,21 @@ function format_money($total, $symbol = '')
     } else {
         $_formated = $symbol . '' . $total;
     }
+
     return $_formated;
 }
-function is_decimal($val){
-    return is_numeric( $val ) && floor( $val ) != $val;
+function is_decimal($val)
+{
+    return is_numeric($val) && floor($val) != $val;
 }
-function mutiple_taxes_found_for_item($taxes){
+function mutiple_taxes_found_for_item($taxes)
+{
     $names = array();
-    foreach($taxes as $t){
-        array_push($names,$t['taxname']);
+    foreach ($taxes as $t) {
+        array_push($names, $t['taxname']);
     }
-    $names            = array_map("unserialize", array_unique(array_map("serialize", $names)));
-    if(count($names) == 1){
+    $names = array_map("unserialize", array_unique(array_map("serialize", $names)));
+    if (count($names) == 1) {
         return false;
     }
     return true;
@@ -250,43 +253,44 @@ function mutiple_taxes_found_for_item($taxes){
  */
 function format_invoice_status($status, $classes = '', $label = true)
 {
-    $id = $status;
+    $id          = $status;
     $label_class = get_invoice_status_label($status);
     if ($status == 1) {
-        $status      = _l('invoice_status_unpaid');
+        $status = _l('invoice_status_unpaid');
     } else if ($status == 2) {
-        $status      = _l('invoice_status_paid');
+        $status = _l('invoice_status_paid');
     } else if ($status == 3) {
-        $status      = _l('invoice_status_not_paid_completely');
-    } else if($status == 4){
-        $status      = _l('invoice_status_overdue');
-    } else if($status == 5) {
-        $status      = _l('invoice_status_cancelled');
+        $status = _l('invoice_status_not_paid_completely');
+    } else if ($status == 4) {
+        $status = _l('invoice_status_overdue');
+    } else if ($status == 5) {
+        $status = _l('invoice_status_cancelled');
     } else {
         // status 6
         $status = _l('invoice_status_draft');
     }
     if ($label == true) {
-        return '<span class="label label-' . $label_class . ' ' . $classes . ' s-status invoice-status-'.$id.'">' . $status . '</span>';
+        return '<span class="label label-' . $label_class . ' ' . $classes . ' s-status invoice-status-' . $id . '">' . $status . '</span>';
     } else {
         return $status;
     }
 }
-function get_invoice_status_label($status){
-    $label_class =  '';
+function get_invoice_status_label($status)
+{
+    $label_class = '';
     if ($status == 1) {
         $label_class = 'danger';
     } else if ($status == 2) {
         $label_class = 'success';
     } else if ($status == 3) {
         $label_class = 'warning';
-    } else if($status == 4){
+    } else if ($status == 4) {
         $label_class = 'warning';
-    } else if($status == 5 || $status == 6) {
+    } else if ($status == 5 || $status == 6) {
         $label_class = 'default';
     } else {
-        if(!is_numeric($status)){
-            if($status == 'not_sent'){
+        if (!is_numeric($status)) {
+            if ($status == 'not_sent') {
                 $label_class = 'default';
             }
         }
@@ -301,42 +305,50 @@ function get_invoice_status_label($status){
  * @return mixed
  */
 function format_estimate_status($status, $classes = '', $label = true)
-{   $id = $status;
+{
+    $id          = $status;
     $label_class = estimate_status_color_class($status);
-    $status = estimate_status_by_id($status);
+    $status      = estimate_status_by_id($status);
     if ($label == true) {
-        return '<span class="label label-' . $label_class . ' ' . $classes . ' s-status estimate-status-'.$id.'">' . $status . '</span>';
+        return '<span class="label label-' . $label_class . ' ' . $classes . ' s-status estimate-status-' . $id . ' estimate-status-'.$label_class.'">' . $status . '</span>';
     } else {
         return $status;
     }
 }
-function estimate_status_by_id($id){
+
+function estimate_status_by_id($id)
+{
     $status = '';
     if ($id == 1) {
-        $status      = _l('estimate_status_draft');
+        $status = _l('estimate_status_draft');
     } else if ($id == 2) {
-        $status      = _l('estimate_status_sent');
+        $status = _l('estimate_status_sent');
     } else if ($id == 3) {
-        $status      = _l('estimate_status_declined');
+        $status = _l('estimate_status_declined');
     } else if ($id == 4) {
-        $status      = _l('estimate_status_accepted');
-    } else if($id==5) {
+        $status = _l('estimate_status_accepted');
+    } else if ($id == 5) {
         // status 5
-        $status      = _l('estimate_status_expired');
+        $status = _l('estimate_status_expired');
     } else {
-        if(!is_numeric($id)){
-            if($id == 'not_sent'){
+        if (!is_numeric($id)) {
+            if ($id == 'not_sent') {
                 $status = _l('not_sent_indicator');
             }
         }
     }
+
+    $hook_data = do_action('estimate_status_label',array('id'=>$id,'label'=>$status));
+    $status = $hook_data['label'];
+
     return $status;
 }
-function estimate_status_color_class($id,$replace_default_by_muted = false){
+function estimate_status_color_class($id, $replace_default_by_muted = false)
+{
     $class = '';
     if ($id == 1) {
         $class = 'default';
-        if($replace_default_by_muted == true){
+        if ($replace_default_by_muted == true) {
             $class = 'muted';
         }
     } else if ($id == 2) {
@@ -345,65 +357,71 @@ function estimate_status_color_class($id,$replace_default_by_muted = false){
         $class = 'danger';
     } else if ($id == 4) {
         $class = 'success';
-    } else if($id ==5) {
+    } else if ($id == 5) {
         // status 5
         $class = 'warning';
     } else {
-        if(!is_numeric($id)){
-            if($id == 'not_sent'){
+        if (!is_numeric($id)) {
+            if ($id == 'not_sent') {
                 $class = 'default';
-                if($replace_default_by_muted == true){
+                if ($replace_default_by_muted == true) {
                     $class = 'muted';
                 }
             }
         }
     }
+
+    $hook_data = do_action('estimate_status_color_class',array('id'=>$id,'class'=>$class));
+    $class = $hook_data['class'];
+
     return $class;
 }
-function proposal_status_color_class($id,$replace_default_by_muted = false){
+function proposal_status_color_class($id, $replace_default_by_muted = false)
+{
     if ($id == 1) {
         $class = 'default';
     } else if ($id == 2) {
         $class = 'danger';
     } else if ($id == 3) {
         $class = 'success';
-    } else if($id == 4 || $id == 5) {
+    } else if ($id == 4 || $id == 5) {
         // status sent and revised
         $class = 'info';
-    } else if($id == 6){
+    } else if ($id == 6) {
         $class = 'default';
     }
-    if($class == 'default'){
-        if($replace_default_by_muted == true){
-            $class ='muted';
+    if ($class == 'default') {
+        if ($replace_default_by_muted == true) {
+            $class = 'muted';
         }
     }
     return $class;
 }
 function format_proposal_status($status, $classes = '', $label = true)
-{   $id = $status;
-        if ($status == 1) {
-            $status      = _l('proposal_status_open');
-            $label_class = 'default';
-        } else if ($status == 2) {
-            $status      = _l('proposal_status_declined');
-            $label_class = 'danger';
-        } else if ($status == 3) {
-            $status      = _l('proposal_status_accepted');
-            $label_class = 'success';
-        } else if ($status == 4) {
-            $status      = _l('proposal_status_sent');
-            $label_class = 'info';
-        } else if($status == 5){
-            $status      = _l('proposal_status_revised');
-            $label_class = 'info';
-        } else if($status == 6){
-            $status      = _l('proposal_status_draft');
-            $label_class = 'default';
-        }
+{
+    $id = $status;
+    if ($status == 1) {
+        $status      = _l('proposal_status_open');
+        $label_class = 'default';
+    } else if ($status == 2) {
+        $status      = _l('proposal_status_declined');
+        $label_class = 'danger';
+    } else if ($status == 3) {
+        $status      = _l('proposal_status_accepted');
+        $label_class = 'success';
+    } else if ($status == 4) {
+        $status      = _l('proposal_status_sent');
+        $label_class = 'info';
+    } else if ($status == 5) {
+        $status      = _l('proposal_status_revised');
+        $label_class = 'info';
+    } else if ($status == 6) {
+        $status      = _l('proposal_status_draft');
+        $label_class = 'default';
+    }
 
     if ($label == true) {
-        return '<span class="label label-' . $label_class . ' ' . $classes . ' s-status proposal-status-'.$id.'">' . $status . '</span>';
+        return '<span class="label label-' . $label_class . ' ' . $classes . ' s-status proposal-status-' . $id . '">' . $status . '</span>';
     } else {
         return $status;
     }
@@ -413,23 +431,23 @@ function format_proposal_status($status, $classes = '', $label = true)
  * @param  mixed $id invoice id
  * @return mixed invoice updates status / if no update return false
  */
-function update_invoice_status( $id, $force_update = false, $prevent_logging = false )
+function update_invoice_status($id, $force_update = false, $prevent_logging = false)
 {
     $CI =& get_instance();
 
     $CI->load->model('invoices_model');
-    $invoice         = $CI->invoices_model->get($id);
+    $invoice = $CI->invoices_model->get($id);
 
     $CI->load->model('payments_model');
-    $payments        = $CI->payments_model->get_invoice_payments($id);
+    $payments = $CI->payments_model->get_invoice_payments($id);
 
     $original_status = $invoice->status;
 
-    if($original_status == 6 && $force_update == false){
+    if ($original_status == 6 && $force_update == false) {
         return false;
     }
-    $total_payments  = array();
-    $status          = 1;
+    $total_payments = array();
+    $status         = 1;
 
     // Check if the first payments is equal to invoice total
     if (isset($payments[0])) {
@@ -463,7 +481,7 @@ function update_invoice_status( $id, $force_update = false, $prevent_logging = f
             }
         }
     } else {
-        if($invoice->total == 0){
+        if ($invoice->total == 0) {
             $status = 2;
         } else {
             if ($invoice->duedate != null) {
@@ -481,17 +499,17 @@ function update_invoice_status( $id, $force_update = false, $prevent_logging = f
     ));
 
     if ($CI->db->affected_rows() > 0) {
-        if($prevent_logging == true){
+        if ($prevent_logging == true) {
             return $status;
         }
         logActivity('Invoice Status Updated [Invoice Number: ' . format_invoice_number($invoice->id) . ', From: ' . format_invoice_status($original_status, '', false) . ' To: ' . format_invoice_status($status, '', false) . ']', NULL);
 
         $additional_activity = serialize(array(
-            '<original_status>'.$original_status.'</original_status>',
-            '<new_status>'.$status.'</new_status>'
+            '<original_status>' . $original_status . '</original_status>',
+            '<new_status>' . $status . '</new_status>'
         ));
 
-        $CI->invoices_model->log_invoice_activity($invoice->id, 'invoice_activity_status_updated',false,$additional_activity);
+        $CI->invoices_model->log_invoice_activity($invoice->id, 'invoice_activity_status_updated', false, $additional_activity);
         return $status;
     }
     return false;
@@ -539,16 +557,16 @@ function format_invoice_number($id)
     $CI =& get_instance();
     $CI->db->select('date,number,prefix,number_format')->from('tblinvoices')->where('id', $id);
     $invoice = $CI->db->get()->row();
-    if(!$invoice){
+    if (!$invoice) {
         return '';
     }
-    $format  = $invoice->number_format;
+    $format = $invoice->number_format;
     $prefix = $invoice->prefix;
     if ($format == 1) {
         // Number based
         return $prefix . str_pad($invoice->number, get_option('number_padding_prefixes'), '0', STR_PAD_LEFT);
     } else if ($format == 2) {
-        return $prefix . date('Y',strtotime($invoice->date)) . '/' . str_pad($invoice->number, get_option('number_padding_prefixes'), '0', STR_PAD_LEFT);
+        return $prefix . date('Y', strtotime($invoice->date)) . '/' . str_pad($invoice->number, get_option('number_padding_prefixes'), '0', STR_PAD_LEFT);
     }
     return $number;
 }
@@ -563,16 +581,16 @@ function format_estimate_number($id)
     $CI =& get_instance();
     $CI->db->select('date,number,prefix,number_format')->from('tblestimates')->where('id', $id);
     $estimate = $CI->db->get()->row();
-    if(!$estimate){
+    if (!$estimate) {
         return '';
     }
-    $format   = $estimate->number_format;
+    $format = $estimate->number_format;
     $prefix = $estimate->prefix;
     if ($format == 1) {
         // Number based
         return $prefix . str_pad($estimate->number, get_option('number_padding_prefixes'), '0', STR_PAD_LEFT);
     } else if ($format == 2) {
-        return $prefix . date('Y',strtotime($estimate->date)) . '/' . str_pad($estimate->number, get_option('number_padding_prefixes'), '0', STR_PAD_LEFT);
+        return $prefix . date('Y', strtotime($estimate->date)) . '/' . str_pad($estimate->number, get_option('number_padding_prefixes'), '0', STR_PAD_LEFT);
     }
     return $number;
 }
@@ -701,13 +719,13 @@ function found_invoice_mode($modes, $invoiceid, $offline = true, $show_on_pdf = 
         } else {
             foreach ($modes as $mode) {
                 if ($offline == true) {
-                    if (is_numeric($mode['id'])) {
+                    if (is_numeric($mode['id']) && is_array($invoice->allowed_payment_modes)) {
                         foreach ($invoice->allowed_payment_modes as $allowed_mode) {
                             if ($allowed_mode == $mode['id']) {
-                                if($show_on_pdf == false){
+                                if ($show_on_pdf == false) {
                                     return true;
                                 } else {
-                                    if($mode['show_on_pdf'] == 1){
+                                    if ($mode['show_on_pdf'] == 1) {
                                         return true;
                                     } else {
                                         return false;
@@ -761,59 +779,90 @@ function load_pdf_language($clientid)
     }
 }
 
-function pdf_logo_url(){
+function pdf_logo_url()
+{
     $custom_pdf_logo_image_url = get_option('custom_pdf_logo_image_url');
-
+    $width                     = get_option('pdf_logo_width');
+    if ($width == '') {
+        $width = 120;
+    }
     if ($custom_pdf_logo_image_url != '') {
-        $path_parts = pathinfo($custom_pdf_logo_image_url);
-        if(!isset($path_parts['extension']) || ( isset($path_parts['extension']) && $path_parts['extension'] == null)){
-            $extension = get_file_extension($custom_pdf_logo_image_url);
+        if (strpos($custom_pdf_logo_image_url, 'localhost') !== false) {
+            $cimg = $custom_pdf_logo_image_url;
+        } else if (strpos($custom_pdf_logo_image_url, 'http') === false) {
+            $cimg = FCPATH . $custom_pdf_logo_image_url;
         } else {
-            $extension = $path_parts['extension'];
+            /*  $cimg = do_curl_pdf_image($custom_pdf_logo_image_url);
+            $formImage = imagecreatefromstring(base64_decode(strafter($cimg,'base64,')));
+            $w = imagesx($formImage);
+            $h = imagesy($formImage);
+            */
+            if (_startsWith($custom_pdf_logo_image_url, site_url()) !== FALSE) {
+                $temp = str_replace(site_url(), '/', $custom_pdf_logo_image_url);
+                $cimg = FCPATH . $temp;
+                if (!file_exists($cimg)) {
+                    $cimg = do_curl_pdf_image($custom_pdf_logo_image_url);
+                }
+            } else {
+                $cimg = do_curl_pdf_image($custom_pdf_logo_image_url);
+            }
         }
-        if(strpos($custom_pdf_logo_image_url,'localhost') !== false){
-             $cimg = $custom_pdf_logo_image_url;
-        } else if(strpos($custom_pdf_logo_image_url,'http') === false){
-            $cimg = FCPATH .$custom_pdf_logo_image_url;
-        } else {
-            // On some hosting providers you cant access directly the url and throwing error unable to get image size
-            // Will simulate like browser access to get the image.
-            $ch = curl_init();
-            // set url
-            curl_setopt($ch, CURLOPT_URL, $custom_pdf_logo_image_url);
-            // Return the transfer as a image
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt($ch,CURLOPT_USERAGENT,'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.13) Gecko/20080311 Firefox/2.0.0.13');
-            // $output contains the output image
-            $output = curl_exec($ch);
-            // close curl resource to free up system resources
-            curl_close($ch);
-            $cimg = 'data:image/' . $extension . ';base64,' . base64_encode($output);
-        }
-        $logo_url = '<a href="' . site_url() . '"><img width="'.get_option('pdf_logo_width').'px" src="' . $cimg . '"></a>';
+        $logo_url = '<a href="' . site_url() . '"><img width="' . $width . 'px" src="' . $cimg . '"></a>';
+
     } else {
-        $logo_url = '<a href="' . site_url() . '"><img width="'.get_option('pdf_logo_width').'px" src="' . get_upload_path_by_type('company'). get_option('company_logo') . '"></a>';
+        $logo_url = '<a href="' . site_url() . '"><img width="' . $width . 'px" src="' . get_upload_path_by_type('company') . get_option('company_logo') . '"></a>';
     }
     return $logo_url;
 }
 
-function get_pdf_format($option_name){
-    $oFormat = strtoupper(get_option($option_name));
-    $data = array('orientation'=>'','format'=>'');
+function do_curl_pdf_image($url)
+{
 
-    if($oFormat == 'A4-PORTRAIT'){
+    $path_parts = pathinfo($url);
+
+    if (!isset($path_parts['extension']) || (isset($path_parts['extension']) && $path_parts['extension'] == null)) {
+        $extension = get_file_extension($url);
+    } else {
+        $extension = $path_parts['extension'];
+    }
+    // On some hosting providers you cant access directly the url and throwing error unable to get image size
+    // Will simulate like browser access to get the image.
+    $ch = curl_init();
+    // set url
+    curl_setopt($ch, CURLOPT_URL, $url);
+    // Return the transfer as a image
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+    curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.13) Gecko/20080311 Firefox/2.0.0.13');
+    // $output contains the output image
+    $output = curl_exec($ch);
+    // close curl resource to free up system resources
+    curl_close($ch);
+    return 'data:image/' . $extension . ';base64,' . base64_encode($output);
+}
+
+function get_pdf_format($option_name)
+{
+    $oFormat = strtoupper(get_option($option_name));
+    $data    = array(
+        'orientation' => '',
+        'format' => ''
+    );
+
+    if ($oFormat == 'A4-PORTRAIT') {
         $data['orientation'] = 'P';
-        $data['format'] = 'A4';
-    } else if($oFormat == 'A4-LANDSCAPE'){
+        $data['format']      = 'A4';
+    } else if ($oFormat == 'A4-LANDSCAPE') {
         $data['orientation'] = 'L';
-        $data['format'] = 'A4';
-    } else if($oFormat == 'LETTER-PORTRAIT'){
+        $data['format']      = 'A4';
+    } else if ($oFormat == 'LETTER-PORTRAIT') {
         $data['orientation'] = 'P';
-        $data['format'] = 'LETTER';
+        $data['format']      = 'LETTER';
     } else {
         // LETTER-LANDSCAPE
         $data['orientation'] = 'L';
-        $data['format'] = 'LETTER';
+        $data['format']      = 'LETTER';
     }
     return $data;
 }
@@ -828,10 +877,10 @@ function invoice_pdf($invoice, $tag = '')
     load_pdf_language($invoice->clientid);
     $CI->load->library('pdf');
     $invoice_number = format_invoice_number($invoice->id);
-    $font_name = get_option('pdf_font');
-    $font_size = get_option('pdf_font_size');
+    $font_name      = get_option('pdf_font');
+    $font_size      = get_option('pdf_font_size');
 
-    if($font_size == ''){
+    if ($font_size == '') {
         $font_size = 10;
     }
 
@@ -839,7 +888,7 @@ function invoice_pdf($invoice, $tag = '')
     $payment_modes = $CI->payment_modes_model->get();
 
     $formatArray = get_pdf_format('pdf_format_invoice');
-    $pdf            = new Pdf($formatArray['orientation'], 'mm', $formatArray['format'], true, 'UTF-8', false);
+    $pdf         = new Pdf($formatArray['orientation'], 'mm', $formatArray['format'], true, 'UTF-8', false);
 
     $pdf->SetTitle($invoice_number);
     $CI->pdf->SetMargins(PDF_MARGIN_LEFT, 25, PDF_MARGIN_RIGHT);
@@ -850,22 +899,27 @@ function invoice_pdf($invoice, $tag = '')
     $pdf->SetFont($font_name, '', $font_size);
     $pdf->setImageScale(1.53);
     $pdf->setJPEGQuality(100);
-    $pdf->AddPage($formatArray['orientation'],$formatArray['format']);
+    $pdf->AddPage($formatArray['orientation'], $formatArray['format']);
 
-    if($CI->input->get('print') == 'true'){
+    if ($CI->input->get('print') == 'true') {
         // force print dialog
         $js = 'print(true);';
         $pdf->IncludeJS($js);
     }
+
     $status = $invoice->status;
-    $swap = get_option('swap_pdf_info');
-    $CI->load->library('numberword',array('clientid'=>$invoice->clientid));
+    $swap   = get_option('swap_pdf_info');
+    $CI->load->library('numberword', array(
+        'clientid' => $invoice->clientid
+    ));
+    $invoice = do_action('invoice_html_pdf_data', $invoice);
     if (file_exists(APPPATH . 'views/themes/' . active_clients_theme() . '/views/my_invoicepdf.php')) {
         include(APPPATH . 'views/themes/' . active_clients_theme() . '/views/my_invoicepdf.php');
     } else {
         include(APPPATH . 'views/themes/' . active_clients_theme() . '/views/invoicepdf.php');
     }
-    return do_action('invoice_pdf_generated',$pdf);
+
+    return $pdf;
 }
 
 /**
@@ -880,15 +934,15 @@ function estimate_pdf($estimate, $tag = '')
     load_pdf_language($estimate->clientid);
     $CI->load->library('pdf');
     $estimate_number = format_estimate_number($estimate->id);
-    $font_name = get_option('pdf_font');
-    $font_size = get_option('pdf_font_size');
+    $font_name       = get_option('pdf_font');
+    $font_size       = get_option('pdf_font_size');
 
-    if($font_size == ''){
+    if ($font_size == '') {
         $font_size = 10;
     }
 
     $formatArray = get_pdf_format('pdf_format_estimate');
-    $pdf            = new Pdf($formatArray['orientation'], 'mm', $formatArray['format'], true, 'UTF-8', false);
+    $pdf         = new Pdf($formatArray['orientation'], 'mm', $formatArray['format'], true, 'UTF-8', false);
 
     $pdf->SetTitle($estimate_number);
     $CI->pdf->SetMargins(PDF_MARGIN_LEFT, 25, PDF_MARGIN_RIGHT);
@@ -897,23 +951,26 @@ function estimate_pdf($estimate, $tag = '')
     $pdf->SetAuthor(get_option('company'));
     $pdf->SetFont($font_name, '', $font_size);
     $pdf->setJPEGQuality(100);
-    $pdf->AddPage($formatArray['orientation'],$formatArray['format']);
-     if($CI->input->get('print') == 'true'){
+    $pdf->AddPage($formatArray['orientation'], $formatArray['format']);
+    if ($CI->input->get('print') == 'true') {
         // force print dialog
         $js = 'print(true);';
         $pdf->IncludeJS($js);
     }
     $status = $estimate->status;
-    $swap = get_option('swap_pdf_info');
-    $CI->load->library('numberword',array('clientid'=>$estimate->clientid));
+    $swap   = get_option('swap_pdf_info');
+    $CI->load->library('numberword', array(
+        'clientid' => $estimate->clientid
+    ));
+    $estimate = do_action('estimate_html_pdf_data', $estimate);
     if (file_exists(APPPATH . 'views/themes/' . active_clients_theme() . '/views/my_estimatepdf.php')) {
         include(APPPATH . 'views/themes/' . active_clients_theme() . '/views/my_estimatepdf.php');
     } else {
         include(APPPATH . 'views/themes/' . active_clients_theme() . '/views/estimatepdf.php');
     }
-    return do_action('estimate_pdf_generated',$pdf);
+    return $pdf;
 }
-function proposal_pdf($proposal,$tag = '')
+function proposal_pdf($proposal, $tag = '')
 {
     $CI =& get_instance();
 
@@ -924,7 +981,7 @@ function proposal_pdf($proposal,$tag = '')
     $CI->load->library('pdf');
 
     $number_word_lang_rel_id = 'unknown';
-    if($proposal->rel_type == 'customer'){
+    if ($proposal->rel_type == 'customer') {
         $number_word_lang_rel_id = $proposal->rel_id;
     }
     $CI->load->library('numberword', array(
@@ -932,26 +989,26 @@ function proposal_pdf($proposal,$tag = '')
     ));
 
     $formatArray = get_pdf_format('pdf_format_proposal');
-    $pdf            = new Pdf($formatArray['orientation'], 'mm', $formatArray['format'], true, 'UTF-8', false);
+    $pdf         = new Pdf($formatArray['orientation'], 'mm', $formatArray['format'], true, 'UTF-8', false);
 
     $font_name = get_option('pdf_font');
     $font_size = get_option('pdf_font_size');
-    if($font_size == ''){
+    if ($font_size == '') {
         $font_size = 10;
     }
 
-    $proposal_url = site_url('viewproposal/'.$proposal->id.'/'.$proposal->hash);
-    $number = format_proposal_number($proposal->id);
+    $proposal_url = site_url('viewproposal/' . $proposal->id . '/' . $proposal->hash);
+    $number       = format_proposal_number($proposal->id);
     $CI->pdf->SetMargins(PDF_MARGIN_LEFT, 25, PDF_MARGIN_RIGHT);
 
     $pdf->setImageScale(1.53);
-    $pdf->SetAutoPageBreak(TRUE,15);
+    $pdf->SetAutoPageBreak(TRUE, 15);
     $pdf->setJPEGQuality(100);
-    $pdf->SetDisplayMode('default','OneColumn');
+    $pdf->SetDisplayMode('default', 'OneColumn');
     $pdf->SetAuthor(get_option('company'));
     $pdf->SetFont($font_name, '', $font_size);
-    $pdf->AddPage($formatArray['orientation'],$formatArray['format']);
-     if($CI->input->get('print') == 'true'){
+    $pdf->AddPage($formatArray['orientation'], $formatArray['format']);
+    if ($CI->input->get('print') == 'true') {
         // force print dialog
         $js = 'print(true);';
         $pdf->IncludeJS($js);
@@ -976,14 +1033,26 @@ function proposal_pdf($proposal,$tag = '')
     $proposal->content = str_replace('float: right', 'text-align: right', $proposal->content);
     $proposal->content = str_replace('float: left', 'text-align: left', $proposal->content);
     // Image center
-    $proposal->content = str_replace('margin-left: auto; margin-right: auto;','text-align:center;', $proposal->content);
-
+    $proposal->content = str_replace('margin-left: auto; margin-right: auto;', 'text-align:center;', $proposal->content);
+    /* $matches = array();
+    preg_match_all('!http://[a-z0-9\-\.\/]+\.(?:jpe?g|png|gif)!Ui' , $proposal->content , $matches);
+    if(isset($matches[0])){
+    foreach($matches[0] as $m){
+    if(strpos($m,site_url()) !== FALSE) {
+    $test = str_replace(site_url(), '/', $m);
+    $proposal->content = str_replace($m,$test,$proposal->content);
+    } else {
+    $proposal->content = str_replace($m,do_curl_pdf_image($m),$proposal->content);
+    }
+    }
+    }*/
+    $proposal          = do_action('proposal_html_pdf_data', $proposal);
     if (file_exists(APPPATH . 'views/themes/' . active_clients_theme() . '/views/my_proposalpdf.php')) {
         include(APPPATH . 'views/themes/' . active_clients_theme() . '/views/my_proposalpdf.php');
     } else {
         include(APPPATH . 'views/themes/' . active_clients_theme() . '/views/proposalpdf.php');
     }
-    return do_action('proposal_pdf_generated',$pdf);
+    return $pdf;
 }
 /**
  * Generate contract pdf
@@ -996,10 +1065,10 @@ function contract_pdf($contract)
     $CI->load->library('pdf');
 
     $formatArray = get_pdf_format('pdf_format_invoice');
-    $pdf            = new Pdf($formatArray['orientation'], 'mm', $formatArray['format'], true, 'UTF-8', false);
+    $pdf         = new Pdf($formatArray['orientation'], 'mm', $formatArray['format'], true, 'UTF-8', false);
 
-    $font_name       = get_option('pdf_font');
-    $font_size       = get_option('pdf_font_size');
+    $font_name = get_option('pdf_font');
+    $font_size = get_option('pdf_font_size');
     if ($font_size == '') {
         $font_size = 10;
     }
@@ -1009,7 +1078,7 @@ function contract_pdf($contract)
     $pdf->setImageScale(1.53);
     $pdf->SetAuthor(get_option('company'));
     $pdf->SetFont($font_name, '', $font_size);
-    $pdf->AddPage($formatArray['orientation'],$formatArray['format']);
+    $pdf->AddPage($formatArray['orientation'], $formatArray['format']);
     if ($CI->input->get('print') == 'true') {
         // force print dialog
         $js = 'print(true);';
@@ -1028,14 +1097,14 @@ function contract_pdf($contract)
     $contract->content = str_replace('float: right', 'text-align: right', $contract->content);
     $contract->content = str_replace('float: left', 'text-align: left', $contract->content);
     // Image center
-    $contract->content = str_replace('margin-left: auto; margin-right: auto;','text-align:center;', $contract->content);
+    $contract->content = str_replace('margin-left: auto; margin-right: auto;', 'text-align:center;', $contract->content);
 
     if (file_exists(APPPATH . 'views/themes/' . active_clients_theme() . '/views/my_contractpdf.php')) {
         include(APPPATH . 'views/themes/' . active_clients_theme() . '/views/my_contractpdf.php');
     } else {
         include(APPPATH . 'views/themes/' . active_clients_theme() . '/views/contractpdf.php');
     }
-    return do_action('contract_pdf_generated',$pdf);
+    return $pdf;
 }
 /**
  * Generate payment pdf
@@ -1050,12 +1119,12 @@ function payment_pdf($payment, $tag = '')
     $CI->load->library('pdf');
 
     $formatArray = get_pdf_format('pdf_format_payment');
-    $pdf            = new Pdf($formatArray['orientation'], 'mm', $formatArray['format'], true, 'UTF-8', false);
+    $pdf         = new Pdf($formatArray['orientation'], 'mm', $formatArray['format'], true, 'UTF-8', false);
 
     $font_name = get_option('pdf_font');
     $font_size = get_option('pdf_font_size');
 
-    if($font_size == ''){
+    if ($font_size == '') {
         $font_size = 10;
     }
 
@@ -1067,9 +1136,9 @@ function payment_pdf($payment, $tag = '')
     $pdf->setJPEGQuality(100);
     $pdf->SetAuthor(get_option('company'));
     $pdf->SetFont($font_name, '', $font_size);
-    $pdf->AddPage($formatArray['orientation'],$formatArray['format']);
+    $pdf->AddPage($formatArray['orientation'], $formatArray['format']);
 
-     if($CI->input->get('print') == 'true'){
+    if ($CI->input->get('print') == 'true') {
         // force print dialog
         $js = 'print(true);';
         $pdf->IncludeJS($js);
@@ -1079,93 +1148,104 @@ function payment_pdf($payment, $tag = '')
     } else {
         include(APPPATH . 'views/themes/' . active_clients_theme() . '/views/paymentpdf.php');
     }
-    return do_action('payment_pdf_generated',$pdf);
+    return $pdf;
 }
 
-function get_estimates_percent_by_status($status,$total_estimates = ''){
+function get_estimates_percent_by_status($status, $total_estimates = '')
+{
 
-    $has_permission_view = has_permission('estimates','','view');
+    $has_permission_view = has_permission('estimates', '', 'view');
 
-    if(!is_numeric($total_estimates)){
+    if (!is_numeric($total_estimates)) {
         $where_total = array();
-        if(!$has_permission_view){
+        if (!$has_permission_view) {
             $where_total['addedfrom'] = get_staff_user_id();
-         }
-        $total_estimates = total_rows('tblestimates',$where_total);
+        }
+        $total_estimates = total_rows('tblestimates', $where_total);
     }
 
-    $data = array();
+    $data            = array();
     $total_by_status = 0;
 
-    if(!is_numeric($status)){
-        if($status == 'not_sent'){
-           $total_by_status = total_rows('tblestimates','sent=0 AND status NOT IN(2,3,4)' . (!$has_permission_view ? ' AND addedfrom='.get_staff_user_id() : ''));
+    if (!is_numeric($status)) {
+        if ($status == 'not_sent') {
+            $total_by_status = total_rows('tblestimates', 'sent=0 AND status NOT IN(2,3,4)' . (!$has_permission_view ? ' AND addedfrom=' . get_staff_user_id() : ''));
         }
     } else {
-        $where = array('status'=>$status);
-        if(!$has_permission_view){
-            $where = array_merge($where,array('addedfrom'=>get_staff_user_id()));
+        $where = array(
+            'status' => $status
+        );
+        if (!$has_permission_view) {
+            $where = array_merge($where, array(
+                'addedfrom' => get_staff_user_id()
+            ));
         }
-        $total_by_status = total_rows('tblestimates',$where);
+        $total_by_status = total_rows('tblestimates', $where);
     }
 
-    $percent = ($total_estimates > 0 ? number_format(($total_by_status * 100) / $total_estimates,2) : 0);
+    $percent                 = ($total_estimates > 0 ? number_format(($total_by_status * 100) / $total_estimates, 2) : 0);
     $data['total_by_status'] = $total_by_status;
-    $data['percent'] = $percent;
-    $data['total'] = $total_estimates;
+    $data['percent']         = $percent;
+    $data['total']           = $total_estimates;
     return $data;
 }
-function get_proposals_percent_by_status($status,$total_proposals = ''){
+function get_proposals_percent_by_status($status, $total_proposals = '')
+{
 
-    $has_permission_view = has_permission('proposals','','view');
+    $has_permission_view = has_permission('proposals', '', 'view');
 
-    if(!is_numeric($total_proposals)){
+    if (!is_numeric($total_proposals)) {
         $where_total = array();
-        if(!$has_permission_view){
+        if (!$has_permission_view) {
             $where_total['addedfrom'] = get_staff_user_id();
-         }
-        $total_proposals = total_rows('tblproposals',$where_total);
+        }
+        $total_proposals = total_rows('tblproposals', $where_total);
     }
-    $data = array();
+    $data            = array();
     $total_by_status = 0;
-    $where = array('status'=>$status);
-    if(!$has_permission_view){
-        $where = array_merge($where,array('addedfrom'=>get_staff_user_id()));
+    $where           = array(
+        'status' => $status
+    );
+    if (!$has_permission_view) {
+        $where = array_merge($where, array(
+            'addedfrom' => get_staff_user_id()
+        ));
     }
-    $total_by_status = total_rows('tblproposals',$where);
+    $total_by_status = total_rows('tblproposals', $where);
 
-    $percent = ($total_proposals  > 0 ? number_format(($total_by_status * 100) / $total_proposals  ,2) : 0);
+    $percent = ($total_proposals > 0 ? number_format(($total_by_status * 100) / $total_proposals, 2) : 0);
 
     $data['total_by_status'] = $total_by_status;
-    $data['percent'] =$percent;
-    $data['total'] = $total_proposals;
+    $data['percent']         = $percent;
+    $data['total']           = $total_proposals;
     return $data;
 }
 /* This function does not work with cancelled status */
-function get_invoices_percent_by_status($status,$total_invoices = ''){
+function get_invoices_percent_by_status($status, $total_invoices = '')
+{
 
-    $has_permission_view = has_permission('invoices','','view');
+    $has_permission_view = has_permission('invoices', '', 'view');
 
-    if(!is_numeric($total_invoices)){
+    if (!is_numeric($total_invoices)) {
         $where_total = 'status NOT IN(5)';
-        if(!$has_permission_view){
-            $where_total.= ' AND addedfrom='.get_staff_user_id();
+        if (!$has_permission_view) {
+            $where_total .= ' AND addedfrom=' . get_staff_user_id();
         }
-        $total_invoices = total_rows('tblinvoices',$where_total);
+        $total_invoices = total_rows('tblinvoices', $where_total);
     }
-    $data = array();
+    $data            = array();
     $total_by_status = 0;
-    if(!is_numeric($status)){
-        if($status == 'not_sent'){
-           $total_by_status = total_rows('tblinvoices','sent=0 AND status NOT IN(2,5)'.(!$has_permission_view ? ' AND addedfrom='.get_staff_user_id() : ''));
+    if (!is_numeric($status)) {
+        if ($status == 'not_sent') {
+            $total_by_status = total_rows('tblinvoices', 'sent=0 AND status NOT IN(2,5)' . (!$has_permission_view ? ' AND addedfrom=' . get_staff_user_id() : ''));
         }
     } else {
-        $total_by_status = total_rows('tblinvoices','status = ' . $status .' AND status NOT IN(5)'.(!$has_permission_view ? ' AND addedfrom='.get_staff_user_id() : ''));
+        $total_by_status = total_rows('tblinvoices', 'status = ' . $status . ' AND status NOT IN(5)' . (!$has_permission_view ? ' AND addedfrom=' . get_staff_user_id() : ''));
     }
-    $percent = ($total_invoices  > 0 ? number_format(($total_by_status * 100) / $total_invoices  ,2) : 0);
+    $percent                 = ($total_invoices > 0 ? number_format(($total_by_status * 100) / $total_invoices, 2) : 0);
     $data['total_by_status'] = $total_by_status;
-    $data['percent'] = $percent;
-    $data['total'] = $total_invoices;
+    $data['percent']         = $percent;
+    $data['total']           = $total_invoices;
     return $data;
 
 }

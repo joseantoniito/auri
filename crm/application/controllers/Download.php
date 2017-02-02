@@ -8,12 +8,22 @@ class Download extends CI_Controller
         $this->load->helper('download');
     }
     public function preview_image(){
+
         $path = $this->input->get('path');
         $file_type = $this->input->get('type');
-        if(!file_exists($path)){
-          $file_type = 'image/jpg';
-          $path = FCPATH .'assets/images/preview_no_available.jpg';
+        $allowed_extensions = array('jpg','jpeg','png','bmp','gif','tif','thm');
+        $pathinfo = pathinfo($path);
+        $not_allowed = false;
+
+        if(!in_array($pathinfo['extension'], $allowed_extensions)){
+            $not_allowed = true;
         }
+
+        if(!file_exists($path) || $not_allowed){
+           $file_type = 'image/jpg';
+           $path = FCPATH .'assets/images/preview_no_available.jpg';
+        }
+
         header('Content-Description: File Transfer');
         header('Content-Type: application/octet-stream');
         header('Content-Disposition: attachment; filename="'.basename($path).'"');
@@ -22,7 +32,6 @@ class Download extends CI_Controller
         header('Cache-Control: must-revalidate');
         header('Pragma: public');
         echo readfile($path);
-
     }
     public function file($folder_indicator, $attachmentid = '')
     {
@@ -41,7 +50,6 @@ class Download extends CI_Controller
                         die('Attachment or ticket not equal');
                     }
                     $path = get_upload_path_by_type('ticket') . $ticketid . '/' . $attachment->file_name;
-                    $name = $attachment->file_name;
                 }
             }
         } else if ($folder_indicator == 'newsfeed') {
@@ -55,7 +63,6 @@ class Download extends CI_Controller
                     die('No attachment found in database');
                 }
                 $path = get_upload_path_by_type('newsfeed') . $attachment->rel_id . '/' . $attachment->file_name;
-                $name = $attachment->file_name;
             }
         } else if ($folder_indicator == 'contract') {
             if (is_logged_in()) {
@@ -86,7 +93,6 @@ class Download extends CI_Controller
                     }
                 }
                 $path = get_upload_path_by_type('contract') . $attachment->rel_id . '/' . $attachment->file_name;
-                $name = $attachment->file_name;
             }
         } else if ($folder_indicator == 'taskattachment') {
             if (!is_staff_logged_in() && !is_client_logged_in()) {
@@ -99,7 +105,6 @@ class Download extends CI_Controller
                 die('No attachment found in database');
             }
             $path = get_upload_path_by_type('task') . $attachment->rel_id . '/' . $attachment->file_name;
-            $name = $attachment->file_name;
         } else if ($folder_indicator == 'sales_attachment') {
             $this->db->where('attachment_key', $attachmentid);
             $attachment = $this->db->get('tblfiles')->row();
@@ -108,7 +113,6 @@ class Download extends CI_Controller
             }
 
             $path = get_upload_path_by_type($attachment->rel_type) . $attachment->rel_id . '/' . $attachment->file_name;
-            $name = $attachment->file_name;
 
         } else if ($folder_indicator == 'expense') {
             if (!is_staff_logged_in()) {
@@ -118,7 +122,6 @@ class Download extends CI_Controller
             $this->db->where('rel_type', 'expense');
             $file = $this->db->get('tblfiles')->row();
             $path    = get_upload_path_by_type('expense') . $file->rel_id . '/' . $file->file_name;
-            $name    = $file->file_name;
         } else if ($folder_indicator == 'lead_attachment') {
             if (!is_staff_logged_in()) {
                 die();
@@ -129,13 +132,11 @@ class Download extends CI_Controller
                 die('No attachment found in database');
             }
             $path = get_upload_path_by_type('lead') . $attachment->rel_id . '/' . $attachment->file_name;
-            $name = $attachment->file_name;
         } else if ($folder_indicator == 'db_backup') {
             if (!is_admin()) {
                 die('Access forbidden');
             }
             $path = BACKUPS_FOLDER . $attachmentid;
-            $name = $attachmentid;
         } else if ($folder_indicator == 'client') {
             if(!is_client_logged_in()){
                 $this->db->where('id', $attachmentid);
@@ -146,12 +147,10 @@ class Download extends CI_Controller
             if(!$attachment){die;}
              if (has_permission('customers','','view') || is_customer_admin($attachment->rel_id) || is_client_logged_in()) {
                 $path       = get_upload_path_by_type('customer') . $attachment->rel_id . '/' . $attachment->file_name;
-                $name       = $attachment->file_name;
              }
         } else {
             die('folder not specified');
         }
-        $data = file_get_contents($path);
-        force_download($name, $data);
+        force_download($path,NULL);
     }
 }

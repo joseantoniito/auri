@@ -300,19 +300,16 @@ if (found_invoice_mode($payment_modes, $invoice->id, true, true)) {
     $pdf->Cell(0, 0, _l('invoice_html_offline_payment'), 0, 1, 'L', 0, '', 0);
     $pdf->SetFont($font_name, '', 10);
     foreach ($payment_modes as $mode) {
-
         if (is_numeric($mode['id'])) {
             if (!is_payment_mode_allowed_for_invoice($mode['id'], $invoice->id)) {
                 continue;
             }
         }
-
         if (isset($mode['show_on_pdf']) && $mode['show_on_pdf'] == 1) {
             $pdf->Ln(2);
             $pdf->Cell(0, 0, $mode['name'], 0, 1, 'L', 0, '', 0);
-            $pdf->MultiCell(80, 0, clear_textarea_breaks($mode['description']), 0, 'L');
+            $pdf->MultiCell($dimensions['wk'] - ($dimensions['lm'] + $dimensions['rm']), 0, clear_textarea_breaks($mode['description']), 0, 'L');
         }
-
     }
 }
 
@@ -322,7 +319,7 @@ if (!empty($invoice->clientnote)) {
     $pdf->Cell(0, 0, _l('invoice_note'), 0, 1, 'L', 0, '', 0);
     $pdf->SetFont($font_name, '', 10);
     $pdf->Ln(2);
-    $pdf->MultiCell(0, 0, clear_textarea_breaks($invoice->clientnote), 0, 'L');
+    $pdf->MultiCell(0, 0, html_entity_decode(clear_textarea_breaks($invoice->clientnote)), 0, 'L');
 }
 
 if (!empty($invoice->terms)) {
@@ -331,5 +328,5 @@ if (!empty($invoice->terms)) {
     $pdf->Cell(0, 0, _l('terms_and_conditions'), 0, 1, 'L', 0, '', 0);
     $pdf->SetFont($font_name, '', 10);
     $pdf->Ln(2);
-    $pdf->MultiCell(0, 0, clear_textarea_breaks($invoice->terms), 0, 'L');
+    $pdf->MultiCell(0, 0, html_entity_decode(clear_textarea_breaks($invoice->terms)), 0, 'L');
 }

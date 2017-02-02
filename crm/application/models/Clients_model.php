@@ -341,7 +341,10 @@ class Clients_model extends CRM_Model
             if (isset($send_set_password_email)) {
                 $this->authentication_model->set_password_email($data['email'], 0);
             }
-            return true;
+
+            logActivity('Contact Created [' . $data['firstname'] . ' ' . $data['lastname'] . ']');
+
+            return $contact_id;
         }
         return false;
     }
@@ -638,6 +641,12 @@ class Clients_model extends CRM_Model
         if (isset($data['country']) && $data['country'] == '' || !isset($data['country'])) {
             $data['country'] = 0;
         }
+        if (isset($data['billing_country']) && $data['billing_country'] == '') {
+            $data['billing_country'] = 0;
+        }
+        if (isset($data['shipping_country']) && $data['shipping_country'] == '') {
+            $data['shipping_country'] = 0;
+        }
         $this->db->where('userid', $id);
         $this->db->update('tblclients', $data);
         if ($this->db->affected_rows() > 0) {
@@ -655,12 +664,15 @@ class Clients_model extends CRM_Model
     public function delete($id)
     {
         $affectedRows = 0;
-        do_action('before_client_deleted', $id);
+
         if (is_reference_in_table('clientid', 'tblinvoices', $id) || is_reference_in_table('clientid', 'tblestimates', $id)) {
             return array(
                 'referenced' => true
             );
         }
+
+        do_action('before_client_deleted', $id);
+
         $this->db->where('userid', $id);
         $this->db->delete('tblclients');
         if ($this->db->affected_rows() > 0) {
@@ -701,7 +713,6 @@ class Clients_model extends CRM_Model
             $this->db->delete('tblcustomfieldsvalues');
 
             // Get customer related tasks
-            $this->load->model('tasks_model');
             $this->db->where('rel_type', 'customer');
             $this->db->where('rel_id', $id);
             $tasks = $this->db->get('tblstafftasks')->result_array();
@@ -757,6 +768,10 @@ class Clients_model extends CRM_Model
     }
     public function delete_contact($id)
     {
+        $this->db->select('userid');
+        $this->db->where('id',$id);
+        $result = $this->db->get('tblcontacts')->row();
+        $customer_id = $result->userid;
         do_action('before_delete_contact', $id);
         $this->db->where('id', $id);
         $this->db->delete('tblcontacts');
@@ -764,6 +779,9 @@ class Clients_model extends CRM_Model
             if (is_dir(get_upload_path_by_type('contact_profile_images') . $id)) {
                 delete_dir(get_upload_path_by_type('contact_profile_images') . $id);
             }
+
+            $this->db->where('contact_id',$id);
+            $this->db->delete('tblcustomerfiles_shares');
 
             $this->db->where('userid', $id);
             $this->db->where('staff', 0);
@@ -776,6 +794,7 @@ class Clients_model extends CRM_Model
             $this->db->where('userid', $id);
             $this->db->delete('tblcontactpermissions');
             return true;
+
         }
         return false;
     }
@@ -1020,7 +1039,11 @@ class Clients_model extends CRM_Model
             $this->db->where('id', $id);
             $this->db->delete('tblfiles');
             if ($this->db->affected_rows() > 0) {
+
                 $deleted = true;
+
+                $this->db->where('file_id',$id);
+                $this->db->delete('tblcustomerfiles_shares');
                 logActivity('Customer Attachment Deleted [CustomerID: ' . $attachment->rel_id . ']');
             }
 

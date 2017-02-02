@@ -131,6 +131,9 @@
 		<i class="fa fa-question-circle" data-toggle="tooltip" data-title="<?php echo _l('settings_sales_decrement_estimate_number_on_delete_tooltip'); ?>"></i>
 		<?php render_yes_no_option('estimate_number_decrement_on_delete','settings_sales_decrement_estimate_number_on_delete'); ?>
 		<hr />
+		<i class="fa fa-question-circle" data-toggle="tooltip" data-title="<?php echo _l('invoice_due_after_help'); ?>"></i>
+		<?php echo render_input('settings[estimate_due_after]','estimate_due_after',get_option('estimate_due_after')); ?>
+		<hr />
 		<?php render_yes_no_option('view_estimate_only_logged_in','settings_sales_require_client_logged_in_to_view_estimate'); ?>
 		<hr />
 		<?php render_yes_no_option('show_sale_agent_on_estimates','settings_show_sale_agent_on_estimates'); ?>
@@ -187,7 +190,7 @@
 
 	<div role="tabpanel" class="tab-pane" id="set_proposals">
 		<?php echo render_input('settings[proposal_number_prefix]','proposal_number_prefix',get_option('proposal_number_prefix')); ?>
-
+		<i class="fa fa-question-circle" data-toggle="tooltip" data-title="<?php echo _l('settings_sales_next_invoice_number_tooltip'); ?>"></i>
 		<?php echo render_input('settings[proposal_due_after]','proposal_due_after',get_option('proposal_due_after'),'number'); ?>
 		<div class="row">
 			<div class="col-md-12">

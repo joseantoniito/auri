@@ -40,7 +40,7 @@
                     <?php echo $note['description']; ?>
                 </div>
                 <div data-note-edit-textarea="<?php echo $note['id']; ?>" class="hide">
-                    <textarea name="description" class="form-control" rows="4"><?php echo $note['description']; ?></textarea>
+                    <textarea name="description" class="form-control" rows="4"><?php echo clear_textarea_breaks($note['description']); ?></textarea>
                     <div class="text-right mtop15">
                       <button type="button" class="btn btn-default" onclick="toggle_edit_note(<?php echo $note['id']; ?>);return false;"><?php echo _l('cancel'); ?></button>
                       <button type="button" class="btn btn-info" onclick="edit_note(<?php echo $note['id']; ?>);"><?php echo _l('update_note'); ?></button>

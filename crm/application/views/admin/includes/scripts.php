@@ -15,11 +15,22 @@
 <script src="<?php echo base_url('assets/plugins/datatables/datatables.min.js'); ?>"></script>
 <script src="<?php echo base_url('assets/plugins/bootstrap-select/js/bootstrap-select.min.js'); ?>"></script>
 <script src="<?php echo base_url('assets/plugins/bootstrap-select-ajax/js/ajax-bootstrap-select.min.js'); ?>"></script>
+<?php
+if($locale != 'en'){
+if(file_exists(FCPATH.'assets/plugins/bootstrap-select/js/i18n/defaults-'.$locale.'.min.js')){ ?>
+<script src="<?php echo base_url('assets/plugins/bootstrap-select/js/i18n/defaults-'.$locale.'.min.js'); ?>"></script>
+<?php } else if(file_exists(FCPATH.'assets/plugins/bootstrap-select/js/i18n/defaults-'.$locale.'_'.strtoupper($locale).'.min.js')){ ?>
+<script src="<?php echo base_url('assets/plugins/bootstrap-select/js/i18n/defaults-'.$locale.'_'.strtoupper($locale).'.min.js'); ?>"></script>
+<?php } } ?>
 <script src="<?php echo base_url('assets/plugins/tinymce/tinymce.min.js'); ?>"></script>
 <script src="<?php echo base_url('assets/plugins/jquery-validation/jquery.validate.min.js'); ?>"></script>
-<?php if(file_exists(FCPATH.'assets/plugins/jquery-validation/localization/messages_'.$locale.'.min.js')){ ?>
+<?php
+if($locale != 'en'){
+if(file_exists(FCPATH.'assets/plugins/jquery-validation/localization/messages_'.$locale.'.min.js')){ ?>
 <script src="<?php echo base_url('assets/plugins/jquery-validation/localization/messages_'.$locale.'.min.js'); ?>"></script>
-<?php } ?>
+<?php } else if(file_exists(FCPATH.'assets/plugins/jquery-validation/localization/messages_'.$locale.'_'.strtoupper($locale).'.min.js')){ ?>
+<script src="<?php echo base_url('assets/plugins/jquery-validation/localization/messages_'.$locale.'_'.strtoupper($locale).'.min.js'); ?>"></script>
+<?php } } ?>
 <script src="<?php echo base_url('assets/plugins/moment/moment-with-locales.min.js'); ?>"></script>
 <script src="<?php echo base_url('assets/plugins/moment-timezone/moment-timezone-with-data.min.js'); ?>"></script>
 <script src="<?php echo base_url('assets/plugins/moment-duration-format/moment-duration-format.js'); ?>"></script>
@@ -64,8 +75,9 @@
 <?php } ?>
 <?php echo app_script('assets/js','calendar.js'); ?>
 <?php } ?>
-<?php echo app_script('assets/js','sales.js'); ?>
 <?php echo app_script('assets/js','main.js'); ?>
+<?php echo app_script('assets/js','sales.js'); ?>
+<?php echo get_custom_fields_hyperlink_js_function(); ?>
 <?php do_action('after_js_scripts_render'); ?>
 <?php
 $alertclass = "";
@@ -94,12 +106,6 @@ if($alertclass != ''){
             alert_float('<?php echo $alertclass; ?>','<?php echo $alert_message; ?>');
         });
     </script>
-    <?php } ?>
+    <?php } ?>	<link rel="stylesheet" href="//kendo.cdn.telerik.com/2016.3.1118/styles/kendo.common-material.min.css" /><link rel="stylesheet" href="//kendo.cdn.telerik.com/2016.3.1118/styles/kendo.material.min.css" /><script src="//kendo.cdn.telerik.com/2016.3.1118/js/kendo.all.min.js"></script><script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA8Xq5o6lNl4YyFt0F30E_yas-zDNk3sMg" async="" defer=""></script><?php echo app_script('assets/js','items.js'); ?><?php echo app_stylesheet('assets/css','custom-style.css'); ?>
 
-<link rel="stylesheet" href="//kendo.cdn.telerik.com/2016.3.1118/styles/kendo.common-material.min.css" />
-<link rel="stylesheet" href="//kendo.cdn.telerik.com/2016.3.1118/styles/kendo.material.min.css" />
-<script src="//kendo.cdn.telerik.com/2016.3.1118/js/kendo.all.min.js"></script>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA8Xq5o6lNl4YyFt0F30E_yas-zDNk3sMg" async="" defer=""></script>
-<?php echo app_script('assets/js','items.js'); ?>
-<?php echo app_stylesheet('assets/css','custom-style.css'); ?>
 

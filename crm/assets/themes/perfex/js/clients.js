@@ -4,6 +4,7 @@ var discussion_id = $('input[name="discussion_id"]').val();
 Dropzone.options.projectFilesUpload = false;
 Dropzone.options.taskFileUpload = false;
 Dropzone.options.filesUpload = false;
+var salesChart;
 $(function() {
 
     fix_phases_height();
@@ -14,6 +15,23 @@ $(function() {
     if (file_id) {
         view_project_file(file_id, project_id);
     }
+
+    $("a[href='#top']").on("click", function(e) {
+        e.preventDefault();
+        $("html,body").animate({scrollTop:0}, 1000);
+        e.preventDefault();
+    });
+
+    $("a[href='#bot']").on("click", function(e) {
+        e.preventDefault();
+        $("html,body").animate({scrollTop:$(document).height()}, 1000);
+        e.preventDefault();
+    });
+
+    client_home_chart();
+    $('select[name="currency"],select[name="payments_years"]').on('change', function() {
+        client_home_chart();
+    });
 
     if (typeof(discussion_id != 'undefined')) {
         discussion_comments('#discussion-comments', discussion_id, 'regular');
@@ -48,8 +66,8 @@ $(function() {
                 files:files,
                 external:'dropbox',
             }).done(function(){
-                 window.location.reload();
-              });
+             window.location.reload();
+         });
         },
         linkType: "preview",
         extensions: allowed_files.split(','),
@@ -62,6 +80,9 @@ $(function() {
         paramName: "file",
         addRemoveLinks: true,
         dictFileTooBig: file_exceds_maxfile_size_in_form,
+        dictDefaultMessage: drop_files_here_to_upload,
+        dictFallbackMessage: browser_not_support_drag_and_drop,
+        dictRemoveFile: remove_file,
         maxFilesize: max_php_ini_upload_size.replace(/\D/g, ''),
         accept: function(file, done) {
             done();
@@ -161,17 +182,27 @@ if(typeof(calendar_data) != 'undefined'){
             data: JSON.parse(contracts_by_type),
             options: {
                 responsive: true,
-                maintainAspectRatio:false
+                maintainAspectRatio:false,
+                scales: {
+                    yAxes: [{
+                        display: true,
+                        ticks: {
+                            suggestedMin: 0,
+                        }
+                    }]
+                }
             }
         });
     }
-
     if ($('#task-file-upload').length > 0) {
         new Dropzone('#task-file-upload', {
             paramName: "file",
             addRemoveLinks: true,
             dictFileTooBig: file_exceds_maxfile_size_in_form,
+            dictDefaultMessage: drop_files_here_to_upload,
             maxFilesize: max_php_ini_upload_size.replace(/\D/g, ''),
+            dictFallbackMessage: browser_not_support_drag_and_drop,
+            dictRemoveFile: remove_file,
             accept: function(file, done) {
                 done();
             },
@@ -189,12 +220,16 @@ if(typeof(calendar_data) != 'undefined'){
             alert_float('danger', response);
         }
     });
-
     }
 
     if ($('#project-files-upload').length > 0) {
         new Dropzone('#project-files-upload', {
             paramName: "file",
+            dictFileTooBig: file_exceds_maxfile_size_in_form,
+            dictDefaultMessage: drop_files_here_to_upload,
+            dictFallbackMessage: browser_not_support_drag_and_drop,
+            dictRemoveFile: remove_file,
+            maxFilesize: max_php_ini_upload_size.replace(/\D/g, ''),
             addRemoveLinks: true,
             accept: function(file, done) {
                 done();
@@ -560,3 +595,32 @@ function close_modal_manualy(modal) {
         $('body').removeClass('modal-open');
     });
 }
+function client_home_chart() {
+        // Check if chart canvas exists.
+        var chart = $('#client-home-chart');
+        if(chart.length == 0){
+            return;
+        }
+        if (typeof(salesChart) !== 'undefined') {
+            salesChart.destroy();
+        }
+        var data = {};
+        var currency = $('#currency');
+        var year = $('#payments_year');
+        if (currency.length > 0) {
+            data.report_currency = $('select[name="currency"]').val();
+        }
+        if (year.length > 0) {
+            data.year = $('#payments_year').val();
+        }
+
+        $.post(site_url + 'clients/client_home_chart', data).done(function(response) {
+            response = JSON.parse(response);
+            salesChart = new Chart(chart,{
+                type:'line',
+                data:response,
+                options:{responsive:true,maintainAspectRatio:false}
+            });
+        });
+    }
+

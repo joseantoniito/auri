@@ -5,6 +5,7 @@ $aColumns     = array(
     'name',
     'fieldto',
     'type',
+    'slug',
     'active',
     );
 $sIndexColumn = "id";

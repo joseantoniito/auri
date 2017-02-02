@@ -20,6 +20,7 @@ class Expenses_model extends CRM_Model
         $this->db->join('tbltaxes', 'tbltaxes.id = tblexpenses.tax', 'left');
         $this->db->join('tblexpensescategories', 'tblexpensescategories.id = tblexpenses.category');
         $this->db->where($where);
+
         if (is_numeric($id)) {
             $this->db->where('tblexpenses.id', $id);
             $expense = $this->db->get()->row();
@@ -395,7 +396,6 @@ class Expenses_model extends CRM_Model
             $this->db->where('fieldto', 'expenses');
             $this->db->delete('tblcustomfieldsvalues');
             // Get related tasks
-            $this->load->model('tasks_model');
             $this->db->where('rel_type', 'expense');
             $this->db->where('rel_id', $id);
             $tasks = $this->db->get('tblstafftasks')->result_array();

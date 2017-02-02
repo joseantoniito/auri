@@ -194,7 +194,7 @@ class Leads extends Admin_controller
         }
 
         $data['formData'] = array();
-        $custom_fields = get_custom_fields('leads');
+        $custom_fields = get_custom_fields('leads',array('type !=','link'));
         $cfields = array();
         $data['title'] = _l('web_to_lead');
 
@@ -286,6 +286,8 @@ class Leads extends Admin_controller
                 $type = 'email';
             } else if($f == 'description'){
                 $type = 'textarea';
+            } else if($f == 'country'){
+                $type = 'select';
             }
 
             if($f == 'name'){
@@ -304,6 +306,22 @@ class Leads extends Admin_controller
                 'className'=>$className,
                 'name'=>$f
                 );
+
+            if($f == 'country'){
+                $field_array['values'] = array();
+                $countries = get_all_countries();
+                foreach($countries as $country){
+                    $selected = false;
+                    if(get_option('customer_default_country') == $country['country_id']){
+                        $selected = true;
+                    }
+                    array_push($field_array['values'],array(
+                        'label'=>$country['short_name'],
+                        'value'=>(int) $country['country_id'],
+                        'selected'=>$selected
+                        ));
+                }
+            }
 
             if($f == 'name'){
               $field_array['required'] = true;

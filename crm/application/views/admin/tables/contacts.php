@@ -54,7 +54,7 @@ foreach ( $rResult as $aRow )
                 $_data = time_ago($_data);
             }
         } else if($aColumns[$i] == 'firstname'){
-            $_data = '<a href="#" onclick="contact('.$aRow['userid'].','.$aRow['id'].');return false;">'.$_data.'</a>';
+            $_data = '<img src="'.contact_profile_image_url($aRow['id']).'" class="client-profile-image-small mright5"><a href="#" onclick="contact('.$aRow['userid'].','.$aRow['id'].');return false;">'.$_data.'</a>';
         } else {
             if(_startsWith($aColumns[$i],'ctable_') && is_date($_data)){
                  $_data = _d($_data);

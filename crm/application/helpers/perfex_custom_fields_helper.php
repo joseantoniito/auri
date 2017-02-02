@@ -27,6 +27,8 @@ function render_custom_fields($belongs_to, $rel_id = false, $where = array())
                 continue;
             }
 
+            $field['name'] = _l('cf_translate_'.$field['slug']) != 'cf_translate_'.$field['slug'] ? _l('cf_translate_'.$field['slug']) : $field['name'];
+
             $value = '';
             if($field['bs_column'] == '' || $field['bs_column'] == 0){
                 $field['bs_column'] = 12;
@@ -77,7 +79,7 @@ function render_custom_fields($belongs_to, $rel_id = false, $where = array())
 
                 $fields_html .= '<div class="form-group">';
                 $fields_html .= '<label for="custom_fields[' . $field['fieldto'] . '][' . $field['id'] . ']">' . $field_name . '</label>';
-                $fields_html .= '<select ' . $select_attrs . ' name="custom_fields[' . $field['fieldto'] . '][' . $field['id'] . ']" class="selectpicker form-control" data-width="100%" data-none-selected-text="' . _l('dropdown_non_selected_tex') . '">';
+                $fields_html .= '<select ' . $select_attrs . ' name="custom_fields[' . $field['fieldto'] . '][' . $field['id'] . ']" class="selectpicker form-control" data-width="100%" data-none-selected-text="' . _l('dropdown_non_selected_tex') . '"  data-live-search="true">';
                 $fields_html .= '<option value=""></option>';
                 $options = explode(',', $field['options']);
                 foreach ($options as $option) {
@@ -132,7 +134,44 @@ function render_custom_fields($belongs_to, $rel_id = false, $where = array())
                     $fields_html .= '</div>';
                 }
                 $fields_html .= '</div>';
+            } else if ($field['type'] == 'link') {
+
+                $fields_html .= '<div class="form-group cf-hyperlink" data-fieldto="'.$field['fieldto'].'" data-field-id="'.$field['id'].'" data-value="'.htmlspecialchars($value).'" data-field-name="'.htmlspecialchars($field_name).'">';
+                $fields_html .= '<label class="control-label" for="custom_fields[' . $field['fieldto'] . '][' . $field['id'] . ']">' . $field_name . '</label></br>';
+
+                $fields_html .= '<a id="custom_fields_' . $field['fieldto'] . '_' . $field['id'] . '_popover" type="button" href="javascript:">'. _l('cf_translate_input_link_tip') .'</a>';
+
+                $fields_html .= '<input type="hidden" '.($field['required'] == 1 ? 'data-custom-field-required="1"' : '').' value="" id="custom_fields[' . $field['fieldto'] . '][' . $field['id'] . ']" name="custom_fields[' . $field['fieldto'] . '][' . $field['id'] . ']">';
+
+                $field_template = '';
+                $field_template .= '<div id="custom_fields_' . $field['fieldto'] . '_' . $field['id'] . '_popover-content" class="hide cfh-field-popover-template"><div class="form-group">';
+                $field_template .= '<div class="row"><div class="col-md-12"><label class="control-label" for="custom_fields_' . $field['fieldto'] . '_' . $field['id'] . '_title">' . _l('cf_translate_input_link_title') . '</label>';
+                $field_template .= '<input type="text"'.($field['disalow_client_to_edit'] == 1 && is_client_logged_in() ? " disabled=\"true\" " : ' ').'id="custom_fields_' . $field['fieldto'] . '_' . $field['id'] . '_title" value="" class="form-control">';
+                $field_template .= '</div>';
+                $field_template .= '</div>';
+                $field_template .= '</div>';
+                $field_template .= '<div class="form-group">';
+                $field_template .= '<div class="row">';
+                $field_template .= '<div class="col-md-12">';
+                $field_template .= '<label class="control-label" for="custom_fields_' . $field['fieldto'] . '_' . $field['id'] . '_link">' . _l('cf_translate_input_link_url') . '</label>';
+                $field_template .= '<input type="text"'.($field['disalow_client_to_edit'] == 1 && is_client_logged_in() ? " disabled=\"true\" " : ' ').'id="custom_fields_' . $field['fieldto'] . '_' . $field['id'] . '_link" value="" class="form-control">';
+                $field_template .= '</div>';
+                $field_template .= '</div>';
+                $field_template .= '</div>';
+                $field_template .= '<div class="row">';
+                $field_template .= '<div class="col-md-6">';
+                $field_template .= '<button type="button" id="custom_fields_' . $field['fieldto'] . '_' . $field['id'] . '_btn-cancel" class="btn btn-default btn-md pull-left" value="">'._l('cancel').'</button>';
+                $field_template .= '</div>';
+                $field_template .= '<div class="col-md-6">';
+                $field_template .= '<button type="button" id="custom_fields_' . $field['fieldto'] . '_' . $field['id'] . '_btn-save" class="btn btn-info btn-md pull-right" value="">'._l('apply').'</button>';
+                $field_template .= '</div>';
+                $field_template .= '</div>';
+                $fields_html .= '<script>';
+                $fields_html .= 'cfh_popover_templates[\''.$field['id'].'\'] = \''.$field_template.'\';';
+                $fields_html .= '</script>';
+                $fields_html .= '</div>';
             }
+
             $name = 'custom_fields[' . $field['fieldto'] . '][' . $field['id'] . ']';
             if ($field['type'] == 'checkbox') {
                 $name .= '[]';
@@ -154,7 +193,7 @@ function render_custom_fields($belongs_to, $rel_id = false, $where = array())
  * @param  [type] $field_to belongs to ex.leads,customers,staff
  * @return array
  */
-function get_custom_fields($field_to, $where = array())
+function get_custom_fields($field_to, $where = array(), $exclude_only_admin = false)
 {
     $is_admin = is_admin();
     $CI =& get_instance();
@@ -162,13 +201,18 @@ function get_custom_fields($field_to, $where = array())
     if (count($where) > 0) {
         $CI->db->where($where);
     }
-    if (!$is_admin) {
+    if (!$is_admin || $exclude_only_admin == TRUE) {
         $CI->db->where('only_admin', 0);
     }
     $CI->db->where('active', 1);
     $CI->db->order_by('field_order', 'asc');
 
-    return $CI->db->get('tblcustomfields')->result_array();
+    $results = $CI->db->get('tblcustomfields')->result_array();
+
+    foreach ($results as $key => $result) {
+        $results[$key]['name'] = _l('cf_translate_'.$result['slug']) != 'cf_translate_'.$result['slug'] ? _l('cf_translate_'.$result['slug']) : $result['name'];
+    }
+    return $results;
 }
 /**
  * Get custom field value
@@ -206,8 +250,6 @@ function get_custom_field_value($rel_id, $field_id, $field_to, $format = true)
  */
 function handle_custom_fields_post($rel_id, $custom_fields)
 {
-
-
     $affectedRows = 0;
     $CI =& get_instance();
 
@@ -244,7 +286,7 @@ function handle_custom_fields_post($rel_id, $custom_fields)
                 $CI->db->where('id', $row->id);
                 $CI->db->update('tblcustomfieldsvalues', array(
                     'value' => $field_value
-                ));
+                    ));
                 if ($CI->db->affected_rows() > 0) {
                     $affectedRows++;
                 }
@@ -255,7 +297,7 @@ function handle_custom_fields_post($rel_id, $custom_fields)
                         'fieldid' => $field_id,
                         'fieldto' => $key,
                         'value' => $field_value
-                    ));
+                        ));
                     $insert_id = $CI->db->insert_id();
                     if ($insert_id) {
                         $affectedRows++;
@@ -284,4 +326,59 @@ function get_company_custom_fields()
         $i++;
     }
     return $fields;
+}
+
+function get_custom_fields_hyperlink_js_function(){
+    ob_start(); ?>
+    <script>
+        function custom_fields_hyperlink(){
+         var cf_hyperlink = $('body').find('.cf-hyperlink');
+         $.each(cf_hyperlink,function(){
+            var cfh_wrapper = $(this);
+            var cfh_field_to = cfh_wrapper.attr('data-fieldto');
+            var cfh_field_id = cfh_wrapper.attr('data-field-id');
+            var textEl = $('body').find('#custom_fields_'+cfh_field_to+'_'+cfh_field_id+'_popover');
+            var hiddenField = $("#custom_fields\\\["+cfh_field_to+"\\\]\\\["+cfh_field_id+"\\\]");
+            var cfh_value = cfh_wrapper.attr('data-value');
+            hiddenField.val(cfh_value);
+            if($(hiddenField.val()).html() != ''){
+                textEl.html($(hiddenField.val()).html());
+            }
+            var cfh_field_name = cfh_wrapper.attr('data-field-name');
+            textEl.popover({
+                html: true,
+                trigger: "manual",
+                placement: "top",
+                title:cfh_field_name,
+                content:function(){
+                    return $(cfh_popover_templates[cfh_field_id]).html();
+                }
+            }).on("click", function(e){
+                var $popup = $(this);
+                $popup.popover("toggle");
+                var titleField = $("#custom_fields_"+cfh_field_to+"_"+cfh_field_id+"_title");
+                var urlField = $("#custom_fields_"+cfh_field_to+"_"+cfh_field_id+"_link");
+                var ttl = $(hiddenField.val()).html();
+                var cfUrl = $(hiddenField.val()).attr("href");
+                titleField.val(ttl);
+                urlField.val(cfUrl);
+                $("#custom_fields_"+cfh_field_to+"_"+cfh_field_id+"_btn-save").click(function(){
+                    hiddenField.val((urlField.val() != '' ? '<a href="'+urlField.val()+'" target="_blank">' + titleField.val() + '</a>' : ''));
+                    textEl.html(titleField.val() == "" ? cf_translate_input_link_tip : titleField.val());
+                    $popup.popover("toggle");
+                });
+                $("#custom_fields_"+cfh_field_to+"_"+cfh_field_id+"_btn-cancel").click(function(){
+                    if(urlField.val() == ''){
+                        hiddenField.val('');
+                    }
+                    $popup.popover("toggle");
+                });
+            });
+        });
+     }
+ </script>
+ <?php
+ $contents = ob_get_contents();
+ ob_end_clean();
+ return $contents;
 }

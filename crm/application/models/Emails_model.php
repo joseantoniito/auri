@@ -111,14 +111,34 @@ class Emails_model extends CRM_Model
     public function send_simple_email($email, $subject, $message)
     {
 
+        $cnf = array(
+            'from_email'=>get_option('smtp_email'),
+            'from_name'=>get_option('companyname'),
+            'email'=>$email,
+            'subject'=>$subject,
+            'message'=>$message,
+            );
+
+        $cnf = do_action('before_send_simple_email',$cnf);
+
         $this->email->initialize();
         $this->email->set_newline("\r\n");
         $this->email->clear(TRUE);
-        $this->email->from(get_option('smtp_email'), get_option('companyname'));
-        $this->email->to($email);
-        $this->email->subject($subject);
-        $this->email->message($message);
-        $this->email->set_alt_message(strip_tags($message));
+        $this->email->from($cnf['from_email'], $cnf['from_name']);
+        $this->email->to($cnf['email']);
+
+        // Possible action hooks data
+        if(isset($cnf['bcc'])){
+            $this->email->bcc($cnf['bcc']);
+        }
+
+        if(isset($cnf['cc'])){
+            $this->email->cc($cnf['cc']);
+        }
+
+        $this->email->subject($cnf['subject']);
+        $this->email->message($cnf['message']);
+        $this->email->set_alt_message(strip_tags($cnf['message']));
         if (count($this->attachment) > 0) {
             foreach ($this->attachment as $attach) {
                 if (!isset($attach['read'])) {
@@ -131,7 +151,7 @@ class Emails_model extends CRM_Model
         }
         $this->clear_attachments();
         if ($this->email->send()) {
-            logActivity('Email sent to: ' . $email . ' Subject:' . $subject);
+            logActivity('Email sent to: ' . $cnf['email'] . ' Subject:' . $cnf['subject']);
             return true;
         }
         return false;
@@ -146,7 +166,6 @@ class Emails_model extends CRM_Model
      */
     public function send_email($email, $subject, $type, &$data)
     {
-
         // Check if overide happens
         if (file_exists(APPPATH . 'views/my_email/' . $type . '.php')) {
             $template = $this->load->view('my_email/' . $type, $data, TRUE);
@@ -265,12 +284,22 @@ class Emails_model extends CRM_Model
         if (is_array($cc) || !empty($cc)) {
             $this->email->cc($cc);
         }
+
+        // Used for action hooks
+        if(isset($template->bcc)){
+            $this->email->bcc($template->bcc);
+        }
+
         if ($reply_to != false) {
             $this->email->reply_to($reply_to);
+        } else if(isset($template->reply_to)){
+            $this->email->reply_to($template->reply_to);
         }
+
         if ($template->plaintext == 0) {
             $this->email->set_alt_message(strip_tags($template->message));
         }
+
         $this->email->to($email);
         if (count($this->attachment) > 0) {
             foreach ($this->attachment as $attach) {

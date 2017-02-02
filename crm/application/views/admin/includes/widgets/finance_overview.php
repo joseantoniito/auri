@@ -111,7 +111,7 @@
     $percent_data = get_estimates_percent_by_status($status);
     ?>
     <div class="col-md-12 text-stats-wrapper">
-     <a href="<?php echo $url; ?>" class="text-<?php echo estimate_status_color_class($status,true); ?> mbot15 inline-block">
+     <a href="<?php echo $url; ?>" class="text-<?php echo estimate_status_color_class($status,true); ?> mbot15 inline-block estimate-status-dashboard-<?php echo estimate_status_color_class($status,true); ?>">
       <span class="_total bold"><?php echo $percent_data['total_by_status']; ?></span>
     </span> <?php echo format_estimate_status($status,'',false); ?>
   </a>

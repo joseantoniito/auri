@@ -17,6 +17,9 @@ $aColumns     = array(
     'lastcontact',
     'dateadded'
     );
+
+$aColumns = do_action('leads_table_sql_columns',$aColumns);
+
 $sIndexColumn = "id";
 $sTable       = 'tblleads';
 
@@ -75,10 +78,13 @@ if ($this->_instance->input->post('source')) {
 if (!is_admin()) {
     array_push($where, 'AND (assigned =' . get_staff_user_id() . ' OR addedfrom = ' . get_staff_user_id() . ' OR is_public = 1)');
 }
+
 // Fix for big queries. Some hosting have max_join_limit
 if (count($custom_fields) > 4) {
     @$this->_instance->db->query('SET SQL_BIG_SELECTS=1');
 }
+
+$where = do_action('leads_table_sql_where',$where);
 
 $result  = data_tables_init($aColumns, $sIndexColumn, $sTable, $join, $where, array(
     'firstname',
@@ -105,7 +111,7 @@ foreach ($rResult as $aRow) {
         if($aColumns[$i] == '1'){
             $_data = '<div class="checkbox"><input type="checkbox" value="'.$aRow['id'].'"><label></label></div>';
         } else if ($aColumns[$i] == 'tblleads.name') {
-            $_data = '<a href="#" onclick="init_lead('.$aRow['id'].');return false;">'. $_data . '</a>';
+            $_data = '<a href="'.admin_url('leads/index/'.$aRow['id']).'" onclick="init_lead('.$aRow['id'].');return false;">'. $_data . '</a>';
         } else if ($aColumns[$i] == 'lastcontact' || $aColumns[$i] == 'dateadded') {
             if ($_data == '0000-00-00 00:00:00' || !is_date($_data)) {
                 $_data = '';
@@ -146,6 +152,8 @@ foreach ($rResult as $aRow) {
             }
         }
 
+        $hook_data = do_action('leads_tr_data_output',array('output'=>$_data,'column'=>$aColumns[$i],'id'=>$aRow['id']));
+        $_data = $hook_data['output'];
         $row[] = $_data;
     }
 

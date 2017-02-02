@@ -13,6 +13,7 @@
             <?php do_action('forms_table_start'); ?>
             <div class="clearfix"></div>
             <?php render_datatable(array(
+             _l('id'),
              _l('form_name'),
              _l('total_submissions'),
              _l('leads_dt_datecreated'),

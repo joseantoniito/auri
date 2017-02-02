@@ -19,15 +19,16 @@ class Auto_update extends Admin_controller
         $purchase_key   = $this->input->post('purchase_key', FALSE);
         $latest_version = $this->input->post('latest_version');
 
-        $url     = UPDATE_URL . "?purchase_key=" . $purchase_key;
+        $url = UPDATE_URL . "?purchase_key=" . $purchase_key;
 
-        $tmp_dir = ini_get('upload_tmp_dir');
+        $tmp_dir = @ini_get('upload_tmp_dir');
         if (!$tmp_dir) {
             $tmp_dir = @sys_get_temp_dir();
             if (!$tmp_dir) {
-                FCPATH . 'temp';
+                $tmp_dir = FCPATH . 'temp';
             }
         }
+
         $tmp_dir = rtrim($tmp_dir, '/') . '/';
         if (!is_writable($tmp_dir)) {
             header('HTTP/1.0 400');
@@ -37,7 +38,7 @@ class Auto_update extends Admin_controller
             die;
         }
 
-        $this->tmp_dir = $tmp_dir;
+        $this->tmp_dir        = $tmp_dir;
         $tmp_dir              = $tmp_dir . 'v' . $latest_version . '/';
         $this->tmp_update_dir = $tmp_dir;
 
@@ -46,7 +47,8 @@ class Auto_update extends Admin_controller
             fopen($tmp_dir . 'index.html', 'w');
         }
 
-        $zipFile     = $tmp_dir . $latest_version . '.zip'; // Local Zip File Path
+        $zipFile = $tmp_dir . $latest_version . '.zip'; // Local Zip File Path
+        do_action('before_perform_update');
         $zipResource = fopen($zipFile, "w+");
 
         // Get The Zip File From Server
@@ -61,6 +63,13 @@ class Auto_update extends Admin_controller
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
         curl_setopt($ch, CURLOPT_FILE, $zipResource);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, array(
+            'base_url' => site_url(),
+            'buyer_version' => $this->misc_model->get_current_db_version(),
+            'user_ip' => $this->input->ip_address(),
+            'server_ip' => $_SERVER['SERVER_ADDR']
+        ));
+
         $success = curl_exec($ch);
 
         if (!$success) {

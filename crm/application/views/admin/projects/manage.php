@@ -33,7 +33,7 @@
                   <?php foreach($statuses as $status){ ?>
                     <li class="<?php if($status != 4){echo 'active';} ?>">
                       <a href="#" data-cview="<?php echo 'project_status_'.$status; ?>" onclick="dt_custom_view('project_status_<?php echo $status; ?>','.table-projects','project_status_<?php echo $status; ?>'); return false;">
-                        <?php echo _l('project_status_'.$status); ?>
+                        <?php echo project_status_by_id($status); ?>
                       </a>
                     </li>
                     <?php } ?>
@@ -65,7 +65,7 @@
                     <?php $where = ($_where == '' ? '' : $_where.' AND ').'status = '.$status; ?>
                     <a href="#" onclick="dt_custom_view('project_status_<?php echo $status; ?>','.table-projects','project_status_<?php echo $status; ?>',true); return false;">
                      <h3 class="bold"><?php echo total_rows('tblprojects',$where); ?></h3>
-                     <span class="text-<?php echo get_project_label($status); ?>"><?php echo _l('project_status_'.$status); ?></span>
+                     <span class="text-<?php echo project_status_color_class($status,true); ?> project-status-<?php echo $status; ?>"><?php echo project_status_by_id($status); ?></span>
                    </a>
                  </div>
                  <?php } ?>
@@ -91,6 +91,7 @@
                foreach($custom_fields as $field){
                 array_push($table_data,$field['name']);
               }
+            $table_data = do_action('projects_table_columns',$table_data);
             array_push($table_data, _l('options'));
 
             render_datatable($table_data,'projects'); ?>
@@ -107,7 +108,7 @@
   ProjectsServerParams[$(this).attr('name')] = '[name="'+$(this).attr('name')+'"]';
 });
  var projects_not_sortable = $('.table-projects').find('th').length - 1;
- initDataTable('.table-projects', window.location.href, [projects_not_sortable], [projects_not_sortable], ProjectsServerParams, [4, 'ASC']).column(0).visible(false, false).columns.adjust();
+ initDataTable('.table-projects', window.location.href, [projects_not_sortable], [projects_not_sortable], ProjectsServerParams, <?php echo do_action('projects_table_default_order',json_encode(array(4,'ASC'))); ?>).column(0).visible(false, false).columns.adjust();
 </script>
 </body>
 </html>

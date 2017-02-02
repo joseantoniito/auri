@@ -42,7 +42,6 @@ function active_clients_theme()
     $CI = &get_instance();
 
     $theme = get_option('clients_default_theme');
-
     if ($theme == '') {
         show_error('Default theme is not set');
     }
@@ -50,4 +49,53 @@ function active_clients_theme()
         show_error('Theme does not exists');
     }
     return $theme;
+}
+
+add_action('app_customers_head','do_theme_required_head');
+
+function do_theme_required_head($params = array()){
+    ob_start();
+    $isRTL = (is_rtl(true) ? 'true' : 'false');
+    echo get_custom_fields_hyperlink_js_function();
+    $locale = get_locale_key($params['language']);
+    ?>
+    <?php if(get_option('use_recaptcha_customers_area') == 1 && get_option('recaptcha_secret_key') != '' && get_option('recaptcha_site_key') != '' && is_connected('google.com')){ ?>
+    <script src='https://www.google.com/recaptcha/api.js'></script>
+    <?php } ?>
+    <script>
+        <?php if(is_staff_logged_in()){  ?>
+          var admin_url = '<?php echo admin_url(); ?>';
+          <?php } ?>
+          var site_url = '<?php echo site_url(''); ?>';
+        // Settings required for javascript
+        var calendar_events_limit = "<?php echo get_option("calendar_events_limit"); ?>";
+        var maximum_allowed_ticket_attachments = "<?php echo get_option("maximum_allowed_ticket_attachments"); ?>";
+        var max_php_ini_upload_size = "<?php echo bytesToSize('', file_upload_max_size()); ?>";
+        var file_exceds_maxfile_size_in_form = "<?php echo _l('file_exceds_maxfile_size_in_form'); ?>";
+        var drop_files_here_to_upload = "<?php echo _l('drop_files_here_to_upload'); ?>";
+        var browser_not_support_drag_and_drop = "<?php echo _l('browser_not_support_drag_and_drop'); ?>";
+        var remove_file = "<?php echo _l('remove_file'); ?>";
+        var tables_pagination_limit = "<?php echo get_option("tables_pagination_limit"); ?>";
+        var date_format = "<?php echo get_option("dateformat"); ?>";
+        date_format = date_format.split('|');
+        date_format = date_format[0];
+        var dt_lang = <?php echo json_encode(get_datatables_language_array()); ?>;
+        var discussions_lang = <?php echo json_encode(get_project_discussions_language_array()); ?>;
+        var confirm_action_prompt = "<?php echo _l('confirm_action_prompt'); ?>";
+        var cf_translate_input_link_tip = "<?php echo _l('cf_translate_input_link_tip'); ?>";
+        var cfh_popover_templates  = {};
+        // Discussions
+        var locale = '<?php echo $locale; ?>';
+        var allowed_files = "<?php echo get_option('allowed_files'); ?>";
+        var isRTL = '<?php echo $isRTL; ?>';
+        var calendar_first_day = '<?php echo get_option('calendar_first_day'); ?>';
+        var months_json = '<?php echo json_encode(array(_l('January'),_l('February'),_l('March'),_l('April'),_l('May'),_l('June'),_l('July'),_l('August'),_l('September'),_l('October'),_l('November'),_l('December'))); ?>';
+        window.addEventListener('load',function(){
+            custom_fields_hyperlink();
+        });
+    </script>
+    <?php
+    $contents = ob_get_contents();
+    ob_end_clean();
+    echo $contents;
 }

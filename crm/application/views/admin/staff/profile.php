@@ -43,7 +43,7 @@
                         </div>
                         <div class="form-group">
                             <label for="default_language" class="control-label"><?php echo _l('localization_default_language'); ?></label>
-                            <select name="default_language" id="default_language" class="form-control selectpicker" data-none-selected-text="<?php echo _l('dropdown_non_selected_tex'); ?>">
+                            <select name="default_language" data-live-search="true" id="default_language" class="form-control selectpicker" data-none-selected-text="<?php echo _l('dropdown_non_selected_tex'); ?>">
                                 <option value=""><?php echo _l('system_default_string'); ?></option>
                                 <?php foreach(list_folders(APPPATH .'language') as $language){
                                     $selected = '';

@@ -65,7 +65,7 @@
 								<address>
 									<span class="bold"><?php echo $invoice->client->company; ?></span><br>
 									<?php echo $invoice->billing_street; ?><br>
-									<?php echo $invoice->billing_city; ?>, <?php echo $invoice->billing_state; ?><br/><?php echo get_country_short_name($invoice->billing_country); ?>,<?php echo $invoice->billing_zip; ?><br>
+									<?php echo $invoice->billing_city; ?>, <?php echo $invoice->billing_state; ?><br/><?php echo get_country_short_name($invoice->billing_country); ?>, <?php echo $invoice->billing_zip; ?><br>
 									<?php if(!empty($invoice->client->vat)){ ?>
 									<?php echo _l('invoice_vat'); ?>: <?php echo $invoice->client->vat; ?><br />
 									<?php } ?>

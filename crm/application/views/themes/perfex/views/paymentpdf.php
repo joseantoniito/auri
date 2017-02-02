@@ -43,8 +43,8 @@ $pdf->writeHTMLCell(($swap == '0' ? (($dimensions['wk'] / 2) - $dimensions['rm']
 // Bill to
 $client_details = '';
 $client_details .= $payment->invoice_data->client->company . '<br />';
-$client_details .= $payment->invoice_data->billing_street . '<br />' . $payment->invoice_data->billing_city . ', ' . $payment->invoice_data->billing_city .'<br />'.
-get_country_short_name($payment->invoice_data->billing_country) . ',' . $payment->invoice_data->billing_zip . '<br />';
+$client_details .= $payment->invoice_data->billing_street . '<br />' . $payment->invoice_data->billing_city . ', ' . $payment->invoice_data->billing_state .'<br />'.
+get_country_short_name($payment->invoice_data->billing_country) . ', ' . $payment->invoice_data->billing_zip . '<br />';
 if (!empty($payment->invoice_data->client->vat)) {
     $client_details .= _l('invoice_vat') . ' ' . $payment->invoice_data->client->vat . '<br />';
 }

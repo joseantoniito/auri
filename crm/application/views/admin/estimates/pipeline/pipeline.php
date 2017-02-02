@@ -8,7 +8,7 @@ foreach ($estimate_statuses as $status) {
  <ul class="kan-ban-col" data-col-status-id="<?php echo $status; ?>" data-total-pages="<?php echo $total_pages; ?>">
     <li class="kan-ban-col-wrapper">
         <div class="border-right panel_s">
-            <div class="panel-heading-bg <?php echo estimate_status_color_class($status); ?>-bg">
+            <div class="panel-heading-bg <?php echo estimate_status_color_class($status); ?>-bg estimate-status-pipeline-<?php echo estimate_status_color_class($status); ?>">
                 <div class="kan-ban-step-indicator<?php if($i == count($estimate_statuses) -1){ echo ' kan-ban-step-indicator-full'; } ?>"></div>
                 <?php echo estimate_status_by_id($status); ?>
             </div>

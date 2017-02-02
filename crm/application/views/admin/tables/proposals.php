@@ -82,7 +82,6 @@ foreach($custom_fields as $field){
 }
 
 $result  = data_tables_init($aColumns, $sIndexColumn, $sTable, $join, $where, array(
-    'tblproposals.id',
     'currency',
     'rel_id',
     'rel_type',
@@ -101,9 +100,9 @@ foreach ($rResult as $aRow) {
             $_data = $aRow[ $aColumns[$i] ];
         }
         if($aColumns[$i] == 'tblproposals.id'){
-            $_data = '<a href="#" onclick="init_proposal(' . $aRow['id'] . '); return false;">' . format_proposal_number($aRow['tblproposals.id']) . '</a>';
+            $_data = '<a href="' . admin_url('proposals/list_proposals/' . $aRow['tblproposals.id']) . '" onclick="init_proposal(' . $aRow['tblproposals.id'] . '); return false;">' . format_proposal_number($aRow['tblproposals.id']) . '</a>';
         } else if ($aColumns[$i] == 'subject') {
-            $_data = '<a href="#" onclick="init_proposal(' . $aRow['id'] . '); return false;">' . $_data . '</a>';
+            $_data = '<a href="' . admin_url('proposals/list_proposals/' . $aRow['tblproposals.id']) . '" onclick="init_proposal(' . $aRow['tblproposals.id'] . '); return false;">' . $_data . '</a>';
         } else if ($aColumns[$i] == 'status') {
             $_data = format_proposal_status($aRow['status']);
         } else if($aColumns[$i] == 'total'){

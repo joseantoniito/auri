@@ -35,6 +35,7 @@
 }
 ?>
 <script>
+    custom_fields_hyperlink();
     init_selectpicker();
     init_datepicker();
     init_color_pickers();

@@ -113,12 +113,12 @@ public function get_html($data = array()){
                         <?php echo _l('payment_for_invoice'); ?> <a href="<?php echo site_url('viewinvoice/'. $data['invoice']->id . '/' . $data['invoice']->hash); ?>"><?php echo format_invoice_number($data['invoice']->id); ?></a>
                      </h4>
                      <hr />
-                     <p><span class="bold"><?php echo _l('payment_total',format_money($data['total'],$data['invoice']->symbol)); ?></span></p>
+                     <h4 class="mbot20"><?php echo _l('payment_total',format_money($data['total'],$data['invoice']->symbol)); ?></h4>
                      <?php echo form_open(site_url('gateways/authorize_aim/complete_purchase'),array('novalidate'=>true,'id'=>'authorize_form')); ?>
                      <?php echo form_hidden('invoiceid',$data['invoice']->id); ?>
                      <?php echo form_hidden('total',$data['total']); ?>
                      <div>
-                        <div class="form-group">
+                        <div class="form-group mtop15">
                            <label class="control-label">
                            <?php echo _l('payment_credit_card_number'); ?>
                            </label>
@@ -126,21 +126,18 @@ public function get_html($data = array()){
                         </div>
                      </div>
                      <div>
-                        <div class="row">
-                           <div class="form-group">
-                              <div class="col-md-12">
-                                 <label class="control-label">
-                                 <?php echo _l('payment_credit_card_expiration_date'); ?> (MM/YYYY)
-                                 </label>
-                              </div>
-                              <div class="col-md-6">
-                                 <input class="form-control" name="expMonth" id="expMonth" type="number" maxlength="2" required />
-                              </div>
-                              <div class="col-md-6">
-                                 <input class="form-control" name="expYear" id="expYear" type="number" maxlength="4" required />
-                              </div>
-                           </div>
-                        </div>
+                       <div class="form-group">
+                        <label class="control-label" for="expMonth">
+                         <?php echo _l('card_expiration_month'); ?> (MM)
+                       </label>
+                       <input class="form-control" name="expMonth" id="expMonth" type="number" maxlength="2" required />
+                     </div>
+                     <div class="form-group">
+                      <label class="control-label" for="expYear">
+                       <?php echo _l('card_expiration_year'); ?> (YYYY)
+                     </label>
+                     <input class="form-control" name="expYear" id="expYear" type="number" maxlength="4" required />
+                   </div>
                      </div>
                      <div>
                         <div class="form-group mtop15">
@@ -149,8 +146,9 @@ public function get_html($data = array()){
                            </label>
                            <input class="form-control" name="cvv" id="cvv" type="text" autocomplete="off" required />
                         </div>
-                        <p class="bold"><?php echo _l('billing_address'); ?></p>
-                        <div class="form-group">
+                        <hr />
+                        <h4><?php echo _l('billing_address'); ?></h4>
+                        <div class="form-group mtop15">
                            <label class="control-label">
                            <?php echo _l('payment_cardholder_name'); ?>
                            </label>

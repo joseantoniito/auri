@@ -1,9 +1,9 @@
 	<div class="panel_s">
 		<div class="panel-body">
 			<div class="row kb-article">
-				<div class="col-md-<?php if(count($related_articles) == 0){echo '12';}else{echo '8 border-right';} ?>">
-					<h1 class="bold no-margin"><?php echo $article->subject; ?></h1>
-					<hr />
+				<div class="col-md-<?php if(count($related_articles) == 0){echo '12';}else{echo '8';} ?>">
+					<h1 class="bold no-mtop kb-article-single-heading"><?php echo $article->subject; ?></h1>
+					<hr class="no-mtop" />
 					<div class="mtop10 tc-content">
 						<?php echo $article->description; ?>
 					</div>
@@ -17,23 +17,22 @@
 					</div>
 				</div>
 				<?php if(count($related_articles) > 0){ ?>
-					<div class="col-md-4">
-						<h4 class="bold no-margin"><?php echo _l('related_knowledgebase_articles'); ?></h4>
+				<div class="col-md-4">
+					<h4 class="bold no-mtop h3 kb-related-heading"><?php echo _l('related_knowledgebase_articles'); ?></h4>
+					<hr class="no-mtop" />
+					<ul class="mtop10 articles_list">
+						<?php foreach($related_articles as $article) { ?>
+						<li>
+							<a href="<?php echo site_url('knowledge_base/'.$article['slug']); ?>" class="article-heading"><?php echo $article['subject']; ?></a>
+							<div class="text-muted mtop10"><?php echo strip_tags(mb_substr($article['description'],0,100)); ?>...</div>
+						</li>
 						<hr />
-						<ul class="mtop10 articles_list">
-							<?php foreach($related_articles as $article) { ?>
-								<li>
-									<i class="fa fa-file-text-o"></i>
-									<a href="<?php echo site_url('knowledge_base/'.$article['slug']); ?>" class="article-heading"><?php echo $article['subject']; ?></a>
-									<div class="text-muted mtop10"><?php echo strip_tags(mb_substr($article['description'],0,100)); ?>...</div>
-								</li>
-								<hr />
-								<?php } ?>
-							</ul>
-						</div>
 						<?php } ?>
-					</div>
+					</ul>
 				</div>
+				<?php } ?>
 			</div>
-			<?php
+		</div>
+	</div>
+	<?php
 

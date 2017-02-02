@@ -2,6 +2,7 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 $assignee_column = 3;
+
 $aColumns = array(
     'name',
     'startdate',
@@ -17,10 +18,6 @@ if($this->_instance->input->get('bulk_actions')){
     $assignee_column = 4;
 }
 
-if (has_permission('tasks', '', 'create') || has_permission('tasks', '', 'edit')) {
-    array_push($aColumns, 'billable');
-    array_push($aColumns, 'billed');
-}
 
 $where = array();
 include_once(APPPATH . 'views/admin/tables/includes/tasks_filter.php');
@@ -40,6 +37,9 @@ foreach ($custom_fields as $field) {
     array_push($join, 'LEFT JOIN tblcustomfieldsvalues as ctable_' . $i . ' ON tblstafftasks.id = ctable_' . $i . '.relid AND ctable_' . $i . '.fieldto="' . $field['fieldto'] . '" AND ctable_' . $i . '.fieldid=' . $field['id']);
     $i++;
 }
+
+$aColumns = do_action('tasks_table_sql_columns',$aColumns);
+
 $sIndexColumn = "id";
 $sTable       = 'tblstafftasks';
 // Fix for big queries. Some hosting have max_join_limit
@@ -65,10 +65,11 @@ foreach ($rResult as $aRow) {
             $_data = $aRow[$aColumns[$i]];
         }
 
+
         if($aColumns[$i] == '1'){
             $_data = '<div class="checkbox"><input type="checkbox" value="'.$aRow['id'].'"><label></label></div>';
         } else if ($aColumns[$i] == 'name') {
-            $_data = '<a href="#" class="main-tasks-table-href-name" onclick="init_task_modal(' . $aRow['id'] . '); return false;">' . $_data . '</a>';
+            $_data = '<a href="'.admin_url('tasks/index/'.$aRow['id']).'" class="main-tasks-table-href-name" onclick="init_task_modal(' . $aRow['id'] . '); return false;">' . $_data . '</a>';
         } else if ($aColumns[$i] == 'startdate' || $aColumns[$i] == 'duedate') {
             if ($aColumns[$i] == 'startdate') {
                 $_data = _d($aRow['startdate']);
@@ -76,7 +77,7 @@ foreach ($rResult as $aRow) {
                 $_data = _d($aRow['duedate']);
             }
         } else if ($aColumns[$i] == 'status') {
-            $_data = '<span class="inline-block label label-'.get_status_label($aRow['status']).'">' . format_task_status($aRow['status'],false,true);
+            $_data = '<span class="inline-block label label-'.get_status_label($aRow['status']).'" task-status-table="'.$aRow['status'].'">' . format_task_status($aRow['status'],false,true);
             if ($aRow['status'] == 5) {
                 $_data .= '<a href="#" onclick="unmark_complete(' . $aRow['id'] . '); return false;"><i class="fa fa-check task-icon task-finished-icon" data-toggle="tooltip" title="' . _l('task_unmark_as_complete') . '"></i></a>';
             } else {
@@ -145,24 +146,24 @@ foreach ($rResult as $aRow) {
                 }
             }
             if ($export_assignees != '') {
-                $_data .= '<span class="hide">' . substr($export_assignees, 0, -2) . '</span>';
+                $_data .= '<span class="hide">' . mb_substr($export_assignees, 0, -2) . '</span>';
             }
         } else {
             if (strpos($aColumns[$i], 'date_picker_') !== false) {
                 $_data = _d($_data);
             }
         }
+        $hook_data = do_action('tasks_tr_data_output',array('output'=>$_data,'column'=>$aColumns[$i],'id'=>$aRow['id']));
+        $_data = $hook_data['output'];
         $row[] = $_data;
     }
     $options = '';
-
 
     if (has_permission('tasks', '', 'edit')) {
         $options .= icon_btn('#', 'pencil-square-o', 'btn-default pull-right mleft5', array(
             'onclick' => 'edit_task(' . $aRow['id'] . '); return false'
         ));
     }
-
 
     $class = 'btn-success no-margin';
     $atts  = array(

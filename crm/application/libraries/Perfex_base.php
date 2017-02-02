@@ -14,6 +14,7 @@ class Perfex_Base
     private $show_setup_menu = true;
     // Currently reminders
     private $available_reminders = array('customer', 'lead', 'estimate', 'invoice', 'proposal', 'expense');
+
     private $tables_with_currency = array();
     // Media folder
     private $media_folder;
@@ -54,9 +55,10 @@ class Perfex_Base
         $this->media_folder = do_action('before_set_media_folder', 'media');
 
         foreach (list_folders(APPPATH . 'language') as $language) {
-            array_push($this->available_languages, $language);
+            if(is_dir(APPPATH.'language/'.$language)){
+                array_push($this->available_languages, $language);
+            }
         }
-
     }
     public function get_available_languages()
     {
@@ -90,33 +92,8 @@ class Perfex_Base
     }
     public function get_option($name)
     {
-
         if ($name == 'number_padding_invoice_and_estimate') {
             $name = 'number_padding_prefixes';
-            if ($this->_instance->uri->uri_string(2) == 'admin/invoices/invoice' || $this->_instance->uri->uri_string(2) == 'admin/estimates/estimate') {
-                echo '<p class="text-danger">You are using my_ prefixed files in one of the following files:
-        <br />
-        <br />
-        1. application/views/admin/invoices/invoice_template.php<br />
-        2. application/views/admin/invoices/estimate_teplate.php
-        <br />
-        <br />
-        There is changes in one option used for this file.<br />
-        Open the files you are using as my_ prefixed and find:
-        <pre>
-        get_option(\'number_padding_invoice_and_estimate\')
-        </pre>
-        <br />
-        Replace with:
-        <pre>
-        get_option(\'number_padding_prefixes\')
-        </pre>
-        <br />
-        You only need to replace <b>number_padding_invoice_and_estimate</b> with <b>number_padding_prefixes</b>
-        <br />
-        <br />
-        </p>';
-            }
         }
         if (isset($this->options[$name])) {
             if (in_array($name, $this->dynamic_options)) {
@@ -184,14 +161,14 @@ class Perfex_Base
     }
     public function show_setup_menu()
     {
-        return $this->show_setup_menu;
+        return do_action('show_setup_menu',$this->show_setup_menu);
     }
     public function get_tables_with_currency()
     {
-        return $this->tables_with_currency;
+        return do_action('tables_with_currencies',$this->tables_with_currency);
     }
     public function get_media_folder()
     {
-        return $this->media_folder;
+        return do_action('get_media_folder',$this->media_folder);
     }
 }

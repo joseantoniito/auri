@@ -128,7 +128,7 @@ foreach ($rResult as $aRow) {
             if (is_numeric($clientid) || $this->_instance->input->post('project_id')) {
                 $__data = '<a href="' . admin_url('invoices/list_invoices/' . $aRow['id']) . '" target="_blank">' . format_invoice_number($aRow['id']) . '</a><br />';
             } else {
-               $__data = '<a href="#" onclick="init_invoice(' . $aRow['id'] . '); return false;">' . format_invoice_number($aRow['id']) . '</a><br />';
+               $__data = '<a href="' . admin_url('invoices/list_invoices/' . $aRow['id']) . '" onclick="init_invoice(' . $aRow['id'] . '); return false;">' . format_invoice_number($aRow['id']) . '</a><br />';
            }
        } else if ($aColumns[$i] == 'date') {
         $__data = _d($_data);

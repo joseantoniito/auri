@@ -9,7 +9,7 @@
           <?php echo _l('project_not_started_status_tasks_timers_found'); ?>
         </div>
         <?php } ?>
-        <?php if(date('Y-m-d') > $project->deadline && $project->status == 2){ ?>
+        <?php if($project->deadline && date('Y-m-d') > $project->deadline && $project->status == 2){ ?>
         <div class="alert alert-warning bold">
           <?php echo _l('project_due_notice',floor((abs(time() - strtotime($project->deadline)))/(60*60*24))); ?>
         </div>
@@ -69,7 +69,7 @@
                   if($status == $project->status){continue;}
                  ?>
                     <li>
-                      <a href="#" onclick="project_mark_as_modal(<?php echo $status; ?>,<?php echo $project->id; ?>); return false;"><?php echo _l('project_mark_as',_l('project_status_'.$status)); ?></a>
+                      <a href="#" onclick="project_mark_as_modal(<?php echo $status; ?>,<?php echo $project->id; ?>); return false;"><?php echo _l('project_mark_as',project_status_by_id($status)); ?></a>
                     </li>
                 <?php } ?>
                 <?php } ?>
@@ -89,7 +89,7 @@
     <div class="panel_s">
       <div class="panel-body">
         <?php do_action('before_render_project_view',$project->id); ?>
-        <?php echo '<div class="ribbon '.get_project_label($project->status).'"><span>'._l('project_status_'.$project->status).'</span></div>'; ?>
+        <?php echo '<div class="ribbon '.project_status_color_class($project->status).'" project-status-ribbon-'.$project->status.'><span>'.project_status_by_id($project->status).'</span></div>'; ?>
         <?php $this->load->view('admin/projects/project_tabs'); ?>
       </div>
     </div>
@@ -135,8 +135,9 @@ echo form_hidden('project_percent',$percent);
     discussion_comments('#discussion-comments',discussion_id,'regular');
   }
   $(function(){
+   var project_progress_color = '<?php echo do_action('admin_project_progress_color','#D8EDA3'); ?>';
    var circle = $('.project-progress').circleProgress({fill: {
-    gradient: ["#D8EDA3", "#D8EDA3"]
+    gradient: [project_progress_color, project_progress_color]
   }}).on('circle-animation-progress', function(event, progress, stepValue) {
     $(this).find('strong.project-percent').html(parseInt(100 * stepValue) + '<i>%</i>');
   });

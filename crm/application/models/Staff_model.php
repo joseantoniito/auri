@@ -22,6 +22,7 @@ class Staff_model extends CRM_Model
         if($id == $transfer_data_to) {
             return false;
         }
+
         do_action('before_delete_staff_member',array('id'=>$id,'transfer_data_to'=>$transfer_data_to));
         $name = get_staff_full_name($id);
         $transfered_to = get_staff_full_name($transfer_data_to);
@@ -260,7 +261,7 @@ class Staff_model extends CRM_Model
         } else {
             unset($data['send_welcome_email']);
         }
-        $data['email_signature'] = nl2br($data['email_signature']);
+        $data['email_signature'] = nl2br_save_html($data['email_signature']);
         $this->load->helper('phpass');
         $hasher              = new PasswordHash(PHPASS_HASH_STRENGTH, PHPASS_HASH_PORTABLE);
         $data['password']    = $hasher->HashPassword($data['password']);
@@ -371,6 +372,7 @@ class Staff_model extends CRM_Model
                     'userid' => $staffid
                 ));
             }
+            do_action('staff_member_created',$staffid);
             return $staffid;
         }
         return false;
@@ -453,7 +455,7 @@ class Staff_model extends CRM_Model
         } else {
             $data['is_not_staff'] = 0;
         }
-        $data['email_signature'] = nl2br($data['email_signature']);
+        $data['email_signature'] = nl2br_save_html($data['email_signature']);
 
         $this->load->model('departments_model');
         $staff_departments = $this->departments_model->get_staff_departments($id);
@@ -521,6 +523,7 @@ class Staff_model extends CRM_Model
             $this->db->delete('tblstaffpermissions');
         }
         if ($affectedRows > 0) {
+            do_action('staff_member_updated',$id);
             logActivity('Staff Member Updated [ID: ' . $id . ', ' . $data['firstname'] . ' ' . $data['lastname'] . ']');
             return true;
         }
@@ -588,11 +591,12 @@ class Staff_model extends CRM_Model
             $data['last_password_change'] = date('Y-m-d H:i:s');
         }
 
-        $data['email_signature'] = nl2br($data['email_signature']);
+        $data['email_signature'] = nl2br_save_html($data['email_signature']);
 
         $this->db->where('staffid',$id);
         $this->db->update('tblstaff',$data);
         if($this->db->affected_rows() > 0){
+            do_action('staff_member_profile_updated',$id);
             logActivity('Staff Profile Updated [Staff: '.get_staff_full_name($id).']');
             return true;
         }
@@ -686,7 +690,7 @@ class Staff_model extends CRM_Model
         $first_day_last_week = date('Y-m-d', strtotime('monday last week'));
         $last_day_last_week  = date('Y-m-d', strtotime('sunday last week'));
 
-        $this->db->select('task_id,start_time,end_time,staff_id,tbltaskstimers.hourly_rate,name,tbltaskstimers.id');
+        $this->db->select('task_id,start_time,end_time,staff_id,tbltaskstimers.hourly_rate,name,tbltaskstimers.id,rel_id,rel_type');
         $this->db->where('staff_id',$id);
         $this->db->join('tblstafftasks','tblstafftasks.id = tbltaskstimers.task_id');
         $timers = $this->db->get('tbltaskstimers')->result_array();
@@ -716,7 +720,6 @@ class Staff_model extends CRM_Model
             $result['total'][] = $total;
             $timer['total'] = $total;
             $timer['end_time'] = $end_time;
-//            $start_date = '2016-11-01';
 
             if ($start_date >= $first_day_this_month && $start_date <= $last_day_this_month)
             {

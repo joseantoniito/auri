@@ -28,7 +28,6 @@
                         <div class="panel_s">
                             <div class="panel-heading">
                                 <?php echo $group['name']; ?>
-
                             </div>
                             <div class="panel-body">
                                 <?php foreach($group['articles'] as $article) {

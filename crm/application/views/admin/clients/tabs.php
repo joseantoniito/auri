@@ -7,67 +7,68 @@
          }
          ?>
       <a href="<?php echo $url_profile; ?>" data-group="profile">
-      <?php echo _l( 'client_add_edit_profile'); ?>
+      <i class="fa fa-user-circle menu-icon" aria-hidden="true"></i><?php echo _l( 'client_add_edit_profile'); ?>
       </a>
    </li>
    <?php if(isset($client)) { ?>
    <?php if(has_permission('invoices','','view') || has_permission('invoices','','view_own')) { ?>
-    <li><a href="<?php echo admin_url('clients/client/'.$client->userid.'?group=invoices'); ?>" data-group="invoices"><?php echo _l( 'client_invoices_tab'); ?></a></li>
+    <li><a href="<?php echo admin_url('clients/client/'.$client->userid.'?group=invoices'); ?>" data-group="invoices"><i class="fa fa-file-text menu-icon"></i><?php echo _l( 'client_invoices_tab'); ?></a></li>
    <?php } ?>
 
     <?php if(has_permission('payments','','view') || has_permission('invoices','','view_own')) { ?>
-    <li><a href="<?php echo admin_url('clients/client/'.$client->userid.'?group=payments'); ?>" data-group="payments"><?php echo _l( 'client_payments_tab'); ?></a></li>
+    <li><a href="<?php echo admin_url('clients/client/'.$client->userid.'?group=payments'); ?>" data-group="payments"><i class="fa fa-line-chart menu-icon" aria-hidden="true"></i><?php echo _l( 'client_payments_tab'); ?></a></li>
    <?php } ?>
 
     <?php if(has_permission('proposals','','view') || has_permission('proposals','','view_own')) { ?>
-    <li><a href="<?php echo admin_url('clients/client/'.$client->userid.'?group=proposals'); ?>" data-group="proposals"><?php echo _l( 'proposals'); ?></a></li>
+    <li><a href="<?php echo admin_url('clients/client/'.$client->userid.'?group=proposals'); ?>" data-group="proposals"><i class="fa fa-file-text-o menu-icon" aria-hidden="true"></i><?php echo _l( 'proposals'); ?></a></li>
    <?php } ?>
 
      <?php if(has_permission('estimates','','view') || has_permission('estimates','','view_own')) { ?>
-    <li><a href="<?php echo admin_url('clients/client/'.$client->userid.'?group=estimates'); ?>" data-group="estimates"><?php echo _l( 'estimates'); ?></a></li>
+    <li><a href="<?php echo admin_url('clients/client/'.$client->userid.'?group=estimates'); ?>" data-group="estimates"><i class="fa fa-file-text-o menu-icon" aria-hidden="true"></i><?php echo _l( 'estimates'); ?></a></li>
    <?php } ?>
 
    <?php if(has_permission('expenses','','view') || has_permission('expenses','','view_own')){ ?>
-   <li><a href="<?php echo admin_url('clients/client/'.$client->userid.'?group=expenses'); ?>" data-group="expenses"><?php echo _l( 'client_expenses_tab'); ?></a></li>
+   <li><a href="<?php echo admin_url('clients/client/'.$client->userid.'?group=expenses'); ?>" data-group="expenses"><i class="fa fa-heartbeat menu-icon"></i><?php echo _l( 'client_expenses_tab'); ?></a></li>
    <?php } ?>
    <?php if(has_permission('contracts','','view') || has_permission('contracts','','view_own')){ ?>
-      <li><a href="<?php echo admin_url('clients/client/'.$client->userid.'?group=contracts'); ?>" data-group="contracts"><?php echo _l( 'contracts_invoices_tab'); ?></a></li>
+      <li><a href="<?php echo admin_url('clients/client/'.$client->userid.'?group=contracts'); ?>" data-group="contracts">
+       <i class="fa fa-file menu-icon"></i><?php echo _l( 'contracts_invoices_tab'); ?></a></li>
    <?php } ?>
    <li>
       <a href="<?php echo admin_url('clients/client/'.$client->userid.'?group=projects'); ?>" data-group="projects">
-      <?php echo _l( 'projects'); ?>
+      <i class="fa fa-bars menu-icon"></i><?php echo _l( 'projects'); ?>
       </a>
    </li>
    <?php if((get_option('access_tickets_to_none_staff_members') == 1 && !is_staff_member()) || is_staff_member()){ ?>
    <li>
       <a href="<?php echo admin_url('clients/client/'.$client->userid.'?group=tickets'); ?>" data-group="tickets">
-      <?php echo _l( 'contracts_tickets_tab'); ?>
+      <i class="fa fa-ticket menu-icon"></i><?php echo _l( 'contracts_tickets_tab'); ?>
       </a>
    </li>
    <?php } ?>
    <li>
       <a href="<?php echo admin_url('clients/client/'.$client->userid.'?group=tasks'); ?>" data-group="tasks">
-      <?php echo _l( 'tasks'); ?>
+      <i class="fa fa-tasks menu-icon"></i><?php echo _l( 'tasks'); ?>
       </a>
    </li>
    <li>
       <a href="<?php echo admin_url('clients/client/'.$client->userid.'?group=attachments'); ?>" data-group="attachments">
-      <?php echo _l( 'customer_attachments'); ?>
+      <i class="fa fa-paperclip menu-icon" aria-hidden="true"></i><?php echo _l( 'customer_attachments'); ?>
       </a>
    </li>
    <li>
       <a href="<?php echo admin_url('clients/client/'.$client->userid.'?group=reminders'); ?>" data-group="reminders">
-      <?php echo _l( 'client_reminders_tab'); ?>
+      <i class="fa fa-clock-o menu-icon" aria-hidden="true"></i><?php echo _l( 'client_reminders_tab'); ?>
       </a>
    </li>
    <li>
       <a href="<?php echo admin_url('clients/client/'.$client->userid.'?group=map'); ?>" data-group="map">
-      <?php echo _l( 'customer_map'); ?>
+      <i class="fa fa-map-marker menu-icon" aria-hidden="true"></i><?php echo _l( 'customer_map'); ?>
       </a>
    </li>
    <li>
       <a href="<?php echo admin_url('clients/client/'.$client->userid.'?group=notes'); ?>" data-group="notes">
-      <?php echo _l( 'contracts_notes_tab'); ?>
+      <i class="fa fa-sticky-note-o menu-icon" aria-hidden="true"></i><?php echo _l( 'contracts_notes_tab'); ?>
       </a>
    </li>
    <?php } ?>

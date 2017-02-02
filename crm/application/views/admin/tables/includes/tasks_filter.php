@@ -57,8 +57,9 @@ if(count($_assignees) > 0){
 if (!has_permission('tasks', '', 'view')) {
     array_push($where, get_tasks_where_string());
 }
+
 if(count($filter) > 0){
     array_push($where,'AND ('.prepare_dt_filter($filter).')');
 }
 
-
+$where = do_action('tasks_table_sql_where',$where);

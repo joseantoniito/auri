@@ -82,7 +82,7 @@ $(function() {
         do_prefix_year($(this).val());
     });
 
-    $('body').on('change', 'div.invoice input[name="date"]', function() {
+    $('body').on('change', 'div.invoice input[name="date"],div.estimate input[name="date"]', function() {
 
         var date = $(this).val();
         do_prefix_year(date);
@@ -90,14 +90,20 @@ $(function() {
         if ($('input[name="isedit"]').length > 0) {
             return;
         }
+        var due_date_input_name = 'duedate';
+        var due_calc_url = admin_url+'invoices/get_due_date';
+        if($('body').find('div.estimate').length > 0){
+            due_calc_url = admin_url+'estimates/get_due_date';
+            due_date_input_name = 'expirydate';
+        }
         if (date != '') {
-            $.post(admin_url + 'invoices/get_due_date', {
+            $.post(due_calc_url, {
                 date: date
             }).done(function(formated) {
-                $('input[name="duedate"]').val(formated);
+                $('input[name="'+due_date_input_name+'"]').val(formated);
             });
         } else {
-            $('input[name="duedate"]').val('');
+            $('input[name="'+due_date_input_name+'"]').val('');
         }
     });
 
@@ -145,6 +151,9 @@ $(function() {
         new Dropzone('#sales-upload', {
             createImageThumbnails: false,
             dictFileTooBig: file_exceds_maxfile_size_in_form,
+            dictDefaultMessage: drop_files_here_to_upload,
+            dictFallbackMessage: browser_not_support_drag_and_drop,
+            dictRemoveFile: remove_file,
             sending: function(file, xhr, formData) {
                 formData.append("rel_id", $('body').find('input[name="_attachment_sale_id"]').val());
                 formData.append("type", $('body').find('input[name="_attachment_sale_type"]').val());
@@ -333,9 +342,9 @@ $(function() {
     });
     // Add task data to preview from the dropdown for invoiecs
     $('body').on('change', 'select[name="task_select"]', function() {
-        var taskid = $(this).selectpicker('val');
-        if (taskid != '') {
-            add_task_to_preview_as_item(taskid);
+        var task_bill_id = $(this).selectpicker('val');
+        if (task_bill_id != '') {
+            add_task_to_preview_as_item(task_bill_id);
         }
     });
     // When user record payment check if is online mode
@@ -809,7 +818,9 @@ function fixHelperTableHelperSortable(e, ui) {
 }
 
 function init_items_sortable(preview_table) {
-    $("body").find('.items tbody').sortable({
+    var _items_sortable = $("body").find('.items tbody');
+    if(_items_sortable.length == 0){return;}
+    _items_sortable.sortable({
         helper: fixHelperTableHelperSortable,
         handle: '.dragger',
         placeholder: 'ui-placeholder',

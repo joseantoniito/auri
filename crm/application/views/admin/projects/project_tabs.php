@@ -1,55 +1,119 @@
+<?php
+$project_tabs = array(
+    array(
+        'name'=>'project_overview',
+        'url'=>admin_url('projects/view/'.$project->id.'?group=project_overview'),
+        'icon'=>'fa fa-th',
+        'lang'=>_l('project_overview'),
+        'visible'=>true,
+        'order'=>1
+        ),
+    array(
+        'name'=>'project_tasks',
+        'url'=>admin_url('projects/view/'.$project->id.'?group=project_tasks'),
+        'icon'=>'fa fa-check-circle',
+        'lang'=>_l('tasks'),
+        'visible'=>true,
+        'order'=>2
+        ),
+    array(
+        'name'=>'project_timesheets',
+        'url'=>admin_url('projects/view/'.$project->id.'?group=project_timesheets'),
+        'icon'=>'fa fa-clock-o',
+        'lang'=>_l('project_timesheets'),
+        'visible'=>true,
+        'order'=>3
+        ),
+    array(
+        'name'=>'project_milestones',
+        'url'=>admin_url('projects/view/'.$project->id.'?group=project_milestones'),
+        'icon'=>'fa fa-rocket',
+        'lang'=>_l('project_milestones'),
+        'visible'=>true,
+        'order'=>4
+        ),
+    array(
+        'name'=>'project_files',
+        'url'=>admin_url('projects/view/'.$project->id.'?group=project_files'),
+        'icon'=>'fa fa-files-o',
+        'lang'=>_l('project_files'),
+        'visible'=>true,
+        'order'=>5
+        ),
+    array(
+        'name'=>'project_discussions',
+        'url'=>admin_url('projects/view/'.$project->id.'?group=project_discussions'),
+        'icon'=>'fa fa-commenting',
+        'lang'=>_l('project_discussions'),
+        'visible'=>true,
+        'order'=>6
+        ),
+    array(
+        'name'=>'project_gantt',
+        'url'=>admin_url('projects/view/'.$project->id.'?group=project_gantt'),
+        'icon'=>'fa fa-line-chart',
+        'lang'=>_l('project_gant'),
+        'visible'=>true,
+        'order'=>7
+        ),
+    array(
+        'name'=>'project_tickets',
+        'url'=>admin_url('projects/view/'.$project->id.'?group=project_tickets'),
+        'icon'=>'fa fa-life-ring',
+        'lang'=>_l('project_tickets'),
+        'visible'=>(get_option('access_tickets_to_none_staff_members') == 1 && !is_staff_member()) || is_staff_member(),
+        'order'=>8
+        ),
+    array(
+        'name'=>'project_estimates',
+        'url'=>admin_url('projects/view/'.$project->id.'?group=project_estimates'),
+        'icon'=>'fa fa-sun-o',
+        'lang'=>_l('estimates'),
+        'visible'=>has_permission('estimates','','view') || has_permission('estimates','','view_own'),
+        'order'=>9
+        ),
+    array(
+        'name'=>'project_invoices',
+        'url'=>admin_url('projects/view/'.$project->id.'?group=project_invoices'),
+        'icon'=>'fa fa-sun-o',
+        'lang'=>_l('project_invoices'),
+        'visible'=>has_permission('invoices','','view') || has_permission('invoices','','view_own'),
+        'order'=>10
+        ),
+    array(
+        'name'=>'project_expenses',
+        'url'=>admin_url('projects/view/'.$project->id.'?group=project_expenses'),
+        'icon'=>'fa fa-sort-amount-asc',
+        'lang'=>_l('project_expenses'),
+        'visible'=>has_permission('expenses','','view') || has_permission('expenses','','view_own'),
+        'order'=>11
+        ),
+    array(
+        'name'=>'project_notes',
+        'url'=>admin_url('projects/view/'.$project->id.'?group=project_notes'),
+        'icon'=>'fa fa-clock-o',
+        'lang'=>_l('project_notes'),
+        'visible'=>true,
+        'order'=>12
+        ),
+    array(
+        'name'=>'project_activity',
+        'url'=>admin_url('projects/view/'.$project->id.'?group=project_activity'),
+        'icon'=>'fa fa-exclamation',
+        'lang'=>_l('project_activity'),
+        'visible'=>has_permission('projects','','create'),
+        'order'=>13
+        ),
+    );
+
+    $project_tabs = do_action('project_tabs_admin',$project_tabs);
+?>
 <ul class="nav nav-tabs no-margin project-tabs" role="tablist">
-    <li class="active">
-        <a data-group="project_overview" href="<?php echo admin_url('projects/view/'.$project->id.'?group=project_overview'); ?>" role="tab"><i class="fa fa-th" aria-hidden="true"></i> <?php echo _l('project_overview'); ?></a>
-    </li>
-    <li>
-        <a data-group="project_tasks" href="<?php echo admin_url('projects/view/'.$project->id.'?group=project_tasks'); ?>" role="tab"><i class="fa fa-check-circle" aria-hidden="true"></i> <?php echo _l('tasks'); ?></a>
-    </li>
-    <li>
-        <a data-group="project_timesheets" href="<?php echo admin_url('projects/view/'.$project->id.'?group=project_timesheets'); ?>" role="tab"><i class="fa fa-clock-o" aria-hidden="true"></i> <?php echo _l('project_timesheets'); ?></a>
-    </li>
-    <li>
-        <a data-group="project_milestones" href="<?php echo admin_url('projects/view/'.$project->id.'?group=project_milestones'); ?>" role="tab"><i class="fa fa-rocket" aria-hidden="true"></i> <?php echo _l('project_milestones'); ?></a>
-    </li>
-    <li>
-        <a data-group="project_files" href="<?php echo admin_url('projects/view/'.$project->id.'?group=project_files'); ?>" role="tab"><i class="fa fa-files-o" aria-hidden="true"></i> <?php echo _l('project_files'); ?></a>
-    </li>
-    <li>
-        <a data-group="project_discussions" href="<?php echo admin_url('projects/view/'.$project->id.'?group=project_discussions'); ?>" role="tab"><i class="fa fa-commenting" aria-hidden="true"></i> <?php echo _l('project_discussions'); ?></a>
-    </li>
-    <li>
-        <a data-group="project_gantt" href="<?php echo admin_url('projects/view/'.$project->id.'?group=project_gantt'); ?>" role="tab"><i class="fa fa-line-chart" aria-hidden="true"></i> <?php echo _l('project_gant'); ?></a>
-    </li>
-
-    <?php if((get_option('access_tickets_to_none_staff_members') == 1 && !is_staff_member()) || is_staff_member()){ ?>
-    <li>
-        <a data-group="project_tickets" href="<?php echo admin_url('projects/view/'.$project->id.'?group=project_tickets'); ?>" role="tab"><i class="fa fa-life-ring" aria-hidden="true"></i> <?php echo _l('project_tickets'); ?></a>
-    </li>
-    <?php } ?>
-
-    <?php if(has_permission('estimates','','view') || has_permission('estimates','','view_own')){ ?>
-    <li>
-        <a data-group="project_estimates" href="<?php echo admin_url('projects/view/'.$project->id.'?group=project_estimates'); ?>" role="tab"><i class="fa fa-sun-o" aria-hidden="true"></i> <?php echo _l('estimates'); ?></a>
-    </li>
-    <?php } ?>
-
-    <?php if(has_permission('invoices','','view') || has_permission('invoices','','view_own')){ ?>
-    <li>
-        <a data-group="project_invoices" href="<?php echo admin_url('projects/view/'.$project->id.'?group=project_invoices'); ?>" role="tab"><i class="fa fa-sun-o" aria-hidden="true"></i> <?php echo _l('project_invoices'); ?></a>
-    </li>
-    <?php } ?>
-
-    <?php if(has_permission( 'expenses','','create') || has_permission('expenses','','view_own')){ ?>
-    <li>
-        <a data-group="project_expenses" href="<?php echo admin_url('projects/view/'.$project->id.'?group=project_expenses'); ?>" role="tab"><i class="fa fa-sort-amount-asc" aria-hidden="true"></i> <?php echo _l('project_expenses'); ?></a>
-    </li>
-    <?php } ?>
-    <li>
-        <a data-group="project_notes" href="<?php echo admin_url('projects/view/'.$project->id.'?group=project_notes'); ?>" role="tab"><i class="fa fa-clock-o" aria-hidden="true"></i> <?php echo _l('project_notes'); ?></a>
-    </li>
-    <?php if(has_permission('projects','','create')){ ?>
-    <li>
-        <a data-group="project_activity" href="<?php echo admin_url('projects/view/'.$project->id.'?group=project_activity'); ?>" role="tab"><i class="fa fa-exclamation" aria-hidden="true"></i> <?php echo _l('project_activity'); ?></a>
-    </li>
-    <?php } ?>
-</ul>
+    <?php foreach($project_tabs as $tab){
+        if((isset($tab['visible']) && $tab['visible'] == true) || !isset($tab['visible'])){ ?>
+        <li class="<?php if($tab['name'] == 'project_overview'){echo 'active';} ?>">
+            <a data-group="<?php echo $tab['name']; ?>" href="<?php echo $tab['url']; ?>" role="tab"><i class="<?php echo $tab['icon']; ?>" aria-hidden="true"></i> <?php echo $tab['lang']; ?></a>
+        </li>
+        <?php } ?>
+        <?php } ?>
+    </ul>

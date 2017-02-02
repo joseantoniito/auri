@@ -33,11 +33,14 @@
                                 foreach($additional_data as $data){
                                   if(strpos($data,'<lang>') !== false){
                                     $lang = get_string_between($data, '<lang>', '</lang>');
-                                    $additional_data[$i] = _l($lang);
+                                    $temp = _l($lang);
+                                    if(strpos($temp,'project_status_') !== FALSE){
+                                      $temp = project_status_by_id(strafter($temp,'project_status_'));
+                                    }
+                                    $additional_data[$i] = $temp;
                                   }
                                   $i++;
                                 }
-
                               }
                               $description = _l($notification['description'],$additional_data);
                               if(($notification['fromcompany'] == NULL && $notification['fromuserid'] != 0) || ($notification['fromcompany'] == NULL && $notification['fromclientid'] != 0)){

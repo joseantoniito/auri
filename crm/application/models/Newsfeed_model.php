@@ -218,7 +218,7 @@ class Newsfeed_model extends CRM_Model
     public function like_post($id)
     {
         if ($this->user_liked_post($id)) {
-            return;
+            return true;
         }
         $this->db->insert('tblpostlikes', array(
             'postid' => $id,
@@ -235,7 +235,7 @@ class Newsfeed_model extends CRM_Model
                     'link'=>'#postid='.$id,
                     'additional_data'=>serialize(array(
                         get_staff_full_name(get_staff_user_id()),
-                        mb_substr($post->content, 0, 50)
+                        strip_tags(mb_substr($post->content, 0, 50))
                         ))
                     ));
             }

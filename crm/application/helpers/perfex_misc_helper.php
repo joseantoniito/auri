@@ -1,18 +1,37 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
-function is_client_id_used($id){
+function is_client_id_used($id)
+{
 
     $total = 0;
-    $total += total_rows('tblcontracts',array('client'=>$id));
-    $total += total_rows('tblestimates',array('clientid'=>$id));
-    $total += total_rows('tblexpenses',array('clientid'=>$id));
-    $total += total_rows('tblinvoices',array('clientid'=>$id));
-    $total += total_rows('tblproposals',array('rel_id'=>$id,'rel_type'=>'customer'));
-    $total += total_rows('tbltickets',array('userid'=>$id));
-    $total += total_rows('tblprojects',array('clientid'=>$id));
-    $total += total_rows('tblstafftasks',array('rel_id'=>$id,'rel_type'=>'customer'));
+    $total += total_rows('tblcontracts', array(
+        'client' => $id
+    ));
+    $total += total_rows('tblestimates', array(
+        'clientid' => $id
+    ));
+    $total += total_rows('tblexpenses', array(
+        'clientid' => $id
+    ));
+    $total += total_rows('tblinvoices', array(
+        'clientid' => $id
+    ));
+    $total += total_rows('tblproposals', array(
+        'rel_id' => $id,
+        'rel_type' => 'customer'
+    ));
+    $total += total_rows('tbltickets', array(
+        'userid' => $id
+    ));
+    $total += total_rows('tblprojects', array(
+        'clientid' => $id
+    ));
+    $total += total_rows('tblstafftasks', array(
+        'rel_id' => $id,
+        'rel_type' => 'customer'
+    ));
 
-    if($total > 0){
+    if ($total > 0) {
         return true;
     }
 
@@ -29,6 +48,15 @@ function show_just_updated_message()
             update_option('update_info_message', '');
             echo $message;
         }
+    }
+}
+function show_development_mode_message(){
+    if(ENVIRONMENT == 'development' || ENVIRONMENT == 'testing'){
+        echo '<div class="col-md-12">';
+        echo '<div class="alert alert-warning">';
+        echo 'Environment set to <b>' . ENVIRONMENT . '</b>. Don\'t forget to set back to <b>production</b> in the main index.php file after finishing your tests.';
+        echo '</div>';
+        echo '</div>';
     }
 }
 /**
@@ -106,7 +134,7 @@ function parse_email_template($template, $merge_fields = array())
         $template = $CI->db->get('tblemailtemplates')->row();
 
         if ($CI->input->post('email_template_custom')) {
-            $template->message = $CI->input->post('email_template_custom',FALSE);
+            $template->message = $CI->input->post('email_template_custom', FALSE);
             // Replace the subject too
             $template->subject = $original_template->subject;
         }
@@ -151,7 +179,7 @@ function get_system_favourite_colors()
         '#fb8c00',
         '#84C529'
     );
-    $colors = do_action('get_kan_ban_colors', $colors);
+    $colors = do_action('get_system_favourite_colors', $colors);
     return $colors;
 }
 function get_goal_types()
@@ -774,7 +802,7 @@ function set_ticket_open($current, $id, $admin = true)
  */
 function get_timezones_list()
 {
-    return $timezones = array(
+    return do_action('get_timezones_list', array(
         'Pacific/Midway' => "(GMT-11:00) Midway Island",
         'US/Samoa' => "(GMT-11:00) Samoa",
         'US/Hawaii' => "(GMT-10:00) Hawaii",
@@ -800,6 +828,7 @@ function get_timezones_list()
         'Canada/Newfoundland' => "(GMT-03:30) Newfoundland",
         'America/Buenos_Aires' => "(GMT-03:00) Buenos Aires",
         'Greenland' => "(GMT-03:00) Greenland",
+        'America/Sao_Paulo' => "(GMT-03:00) Brazil/Sao Paulo",
         'Atlantic/Stanley' => "(GMT-02:00) Stanley",
         'Atlantic/Azores' => "(GMT-01:00) Azores",
         'Atlantic/Cape_Verde' => "(GMT-01:00) Cape Verde Is.",
@@ -887,8 +916,8 @@ function get_timezones_list()
         'Asia/Magadan' => "(GMT+12:00) Magadan",
         'Pacific/Auckland' => "(GMT+12:00) Auckland",
         'Pacific/Fiji' => "(GMT+12:00) Fiji",
-        'Africa/Algiers' => "(GMT+01:00) Algiers",
-    );
+        'Africa/Algiers' => "(GMT+01:00) Algiers"
+    ));
 }
 function get_locales()
 {
@@ -901,7 +930,7 @@ function get_locales()
         "Albanian" => 'sq',
         "German" => 'de',
         "Deutsch" => 'de',
-        'Dutch' => 'de',
+        'Dutch' => 'nl',
         "Greek" => 'el',
         "English" => 'en',
         "Finland" => 'fi',
@@ -956,8 +985,9 @@ function get_tinymce_language($locale)
     }
     return $_lang;
 }
-function is_mobile(){
-    $CI = &get_instance();
+function is_mobile()
+{
+    $CI =& get_instance();
     $CI->load->library('user_agent');
     if ($CI->agent->is_mobile()) {
         return true;
@@ -1104,10 +1134,11 @@ function get_permission_conditions()
         )
     );
 }
-function get_proposal_templates(){
+function get_proposal_templates()
+{
     $proposal_templates = array();
-    foreach(list_files(VIEWPATH.'admin/proposals/templates') as $template){
-       $proposal_templates[] = $template;
+    foreach (list_files(VIEWPATH . 'admin/proposals/templates') as $template) {
+        $proposal_templates[] = $template;
     }
 
     return $proposal_templates;
@@ -1115,25 +1146,25 @@ function get_proposal_templates(){
 function get_datatables_language_array()
 {
     $lang = array(
-        'emptyTable' => preg_replace("/{(\d+)}/", htmlentities(_l("dt_entries")), htmlentities(_l("dt_empty_table"))),
-        'info' => preg_replace("/{(\d+)}/", htmlentities(_l("dt_entries")), htmlentities(_l("dt_info"))),
-        'infoEmpty' => preg_replace("/{(\d+)}/", htmlentities(_l("dt_entries")), htmlentities(_l("dt_info_empty"))),
-        'infoFiltered' => preg_replace("/{(\d+)}/", htmlentities(_l("dt_entries")), htmlentities(_l("dt_info_filtered"))),
-        'lengthMenu' => preg_replace("/{(\d+)}/", htmlentities(_l("dt_entries")), htmlentities(_l("dt_length_menu"))),
-        'loadingRecords' => htmlentities(_l('dt_loading_records')),
+        'emptyTable' => preg_replace("/{(\d+)}/", _l("dt_entries"), _l("dt_empty_table")),
+        'info' => preg_replace("/{(\d+)}/", _l("dt_entries"), _l("dt_info")),
+        'infoEmpty' => preg_replace("/{(\d+)}/", _l("dt_entries"), _l("dt_info_empty")),
+        'infoFiltered' => preg_replace("/{(\d+)}/", _l("dt_entries"), _l("dt_info_filtered")),
+        'lengthMenu' => preg_replace("/{(\d+)}/", _l("dt_entries"), _l("dt_length_menu")),
+        'loadingRecords' => _l('dt_loading_records'),
         'processing' => '<div class="dt-loader"></div>',
         'search' => '<div class="input-group"><span class="input-group-addon"><span class="glyphicon glyphicon-search"></span></span>',
-        'searchPlaceholder' => htmlentities(_l('dt_search')),
-        'zeroRecords' => htmlentities(_l('dt_zero_records')),
+        'searchPlaceholder' => _l('dt_search'),
+        'zeroRecords' => _l('dt_zero_records'),
         'paginate' => array(
-            'first' => htmlentities(_l('dt_paginate_first')),
-            'last' => htmlentities(_l('dt_paginate_last')),
-            'next' => htmlentities(_l('dt_paginate_next')),
-            'previous' => htmlentities(_l('dt_paginate_previous'))
+            'first' => _l('dt_paginate_first'),
+            'last' => _l('dt_paginate_last'),
+            'next' => _l('dt_paginate_next'),
+            'previous' => _l('dt_paginate_previous')
         ),
         'aria' => array(
-            'sortAscending' => htmlentities(_l('dt_sort_ascending')),
-            'sortDescending' => htmlentities(_l('dt_sort_descending'))
+            'sortAscending' => _l('dt_sort_ascending'),
+            'sortDescending' => _l('dt_sort_descending')
         )
     );
     return $lang;
@@ -1141,22 +1172,22 @@ function get_datatables_language_array()
 function get_project_discussions_language_array()
 {
     $lang = array(
-        'discussion_add_comment' => htmlentities(_l('discussion_add_comment')),
-        'discussion_newest' => htmlentities(_l('discussion_newest')),
-        'discussion_oldest' => htmlentities(_l('discussion_oldest')),
-        'discussion_attachments' => htmlentities(_l('discussion_attachments')),
-        'discussion_send' => htmlentities(_l('discussion_send')),
-        'discussion_reply' => htmlentities(_l('discussion_reply')),
-        'discussion_edit' => htmlentities(_l('discussion_edit')),
-        'discussion_edited' => htmlentities(_l('discussion_edited')),
-        'discussion_you' => htmlentities(_l('discussion_you')),
-        'discussion_save' => htmlentities(_l('discussion_save')),
-        'discussion_delete' => htmlentities(_l('discussion_delete')),
-        'discussion_view_all_replies' => htmlentities(_l('discussion_view_all_replies')),
-        'discussion_hide_replies' => htmlentities(_l('discussion_hide_replies')),
-        'discussion_no_comments' => htmlentities(_l('discussion_no_comments')),
-        'discussion_no_attachments' => htmlentities(_l('discussion_no_attachments')),
-        'discussion_attachments_drop' => htmlentities(_l('discussion_attachments_drop'))
+        'discussion_add_comment' => _l('discussion_add_comment'),
+        'discussion_newest' => _l('discussion_newest'),
+        'discussion_oldest' => _l('discussion_oldest'),
+        'discussion_attachments' => _l('discussion_attachments'),
+        'discussion_send' => _l('discussion_send'),
+        'discussion_reply' => _l('discussion_reply'),
+        'discussion_edit' => _l('discussion_edit'),
+        'discussion_edited' => _l('discussion_edited'),
+        'discussion_you' => _l('discussion_you'),
+        'discussion_save' => _l('discussion_save'),
+        'discussion_delete' => _l('discussion_delete'),
+        'discussion_view_all_replies' => _l('discussion_view_all_replies'),
+        'discussion_hide_replies' => _l('discussion_hide_replies'),
+        'discussion_no_comments' => _l('discussion_no_comments'),
+        'discussion_no_attachments' => _l('discussion_no_attachments'),
+        'discussion_attachments_drop' => _l('discussion_attachments_drop')
     );
     return $lang;
 }
@@ -1171,12 +1202,13 @@ function render_admin_js_variables()
         'admin_url' => admin_url(),
         '_is_mobile' => is_mobile(),
         'company_is_required' => get_option('company_is_required'),
+        'show_table_columns_visibility' => do_action('show_table_columns_visibility', 0),
         'maximum_allowed_ticket_attachments' => get_option('maximum_allowed_ticket_attachments'),
         'show_setup_menu_item_only_on_hover' => get_option('show_setup_menu_item_only_on_hover'),
         'calendar_events_limit' => get_option('calendar_events_limit'),
-        'lang_unit' => htmlentities(_l('unit')),
+        'lang_unit' => _l('unit'),
         'max_php_ini_upload_size' => bytesToSize('', file_upload_max_size()),
-        'file_exceds_maxfile_size_in_form' => htmlentities(_l('file_exceds_maxfile_size_in_form')),
+        'file_exceds_maxfile_size_in_form' => _l('file_exceds_maxfile_size_in_form'),
         'auto_check_for_new_notifications' => get_option('auto_check_for_new_notifications'),
         'tables_pagination_limit' => get_option('tables_pagination_limit'),
         'newsfeed_maximum_files_upload' => get_option('newsfeed_maximum_files_upload'),
@@ -1185,41 +1217,43 @@ function render_admin_js_variables()
         'decimal_separator' => get_option('decimal_separator'),
         'thousand_separator' => get_option('thousand_separator'),
         'currency_placement' => get_option('currency_placement'),
-        'drop_files_here_to_upload' => htmlentities(_l('drop_files_here_to_upload')),
-        'browser_not_support_drag_and_drop' => htmlentities(_l('browser_not_support_drag_and_drop')),
-        'remove_file' => htmlentities(_l('remove_file')),
-        'you_can_not_upload_any_more_files' => htmlentities(_l('you_can_not_upload_any_more_files')),
+        'drop_files_here_to_upload' => _l('drop_files_here_to_upload'),
+        'browser_not_support_drag_and_drop' => _l('browser_not_support_drag_and_drop'),
+        'remove_file' => _l('remove_file'),
+        'you_can_not_upload_any_more_files' => _l('you_can_not_upload_any_more_files'),
         'timezone' => get_option('default_timezone'),
-        'dt_length_menu_all' => htmlentities(_l("dt_length_menu_all")),
-        'dt_button_column_visibility' => htmlentities(_l('dt_button_column_visibility')),
-        'dt_button_reload' => htmlentities(_l('dt_button_reload')),
-        'dt_button_excel' => htmlentities(_l('dt_button_excel')),
-        'dt_button_csv' => htmlentities(_l('dt_button_csv')),
-        'dt_button_pdf' => htmlentities(_l('dt_button_pdf')),
-        'dt_button_print' => htmlentities(_l('dt_button_print')),
-        'dt_button_export' => htmlentities(_l('dt_button_export')),
-        'item_field_not_formated' => htmlentities(_l('numbers_not_formated_while_editing')),
-        'no_results_found' => htmlentities(_l('not_results_found')),
+        'dt_length_menu_all' => _l("dt_length_menu_all"),
+        'dt_button_column_visibility' => _l('dt_button_column_visibility'),
+        'dt_button_reload' => _l('dt_button_reload'),
+        'dt_button_excel' => _l('dt_button_excel'),
+        'dt_button_csv' => _l('dt_button_csv'),
+        'dt_button_pdf' => _l('dt_button_pdf'),
+        'dt_button_print' => _l('dt_button_print'),
+        'dt_button_export' => _l('dt_button_export'),
+        'item_field_not_formated' => _l('numbers_not_formated_while_editing'),
+        'no_results_found' => _l('not_results_found'),
         'google_api' => '',
         'calendarIDs' => '',
         'has_tasks_permission' => has_permission('tasks', '', 'create'),
         'invoice_due_after' => get_option('invoice_due_after'),
-        'media_files' => htmlentities(_l('media_files')),
-        'proposal_save' => htmlentities(_l('proposal_save')),
-        'contract_save' => htmlentities(_l('contract_save')),
-        'calendar_expand' => htmlentities(_l('calendar_expand')),
+        'media_files' => _l('media_files'),
+        'proposal_save' => _l('proposal_save'),
+        'contract_save' => _l('contract_save'),
+        'calendar_expand' => _l('calendar_expand'),
         'allowed_files' => get_option('allowed_files'),
-        'dropdown_non_selected_text' => htmlentities(_l('dropdown_non_selected_tex')),
-        'confirm_action_prompt' => htmlentities(_l('confirm_action_prompt')),
-        'mass_delete_btn' => htmlentities(_l('mass_delete')),
+        'dropdown_non_selected_text' => _l('dropdown_non_selected_tex'),
+        'confirm_action_prompt' => _l('confirm_action_prompt'),
+        'mass_delete_btn' => _l('mass_delete'),
         'calendar_first_day' => get_option('calendar_first_day'),
-        'estimate_number_exists' => htmlentities(_l('estimate_number_exists')),
-        'invoice_number_exists' => htmlentities(_l('invoice_number_exists')),
-        'no_results_text_search_dropdown' => htmlentities(_l('no_results_text_search_dropdown')),
-        'email_exists' => htmlentities(_l('email_exists')),
+        'estimate_number_exists' => _l('estimate_number_exists'),
+        'invoice_number_exists' => _l('invoice_number_exists'),
+        'no_results_text_search_dropdown' => _l('no_results_text_search_dropdown'),
+        'email_exists' => _l('email_exists'),
+        'options_string_translate' => _l('options'),
+        'cf_translate_input_link_tip' => _l('cf_translate_input_link_tip'),
         'is_admin' => is_admin(),
         'is_staff_member' => is_staff_member(),
-        'invoice_task_billable_timers_found'=>htmlentities(_l('invoice_task_billable_timers_found')),
+        'invoice_task_billable_timers_found' => _l('invoice_task_billable_timers_found')
     );
     $js_vars     = do_action('before_render_js_vars_admin', $js_vars);
     echo '<script>';
@@ -1244,7 +1278,7 @@ function get_form_accepted_mimes()
 {
     $allowed_extensions  = get_option('allowed_files');
     $_allowed_extensions = explode(',', $allowed_extensions);
-    $all_form_ext               = $allowed_extensions;
+    $all_form_ext        = $allowed_extensions;
     if (is_array($_allowed_extensions)) {
         foreach ($_allowed_extensions as $ext) {
             $all_form_ext .= ',' . get_mime_by_extension($ext);
@@ -1385,7 +1419,7 @@ function get_client_email_templates_slugs()
         'estimate-expiry-reminder',
         'task-marked-as-finished-to-contacts',
         'task-added-attachment-to-contacts',
-        'task-commented-to-contacts',
+        'task-commented-to-contacts'
     );
 
     return do_action('client_email_templates', $client_email_templates_slugs);
@@ -1416,7 +1450,7 @@ function get_staff_email_templates_slugs()
         'new-project-discussion-comment-to-staff',
         'staff-added-as-project-member',
         'new-staff-created',
-        'new-lead-assigned',
+        'new-lead-assigned'
     );
 
     return do_action('staff_email_templates', $staff_email_templates_slugs);
@@ -1424,7 +1458,7 @@ function get_staff_email_templates_slugs()
 
 function get_email_template_language($template_slug, $email)
 {
-    $CI = &get_instance();
+    $CI =& get_instance();
     $language = get_option('active_language');
 
     if (total_rows('tblcontacts', array(
@@ -1452,27 +1486,39 @@ function get_email_template_language($template_slug, $email)
 
     return $language;
 }
-function get_email_template_for_sending($template_slug,$email){
+function get_email_template_for_sending($template_slug, $email)
+{
 
-    $CI = &get_instance();
+    $CI =& get_instance();
 
-    $language = get_email_template_language($template_slug,$email);
+    $language = get_email_template_language($template_slug, $email);
 
-    $CI->db->where('language',$language);
+    if (!is_dir(APPPATH . 'language/' . $language)) {
+        $language = 'english';
+    }
+
+    $CI->db->where('language', $language);
     $CI->db->where('slug', $template_slug);
     $template = $CI->db->get('tblemailtemplates')->row();
 
     // Template message blank use the active language default template
-    if($template->message == ''){
-        $CI->db->where('language',get_option('active_language'));
+    if ($template->message == '') {
+        $CI->db->where('language', get_option('active_language'));
         $CI->db->where('slug', $template_slug);
         $template = $CI->db->get('tblemailtemplates')->row();
+
+        if ($template->message == '') {
+            $CI->db->where('language', 'english');
+            $CI->db->where('slug', $template_slug);
+            $template = $CI->db->get('tblemailtemplates')->row();
+        }
     }
 
     return $template;
 
 }
-function optimize_dropbox_thumbnail($url,$bounding_box = '800'){
-    $url = str_replace('bounding_box=75','bounding_box='.$bounding_box,$url);
+function optimize_dropbox_thumbnail($url, $bounding_box = '800')
+{
+    $url = str_replace('bounding_box=75', 'bounding_box=' . $bounding_box, $url);
     return $url;
 }

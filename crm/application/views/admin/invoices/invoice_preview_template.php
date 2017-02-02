@@ -153,7 +153,7 @@
                 <?php
                 if($invoice->recurring > 0 || $invoice->is_recurring_from != NULL) {
                     $recurring_invoice = $invoice;
-                    $next_recurring_date_compare = $recurring_invoice->date;
+                    $next_recurring_date_compare = to_sql_date($recurring_invoice->date);
                     if($recurring_invoice->last_recurring_date){
                       $next_recurring_date_compare = $recurring_invoice->last_recurring_date;
                     }
@@ -167,10 +167,13 @@
                     $next_date = date('Y-m-d', strtotime('+' . $recurring_invoice->recurring . ' ' . strtoupper($recurring_invoice->recurring_type),strtotime($next_recurring_date_compare)));
                 ?>
                 <div class="col-md-12">
-                  <h4 class="font-medium text-success"><?php echo _l('next_invoice_date',$next_date); ?>
+                  <h4 class="font-medium text-success">
+                  <?php if(!$recurring_invoice->recurring_ends_on || ($next_date <= $recurring_expense->recurring_ends_on)){ ?>
+                  <?php echo _l('next_invoice_date',_d($next_date)); ?><br />
+                  <?php } ?>
                     <?php
                      if($invoice->is_recurring_from != NULL){ ?>
-                    <?php echo '<br /><small class="text-muted">'._l('invoice_recurring_from','<a href="#" onclick="init_invoice('.$invoice->is_recurring_from.');return false;">'.format_invoice_number($invoice->is_recurring_from).'</small></a>'); ?>
+                    <?php echo '<small class="text-muted">'._l('invoice_recurring_from','<a href="#" onclick="init_invoice('.$invoice->is_recurring_from.');return false;">'.format_invoice_number($invoice->is_recurring_from).'</small></a>'); ?>
                     <?php } ?>
                   </h4>
                 </div>

@@ -15,6 +15,7 @@ class Cron_model extends CRM_Model
         $this->load->model('emails_model');
         $this->load->model('staff_model');
     }
+
     public function run($manualy = false)
     {
 
@@ -160,7 +161,6 @@ class Cron_model extends CRM_Model
         $this->db->where('isexpirynotified', 0);
         $this->db->where('dateend is NOT NULL');
         $this->db->where('trash', 0);
-        $this->db->where('not_visible_to_client', 0);
         $contracts = $this->db->get('tblcontracts')->result_array();
         $now       = new DateTime(date('Y-m-d'));
         foreach ($contracts as $contract) {
@@ -207,7 +207,6 @@ class Cron_model extends CRM_Model
     }
     public function recurring_tasks()
     {
-        $this->load->model('tasks_model');
 
         $this->db->where('recurring', 1);
         $recurring_tasks = $this->db->get('tblstafftasks')->result_array();
@@ -215,7 +214,7 @@ class Cron_model extends CRM_Model
 
         foreach ($recurring_tasks as $task) {
             if (!is_null($task['recurring_ends_on'])) {
-                if (date('Y-m-d') >= date('Y-m-d', strtotime($task['recurring_ends_on']))) {
+                if (date('Y-m-d') > date('Y-m-d', strtotime($task['recurring_ends_on']))) {
                     continue;
                 }
             }
@@ -284,7 +283,7 @@ class Cron_model extends CRM_Model
 
         foreach ($recurring_expenses as $expense) {
             if (!is_null($expense['recurring_ends_on'])) {
-                if (date('Y-m-d') >= date('Y-m-d', strtotime($expense['recurring_ends_on']))) {
+                if (date('Y-m-d') > date('Y-m-d', strtotime($expense['recurring_ends_on']))) {
                     continue;
                 }
             }
@@ -458,7 +457,7 @@ class Cron_model extends CRM_Model
         $total_renewed      = 0;
         foreach ($invoices as $invoice) {
             if (!is_null($invoice['recurring_ends_on'])) {
-                if (date('Y-m-d') >= date('Y-m-d', strtotime($invoice['recurring_ends_on']))) {
+                if (date('Y-m-d') > date('Y-m-d', strtotime($invoice['recurring_ends_on']))) {
                     continue;
                 }
             }
@@ -620,7 +619,6 @@ class Cron_model extends CRM_Model
     private function tasks_reminders()
     {
         $reminder_before = get_option('tasks_reminder_notification_before');
-        $this->load->model('tasks_model');
         $this->db->where('status !=', 5);
         $this->db->where('duedate IS NOT NULL');
         $this->db->where('deadline_notified', 0);
@@ -837,14 +835,20 @@ class Cron_model extends CRM_Model
                             $datediff  = $now - strtotime($invoice['last_overdue_reminder']);
                             $days_diff = floor($datediff / (60 * 60 * 24));
                             if ($days_diff >= $resend_days) {
-                                $this->invoices_model->send_invoice_overdue_notice($invoice['id']);
+                                if($this->invoices_model->send_invoice_overdue_notice($invoice['id'])){
+                                    do_action('invoice_overdue_reminder_sent_from_cron',$invoice['id']);
+                                }
+
                             }
                         }
                     } else {
                         $datediff  = $now - strtotime($invoice['duedate']);
                         $days_diff = floor($datediff / (60 * 60 * 24));
                         if ($days_diff >= get_option('automatically_send_invoice_overdue_reminder_after')) {
-                            $this->invoices_model->send_invoice_overdue_notice($invoice['id']);
+                            if($this->invoices_model->send_invoice_overdue_notice($invoice['id'])){
+                                do_action('invoice_overdue_reminder_sent_from_cron',$invoice['id']);
+                            }
+
                         }
                     }
                 }
@@ -1146,7 +1150,7 @@ class Cron_model extends CRM_Model
     }
     public function auto_import_imap_tickets()
     {
-        $this->db->select('host,encryption,password,email,delete_after_import')->from('tbldepartments')->where('host !=', '')->where('password !=', '')->where('email !=', '');
+        $this->db->select('host,encryption,password,email,delete_after_import,imap_username')->from('tbldepartments')->where('host !=', '')->where('password !=', '')->where('email !=', '');
         $dep_emails = $this->db->get()->result_array();
         foreach ($dep_emails as $e) {
             $password = $this->encryption->decrypt($e['password']);
@@ -1157,6 +1161,9 @@ class Cron_model extends CRM_Model
             require_once(APPPATH . 'third_party/php-imap/Imap.php');
             $mailbox    = $e['host'];
             $username   = $e['email'];
+            if(!empty($e['imap_username'])){
+                $username = $e['username'];
+            }
             $password   = $password;
             $encryption = $e['encryption'];
             // open connection

@@ -61,6 +61,7 @@ ob_end_clean();
             if(!is_mobile()){
                 echo $top_search_area;
             } ?>
+            <?php do_action('after_render_top_search'); ?>
             <li>
                 <a href="#" class="dropdown-toggle profile" data-toggle="dropdown" aria-expanded="false">
                     <?php echo staff_profile_image($_staff->staffid,array('img','img-responsive','staff-profile-image-small','pull-left')); ?>

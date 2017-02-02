@@ -1,79 +1,202 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed'); ?>
 
-ERROR - 2017-01-23 21:27:52 --> 404 Page Not Found: admin/MetisMenujsmap/index
-ERROR - 2017-01-23 21:27:52 --> 404 Page Not Found: admin/Bootstrap-selectjsmap/index
-ERROR - 2017-01-23 21:27:52 --> 404 Page Not Found: admin/Pdfmakeminjsmap/index
-ERROR - 2017-01-23 21:27:53 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-23 21:27:53 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-23 21:29:06 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-23 21:29:08 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-23 21:39:05 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-23 21:39:05 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-23 15:02:15 --> Severity: Notice --> Undefined variable: data F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 390
-ERROR - 2017-01-23 22:02:31 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-23 22:02:31 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-23 22:03:25 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-23 22:03:26 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-23 15:07:11 --> Severity: Notice --> Undefined variable: data F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 390
-ERROR - 2017-01-23 22:07:33 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-23 22:07:33 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-23 15:07:49 --> Severity: Warning --> Missing argument 1 for Inventory::get_reservations(), called in F:\xampp\htdocs\perfex_crm\crm\system\core\CodeIgniter.php on line 529 and defined F:\xampp\htdocs\perfex_crm\crm\application\controllers\admin\Inventory.php 520
-ERROR - 2017-01-23 15:07:49 --> Severity: Notice --> Undefined variable: data F:\xampp\htdocs\perfex_crm\crm\application\controllers\admin\Inventory.php 523
-ERROR - 2017-01-23 15:07:49 --> Severity: Notice --> Undefined variable: data F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 390
-ERROR - 2017-01-23 22:08:29 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-23 22:08:30 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-23 15:08:40 --> Severity: Warning --> Missing argument 1 for Inventory::get_reservations(), called in F:\xampp\htdocs\perfex_crm\crm\system\core\CodeIgniter.php on line 529 and defined F:\xampp\htdocs\perfex_crm\crm\application\controllers\admin\Inventory.php 520
-ERROR - 2017-01-23 15:08:40 --> Severity: Notice --> Undefined variable: data F:\xampp\htdocs\perfex_crm\crm\application\controllers\admin\Inventory.php 523
-ERROR - 2017-01-23 15:08:40 --> Severity: Notice --> Undefined variable: data F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 390
-ERROR - 2017-01-23 22:10:14 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-23 22:10:14 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-23 15:10:24 --> Severity: Notice --> Undefined variable: data F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 390
-ERROR - 2017-01-23 22:11:04 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-23 22:11:04 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-23 15:11:39 --> Query error: Column 'status' in where clause is ambiguous - Invalid query: SELECT `tblreservations`.`id_development`, `id_unity`, `id_lead`, `tblreservations`.`status`, `unidad`, `nombre`, `precio`, `firstname`
-FROM `tblreservations`
-INNER JOIN `tbldevelopments` ON `tblreservations`.`id_development` = `tbldevelopments`.`id`
-LEFT JOIN `tblunities` ON `tblreservations`.`id_unity` = `tblunities`.`id`
-LEFT JOIN `tbldevelopmentassessors` ON `tblreservations`.`id_development` = `tbldevelopmentassessors`.`id_development`
-LEFT JOIN `tblstaff` ON `tbldevelopmentassessors`.`id_staff` = `tblstaff`.`staffid`
-WHERE `status` = '1'
-ERROR - 2017-01-23 22:12:21 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-23 22:12:21 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-23 22:16:47 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-23 22:16:47 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-23 22:18:05 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-23 22:18:05 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-23 15:18:56 --> Severity: Notice --> Undefined index: status F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 390
-ERROR - 2017-01-23 22:29:06 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-23 22:29:08 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-23 15:29:58 --> Severity: Notice --> Undefined index: status F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 390
-ERROR - 2017-01-23 15:35:38 --> Severity: Notice --> Undefined index: status F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 390
-ERROR - 2017-01-23 15:36:10 --> Severity: Notice --> Undefined index: status F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 390
-ERROR - 2017-01-23 22:38:16 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-23 22:38:16 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-23 22:39:36 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-23 22:39:36 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-23 22:40:23 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-23 22:40:23 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-23 22:40:57 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-23 22:41:04 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-23 22:41:36 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-23 22:41:36 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-23 23:10:31 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-23 23:10:31 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-23 23:11:54 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-23 23:11:54 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-23 23:15:49 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-23 23:15:54 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-23 23:17:20 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-23 23:17:20 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-23 23:26:12 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-23 23:26:12 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-23 23:28:22 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-23 23:28:26 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-23 23:29:42 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-23 23:29:43 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-23 23:34:41 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-23 23:34:42 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-23 23:38:35 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-23 23:38:35 --> 404 Page Not Found: Assets/plugins
+ERROR - 2017-01-23 12:56:32 --> Severity: Notice --> Array to string conversion /home3/rafaq5/public_html/auri/crm/system/database/DB_driver.php 1476
+ERROR - 2017-01-23 12:56:32 --> Query error: Unknown column 'Array' in 'field list' - Invalid query: INSERT INTO `tblleads` (`name`, `email`, `phonenumber`, `description`, `dateadded`) VALUES ('Toño Flores', 'joseantoniito@hotmail.com', '4425687391', 'Prueba alta lead', Array)
+ERROR - 2017-01-23 12:56:32 --> Severity: Warning --> Cannot modify header information - headers already sent by (output started at /home3/rafaq5/public_html/auri/crm/system/core/Exceptions.php:271) /home3/rafaq5/public_html/auri/crm/system/core/Common.php 573
+ERROR - 2017-01-23 12:57:49 --> Severity: Notice --> Array to string conversion /home3/rafaq5/public_html/auri/crm/system/database/DB_driver.php 1476
+ERROR - 2017-01-23 12:57:49 --> Query error: Unknown column 'Array' in 'field list' - Invalid query: INSERT INTO `tblleads` (`name`, `email`, `phonenumber`, `description`, `dateadded`) VALUES ('Toño Flores', 'joseantoniito@hotmail.com', '4425687391', 'Prueba alta lead', Array)
+ERROR - 2017-01-23 12:57:49 --> Severity: Warning --> Cannot modify header information - headers already sent by (output started at /home3/rafaq5/public_html/auri/crm/system/core/Exceptions.php:271) /home3/rafaq5/public_html/auri/crm/system/core/Common.php 573
+ERROR - 2017-01-23 12:59:54 --> Severity: Notice --> Array to string conversion /home3/rafaq5/public_html/auri/crm/system/database/DB_driver.php 1476
+ERROR - 2017-01-23 12:59:54 --> Query error: Unknown column 'Array' in 'field list' - Invalid query: INSERT INTO `tblleads` (`name`, `email`, `phonenumber`, `description`, `dateadded`) VALUES ('Toño Flores', 'joseantoniito@hotmail.com', '4425687391', 'Prueba alta lead', Array)
+ERROR - 2017-01-23 12:59:54 --> Severity: Warning --> Cannot modify header information - headers already sent by (output started at /home3/rafaq5/public_html/auri/crm/system/core/Exceptions.php:271) /home3/rafaq5/public_html/auri/crm/system/core/Common.php 573
+ERROR - 2017-01-23 13:07:50 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-23 13:07:50 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-23 13:08:07 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-23 13:08:07 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-23 13:08:13 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-23 13:08:13 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-23 13:08:13 --> Could not find the language line "Nombre"
+ERROR - 2017-01-23 13:08:13 --> Could not find the language line "Logotipo"
+ERROR - 2017-01-23 13:08:13 --> Could not find the language line "Descripción"
+ERROR - 2017-01-23 13:08:13 --> Could not find the language line "Tipo de desarrollo"
+ERROR - 2017-01-23 13:08:13 --> Could not find the language line "Etapa de desarrollo"
+ERROR - 2017-01-23 13:08:13 --> Could not find the language line "Precio Desde"
+ERROR - 2017-01-23 13:08:13 --> Could not find the language line "Total de Unidades"
+ERROR - 2017-01-23 13:08:13 --> Could not find the language line "Entrega"
+ERROR - 2017-01-23 13:08:13 --> Could not find the language line "Dirección"
+ERROR - 2017-01-23 13:08:13 --> Could not find the language line "Código Postal"
+ERROR - 2017-01-23 13:08:13 --> Could not find the language line "Superficie de Terreno Mínima"
+ERROR - 2017-01-23 13:08:13 --> Could not find the language line "Superficie de Terreno Máxima"
+ERROR - 2017-01-23 13:08:13 --> Could not find the language line "Superficie Construida Mínima"
+ERROR - 2017-01-23 13:08:13 --> Could not find the language line "Superficie Construida Máxima"
+ERROR - 2017-01-23 13:08:13 --> Could not find the language line "Total de Recámaras"
+ERROR - 2017-01-23 13:08:13 --> Could not find the language line "Máximo de Baños"
+ERROR - 2017-01-23 13:08:13 --> Could not find the language line "Máximo de Medio-Baños"
+ERROR - 2017-01-23 13:08:13 --> Could not find the language line "Máximo de Estacionamientos"
+ERROR - 2017-01-23 13:08:13 --> Could not find the language line "Precio"
+ERROR - 2017-01-23 13:08:13 --> Could not find the language line "m2 Habitables"
+ERROR - 2017-01-23 13:08:13 --> Could not find the language line "m2 Totales"
+ERROR - 2017-01-23 13:08:13 --> Could not find the language line "Recámaras"
+ERROR - 2017-01-23 13:08:13 --> Could not find the language line "Baños"
+ERROR - 2017-01-23 13:08:13 --> Could not find the language line "Estacionam."
+ERROR - 2017-01-23 13:09:03 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-23 13:09:03 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-23 13:09:03 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-23 13:09:08 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-23 13:09:15 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-23 13:09:15 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-23 13:09:15 --> Could not find the language line "Qualification"
+ERROR - 2017-01-23 13:11:33 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-23 13:11:33 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-23 13:12:07 --> 404 Page Not Found: Assets/plugins
+ERROR - 2017-01-23 13:12:07 --> 404 Page Not Found: Assets/plugins
+ERROR - 2017-01-23 13:15:09 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-23 13:15:09 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-23 13:15:09 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-23 13:15:11 --> 404 Page Not Found: Assets/plugins
+ERROR - 2017-01-23 13:15:11 --> 404 Page Not Found: Assets/plugins
+ERROR - 2017-01-23 13:15:18 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-23 13:15:59 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-23 13:15:59 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-23 13:15:59 --> Could not find the language line "Qualification"
+ERROR - 2017-01-23 13:16:25 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-23 13:16:25 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-23 13:16:25 --> Could not find the language line "Qualification"
+ERROR - 2017-01-23 13:17:18 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-23 13:17:18 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-23 13:17:18 --> Could not find the language line "Qualification"
+ERROR - 2017-01-23 13:17:40 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-23 13:17:40 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-23 13:18:10 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-23 13:18:10 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-23 13:18:10 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-23 13:18:15 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-23 13:18:19 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-23 13:18:19 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-23 13:18:19 --> Could not find the language line "Qualification"
+ERROR - 2017-01-23 13:18:28 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-23 13:18:28 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-23 13:18:28 --> Could not find the language line "Qualification"
+ERROR - 2017-01-23 13:18:55 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-23 13:18:55 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-23 13:18:55 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-23 13:18:56 --> 404 Page Not Found: Assets/plugins
+ERROR - 2017-01-23 13:18:56 --> 404 Page Not Found: Assets/plugins
+ERROR - 2017-01-23 13:19:03 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-23 13:20:03 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-23 13:20:03 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-23 13:20:03 --> Could not find the language line "Qualification"
+ERROR - 2017-01-23 13:26:23 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-23 13:26:23 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-23 13:28:10 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-23 13:28:10 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-23 13:46:44 --> 404 Page Not Found: Assets/plugins
+ERROR - 2017-01-23 13:46:44 --> 404 Page Not Found: Assets/plugins
+ERROR - 2017-01-23 13:49:03 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-23 13:49:03 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-23 13:49:03 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-23 13:49:10 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-23 13:52:37 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-23 13:52:37 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-23 13:52:41 --> 404 Page Not Found: Assets/plugins
+ERROR - 2017-01-23 13:52:41 --> 404 Page Not Found: Assets/plugins
+ERROR - 2017-01-23 13:56:37 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-23 13:56:37 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-23 13:56:38 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-23 13:56:38 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-23 13:56:38 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-23 13:56:38 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-23 13:56:38 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-23 13:56:38 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-23 13:59:53 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-23 13:59:53 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-23 14:00:02 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-23 14:00:02 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-23 14:17:10 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-23 14:17:10 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-23 14:42:59 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-23 14:42:59 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-23 14:43:23 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-23 14:43:23 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-23 14:43:31 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-23 14:43:31 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-23 15:32:36 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-23 15:32:36 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-23 15:33:55 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-23 15:33:55 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-23 16:55:13 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-23 16:55:13 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-23 16:57:46 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-23 16:57:46 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-23 16:57:46 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-23 16:57:48 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-23 16:57:57 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-23 16:57:57 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-23 16:58:17 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-23 16:58:17 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-23 16:58:17 --> Could not find the language line "Qualification"
+ERROR - 2017-01-23 16:58:31 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-23 16:58:31 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-23 16:58:31 --> Could not find the language line "Qualification"
+ERROR - 2017-01-23 16:58:40 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-23 16:58:40 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-23 16:59:19 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-23 16:59:19 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-23 17:00:36 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-23 17:00:36 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-23 17:00:42 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-23 17:00:42 --> Could not find the language line "Qualification"
+ERROR - 2017-01-23 17:02:51 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-23 17:02:51 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-23 17:02:51 --> Could not find the language line "Qualification"
+ERROR - 2017-01-23 17:04:15 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-23 17:04:15 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-23 17:04:18 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-23 17:04:18 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-23 17:04:18 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-23 17:04:20 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-23 17:04:36 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-23 17:04:36 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-23 17:04:36 --> Could not find the language line "Qualification"
+ERROR - 2017-01-23 17:08:15 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-23 17:08:15 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-23 17:08:15 --> Could not find the language line "Qualification"
+ERROR - 2017-01-23 17:10:20 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-23 17:10:20 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-23 17:10:20 --> Could not find the language line "Qualification"
+ERROR - 2017-01-23 17:41:35 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-23 17:41:35 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-23 17:41:35 --> Could not find the language line "Qualification"
+ERROR - 2017-01-23 17:41:47 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-23 17:41:47 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-23 17:41:47 --> Could not find the language line "Qualification"
+ERROR - 2017-01-23 17:44:25 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-23 17:44:25 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-23 17:45:15 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-23 17:45:15 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-23 17:45:15 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-23 17:45:18 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-23 17:45:22 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-23 17:45:22 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-23 17:46:41 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-23 17:46:41 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-23 17:46:41 --> Could not find the language line "Qualification"
+ERROR - 2017-01-23 17:47:14 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-23 17:47:14 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-23 17:47:14 --> Could not find the language line "Qualification"
+ERROR - 2017-01-23 17:47:30 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-23 17:47:30 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-23 17:49:16 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-23 17:49:16 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-23 17:49:16 --> Could not find the language line "Qualification"
+ERROR - 2017-01-23 17:49:29 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-23 17:49:29 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-23 17:49:36 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-23 17:49:36 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-23 17:49:36 --> Could not find the language line "Qualification"
+ERROR - 2017-01-23 17:50:16 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-23 17:50:16 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-23 18:07:06 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-23 18:07:06 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-23 18:11:50 --> Severity: Warning --> Missing argument 1 for Inventory::get_location_municipalities() /home3/rafaq5/public_html/auri/crm/application/controllers/Inventory.php 19
+ERROR - 2017-01-23 18:11:51 --> Severity: Notice --> Undefined variable: id /home3/rafaq5/public_html/auri/crm/application/controllers/Inventory.php 21

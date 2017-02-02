@@ -4,18 +4,19 @@ header('Content-Type: text/html; charset=utf-8');
 /**
  * This function is deprecated
  */
-function add_encryption_key_old(){
-   $CI =& get_instance();
-   $key = generate_encryption_key();
-   $config_path = APPPATH . 'config/config.php';
-   $CI->load->helper('file');
-   @chmod($config_path, FILE_WRITE_MODE);
-   $config_file = read_file($config_path);
-   $config_file = trim($config_file);
-   $config_file = str_replace("\$config['encryption_key'] = '';", "\$config['encryption_key'] = '".$key."';", $config_file);
-   if (!$fp = fopen($config_path, FOPEN_WRITE_CREATE_DESTRUCTIVE)) {
-    return FALSE;
-   }
+function add_encryption_key_old()
+{
+    $CI =& get_instance();
+    $key         = generate_encryption_key();
+    $config_path = APPPATH . 'config/config.php';
+    $CI->load->helper('file');
+    @chmod($config_path, FILE_WRITE_MODE);
+    $config_file = read_file($config_path);
+    $config_file = trim($config_file);
+    $config_file = str_replace("\$config['encryption_key'] = '';", "\$config['encryption_key'] = '" . $key . "';", $config_file);
+    if (!$fp = fopen($config_path, FOPEN_WRITE_CREATE_DESTRUCTIVE)) {
+        return FALSE;
+    }
     flock($fp, LOCK_EX);
     fwrite($fp, $config_file, strlen($config_file));
     flock($fp, LOCK_UN);
@@ -24,36 +25,37 @@ function add_encryption_key_old(){
     return $key;
 }
 
-function is_rtl($client_area = false){
+function is_rtl($client_area = false)
+{
 
     $CI =& get_instance();
-    if(is_client_logged_in()){
-        $CI->db->select('direction')->from('tblcontacts')->where('id',get_contact_user_id());
+    if (is_client_logged_in()) {
+        $CI->db->select('direction')->from('tblcontacts')->where('id', get_contact_user_id());
         $direction = $CI->db->get()->row()->direction;
-         if($direction == 'rtl'){
+        if ($direction == 'rtl') {
             return true;
-        } else if($direction == 'ltr'){
+        } else if ($direction == 'ltr') {
             return false;
-        } else if(empty($direction)){
-            if(get_option('rtl_support_client') == 1){
+        } else if (empty($direction)) {
+            if (get_option('rtl_support_client') == 1) {
                 return true;
             }
         }
         return false;
-    } else if($client_area == true){
+    } else if ($client_area == true) {
         // Client not logged in and checked from clients area
-       if(get_option('rtl_support_client') == 1){
-        return true;
-    }
-    } else if(is_staff_logged_in()){
-        $CI->db->select('direction')->from('tblstaff')->where('staffid',get_staff_user_id());
-        $direction = $CI->db->get()->row()->direction;
-        if($direction == 'rtl'){
+        if (get_option('rtl_support_client') == 1) {
             return true;
-        } else if($direction == 'ltr'){
+        }
+    } else if (is_staff_logged_in()) {
+        $CI->db->select('direction')->from('tblstaff')->where('staffid', get_staff_user_id());
+        $direction = $CI->db->get()->row()->direction;
+        if ($direction == 'rtl') {
+            return true;
+        } else if ($direction == 'ltr') {
             return false;
-        } else if(empty($direction)){
-            if(get_option('rtl_support_admin') == 1){
+        } else if (empty($direction)) {
+            if (get_option('rtl_support_admin') == 1) {
                 return true;
             }
         }
@@ -61,34 +63,36 @@ function is_rtl($client_area = false){
     }
     return false;
 }
-function generate_encryption_key(){
-   $CI =& get_instance();
-   // In case accessed from my_functions_helper.php
-   $CI->load->library('encryption');
-   $key = bin2hex($CI->encryption->create_key(16));
-   return $key;
-}
-function do_recaptcha_validation($str = ''){
+function generate_encryption_key()
+{
     $CI =& get_instance();
-     $CI->load->library('form_validation');
-        $google_url = "https://www.google.com/recaptcha/api/siteverify";
-        $secret     = get_option('recaptcha_secret_key');
-        $ip         = $CI->input->ip_address();
-        $url        = $google_url . "?secret=" . $secret . "&response=" . $str . "&remoteip=" . $ip;
-        $curl       = curl_init();
-        curl_setopt($curl, CURLOPT_URL, $url);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($curl, CURLOPT_TIMEOUT, 10);
-        $res = curl_exec($curl);
-        curl_close($curl);
-        $res = json_decode($res, true);
-        //reCaptcha success check
-        if ($res['success']) {
-            return TRUE;
-        } else {
-            $CI->form_validation->set_message('recaptcha', _l('recaptcha_error'));
-            return FALSE;
-        }
+    // In case accessed from my_functions_helper.php
+    $CI->load->library('encryption');
+    $key = bin2hex($CI->encryption->create_key(16));
+    return $key;
+}
+function do_recaptcha_validation($str = '')
+{
+    $CI =& get_instance();
+    $CI->load->library('form_validation');
+    $google_url = "https://www.google.com/recaptcha/api/siteverify";
+    $secret     = get_option('recaptcha_secret_key');
+    $ip         = $CI->input->ip_address();
+    $url        = $google_url . "?secret=" . $secret . "&response=" . $str . "&remoteip=" . $ip;
+    $curl       = curl_init();
+    curl_setopt($curl, CURLOPT_URL, $url);
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($curl, CURLOPT_TIMEOUT, 10);
+    $res = curl_exec($curl);
+    curl_close($curl);
+    $res = json_decode($res, true);
+    //reCaptcha success check
+    if ($res['success']) {
+        return TRUE;
+    } else {
+        $CI->form_validation->set_message('recaptcha', _l('recaptcha_error'));
+        return FALSE;
+    }
 }
 /**
  * Get current date format from options
@@ -98,7 +102,16 @@ function get_current_date_format($php = false)
 {
     $format = get_option('dateformat');
     $format = explode('|', $format);
-    if($php == false){
+
+    $hook_data = do_action('get_current_date_format', array(
+        'format' => $format,
+        'php' => $php
+    ));
+
+    $format = $hook_data['format'];
+    $php    = $php;
+
+    if ($php == false) {
         return $format[1];
     } else {
         return $format[0];
@@ -124,7 +137,6 @@ function is_admin($staffid = '')
         return true;
     }
     return false;
-    ;
 }
 /**
  * Is user logged in
@@ -202,7 +214,7 @@ function get_contact_user_id()
 function admin_url($url = '')
 {
     if ($url == '' || $url == '/') {
-        if($url == '/'){
+        if ($url == '/') {
             $url = '';
         }
         return site_url(ADMIN_URL) . '/';
@@ -226,13 +238,17 @@ function _l($line, $label = '')
         $_line = @sprintf($CI->lang->line(trim($line)), $label);
     }
 
-    $CI->load->library('encoding_lib');
-    if($_line != ''){
+    if ($_line != '') {
+        if (preg_match('/"/', $_line) && !is_html($_line)) {
+            $_line = htmlspecialchars($_line, ENT_COMPAT);
+        }
         return $CI->encoding_lib->toUTF8($_line);
     }
-    if(mb_strpos($line,'_db_') !== false){
+
+    if (mb_strpos($line, '_db_') !== false) {
         return 'db_translate_not_found';
     }
+
     return $CI->encoding_lib->toUTF8($line);
 }
 /**
@@ -242,10 +258,12 @@ function _l($line, $label = '')
  */
 function _d($date)
 {
-    if($date == '' || is_null($date) || $date == '0000-00-00'){return '';}
+    if ($date == '' || is_null($date) || $date == '0000-00-00') {
+        return '';
+    }
     $format = get_current_date_format();
-    $date = strftime($format,strtotime($date));
-    return do_action('after_format_date',$date);
+    $date   = strftime($format, strtotime($date));
+    return do_action('after_format_date', $date);
 }
 /**
  * Format datetime to selected datetime format
@@ -253,10 +271,13 @@ function _d($date)
  * @return datetime/string
  */
 function _dt($date)
-{   if($date == '' || is_null($date) || $date == '0000-00-00 00:00:00'){return '';}
+{
+    if ($date == '' || is_null($date) || $date == '0000-00-00 00:00:00') {
+        return '';
+    }
     $format = get_current_date_format();
-    $date = strftime($format. ' %H:%M:%S',strtotime($date));
-    return do_action('after_format_datetime',$date);
+    $date   = strftime($format . ' %H:%M:%S', strtotime($date));
+    return do_action('after_format_datetime', $date);
 }
 /**
  * Convert string to sql date based on current date format from options
@@ -269,44 +290,43 @@ function to_sql_date($date, $datetime = false)
         return NULL;
     }
 
-    $to_date = 'Y-m-d';
+    $to_date     = 'Y-m-d';
     $from_format = get_current_date_format(true);
 
-    $hook_data['date'] = $date;
+    $hook_data['date']        = $date;
     $hook_data['from_format'] = $from_format;
-    $hook_data['datetime'] = $datetime;
+    $hook_data['datetime']    = $datetime;
 
-    $hook_data = do_action('before_sql_date_format',$hook_data);
+    $hook_data = do_action('before_sql_date_format', $hook_data);
 
-    $date = $hook_data['date'];
+    $date        = $hook_data['date'];
     $from_format = $hook_data['from_format'];
 
-    if($datetime == false){
+    if ($datetime == false) {
         return date_format(date_create_from_format($from_format, $date), $to_date);
     } else {
-        if(strpos($date,' ') === false){
+        if (strpos($date, ' ') === false) {
             $date .= ' 00:00:00';
         } else {
-            $_temp = explode(' ',$date);
-            $time = explode(':',$_temp[1]);
-            if(count($time) == 2){
+            $_temp = explode(' ', $date);
+            $time  = explode(':', $_temp[1]);
+            if (count($time) == 2) {
                 $date .= ':00';
             }
         }
 
-        if($from_format == 'd/m/Y'){
+        if ($from_format == 'd/m/Y') {
             $date = preg_replace('#(\d{2})/(\d{2})/(\d{4})\s(.*)#', '$3-$2-$1 $4', $date);
-        } else if($from_format == 'm/d/Y'){
+        } else if ($from_format == 'm/d/Y') {
             $date = preg_replace('#(\d{2})/(\d{2})/(\d{4})\s(.*)#', '$3-$1-$2 $4', $date);
-        } else if($from_format == 'm.d.Y'){
+        } else if ($from_format == 'm.d.Y') {
             $date = preg_replace('#(\d{2}).(\d{2}).(\d{4})\s(.*)#', '$3-$1-$2 $4', $date);
-        } else if($from_format == 'm-d-Y'){
+        } else if ($from_format == 'm-d-Y') {
             $date = preg_replace('#(\d{2})-(\d{2})-(\d{4})\s(.*)#', '$3-$1-$2 $4', $date);
         }
 
-        $d = strftime('%Y-%m-%d %H:%M:%S',strtotime($date));
-
-        return $d;
+        $d = strftime('%Y-%m-%d %H:%M:%S', strtotime($date));
+        return do_action('to_sql_date_formatted', $d);
     }
 }
 /**
@@ -316,7 +336,9 @@ function to_sql_date($date, $datetime = false)
  */
 function is_date($date)
 {
-    if(strlen($date) < 10){return false;}
+    if (strlen($date) < 10) {
+        return false;
+    }
     return (bool) strtotime($date);
 }
 /**
@@ -327,7 +349,7 @@ function is_date($date)
 function get_locale_key($language = 'english')
 {
     $locale = 'en';
-     if ($language == '') {
+    if ($language == '') {
         return $locale;
     }
     $locales = get_locales();
@@ -341,17 +363,14 @@ function get_locale_key($language = 'english')
             $language = strtolower($language);
             if (strpos($key, $language) !== false) {
                 $locale = $val;
-            // In case $language is bigger string then $key
-            } else if(strpos($language,$key) !== false){
+                // In case $language is bigger string then $key
+            } else if (strpos($language, $key) !== false) {
                 $locale = $val;
             }
         }
     }
-    $locale = do_action('before_get_locale',$locale);
+    $locale = do_action('before_get_locale', $locale);
     return $locale;
-}
-function can_view_own($permission,$user_id){
-
 }
 /**
  * Check if staff user has permission
@@ -403,14 +422,18 @@ function has_permission($permission, $staffid = '', $can = '')
  * @param  staff_id  $staff_id staff id to check
  * @return boolean
  */
-function is_customer_admin($id,$staff_id = ''){
+function is_customer_admin($id, $staff_id = '')
+{
 
     $_staff_id = get_staff_user_id();
-    if(is_numeric($staff_id)){
+    if (is_numeric($staff_id)) {
         $_staff_id = $staff_id;
     }
-    $customer_admin_found = total_rows('tblcustomeradmins',array('customer_id'=>$id,'staff_id'=>$_staff_id));
-    if($customer_admin_found > 0){
+    $customer_admin_found = total_rows('tblcustomeradmins', array(
+        'customer_id' => $id,
+        'staff_id' => $_staff_id
+    ));
+    if ($customer_admin_found > 0) {
         return true;
     }
     return false;
@@ -420,13 +443,16 @@ function is_customer_admin($id,$staff_id = ''){
  * @param  mixed $staff_id staff id
  * @return boolean
  */
-function have_assigned_customers($staff_id = ''){
+function have_assigned_customers($staff_id = '')
+{
     $_staff_id = get_staff_user_id();
-    if(is_numeric($staff_id)){
+    if (is_numeric($staff_id)) {
         $_staff_id = $staff_id;
     }
-    $customers_found = total_rows('tblcustomeradmins',array('staff_id'=>$_staff_id));
-    if($customers_found > 0){
+    $customers_found = total_rows('tblcustomeradmins', array(
+        'staff_id' => $_staff_id
+    ));
+    if ($customers_found > 0) {
         return true;
     }
     return false;
@@ -434,7 +460,9 @@ function have_assigned_customers($staff_id = ''){
 function has_contact_permission($permission, $userid = '')
 {
     $CI =& get_instance();
-    $CI->load->library('perfex_base');
+    if (!class_exists('perfex_base')) {
+        $CI->load->library('perfex_base');
+    }
     $permissions = $CI->perfex_base->get_contact_permissions();
     $_userid     = get_contact_user_id();
     if ($userid != '') {
@@ -471,7 +499,7 @@ function load_admin_language($staff_id = '')
     $CI =& get_instance();
 
     $CI->lang->is_loaded = array();
-    $CI->lang->language = array();
+    $CI->lang->language  = array();
 
     $language = get_option('active_language');
     if (is_staff_logged_in() || $staff_id != '') {
@@ -511,5 +539,5 @@ function current_full_url()
 {
     $CI =& get_instance();
     $url = $CI->config->site_url($CI->uri->uri_string());
-    return $_SERVER['QUERY_STRING'] ? $url.'?'.$_SERVER['QUERY_STRING'] : $url;
+    return $_SERVER['QUERY_STRING'] ? $url . '?' . $_SERVER['QUERY_STRING'] : $url;
 }

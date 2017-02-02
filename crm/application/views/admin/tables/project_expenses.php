@@ -39,7 +39,6 @@ $sIndexColumn = "id";
 $sTable       = 'tblexpenses';
 $result       = data_tables_init($aColumns, $sIndexColumn, $sTable, $join, $where, array(
     'name',
-    'tblexpenses.id',
     'billable',
     'invoiceid',
     'currency',
@@ -60,7 +59,7 @@ foreach ($rResult as $aRow) {
         if($aColumns[$i] == 'tblexpenses.id'){
             $_data = '<span class="label label-default inline-block">'.$_data.'</span>';
         } else if ($aColumns[$i] == 'category') {
-            $_data = '<a href="' . admin_url('expenses/list_expenses/' . $aRow['id']) . '" target="_blank">' . $aRow['name'] . '</a>';
+            $_data = '<a href="' . admin_url('expenses/list_expenses/' . $aRow['tblexpenses.id']) . '" target="_blank">' . $aRow['name'] . '</a>';
             if ($aRow['billable'] == 1) {
                 if ($aRow['invoiceid'] == NULL) {
                     $_data .= '<p class="text-danger">' . _l('expense_list_unbilled') . '</p>';
@@ -89,7 +88,7 @@ foreach ($rResult as $aRow) {
             }
         } else if($aColumns[$i] == 'file_name'){
             if(!empty($_data)){
-                $_data=  '<a href="'.site_url('download/file/expense/'.$aRow['id']).'">'.$_data.'</a>';
+                $_data=  '<a href="'.site_url('download/file/expense/'.$aRow['tblexpenses.id']).'">'.$_data.'</a>';
             }
         } else if($aColumns[$i] == 'date'){
             $_data = _d($_data);

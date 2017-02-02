@@ -26,13 +26,17 @@ class Settings extends Admin_controller
             if (!has_permission('settings', '', 'edit')) {
                 access_denied('settings');
             }
+            $logo_uploaded = (handle_company_logo_upload() ? true : false);
+            $favicon_uploaded = (handle_favicon_upload() ? true : false);
 
-            handle_company_logo_upload();
-            handle_favicon_upload();
             $post_data = $this->input->post(NULL,FALSE);
             $success   = $this->settings_model->update($post_data);
             if ($success > 0) {
                 set_alert('success', _l('settings_updated'));
+            }
+
+            if($logo_uploaded || $favicon_uploaded){
+                set_debug_alert(_l('logo_favicon_changed_notice'));
             }
 
             // Do hard refresh on general for the logo
@@ -64,9 +68,15 @@ class Settings extends Admin_controller
                 $data['update_info'] = json_decode("");
             } else {
                 $data['update_info'] = $this->misc_model->get_update_info();
-                $data['update_info'] = json_decode($data['update_info']);
-                $data['latest_version'] = $data['update_info']->latest_version;
-                $data['update_errors'] = array();
+                if(strpos($data['update_info'],'Curl Error -') !== FALSE){
+                    $data['update_errors'][] = $data['update_info'];
+                    $data['latest_version'] = 0;
+                    $data['update_info'] = json_decode("");
+                } else {
+                    $data['update_info'] = json_decode($data['update_info']);
+                    $data['latest_version'] = $data['update_info']->latest_version;
+                    $data['update_errors'] = array();
+                }
             }
 
             if (!extension_loaded('zip')) {

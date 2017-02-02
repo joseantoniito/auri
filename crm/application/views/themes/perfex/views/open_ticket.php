@@ -1,6 +1,6 @@
 <div class="row">
     <?php echo form_open_multipart('clients/open_ticket',array('class'=>'open-new-ticket-form')); ?>
-    <div class="col-md-7">
+    <div class="col-md-<?php echo (count($latest_tickets) > 0 ? 7 : 12); ?>">
         <div class="panel_s">
             <div class="panel-heading">
                 <?php echo _l('clients_ticket_open_subject'); ?>
@@ -62,24 +62,23 @@
             </div>
         </div>
     </div>
+    <?php if(count($latest_tickets) > 0){ ?>
     <div class="col-md-5">
         <div class="panel_s">
             <div class="panel-heading">
                 <?php echo _l('clients_latest_tickets'); ?>
             </div>
             <div class="panel-body">
-                <ul class="list-group">
-                    <?php foreach($latest_tickets as $ticket) { ?>
-                    <li class="list-group-item no-margin">
-                        <a href="<?php echo site_url('clients/ticket/'.$ticket['ticketid']); ?>" target="_blank"><?php echo $ticket['subject']; ?></a><br />
-                        <span class="small"><?php echo _l('clients_ticket_posted',_dt($ticket['date'])); ?></span>
-                        <span class="label pull-right" style="background:<?php echo $ticket['statuscolor']; ?>"><?php echo ticket_status_translate($ticket['ticketstatusid']); ?></span>
-                    </li>
-                    <?php } ?>
-                </ul>
+                <?php foreach($latest_tickets as $ticket) { ?>
+                <a href="<?php echo site_url('clients/ticket/'.$ticket['ticketid']); ?>" target="_blank"><?php echo $ticket['subject']; ?></a><br />
+                <span class="small"><?php echo _l('clients_ticket_posted',_dt($ticket['date'])); ?></span>
+                <span class="label pull-right" style="background:<?php echo $ticket['statuscolor']; ?>"><?php echo ticket_status_translate($ticket['ticketstatusid']); ?></span>
+                <hr />
+                <?php } ?>
             </div>
         </div>
     </div>
+    <?php } ?>
     <div class="col-md-12">
         <div class="panel_s">
             <div class="panel-heading">
@@ -94,8 +93,8 @@
                 <div class="row attachments">
                     <div class="attachment">
                         <div class="col-md-6 col-md-offset-3">
-                         <label for="attachment" class="control-label"><?php echo _l('clients_ticket_attachments'); ?></label>
-                         <div class="input-group">
+                           <label for="attachment" class="control-label"><?php echo _l('clients_ticket_attachments'); ?></label>
+                           <div class="input-group">
                             <input type="file" class="form-control" name="attachments[]" accept="<?php echo get_ticket_form_accepted_mimes(); ?>">
                             <span class="input-group-btn">
                                 <button class="btn btn-success add_more_attachments" type="button"><i class="fa fa-plus"></i></button>

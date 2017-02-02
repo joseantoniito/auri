@@ -24,6 +24,12 @@ function init_proposal_editor() {
     skin: 'perfex',
     relative_urls: false,
     remove_script_host: false,
+    inline_styles : true,
+    verify_html : false,
+    cleanup : false,
+    valid_elements : '+*[*]',
+    valid_children : "+body[style], +style[type]",
+    apply_source_formatting : false,
     file_browser_callback: elFinderBrowser,
     table_class_list: [{
         title: 'Flat',
@@ -46,12 +52,13 @@ function init_proposal_editor() {
     removed_menuitems: 'newdocument',
     fontsize_formats: '8pt 10pt 12pt 14pt 18pt 24pt 36pt',
     plugins: [
-    'advlist autolink autoresize lists link image charmap hr anchor',
+    'advlist pagebreak autolink autoresize lists link image charmap hr anchor',
     'searchreplace wordcount visualblocks visualchars code fullscreen',
     'media nonbreaking save table contextmenu directionality',
     'paste textcolor colorpicker textpattern'
     ],
     autoresize_bottom_margin: 50,
+    pagebreak_separator: '<p pagebreak="true"></p>',
     toolbar1: 'save_button fontselect fontsizeselect insertfile | styleselect',
     toolbar2:'bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent',
     toolbar3: 'media image | forecolor backcolor link ',

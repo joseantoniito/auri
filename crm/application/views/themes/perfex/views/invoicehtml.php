@@ -304,7 +304,7 @@
                         ?>
                         <hr />
                         <div class="col-md-6 text-left">
-                            <h4 class="bold"><?php echo _l('invoice_html_online_payment'); ?></h4>
+                            <h3 class="bold"><?php echo _l('invoice_html_online_payment'); ?></h3>
                             <?php echo form_open($this->uri->uri_string(),array('id'=>'online_payment_form','novalidate'=>true)); ?>
                             <?php foreach($payment_modes as $mode){
                                 if(!is_numeric($mode['id']) && !empty($mode['id'])) {
@@ -312,7 +312,7 @@
                                         continue;
                                     }
                                     ?>
-                                    <div class="radio radio-success">
+                                    <div class="radio radio-success online-payment-radio">
                                         <input type="radio" value="<?php echo $mode['id']; ?>" id="pm_<?php echo $mode['id']; ?>" name="paymentmode">
                                         <label for="pm_<?php echo $mode['id']; ?>"><?php echo $mode['name']; ?></label>
                                     </div>
@@ -324,7 +324,6 @@
                                 }
                             } ?>
                             <div class="form-group">
-                                <hr />
                                 <?php if(get_option('allow_payment_amount_to_be_modified') == 1){ ?>
                                 <label for="amount" class="control-label"><?php echo _l('invoice_html_amount'); ?></label>
                                 <input type="number" data-total="<?php echo get_invoice_total_left_to_pay($invoice->id,$invoice->total); ?>" name="amount" class="form-control" value="<?php echo get_invoice_total_left_to_pay($invoice->id,$invoice->total); ?>">
@@ -372,5 +371,9 @@
                 scrollTop: $("#online_payment_form").offset().top},
                 'slow');
         });
+        var online_payments = $('.online-payment-radio');
+        if(online_payments.length == 1){
+            online_payments.find('input').prop('checked',true);
+        }
     });
 </script>

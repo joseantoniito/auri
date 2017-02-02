@@ -18,6 +18,7 @@ class Estimates extends Admin_controller
         if (!has_permission('estimates', '', 'view') && !has_permission('estimates', '', 'view_own')) {
             access_denied('estimates');
         }
+
         $data['estimate_statuses'] = $this->estimates_model->get_statuses();
         if ($this->session->has_userdata('estimate_pipeline') && $this->session->userdata('estimate_pipeline') == 'true' && $clientid == false && !$this->input->get('status') && !$this->input->get('filter')) {
             $data['title']           = _l('estimates_pipeline');
@@ -66,11 +67,12 @@ class Estimates extends Admin_controller
         }
 
         if ($this->input->post()) {
+            $estimate_data = $this->input->post(NULL,FALSE);
             if ($id == '') {
                 if (!has_permission('estimates', '', 'create')) {
                     access_denied('estimates');
                 }
-                $id = $this->estimates_model->add($this->input->post());
+                $id = $this->estimates_model->add($estimate_data);
                 if ($id) {
                     set_alert('success', _l('added_successfuly', _l('estimate')));
                     if ($this->set_estimate_pipeline_autoload($id)) {
@@ -83,7 +85,7 @@ class Estimates extends Admin_controller
                 if (!has_permission('estimates', '', 'edit')) {
                     access_denied('estimates');
                 }
-                $success = $this->estimates_model->update($this->input->post(), $id);
+                $success = $this->estimates_model->update($estimate_data, $id);
                 if ($success) {
                     set_alert('success', _l('updated_successfuly', _l('estimate')));
                 }
@@ -507,5 +509,17 @@ class Estimates extends Admin_controller
             return true;
         }
         return false;
+    }
+    public function get_due_date(){
+        if ($this->input->post()) {
+            $date    = $this->input->post('date');
+            $duedate = '';
+            if (get_option('estimate_due_after') != 0) {
+                $date = to_sql_date($date);
+                $d = date('Y-m-d', strtotime('+' . get_option('estimate_due_after') . ' DAY',strtotime($date)));
+                $duedate = _d($d);
+            }
+            echo $duedate;
+        }
     }
 }

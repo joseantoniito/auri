@@ -56,9 +56,10 @@
             var locale = '<?php echo $locale; ?>';
             var isRTL = '<?php echo $isRTL; ?>';
             var tinymce_lang = '<?php echo $tinymce_lang; ?>';
-            var months_json = '<?php echo json_encode(array(htmlentities(_l('January')),htmlentities(_l('February')),htmlentities(_l('March')),htmlentities(_l('April')),htmlentities(_l('May')),htmlentities(_l('June')),htmlentities(_l('July')),htmlentities(_l('August')),htmlentities(_l('September')),htmlentities(_l('October')),htmlentities(_l('November')),htmlentities(_l('December')))); ?>';
-            var _table_api,taskid,task_tracking_stats_data,taskAttachmentDropzone,leadAttachmentsDropzone,newsFeedDropzone,autocheck_notifications_timer_id = 0;
+            var months_json = '<?php echo json_encode(array(_l('January'),_l('February'),_l('March'),_l('April'),_l('May'),_l('June'),_l('July'),_l('August'),_l('September'),_l('October'),_l('November'),_l('December'))); ?>';
+            var _table_api,taskid,task_tracking_stats_data,taskAttachmentDropzone,leadAttachmentsDropzone,newsFeedDropzone,autocheck_notifications_timer_id = 0,task_track_chart,cfh_popover_templates = {};
         </script>
+        <?php do_action('app_admin_head'); ?>
     </head>
     <body <?php if(is_rtl()){ echo 'dir="rtl"';} ?> class="admin <?php if(isset($bodyclass)){echo $bodyclass . ' '; } ?><?php if($this->session->has_userdata('is_mobile') && $this->session->userdata('is_mobile') == true){echo 'hide-sidebar ';} ?><?php if(is_rtl()){echo 'rtl';} ?>">
         <?php do_action('after_body_start'); ?>

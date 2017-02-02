@@ -120,7 +120,7 @@ foreach ($rResult as $aRow) {
             if (is_numeric($clientid) || $this->_instance->input->post('project_id')) {
                 $__data = '<a href="' . admin_url('estimates/list_estimates/' . $aRow['id']) . '" target="_blank">' . format_estimate_number($aRow['id']) . '</a><br />';
             } else {
-             $__data = '<a href="#" onclick="init_estimate(' . $aRow['id'] . '); return false;">' . format_estimate_number($aRow['id']) . '</a><br />';
+             $__data = '<a href="' . admin_url('estimates/list_estimates/' . $aRow['id']) . '" onclick="init_estimate(' . $aRow['id'] . '); return false;">' . format_estimate_number($aRow['id']) . '</a><br />';
          }
      } else if ($aColumns[$i] == 'date') {
         $__data = _d($_data);

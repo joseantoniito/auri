@@ -111,11 +111,12 @@ class Proposals extends Admin_controller
     public function proposal($id = '')
     {
         if ($this->input->post()) {
+            $proposal_data = $this->input->post(NULL,FALSE);
             if ($id == '') {
                 if (!has_permission('proposals', '', 'create')) {
                     access_denied('proposals');
                 }
-                $id = $this->proposals_model->add($this->input->post());
+                $id = $this->proposals_model->add($proposal_data);
                 if ($id) {
                     set_alert('success', _l('added_successfuly', _l('proposal')));
                     if ($this->set_proposal_pipeline_autoload($id)) {
@@ -128,7 +129,7 @@ class Proposals extends Admin_controller
                 if (!has_permission('proposals', '', 'edit')) {
                     access_denied('proposals');
                 }
-                $success = $this->proposals_model->update($this->input->post(), $id);
+                $success = $this->proposals_model->update($proposal_data, $id);
                 if ($success) {
                     set_alert('success', _l('updated_successfuly', _l('proposal')));
                 }
@@ -332,7 +333,6 @@ class Proposals extends Admin_controller
 
         $data['staff']    = $this->staff_model->get('', 1);
         $data['proposal'] = $this->proposals_model->get($id);
-        $this->load->model('tasks_model');
         $data['billable_tasks'] = array();
         $data['add_items']      = $this->_parse_items($data['proposal']);
 

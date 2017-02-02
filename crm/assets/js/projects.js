@@ -91,7 +91,6 @@
                   setTimeout(function() {
                       $.post(admin_url + 'projects/update_task_milestone', data)
                   }, 50);
-
               }
           }
       });
@@ -101,6 +100,9 @@
               paramName: "file",
               addRemoveLinks: true,
               dictFileTooBig: file_exceds_maxfile_size_in_form,
+              dictDefaultMessage: drop_files_here_to_upload,
+              dictFallbackMessage: browser_not_support_drag_and_drop,
+              dictRemoveFile: remove_file,
               accept: function(file, done) {
                   done();
               },
@@ -193,18 +195,17 @@
           Timesheets_ServerParams[$(this).attr('name')] = '[name="' + $(this).attr('name') + '"]';
       });
 
-      _table_api = initDataTable('.table-timesheets', admin_url + 'projects/timesheets/' + project_id, [6], [6], Timesheets_ServerParams, [2, 'DESC']);
-      if (_table_api) {
-          _table_api.column(5).visible(false, false).columns.adjust();
-      }
-      initDataTable('.table-project-discussions', admin_url + 'projects/discussions/' + project_id, [4], [4], 'undefined', [1, 'DESC']);
+     initDataTable('.table-timesheets', admin_url + 'projects/timesheets/' + project_id, [6], [6], Timesheets_ServerParams, [2, 'DESC']);
+
+     initDataTable('.table-project-discussions', admin_url + 'projects/discussions/' + project_id, [4], [4], 'undefined', [1, 'DESC']);
+
       _validate_form($('#milestone_form'), {
           name: 'required',
           due_date: 'required'
       });
+
       _validate_form($('#copy_form'), {
           start_date: 'required',
-          deadline: 'required'
       });
 
       _validate_form($('#discussion_form'), {
@@ -375,15 +376,14 @@
   }
 
   function edit_timesheet(invoker, id) {
-      $('#timesheet select[name="timesheet_staff_id"]').attr('data-staff_id', $(invoker).data('timesheet_staff_id'));
-      $('select[name="timesheet_task_id"]').selectpicker('val', $(invoker).data('timesheet_task_id'));
+      $('#timesheet select[name="timesheet_staff_id"]').attr('data-staff_id', $(invoker).attr('data-timesheet_staff_id'));
+      $('select[name="timesheet_task_id"]').selectpicker('val', $(invoker).attr('data-timesheet_task_id'));
       $('input[name="timer_id"]').val(id);
-      $('input[name="start_time"]').val($(invoker).data('start_time'));
-      $('input[name="end_time"]').val($(invoker).data('end_time'));
+      $('input[name="start_time"]').val($(invoker).attr('data-start_time'));
+      $('input[name="end_time"]').val($(invoker).attr('data-end_time'));
       $('select[name="timesheet_task_id"]').change();
       $('#timesheet').modal('show');
   }
-
 
   function new_discussion() {
       $('#discussion').modal('show');

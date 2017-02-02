@@ -7,7 +7,6 @@ class Projects_model extends CRM_Model
     function __construct()
     {
         parent::__construct();
-        $this->load->model('tasks_model');
         $project_settings       = array(
             'view_tasks',
             'comment_on_tasks',
@@ -29,7 +28,7 @@ class Projects_model extends CRM_Model
     }
     public function get_project_statuses()
     {
-        return $this->project_statuses;
+        return do_action('get_project_statuses',$this->project_statuses);
     }
     public function get_distinct_tasks_timesheets_staff($project_id)
     {
@@ -166,7 +165,7 @@ class Projects_model extends CRM_Model
                 }
                 $project->client_data = new StdClass();
                 $project->client_data = $this->clients_model->get($project->clientid);
-                return $project;
+                return do_action('project_get',$project);
             }
             return null;
         }
@@ -304,7 +303,6 @@ class Projects_model extends CRM_Model
     }
     public function get_gantt_data($project_id, $type = 'milestones')
     {
-        $this->load->model('tasks_model');
         $type_data = array();
         if ($type == 'milestones') {
             $type_data[] = array(
@@ -569,8 +567,16 @@ class Projects_model extends CRM_Model
         } else {
             $data['progress_from_tasks'] = 0;
         }
-        $data['deadline']        = to_sql_date($data['deadline']);
+
         $data['start_date']      = to_sql_date($data['start_date']);
+
+
+        if(!empty($data['deadline'])){
+            $data['deadline']        = to_sql_date($data['deadline']);
+        } else {
+            unset($data['deadline']);
+        }
+
         $data['project_created'] = date('Y-m-d');
         if (isset($data['project_members'])) {
             $project_members = $data['project_members'];
@@ -696,7 +702,13 @@ class Projects_model extends CRM_Model
             }
             unset($data['custom_fields']);
         }
-        $data['deadline']   = to_sql_date($data['deadline']);
+
+        if(!empty($data['deadline'])){
+            $data['deadline']        = to_sql_date($data['deadline']);
+        } else {
+            $data['deadline'] = NULL;
+        }
+
         $data['start_date'] = to_sql_date($data['start_date']);
         if ($data['billing_type'] == 1) {
             $data['project_rate_per_hour'] = 0;
@@ -750,6 +762,7 @@ class Projects_model extends CRM_Model
             logActivity('Project Updated [ID: ' . $id . ']');
 
             if ($original_project->status != $data['status']) {
+                do_action('project_status_changed',array('status'=>$data['status'],'project_id'=>$id));
                 // Give space this log to be on top
                 sleep(1);
                 if ($data['status'] == 4) {
@@ -802,6 +815,15 @@ class Projects_model extends CRM_Model
             'status' => $data['status_id']
         ));
         if ($this->db->affected_rows() > 0) {
+
+            do_action('project_status_changed',array('status'=>$data['status_id'],'project_id'=>$data['project_id']));
+
+            if ($data['status_id'] == 4) {
+                $this->log_activity($data['project_id'], 'project_marked_as_finished');
+            } else {
+                $this->log_activity($data['project_id'], 'project_status_updated', '<b><lang>project_status_' . $data['status_id'] . '</lang></b>');
+            }
+
             if ($data['notify_project_members_status_change'] == 1) {
                 $this->_notify_project_members_status_change($data['project_id'], $old_status, $data['status_id']);
             }
@@ -1252,7 +1274,7 @@ class Projects_model extends CRM_Model
         $this->db->where('id', $data['id']);
         $this->db->update('tblprojectdiscussioncomments', array(
             'modified' => date('Y-m-d H:i:s'),
-            'content' =>$data['content']
+            'content' => $data['content']
         ));
         if ($this->db->affected_rows() > 0) {
             $this->_update_discussion_last_activity($comment->discussion_id, $comment->discussion_type);
@@ -1414,9 +1436,14 @@ class Projects_model extends CRM_Model
         } else {
             $_new_data['status'] = 2;
         }
+        if($data['deadline']){
+            $_new_data['deadline']        = to_sql_date($data['deadline']);
+        } else {
+            $_new_data['deadline'] = NULL;
+        }
 
-        $_new_data['deadline']        = to_sql_date($data['deadline']);
         $_new_data['project_created'] = date('Y-m-d H:i:s');
+        $_new_data['addedfrom'] = get_staff_user_id();
         $this->db->insert('tblprojects', $_new_data);
         $id = $this->db->insert_id();
         if ($id) {
@@ -1671,6 +1698,9 @@ class Projects_model extends CRM_Model
             }
             if ($other_lang_keys != '') {
                 $_additional_data = str_replace('<lang>' . $other_lang_keys . '</lang>', _l($other_lang_keys), $_additional_data);
+            }
+            if(strpos($_additional_data,'project_status_') !== FALSE){
+                $_additional_data = project_status_by_id(strafter($_additional_data,'project_status_'));
             }
             $activities[$i]['description']     = _l($activities[$i]['description_key']);
             $activities[$i]['additional_data'] = $_additional_data;

@@ -93,6 +93,7 @@ class Misc_model extends CRM_Model
     }
     public function get_update_info()
     {
+
         $curl = curl_init();
         curl_setopt_array($curl, array(
             CURLOPT_RETURNTRANSFER => 1,
@@ -102,14 +103,24 @@ class Misc_model extends CRM_Model
             CURLOPT_URL => UPDATE_INFO_URL,
             CURLOPT_POST => 1,
             CURLOPT_POSTFIELDS => array(
-                'update_info' => 'true'
+                'update_info' => 'true',
+                'current_version'=>$this->get_current_db_version()
             )
         ));
+
         $result = curl_exec($curl);
-        if (!$curl) {
-            die('Error: "' . curl_error($curl) . '" - Code: ' . curl_errno($curl));
+        $error = '';
+
+        if (!$curl || !$result) {
+            $error = 'Curl Error - Contact your hosting provider with the following error as reference: Error: "' . curl_error($curl) . '" - Code: ' . curl_errno($curl);
         }
+
         curl_close($curl);
+
+        if($error != ''){
+            return $error;
+        }
+
         return $result;
     }
     public function get_current_db_version()
@@ -179,11 +190,12 @@ class Misc_model extends CRM_Model
             $data['staffid'] = $attachment[0]['staffid'];
         }
 
+        $data['rel_type']       = $rel_type;
         if (isset($attachment[0]['contact_id'])) {
             $data['contact_id']          = $attachment[0]['contact_id'];
             $data['visible_to_customer'] = 1;
         }
-        $data['rel_type']       = $rel_type;
+
         $data['attachment_key'] = md5(uniqid(rand(), true) . $rel_id . $rel_type . time());
 
         if ($external == false) {
@@ -201,7 +213,22 @@ class Misc_model extends CRM_Model
         }
 
         $this->db->insert('tblfiles', $data);
-        return $this->db->insert_id();
+        $insert_id = $this->db->insert_id();
+
+        if($data['rel_type'] == 'customer' && $data['contact_id']){
+            if(get_option('only_own_files_contacts') == 1){
+                $this->db->insert('tblcustomerfiles_shares',array('file_id'=>$insert_id,'contact_id'=>$data['contact_id']));
+            } else {
+                $this->db->select('id');
+                $this->db->where('userid',$data['rel_id']);
+                $contacts = $this->db->get('tblcontacts')->result_array();
+                foreach($contacts as $contact){
+                    $this->db->insert('tblcustomerfiles_shares',array('file_id'=>$insert_id,'contact_id'=>$contact['id']));
+                }
+            }
+        }
+
+        return $insert_id;
     }
 
     public function get_file($id)
@@ -432,7 +459,11 @@ class Misc_model extends CRM_Model
                 foreach ($additional_data as $data) {
                     if (strpos($data, '<lang>') !== false) {
                         $lang                = get_string_between($data, '<lang>', '</lang>');
-                        $additional_data[$x] = _l($lang);
+                        $temp = _l($lang);
+                        if(strpos($temp,'project_status_') !== FALSE){
+                            $temp = project_status_by_id(strafter($temp,'project_status_'));
+                        }
+                        $additional_data[$x] = $temp;
                     }
                     $x++;
                 }
@@ -502,9 +533,12 @@ class Misc_model extends CRM_Model
         $have_assigned_customers        = have_assigned_customers();
         $have_permission_customers_view = has_permission('customers', '', 'view');
         if ($have_assigned_customers || $have_permission_customers_view) {
+
             // Clients
-            $this->db->select();
+            $this->db->select(implode(',',prefixed_table_fields_array('tblclients')).',CASE company WHEN "" THEN (SELECT CONCAT(firstname, " ", lastname) FROM tblcontacts WHERE userid = tblclients.userid and is_primary = 1) ELSE company END as company');
+
             $this->db->join('tblcountries', 'tblcountries.country_id = tblclients.country', 'left');
+            $this->db->join('tblcontacts', 'tblcontacts.userid = tblclients.userid AND is_primary = 1', 'left');
             $this->db->from('tblclients');
             if ($have_assigned_customers && !$have_permission_customers_view) {
                 $this->db->where('userid IN (SELECT customer_id FROM tblcustomeradmins WHERE staff_id=' . get_staff_user_id() . ')');
@@ -512,12 +546,15 @@ class Misc_model extends CRM_Model
 
             $this->db->where('(company LIKE "%' . $q . '%"
                 OR vat LIKE "%' . $q . '%"
-                OR phonenumber LIKE "%' . $q . '%"
+                OR tblclients.phonenumber LIKE "%' . $q . '%"
+                OR tblcontacts.phonenumber LIKE "%' . $q . '%"
                 OR city LIKE "%' . $q . '%"
                 OR zip LIKE "%' . $q . '%"
                 OR state LIKE "%' . $q . '%"
                 OR zip LIKE "%' . $q . '%"
                 OR address LIKE "%' . $q . '%"
+                OR email LIKE "%' . $q . '%"
+                OR CONCAT(firstname, \' \', lastname) LIKE "%' . $q . '%"
                 OR tblcountries.short_name LIKE "%' . $q . '%"
                 OR tblcountries.long_name LIKE "%' . $q . '%"
                 OR tblcountries.numcode LIKE "%' . $q . '%"

@@ -242,7 +242,9 @@
        dictDefaultMessage:drop_files_here_to_upload,
        dictFallbackMessage:browser_not_support_drag_and_drop,
        dictRemoveFile:remove_file,
+       dictFileTooBig: file_exceds_maxfile_size_in_form,
        dictMaxFilesExceeded:you_can_not_upload_any_more_files,
+       maxFilesize: max_php_ini_upload_size.replace(/\D/g, ''),
        error:function(file,response){
         alert_float('danger',response);
       },

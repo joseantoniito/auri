@@ -25,7 +25,7 @@
 										<img src="<?php echo contact_profile_image_url($contact->id,'thumb'); ?>" class="client-profile-image-thumb">
 									</div>
 									<div class="col-md-3 text-right">
-										<a href="<?php echo site_url('clients/remove_profile_image'); ?>"><i class="fa fa-remove"></i></a>
+										<a href="<?php echo site_url('clients/remove_profile_image'); ?>"><i class="fa fa-remove text-danger"></i></a>
 									</div>
 								</div>
 							</div>

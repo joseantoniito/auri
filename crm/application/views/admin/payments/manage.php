@@ -19,7 +19,7 @@
 	</div>
 	<?php init_tail(); ?>
 	<script>
-   		 initDataTable('.table-payments', window.location.href, [7], [7]);
+   		 initDataTable('.table-payments', window.location.href, [7], [7],'undefined',<?php echo do_action('payments_table_default_order',json_encode(array(0,'DESC'))); ?>);
 	</script>
 </body>
 </html>

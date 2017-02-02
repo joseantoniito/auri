@@ -17,8 +17,7 @@ class Home_model extends CRM_Model
     {
 
         $this->db->where('(start BETWEEN "' . date('Y-m-d', strtotime('monday this week')) . '" AND "' . date('Y-m-d', strtotime('sunday this week')) . '")');
-        $this->db->where('userid', get_staff_user_id());
-        $this->db->or_where('public', 1);
+        $this->db->where('(userid = ' . get_staff_user_id() . ' OR public = 1)');
         $this->db->order_by('start','desc');
         $this->db->limit(6);
         return $this->db->get('tblevents')->result_array();
@@ -29,14 +28,12 @@ class Home_model extends CRM_Model
      * Used in home dashboard page
      * Return total upcoming events next week
      */
-    public function get_upcoming_events_next_week($limit = 4)
+    public function get_upcoming_events_next_week()
     {
         $monday_this_week = date('Y-m-d', strtotime('monday next week'));
         $sunday_this_week = date('Y-m-d', strtotime('sunday next week'));
         $this->db->where('(start BETWEEN "' . $monday_this_week . '" AND "' . $sunday_this_week . '")');
-        $this->db->where('userid', get_staff_user_id());
-        $this->db->or_where('public', 1);
-        $this->db->limit($limit);
+        $this->db->where('(userid = ' . get_staff_user_id() . ' OR public = 1)');
         return $this->db->count_all_results('tblevents');
     }
     /**
@@ -131,7 +128,8 @@ class Home_model extends CRM_Model
     }
 
     public function projects_status_stats(){
-        $statuses = array(1,2,3,4);
+        $this->load->model('projects_model');
+        $statuses = $this->projects_model->get_project_statuses();
         $colors      = get_system_favourite_colors();
 
         $chart = array(
@@ -152,7 +150,7 @@ class Home_model extends CRM_Model
                 $this->db->where('id IN (SELECT project_id FROM tblprojectmembers WHERE staff_id='.get_staff_user_id().')');
             }
 
-            array_push($chart['labels'],_l('project_status_'.$status));
+            array_push($chart['labels'],project_status_by_id($status));
             array_push($_data['backgroundColor'],$colors[$i]);
             array_push($_data['hoverBackgroundColor'],adjust_color_brightness($colors[$i],-20));
             array_push($_data['data'],$this->db->count_all_results('tblprojects'));

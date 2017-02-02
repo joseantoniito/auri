@@ -7,6 +7,8 @@ if(has_permission('projects','','create') || has_permission('projects','','edit'
   array_push($aColumns,'billing_type');
 }
 
+$aColumns = do_action('projects_table_sql_columns',$aColumns);
+
 $sIndexColumn = "id";
 $sTable = 'tblprojects';
 
@@ -88,16 +90,7 @@ foreach ( $rResult as $aRow )
       }
       $_data = _l($type_name);
     } else if($aColumns[$i] == 'status'){
-      if($_data == 1){
-        $label = 'default';
-      } else if($_data == 2){
-        $label = 'info';
-      } else if($_data == 3){
-       $label = 'warning';
-     } else {
-       $label = 'success';
-     }
-     $status = '<span class="label label-'.$label.' inline-block">'._l('project_status_'.$_data).'</span>';
+     $status = '<span class="label label-'.project_status_color_class($_data).' project-status-'.project_status_color_class($_data).' inline-block project-status-'.$_data.'">'.project_status_by_id($_data).'</span>';
      $_data = $status;
    } else if($i == 5){
     $members = explode(',', $_data);
@@ -117,7 +110,7 @@ foreach ( $rResult as $aRow )
       }
     }
     if($export_members != ''){
-      $_data .= '<span class="hide">'.substr($export_members, 0,-2).'</span>';
+      $_data .= '<span class="hide">'.mb_substr($export_members, 0,-2).'</span>';
     }
 
    } else {
@@ -126,6 +119,9 @@ foreach ( $rResult as $aRow )
        $_data = _d($_data);
      }
    }
+
+   $hook_data = do_action('projects_tr_data_output',array('output'=>$_data,'column'=>$aColumns[$i],'id'=>$aRow['tblprojects.id']));
+   $_data = $hook_data['output'];
 
    $row[] = $_data;
  }

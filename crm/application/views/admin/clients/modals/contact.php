@@ -11,9 +11,16 @@
                 <div class="row">
                     <div class="col-md-12">
                         <?php if(isset($contact)){ ?>
-                        <img src="<?php echo contact_profile_image_url($contact->id,'thumb'); ?>" class="client-profile-image-thumb">
+                        <img src="<?php echo contact_profile_image_url($contact->id,'thumb'); ?>" id="contact-img" class="client-profile-image-thumb">
+                        <?php if(!empty($contact->profile_image)){ ?>
+                        <a href="#" onclick="delete_contact_profile_image(<?php echo $contact->id; ?>); return false;" class="text-danger pull-right" id="contact-remove-img"><i class="fa fa-remove"></i></a>
+                        <?php } ?>
                         <hr />
                         <?php } ?>
+                        <div id="contact-profile-image" class="form-group<?php if(isset($contact) && !empty($contact->profile_image)){echo ' hide';} ?>">
+                            <label for="profile_image" class="profile-image"><?php echo _l('client_profile_image'); ?></label>
+                            <input type="file" name="profile_image" class="form-control" id="profile_image">
+                        </div>
                         <?php if(isset($contact)){ ?>
                         <div class="alert alert-warning hide" role="alert" id="contact_proposal_warning">
                             <?php echo _l('proposal_warning_email_change',array(_l('contact_lowercase'),_l('contact_lowercase'),_l('contact_lowercase'))); ?>
@@ -34,7 +41,7 @@
                         <?php $value=( isset($contact) ? $contact->email : ''); ?>
                         <?php echo render_input( 'email', 'client_email',$value, 'email'); ?>
                         <?php $value=( isset($contact) ? $contact->phonenumber : ''); ?>
-                        <?php echo render_input( 'phonenumber', 'client_phonenumber',$value); ?>
+                        <?php echo render_input( 'phonenumber', 'client_phonenumber',$value,'text',array('autocomplete'=>'off')); ?>
                         <div class="form-group">
                           <label for="direction"><?php echo _l('document_direction'); ?></label>
                           <select class="selectpicker" data-none-selected-text="<?php echo _l('system_default_string'); ?>" data-width="100%" name="direction" id="direction">

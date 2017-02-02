@@ -2,12 +2,12 @@
   <div class="row">
    <div class="col-md-4">
      <div class="form-group no-mbot">
-      <select name="item_select" class="selectpicker no-margin" data-width="100%" id="item_select" data-none-selected-text="<?php echo _l('add_item'); ?>">
+      <select name="item_select" class="selectpicker no-margin" data-width="100%" id="item_select" data-none-selected-text="<?php echo _l('add_item'); ?>" data-live-search="true">
        <option value=""></option>
        <?php foreach($items as $group_id=>$_items){ ?>
        <optgroup data-group-id="<?php echo $group_id; ?>" label="<?php echo $_items[0]['group_name']; ?>">
          <?php foreach($_items as $item){ ?>
-         <option value="<?php echo $item['id']; ?>">(<?php echo _format_number($item['rate']); ; ?>) <?php echo $item['description']; ?></option>
+         <option value="<?php echo $item['id']; ?>" data-subtext="<?php echo strip_tags(mb_substr($item['long_description'],0,200)).'...'; ?>">(<?php echo _format_number($item['rate']); ; ?>) <?php echo $item['description']; ?></option>
          <?php } ?>
        </optgroup>
        <?php } ?>

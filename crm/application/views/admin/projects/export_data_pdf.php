@@ -48,7 +48,7 @@ if($project->billing_type == 1 || $project->billing_type == 2){
   }
 }
 // Project status
-$html .= '<b>' . _l('project_status') . ': </b>' . _l('project_status_'.$project->status) . '<br />';
+$html .= '<b>' . _l('project_status') . ': </b>' . project_status_by_id($project->status) . '<br />';
 // Date created
 $html .= '<b>' . _l('project_datecreated') . ': </b>' . _d($project->project_created) . '<br />';
 // Start date

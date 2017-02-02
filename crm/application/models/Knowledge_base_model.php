@@ -82,6 +82,9 @@ class Knowledge_base_model extends CRM_Model
         if ($slug_total > 0) {
             $data['slug'] .= '-' . ($slug_total + 1);
         }
+
+        $data = do_action('before_add_kb_article',$data);
+
         $this->db->insert('tblknowledgebase', $data);
         $insert_id = $this->db->insert_id();
         if ($insert_id) {

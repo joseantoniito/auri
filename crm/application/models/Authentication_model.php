@@ -329,7 +329,7 @@ class Authentication_model extends CRM_Model
             'password' => $password
         ));
         if ($this->db->affected_rows() > 0) {
-            logActivity('User Set Password [User ID:' . $userid . ', Staff:' . $staff . ', IP:' . $this->input->ip_address() . ']');
+            logActivity('User Set Password [User ID:' . $userid . ', Is Staff Member:' . ($staff == true ? 'Yes' : 'No') . ', IP:' . $this->input->ip_address() . ']');
             $this->db->set('new_pass_key', NULL);
             $this->db->set('new_pass_key_requested', NULL);
             $this->db->set('last_password_change', date('Y-m-d H:i:s'));
@@ -371,7 +371,7 @@ class Authentication_model extends CRM_Model
             'password' => $password
         ));
         if ($this->db->affected_rows() > 0) {
-            logActivity('User Reseted Password [User ID:' . $userid . ', Staff:' . $staff . ', IP:' . $this->input->ip_address() . ']');
+            logActivity('User Reseted Password [User ID:' . $userid . ', Is Staff Member:' . ($staff == true ? 'Yes' : 'No') . ', IP:' . $this->input->ip_address() . ']');
             $this->db->set('new_pass_key', NULL);
             $this->db->set('new_pass_key_requested', NULL);
             $this->db->set('last_password_change', date('Y-m-d H:i:s'));

@@ -409,6 +409,11 @@ class Tickets_model extends CRM_Model
             $_attachments = $this->get_ticket_attachments($id,$insert_id);
 
             logActivity('New Ticket Reply [ReplyID: ' . $insert_id . ']');
+
+            $this->db->select('status');
+            $this->db->where('ticketid',$id);
+            $old_ticket_status = $this->db->get('tbltickets')->row()->status;
+
             $this->db->where('ticketid', $id);
             $this->db->update('tbltickets', array(
                 'lastreply' => date('Y-m-d H:i:s'),
@@ -416,6 +421,11 @@ class Tickets_model extends CRM_Model
                 'adminread' => 0,
                 'clientread' => 0
             ));
+
+            if($old_ticket_status != $status){
+                do_action('after_ticket_status_changed',array('id'=>$id,'status'=>$status));
+            }
+
             $this->load->model('emails_model');
             $ticket = $this->get_ticket_by_id($id);
             $userid = $ticket->userid;
@@ -542,13 +552,15 @@ class Tickets_model extends CRM_Model
      */
     function get_ticket_replies($id)
     {
+        $ticket_replies_comments_order = do_action('ticket_replies_comments_order','ASC');
+
         $this->db->select('tblticketreplies.id,tblticketreplies.ip,tblticketreplies.name as from_name,tblticketreplies.email as reply_email, tblticketreplies.admin, tblticketreplies.userid,tblstaff.firstname as staff_firstname,.tblstaff.lastname as staff_lastname,tblcontacts.firstname as user_firstname,.tblcontacts.lastname as user_lastname,message,date,contactid');
         $this->db->from('tblticketreplies');
         $this->db->join('tblclients', 'tblclients.userid = tblticketreplies.userid', 'left');
         $this->db->join('tblstaff', 'tblstaff.staffid = tblticketreplies.admin', 'left');
         $this->db->join('tblcontacts', 'tblcontacts.id = tblticketreplies.contactid', 'left');
         $this->db->where('ticketid', $id);
-        $this->db->order_by('date', 'asc');
+        $this->db->order_by('date', $ticket_replies_comments_order);
         $replies = $this->db->get()->result_array();
         $i       = 0;
         foreach ($replies as $reply) {
@@ -798,8 +810,8 @@ class Tickets_model extends CRM_Model
             $this->db->where('rel_id', $ticketid);
             $this->db->where('rel_type', 'ticket');
             $this->db->delete('tblnotes');
+
             // Get related tasks
-            $this->load->model('tasks_model');
             $this->db->where('rel_type', 'ticket');
             $this->db->where('rel_id', $ticketid);
             $tasks = $this->db->get('tblstafftasks')->result_array();
@@ -894,7 +906,9 @@ class Tickets_model extends CRM_Model
         if ($this->db->affected_rows() > 0) {
             $alert   = 'success';
             $message = _l('ticket_status_changed_successfuly');
+            do_action('after_ticket_status_changed',array('id'=>$id,'status'=>$status));
         }
+
         return array(
             'alert' => $alert,
             'message' => $message

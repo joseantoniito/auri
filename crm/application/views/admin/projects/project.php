@@ -70,7 +70,7 @@
                                     <div class="clearfix"></div>
                                     <select name="status" id="status" class="selectpicker" data-width="100%" data-none-selected-text="<?php echo _l('dropdown_non_selected_tex'); ?>">
                                         <?php foreach($statuses as $status){ ?>
-                                        <option value="<?php echo $status; ?>" <?php if(!isset($project) && $status == 2 || (isset($project) && $project->status == $status)){echo 'selected';} ?>><?php echo _l('project_status_'.$status); ?></option>
+                                        <option value="<?php echo $status; ?>" <?php if(!isset($project) && $status == 2 || (isset($project) && $project->status == $status)){echo 'selected';} ?>><?php echo project_status_by_id($status); ?></option>
                                         <?php } ?>
                                     </select>
                                 </div>
@@ -214,7 +214,8 @@
                     $('#project_rate_per_hour').addClass('hide');
                 }
             });
-            _validate_form($('form'),{name:'required',clientid:'required',start_date:'required',deadline:'required',billing_type:'required'});
+
+            _validate_form($('form'),{name:'required',clientid:'required',start_date:'required',billing_type:'required'});
 
             $('select[name="status"]').on('change',function(){
                 var status = $(this).val();

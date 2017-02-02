@@ -1,197 +1,130 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed'); ?>
 
-ERROR - 2017-01-27 05:52:24 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-27 05:52:24 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-27 06:09:13 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-27 06:09:14 --> 404 Page Not Found: Assets/plugins
-ERROR - 2017-01-27 01:26:56 --> Could not find the language line "Nombre"
-ERROR - 2017-01-27 01:26:56 --> Could not find the language line "Logotipo"
-ERROR - 2017-01-27 01:26:56 --> Could not find the language line "Descripción"
-ERROR - 2017-01-27 01:26:56 --> Could not find the language line "Tipo de desarrollo"
-ERROR - 2017-01-27 01:26:56 --> Could not find the language line "Etapa de desarrollo"
-ERROR - 2017-01-27 01:26:56 --> Could not find the language line "Precio Desde"
-ERROR - 2017-01-27 01:26:56 --> Could not find the language line "Total de Unidades"
-ERROR - 2017-01-27 01:26:56 --> Could not find the language line "Entrega"
-ERROR - 2017-01-27 01:26:56 --> Could not find the language line "Dirección"
-ERROR - 2017-01-27 01:26:56 --> Could not find the language line "Código Postal"
-ERROR - 2017-01-27 01:26:56 --> Could not find the language line "Superficie de Terreno Mínima"
-ERROR - 2017-01-27 01:26:56 --> Could not find the language line "Superficie de Terreno Máxima"
-ERROR - 2017-01-27 01:26:56 --> Could not find the language line "Superficie Construida Mínima"
-ERROR - 2017-01-27 01:26:56 --> Could not find the language line "Superficie Construida Máxima"
-ERROR - 2017-01-27 01:26:56 --> Could not find the language line "Total de Recámaras"
-ERROR - 2017-01-27 01:26:56 --> Could not find the language line "Máximo de Baños"
-ERROR - 2017-01-27 01:26:56 --> Could not find the language line "Máximo de Medio-Baños"
-ERROR - 2017-01-27 01:26:56 --> Could not find the language line "Máximo de Estacionamientos"
-ERROR - 2017-01-27 01:26:56 --> Could not find the language line "Precio"
-ERROR - 2017-01-27 01:26:56 --> Could not find the language line "m2 Habitables"
-ERROR - 2017-01-27 01:26:56 --> Could not find the language line "m2 Totales"
-ERROR - 2017-01-27 01:26:56 --> Could not find the language line "Recámaras"
-ERROR - 2017-01-27 01:26:56 --> Could not find the language line "Baños"
-ERROR - 2017-01-27 01:26:56 --> Could not find the language line "Estacionam."
-ERROR - 2017-01-27 01:27:07 --> Query error: Column 'id' in field list is ambiguous - Invalid query: SELECT `id`, `nombre`
-FROM `estados`
-INNER JOIN `tbldevelopments` ON `estados`.`id` = `tbldevelopments`.`id_estado`
-WHERE `activo` = 1
-ERROR - 2017-01-27 17:05:51 --> Query error: Got error 22 "Invalid argument" from storage engine MyISAM - Invalid query: SELECT DISTINCT(staffid) as assigneeid FROM tblstafftaskassignees
-ERROR - 2017-01-27 17:08:52 --> Query error: Got error 22 "Invalid argument" from storage engine MyISAM - Invalid query: SELECT DISTINCT(staffid) as assigneeid FROM tblstafftaskassignees
-ERROR - 2017-01-27 17:38:29 --> Query error: Got error 22 "Invalid argument" from storage engine MyISAM - Invalid query: SELECT DISTINCT(staffid) as assigneeid FROM tblstafftaskassignees
-ERROR - 2017-01-27 17:38:41 --> Query error: Got error 22 "Invalid argument" from storage engine MyISAM - Invalid query: SELECT DISTINCT(staffid) as assigneeid FROM tblstafftaskassignees
-ERROR - 2017-01-27 18:05:33 --> Query error: Column 'id' in field list is ambiguous - Invalid query: SELECT `id`, `nombre`
-FROM `estados`
-INNER JOIN `tbldevelopments` ON `estados`.`id` = `tbldevelopments`.`id_estado`
-WHERE `activo` = 1
-ERROR - 2017-01-27 20:20:49 --> Severity: error --> Exception: syntax error, unexpected ';' F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 41
-ERROR - 2017-01-27 20:21:19 --> Severity: error --> Exception: syntax error, unexpected ';' F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 41
-ERROR - 2017-01-27 20:22:01 --> Severity: Notice --> Array to string conversion F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 41
-ERROR - 2017-01-27 20:22:01 --> Severity: Notice --> Array to string conversion F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 41
-ERROR - 2017-01-27 20:22:01 --> Severity: Notice --> Array to string conversion F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 41
-ERROR - 2017-01-27 20:22:01 --> Severity: Notice --> Array to string conversion F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 41
-ERROR - 2017-01-27 20:22:01 --> Severity: Notice --> Array to string conversion F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 41
-ERROR - 2017-01-27 20:22:01 --> Severity: Notice --> Array to string conversion F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 41
-ERROR - 2017-01-27 20:22:01 --> Severity: Notice --> Array to string conversion F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 41
-ERROR - 2017-01-27 20:22:01 --> Severity: Notice --> Array to string conversion F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 41
-ERROR - 2017-01-27 20:22:50 --> Severity: Notice --> Array to string conversion F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 41
-ERROR - 2017-01-27 20:22:50 --> Severity: Notice --> Array to string conversion F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 41
-ERROR - 2017-01-27 20:22:50 --> Severity: Notice --> Array to string conversion F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 41
-ERROR - 2017-01-27 20:22:50 --> Severity: Notice --> Array to string conversion F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 41
-ERROR - 2017-01-27 20:22:50 --> Severity: Notice --> Array to string conversion F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 41
-ERROR - 2017-01-27 20:22:50 --> Severity: Notice --> Array to string conversion F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 41
-ERROR - 2017-01-27 20:22:50 --> Severity: Notice --> Array to string conversion F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 41
-ERROR - 2017-01-27 20:22:50 --> Severity: Notice --> Array to string conversion F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 41
-ERROR - 2017-01-27 20:23:10 --> Severity: error --> Exception: syntax error, unexpected 'return' (T_RETURN) F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 42
-ERROR - 2017-01-27 20:23:11 --> Severity: error --> Exception: syntax error, unexpected 'return' (T_RETURN) F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 42
-ERROR - 2017-01-27 20:24:01 --> Severity: Notice --> Array to string conversion F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 41
-ERROR - 2017-01-27 20:24:01 --> Severity: Notice --> Array to string conversion F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 41
-ERROR - 2017-01-27 20:24:01 --> Severity: Notice --> Array to string conversion F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 41
-ERROR - 2017-01-27 20:24:01 --> Severity: Notice --> Array to string conversion F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 41
-ERROR - 2017-01-27 20:24:01 --> Severity: Notice --> Array to string conversion F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 41
-ERROR - 2017-01-27 20:24:01 --> Severity: Notice --> Array to string conversion F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 41
-ERROR - 2017-01-27 20:24:01 --> Severity: Notice --> Array to string conversion F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 41
-ERROR - 2017-01-27 20:24:01 --> Severity: Notice --> Array to string conversion F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 41
-ERROR - 2017-01-27 20:24:28 --> Severity: Notice --> Array to string conversion F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 41
-ERROR - 2017-01-27 20:24:28 --> Severity: Notice --> Array to string conversion F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 41
-ERROR - 2017-01-27 20:24:28 --> Severity: Notice --> Array to string conversion F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 41
-ERROR - 2017-01-27 20:24:28 --> Severity: Notice --> Array to string conversion F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 41
-ERROR - 2017-01-27 20:24:28 --> Severity: Notice --> Array to string conversion F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 41
-ERROR - 2017-01-27 20:24:28 --> Severity: Notice --> Array to string conversion F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 41
-ERROR - 2017-01-27 20:24:28 --> Severity: Notice --> Array to string conversion F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 41
-ERROR - 2017-01-27 20:24:28 --> Severity: Notice --> Array to string conversion F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 41
-ERROR - 2017-01-27 20:26:14 --> Severity: error --> Exception: syntax error, unexpected '$result' (T_VARIABLE) F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 42
-ERROR - 2017-01-27 20:26:14 --> Severity: error --> Exception: syntax error, unexpected '$result' (T_VARIABLE) F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 42
-ERROR - 2017-01-27 20:26:47 --> Severity: Notice --> Array to string conversion F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 42
-ERROR - 2017-01-27 20:26:47 --> Severity: Notice --> Array to string conversion F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 42
-ERROR - 2017-01-27 20:26:47 --> Severity: Notice --> Array to string conversion F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 42
-ERROR - 2017-01-27 20:26:47 --> Severity: Notice --> Array to string conversion F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 42
-ERROR - 2017-01-27 20:26:47 --> Severity: Notice --> Array to string conversion F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 42
-ERROR - 2017-01-27 20:26:47 --> Severity: Notice --> Array to string conversion F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 42
-ERROR - 2017-01-27 20:26:47 --> Severity: Notice --> Array to string conversion F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 42
-ERROR - 2017-01-27 20:26:47 --> Severity: Notice --> Array to string conversion F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 42
-ERROR - 2017-01-27 20:31:36 --> Severity: Notice --> Array to string conversion F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 52
-ERROR - 2017-01-27 20:31:36 --> Severity: Notice --> Array to string conversion F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 52
-ERROR - 2017-01-27 20:31:36 --> Severity: Notice --> Array to string conversion F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 52
-ERROR - 2017-01-27 20:31:36 --> Severity: Notice --> Array to string conversion F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 52
-ERROR - 2017-01-27 20:31:36 --> Severity: Notice --> Array to string conversion F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 52
-ERROR - 2017-01-27 20:31:36 --> Severity: Notice --> Array to string conversion F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 52
-ERROR - 2017-01-27 20:31:36 --> Severity: Notice --> Array to string conversion F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 52
-ERROR - 2017-01-27 20:31:36 --> Severity: Notice --> Array to string conversion F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 52
-ERROR - 2017-01-27 20:32:28 --> Severity: Warning --> Missing argument 1 for Inventory::get_location_municipalities_with_developments(), called in F:\xampp\htdocs\perfex_crm\crm\system\core\CodeIgniter.php on line 529 and defined F:\xampp\htdocs\perfex_crm\crm\application\controllers\Inventory.php 19
-ERROR - 2017-01-27 20:32:28 --> Severity: Notice --> Undefined variable: id F:\xampp\htdocs\perfex_crm\crm\application\controllers\Inventory.php 21
-ERROR - 2017-01-27 20:32:32 --> Severity: Notice --> Array to string conversion F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 52
-ERROR - 2017-01-27 20:32:32 --> Severity: Notice --> Array to string conversion F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 52
-ERROR - 2017-01-27 20:32:32 --> Severity: Notice --> Array to string conversion F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 52
-ERROR - 2017-01-27 20:32:32 --> Severity: Notice --> Array to string conversion F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 52
-ERROR - 2017-01-27 20:32:33 --> Severity: Notice --> Array to string conversion F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 52
-ERROR - 2017-01-27 20:32:33 --> Severity: Notice --> Array to string conversion F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 52
-ERROR - 2017-01-27 20:32:33 --> Severity: Notice --> Array to string conversion F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 52
-ERROR - 2017-01-27 20:32:33 --> Severity: Notice --> Array to string conversion F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 52
-ERROR - 2017-01-27 20:32:56 --> Severity: Notice --> Array to string conversion F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 52
-ERROR - 2017-01-27 20:32:56 --> Severity: Notice --> Array to string conversion F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 52
-ERROR - 2017-01-27 20:32:56 --> Severity: Notice --> Array to string conversion F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 52
-ERROR - 2017-01-27 20:32:56 --> Severity: Notice --> Array to string conversion F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 52
-ERROR - 2017-01-27 20:32:56 --> Severity: Notice --> Array to string conversion F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 52
-ERROR - 2017-01-27 20:32:56 --> Severity: Notice --> Array to string conversion F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 52
-ERROR - 2017-01-27 20:32:56 --> Severity: Notice --> Array to string conversion F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 52
-ERROR - 2017-01-27 20:32:56 --> Severity: Notice --> Array to string conversion F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 52
-ERROR - 2017-01-27 20:57:46 --> Query error: Unknown column 'municipios.id' in 'on clause' - Invalid query: SELECT `localidades`.`id`, `localidades`.`nombre`
-FROM `localidades`
-INNER JOIN `tbldevelopments` ON `municipios`.`id` = `tbldevelopments`.`id_colonia`
-WHERE `municipio_id` = '274'
-ERROR - 2017-01-27 21:33:08 --> Could not find the language line "Nombre"
-ERROR - 2017-01-27 21:33:08 --> Could not find the language line "Logotipo"
-ERROR - 2017-01-27 21:33:08 --> Could not find the language line "Descripción"
-ERROR - 2017-01-27 21:33:08 --> Could not find the language line "Tipo de desarrollo"
-ERROR - 2017-01-27 21:33:08 --> Could not find the language line "Etapa de desarrollo"
-ERROR - 2017-01-27 21:33:08 --> Could not find the language line "Precio Desde"
-ERROR - 2017-01-27 21:33:08 --> Could not find the language line "Total de Unidades"
-ERROR - 2017-01-27 21:33:08 --> Could not find the language line "Entrega"
-ERROR - 2017-01-27 21:33:08 --> Could not find the language line "Dirección"
-ERROR - 2017-01-27 21:33:08 --> Could not find the language line "Código Postal"
-ERROR - 2017-01-27 21:33:08 --> Could not find the language line "Superficie de Terreno Mínima"
-ERROR - 2017-01-27 21:33:08 --> Could not find the language line "Superficie de Terreno Máxima"
-ERROR - 2017-01-27 21:33:08 --> Could not find the language line "Superficie Construida Mínima"
-ERROR - 2017-01-27 21:33:08 --> Could not find the language line "Superficie Construida Máxima"
-ERROR - 2017-01-27 21:33:08 --> Could not find the language line "Total de Recámaras"
-ERROR - 2017-01-27 21:33:08 --> Could not find the language line "Máximo de Baños"
-ERROR - 2017-01-27 21:33:08 --> Could not find the language line "Máximo de Medio-Baños"
-ERROR - 2017-01-27 21:33:08 --> Could not find the language line "Máximo de Estacionamientos"
-ERROR - 2017-01-27 21:33:08 --> Could not find the language line "Precio"
-ERROR - 2017-01-27 21:33:08 --> Could not find the language line "m2 Habitables"
-ERROR - 2017-01-27 21:33:08 --> Could not find the language line "m2 Totales"
-ERROR - 2017-01-27 21:33:08 --> Could not find the language line "Recámaras"
-ERROR - 2017-01-27 21:33:08 --> Could not find the language line "Baños"
-ERROR - 2017-01-27 21:33:08 --> Could not find the language line "Estacionam."
-ERROR - 2017-01-27 21:34:24 --> Severity: error --> Exception: Call to undefined method Inventory_model::add_unity_media_item() F:\xampp\htdocs\perfex_crm\crm\application\controllers\admin\Inventory.php 363
-ERROR - 2017-01-27 21:35:47 --> Severity: error --> Exception: Call to undefined method Inventory_model::add_unity_media_item() F:\xampp\htdocs\perfex_crm\crm\application\controllers\admin\Inventory.php 363
-ERROR - 2017-01-27 21:36:07 --> Severity: error --> Exception: Call to undefined method Inventory_model::add_unity_media_item() F:\xampp\htdocs\perfex_crm\crm\application\controllers\admin\Inventory.php 363
-ERROR - 2017-01-27 21:41:09 --> Query error: Unknown column 'id_reservation' in 'field list' - Invalid query: INSERT INTO `tblunitydocs` (`id_reservation`, `id_media_item`) VALUES ('undefined', '38')
-ERROR - 2017-01-27 21:41:16 --> Query error: Unknown column 'id_reservation' in 'field list' - Invalid query: INSERT INTO `tblunitydocs` (`id_reservation`, `id_media_item`) VALUES ('undefined', '39')
-ERROR - 2017-01-27 21:43:33 --> Could not find the language line "Nombre"
-ERROR - 2017-01-27 21:43:33 --> Could not find the language line "Logotipo"
-ERROR - 2017-01-27 21:43:33 --> Could not find the language line "Descripción"
-ERROR - 2017-01-27 21:43:33 --> Could not find the language line "Tipo de desarrollo"
-ERROR - 2017-01-27 21:43:33 --> Could not find the language line "Etapa de desarrollo"
-ERROR - 2017-01-27 21:43:33 --> Could not find the language line "Precio Desde"
-ERROR - 2017-01-27 21:43:33 --> Could not find the language line "Total de Unidades"
-ERROR - 2017-01-27 21:43:33 --> Could not find the language line "Entrega"
-ERROR - 2017-01-27 21:43:33 --> Could not find the language line "Dirección"
-ERROR - 2017-01-27 21:43:33 --> Could not find the language line "Código Postal"
-ERROR - 2017-01-27 21:43:33 --> Could not find the language line "Superficie de Terreno Mínima"
-ERROR - 2017-01-27 21:43:33 --> Could not find the language line "Superficie de Terreno Máxima"
-ERROR - 2017-01-27 21:43:33 --> Could not find the language line "Superficie Construida Mínima"
-ERROR - 2017-01-27 21:43:33 --> Could not find the language line "Superficie Construida Máxima"
-ERROR - 2017-01-27 21:43:33 --> Could not find the language line "Total de Recámaras"
-ERROR - 2017-01-27 21:43:33 --> Could not find the language line "Máximo de Baños"
-ERROR - 2017-01-27 21:43:33 --> Could not find the language line "Máximo de Medio-Baños"
-ERROR - 2017-01-27 21:43:33 --> Could not find the language line "Máximo de Estacionamientos"
-ERROR - 2017-01-27 21:43:33 --> Could not find the language line "Precio"
-ERROR - 2017-01-27 21:43:33 --> Could not find the language line "m2 Habitables"
-ERROR - 2017-01-27 21:43:33 --> Could not find the language line "m2 Totales"
-ERROR - 2017-01-27 21:43:33 --> Could not find the language line "Recámaras"
-ERROR - 2017-01-27 21:43:33 --> Could not find the language line "Baños"
-ERROR - 2017-01-27 21:43:33 --> Could not find the language line "Estacionam."
-ERROR - 2017-01-27 21:47:00 --> Could not find the language line "Nombre"
-ERROR - 2017-01-27 21:47:00 --> Could not find the language line "Logotipo"
-ERROR - 2017-01-27 21:47:00 --> Could not find the language line "Descripción"
-ERROR - 2017-01-27 21:47:00 --> Could not find the language line "Tipo de desarrollo"
-ERROR - 2017-01-27 21:47:00 --> Could not find the language line "Etapa de desarrollo"
-ERROR - 2017-01-27 21:47:00 --> Could not find the language line "Precio Desde"
-ERROR - 2017-01-27 21:47:00 --> Could not find the language line "Total de Unidades"
-ERROR - 2017-01-27 21:47:00 --> Could not find the language line "Entrega"
-ERROR - 2017-01-27 21:47:00 --> Could not find the language line "Dirección"
-ERROR - 2017-01-27 21:47:00 --> Could not find the language line "Código Postal"
-ERROR - 2017-01-27 21:47:00 --> Could not find the language line "Superficie de Terreno Mínima"
-ERROR - 2017-01-27 21:47:00 --> Could not find the language line "Superficie de Terreno Máxima"
-ERROR - 2017-01-27 21:47:00 --> Could not find the language line "Superficie Construida Mínima"
-ERROR - 2017-01-27 21:47:00 --> Could not find the language line "Superficie Construida Máxima"
-ERROR - 2017-01-27 21:47:00 --> Could not find the language line "Total de Recámaras"
-ERROR - 2017-01-27 21:47:00 --> Could not find the language line "Máximo de Baños"
-ERROR - 2017-01-27 21:47:00 --> Could not find the language line "Máximo de Medio-Baños"
-ERROR - 2017-01-27 21:47:00 --> Could not find the language line "Máximo de Estacionamientos"
-ERROR - 2017-01-27 21:47:00 --> Could not find the language line "Precio"
-ERROR - 2017-01-27 21:47:00 --> Could not find the language line "m2 Habitables"
-ERROR - 2017-01-27 21:47:00 --> Could not find the language line "m2 Totales"
-ERROR - 2017-01-27 21:47:00 --> Could not find the language line "Recámaras"
-ERROR - 2017-01-27 21:47:00 --> Could not find the language line "Baños"
-ERROR - 2017-01-27 21:47:00 --> Could not find the language line "Estacionam."
-ERROR - 2017-01-27 22:21:38 --> Query error: Unknown column 'id_medio_se_entero' in 'field list' - Invalid query: INSERT INTO `tblleads` (`name`, `email`, `phonenumber`, `id_medio_se_entero`, `id_forma_de_pago`, `presupuesto`, `tiempo_estimado_compra`, `description`, `dateadded`) VALUES ('Toño Flores', 'joseantoniito@gmail.com', '4425687391', '2', '1', '400000', '1 año', 'Prueba', 'NOW()')
-ERROR - 2017-01-27 22:36:24 --> Severity: error --> Exception: syntax error, unexpected '=>' (T_DOUBLE_ARROW) F:\xampp\htdocs\perfex_crm\crm\application\models\Inventory_model.php 356
+ERROR - 2017-01-27 17:22:45 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-27 17:22:45 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-27 17:24:24 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-27 17:24:24 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-27 17:25:47 --> Query error: Table 'rafaq5_auri_perfex_crm.tblreservationsdocs' doesn't exist - Invalid query: SELECT `id`, `url`, `name`, `id_type`
+FROM `tblmediaitems`
+INNER JOIN `tblreservationsdocs` ON `tblmediaitems`.`id` = `tblreservationsdocs`.`id_media_item`
+WHERE `id_reservation` = '2'
+ERROR - 2017-01-27 17:25:56 --> Query error: Table 'rafaq5_auri_perfex_crm.tblreservationsdocs' doesn't exist - Invalid query: SELECT `id`, `url`, `name`, `id_type`
+FROM `tblmediaitems`
+INNER JOIN `tblreservationsdocs` ON `tblmediaitems`.`id` = `tblreservationsdocs`.`id_media_item`
+WHERE `id_reservation` = '2'
+ERROR - 2017-01-27 17:26:04 --> 404 Page Not Found: Assets/plugins
+ERROR - 2017-01-27 17:27:13 --> Query error: Table 'rafaq5_auri_perfex_crm.tblreservationsdocs' doesn't exist - Invalid query: SELECT `id`, `url`, `name`, `id_type`
+FROM `tblmediaitems`
+INNER JOIN `tblreservationsdocs` ON `tblmediaitems`.`id` = `tblreservationsdocs`.`id_media_item`
+WHERE `id_reservation` = '2'
+ERROR - 2017-01-27 17:28:28 --> Query error: Table 'rafaq5_auri_perfex_crm.tblreservationsdocs' doesn't exist - Invalid query: SELECT `id`, `url`, `name`, `id_type`
+FROM `tblmediaitems`
+INNER JOIN `tblreservationsdocs` ON `tblmediaitems`.`id` = `tblreservationsdocs`.`id_media_item`
+WHERE `id_reservation` = '2'
+ERROR - 2017-01-27 17:30:55 --> Query error: Table 'rafaq5_auri_perfex_crm.tblreservationsdocs' doesn't exist - Invalid query: SELECT `id`, `url`, `name`, `id_type`
+FROM `tblmediaitems`
+INNER JOIN `tblreservationsdocs` ON `tblmediaitems`.`id` = `tblreservationsdocs`.`id_media_item`
+WHERE `id_reservation` = '3'
+ERROR - 2017-01-27 17:32:05 --> Query error: Table 'rafaq5_auri_perfex_crm.tblreservationsdocs' doesn't exist - Invalid query: SELECT `id`, `url`, `name`, `id_type`
+FROM `tblmediaitems`
+INNER JOIN `tblreservationsdocs` ON `tblmediaitems`.`id` = `tblreservationsdocs`.`id_media_item`
+WHERE `id_reservation` = '2'
+ERROR - 2017-01-27 17:32:41 --> Query error: Table 'rafaq5_auri_perfex_crm.tblreservationsdocs' doesn't exist - Invalid query: SELECT `id`, `url`, `name`, `id_type`
+FROM `tblmediaitems`
+INNER JOIN `tblreservationsdocs` ON `tblmediaitems`.`id` = `tblreservationsdocs`.`id_media_item`
+WHERE `id_reservation` = '3'
+ERROR - 2017-01-27 17:33:01 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-27 17:33:01 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-27 17:33:01 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-27 17:33:04 --> 404 Page Not Found: Assets/plugins
+ERROR - 2017-01-27 17:33:04 --> 404 Page Not Found: Assets/plugins
+ERROR - 2017-01-27 17:33:13 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-27 17:33:19 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-27 17:33:19 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-27 17:33:19 --> Could not find the language line "Qualification"
+ERROR - 2017-01-27 17:33:33 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-27 17:33:33 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-27 17:33:33 --> Could not find the language line "Qualification"
+ERROR - 2017-01-27 17:33:38 --> Query error: Table 'rafaq5_auri_perfex_crm.tblreservationsdocs' doesn't exist - Invalid query: SELECT `id`, `url`, `name`, `id_type`
+FROM `tblmediaitems`
+INNER JOIN `tblreservationsdocs` ON `tblmediaitems`.`id` = `tblreservationsdocs`.`id_media_item`
+WHERE `id_reservation` = '3'
+ERROR - 2017-01-27 17:33:57 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-27 17:33:57 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-27 17:34:08 --> 404 Page Not Found: Assets/plugins
+ERROR - 2017-01-27 17:34:09 --> 404 Page Not Found: Assets/plugins
+ERROR - 2017-01-27 17:37:04 --> Query error: Table 'rafaq5_auri_perfex_crm.tblreservationsdocs' doesn't exist - Invalid query: SELECT `id`, `url`, `name`, `id_type`
+FROM `tblmediaitems`
+INNER JOIN `tblreservationsdocs` ON `tblmediaitems`.`id` = `tblreservationsdocs`.`id_media_item`
+WHERE `id_reservation` = '2'
+ERROR - 2017-01-27 17:37:18 --> Query error: Table 'rafaq5_auri_perfex_crm.tblreservationsdocs' doesn't exist - Invalid query: SELECT `id`, `url`, `name`, `id_type`
+FROM `tblmediaitems`
+INNER JOIN `tblreservationsdocs` ON `tblmediaitems`.`id` = `tblreservationsdocs`.`id_media_item`
+WHERE `id_reservation` = '2'
+ERROR - 2017-01-27 17:37:29 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-27 17:37:29 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-27 17:37:29 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-27 17:37:37 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-27 17:51:41 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-27 17:51:41 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-27 17:51:46 --> 404 Page Not Found: Assets/plugins
+ERROR - 2017-01-27 17:51:46 --> 404 Page Not Found: Assets/plugins
+ERROR - 2017-01-27 18:01:21 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-27 18:01:21 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-27 18:01:21 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-27 18:01:28 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-27 18:02:49 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-27 18:02:49 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-27 18:02:49 --> Could not find the language line "Qualification"
+ERROR - 2017-01-27 18:03:20 --> 404 Page Not Found: Assets/plugins
+ERROR - 2017-01-27 18:03:20 --> 404 Page Not Found: Assets/plugins
+ERROR - 2017-01-27 18:07:20 --> Severity: Warning --> unlink(/home3/rafaq5/public_html/auri/crm/uploads/inventory/AcuerdoConfidencial_JoseAntonio.pdf): No such file or directory /home3/rafaq5/public_html/auri/crm/application/controllers/admin/Inventory.php 280
+ERROR - 2017-01-27 18:07:20 --> Severity: Warning --> unlink(/home3/rafaq5/public_html/auri/crm/uploads/inventory/AcuerdoConfidencial_JoseAntonio.pdf): No such file or directory /home3/rafaq5/public_html/auri/crm/application/controllers/admin/Inventory.php 280
+ERROR - 2017-01-27 18:07:20 --> Severity: Warning --> unlink(/home3/rafaq5/public_html/auri/crm/uploads/inventory/AcuerdoConfidencial_JoseAntonio.pdf): No such file or directory /home3/rafaq5/public_html/auri/crm/application/controllers/admin/Inventory.php 280
+ERROR - 2017-01-27 18:07:20 --> Severity: Warning --> unlink(/home3/rafaq5/public_html/auri/crm/uploads/inventory/AcuerdoConfidencial_JoseAntonio.pdf): No such file or directory /home3/rafaq5/public_html/auri/crm/application/controllers/admin/Inventory.php 280
+ERROR - 2017-01-27 18:07:22 --> Severity: Warning --> unlink(/home3/rafaq5/public_html/auri/crm/uploads/inventory/AcuerdoConfidencial_JoseAntonio.pdf): No such file or directory /home3/rafaq5/public_html/auri/crm/application/controllers/admin/Inventory.php 280
+ERROR - 2017-01-27 18:07:22 --> Severity: Warning --> unlink(/home3/rafaq5/public_html/auri/crm/uploads/inventory/AcuerdoConfidencial_JoseAntonio.pdf): No such file or directory /home3/rafaq5/public_html/auri/crm/application/controllers/admin/Inventory.php 280
+ERROR - 2017-01-27 18:07:22 --> Severity: Warning --> unlink(/home3/rafaq5/public_html/auri/crm/uploads/inventory/AcuerdoConfidencial_JoseAntonio.pdf): No such file or directory /home3/rafaq5/public_html/auri/crm/application/controllers/admin/Inventory.php 280
+ERROR - 2017-01-27 18:07:22 --> Severity: Warning --> unlink(/home3/rafaq5/public_html/auri/crm/uploads/inventory/AcuerdoConfidencial_JoseAntonio.pdf): No such file or directory /home3/rafaq5/public_html/auri/crm/application/controllers/admin/Inventory.php 280
+ERROR - 2017-01-27 18:07:22 --> Severity: Warning --> unlink(/home3/rafaq5/public_html/auri/crm/uploads/inventory/AcuerdoConfidencial_JoseAntonio.pdf): No such file or directory /home3/rafaq5/public_html/auri/crm/application/controllers/admin/Inventory.php 280
+ERROR - 2017-01-27 18:09:59 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-27 18:09:59 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-27 18:10:21 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-27 18:10:21 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-27 18:10:21 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-27 18:10:25 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-27 18:10:28 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-27 18:10:29 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-27 18:10:29 --> Could not find the language line "Qualification"
+ERROR - 2017-01-27 18:10:40 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-27 18:10:40 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-27 18:10:40 --> Could not find the language line "Qualification"
+ERROR - 2017-01-27 18:12:00 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-27 18:12:00 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-27 18:13:14 --> 404 Page Not Found: Assets/plugins
+ERROR - 2017-01-27 18:13:25 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-27 18:13:25 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-27 18:13:25 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-27 18:13:27 --> 404 Page Not Found: Assets/plugins
+ERROR - 2017-01-27 18:13:27 --> 404 Page Not Found: Assets/plugins
+ERROR - 2017-01-27 18:13:36 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-27 18:13:43 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-27 18:13:43 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-27 18:13:43 --> Could not find the language line "Qualification"
+ERROR - 2017-01-27 18:13:55 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-27 18:13:55 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-27 18:13:55 --> Could not find the language line "Qualification"
+ERROR - 2017-01-27 18:17:09 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-27 18:17:09 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-27 18:17:14 --> 404 Page Not Found: Assets/plugins
+ERROR - 2017-01-27 18:17:14 --> 404 Page Not Found: Assets/plugins
+ERROR - 2017-01-27 20:02:39 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-27 20:02:39 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-27 20:04:05 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-27 20:04:05 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-27 20:04:09 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-27 20:04:09 --> Could not find the language line "Desarrollos"
+ERROR - 2017-01-27 20:04:09 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-27 20:04:10 --> Could not find the language line "cf_translate_leads_qualification"
+ERROR - 2017-01-27 20:04:15 --> Could not find the language line "Prospectos"
+ERROR - 2017-01-27 20:04:15 --> Could not find the language line "Desarrollos"

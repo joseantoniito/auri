@@ -101,6 +101,7 @@ class Payments_model extends CRM_Model
                 unset($data['do_not_send_email_template']);
                 $this->session->set_userdata(array('do_not_send_email_template'=>true));
             }
+
             $invoice = $this->invoices_model->get($invoiceid);
             // Check if request coming from admin area and the user added note so we can insert the note also when the payment is recorded
             if (isset($data['note']) && $data['note'] != '') {
@@ -108,14 +109,14 @@ class Payments_model extends CRM_Model
                     'payment_admin_note' => $data['note']
                     ));
             }
+
             if (get_option('allow_payment_amount_to_be_modified') == 0) {
                 $data['amount'] = get_invoice_total_left_to_pay($invoiceid, $invoice->total);
             }
+
             $data['invoiceid'] = $invoiceid;
             $data['invoice'] = $invoice;
             $data = do_action('before_process_gateway_func', $data);
-            // This hooks is depreced and will be removed in future updates
-            $data = do_action('before_process_getaway_func', $data);
 
             $cf = $data['paymentmode'] .'_gateway';
             $this->$cf->process_payment($data);
@@ -234,6 +235,7 @@ class Payments_model extends CRM_Model
                 $this->emails_model->send_email_template('invoice-payment-recorded-to-staff', $member['email'], $merge_fields);
             }
 
+         do_action('after_payment_added',$insert_id);
          return $insert_id;
      }
      return false;

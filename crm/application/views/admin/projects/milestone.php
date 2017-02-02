@@ -16,7 +16,7 @@
                         <?php echo form_hidden('project_id',$project->id); ?>
                         <div id="additional_milestone"></div>
                         <?php echo render_input('name','milestone_name'); ?>
-                        <?php echo render_date_input('due_date','milestone_due_date','',array('data-date-end-date'=>$project->deadline)); ?>
+                        <?php echo render_date_input('due_date','milestone_due_date','',($project->deadline) ? array('data-date-end-date'=>$project->deadline) : array()); ?>
                         <?php echo render_textarea('description','milestone_description'); ?>
                         <div class="checkbox">
                             <input type="checkbox" id="description_visible_to_customer" name="description_visible_to_customer">

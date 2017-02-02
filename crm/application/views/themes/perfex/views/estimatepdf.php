@@ -251,7 +251,7 @@ if (!empty($estimate->clientnote)) {
     $pdf->Cell(0, 0, _l('estimate_note'), 0, 1, 'L', 0, '', 0);
     $pdf->SetFont($font_name,'',10);
     $pdf->Ln(2);
-    $pdf->MultiCell(190, 0, clear_textarea_breaks($estimate->clientnote),0,'L');
+    $pdf->MultiCell(190, 0, html_entity_decode(clear_textarea_breaks($estimate->clientnote)),0,'L');
 }
 
 if (!empty($estimate->terms)) {
@@ -260,5 +260,5 @@ if (!empty($estimate->terms)) {
     $pdf->Cell(0, 0, _l('terms_and_conditions'), 0, 1, 'L', 0, '', 0);
     $pdf->SetFont($font_name,'',10);
     $pdf->Ln(2);
-    $pdf->MultiCell(190, 0, clear_textarea_breaks($estimate->terms),0,'L');
+    $pdf->MultiCell(190, 0, html_entity_decode(clear_textarea_breaks($estimate->terms)),0,'L');
 }

@@ -56,10 +56,10 @@
     $total_projects_in_progress = total_rows('tblprojects',$where);
     $percent_in_progress_projects = ($total_projects > 0 ? number_format(($total_projects_in_progress * 100) / $total_projects,2) : 0);
     ?>
-    <p class="text-uppercase mtop5"><i class="hidden-sm fa fa-cubes"></i> <?php echo _l('projects') . ' ' . _l('project_status_2'); ?><span class="pull-right"><?php echo $total_projects_in_progress; ?> / <?php echo $total_projects; ?></span></p>
+    <p class="text-uppercase mtop5"><i class="hidden-sm fa fa-cubes"></i> <?php echo _l('projects') . ' ' . project_status_by_id(2); ?><span class="pull-right"><?php echo $total_projects_in_progress; ?> / <?php echo $total_projects; ?></span></p>
     <div class="clearfix"></div>
     <div class="progress no-margin progress-bar-mini">
-       <div class="progress-bar progress-bar-<?php echo get_project_label(2); ?> no-percent-text not-dynamic" role="progressbar" aria-valuenow="<?php echo $percent_in_progress_projects; ?>" aria-valuemin="0" aria-valuemax="100" style="width: 0%" data-percent="<?php echo $percent_in_progress_projects; ?>">
+       <div class="progress-bar progress-bar-<?php echo project_status_color_class(2); ?> no-percent-text not-dynamic" role="progressbar" aria-valuenow="<?php echo $percent_in_progress_projects; ?>" aria-valuemin="0" aria-valuemax="100" style="width: 0%" data-percent="<?php echo $percent_in_progress_projects; ?>">
        </div>
    </div>
 </div>

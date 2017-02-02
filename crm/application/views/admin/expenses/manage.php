@@ -42,6 +42,7 @@
                            foreach($custom_fields as $field){
                                array_push($table_data,$field['name']);
                            }
+                           $table_data = do_action('expenses_table_columns',$table_data);
                            render_datatable($table_data,'expenses'); ?>
                      </div>
                   </div>
@@ -101,7 +102,7 @@
            $.each($('._hidden_inputs._filters input'),function(){
                Expenses_ServerParams[$(this).attr('name')] = '[name="'+$(this).attr('name')+'"]';
            });
-           initDataTable('.table-expenses', window.location.href, 'undefined', 'undefined', Expenses_ServerParams, [5, 'DESC']).column(0).visible(false, false).columns.adjust();
+           initDataTable('.table-expenses', window.location.href, 'undefined', 'undefined', Expenses_ServerParams, <?php echo do_action('expenses_table_default_order',json_encode(array(5,'DESC'))); ?>).column(0).visible(false, false).columns.adjust();
            init_expense();
 
           $('body').on('click','#expense_confirm_convert',function(){

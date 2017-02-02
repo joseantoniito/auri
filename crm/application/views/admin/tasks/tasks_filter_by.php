@@ -22,14 +22,15 @@
         }
         echo form_hidden('task_status_'.$status,$val);
     }
+    do_action('tasks_filters_hidden_html');
     ?>
 </div>
 
 <div class="btn-group pull-right mleft4 btn-with-tooltip-group _filter_data" data-toggle="tooltip" data-title="<?php echo _l('filter_by'); ?>">
     <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-     <i class="fa fa-filter" aria-hidden="true"></i>
- </button>
- <ul class="dropdown-menu width300">
+       <i class="fa fa-filter" aria-hidden="true"></i>
+   </button>
+   <ul class="dropdown-menu width300">
     <li>
         <a href="#" data-cview="all" onclick="dt_custom_view('','<?php echo $view_table_name; ?>',''); return false;">
             <?php echo _l('task_list_all'); ?>
@@ -108,8 +109,8 @@
     <div class="clearfix"></div>
     <li class="divider"></li>
     <li class="dropdown-submenu pull-left">
-     <a href="#" tabindex="-1"><?php echo _l('filter_by_assigned'); ?></a>
-     <ul class="dropdown-menu dropdown-menu-left">
+       <a href="#" tabindex="-1"><?php echo _l('filter_by_assigned'); ?></a>
+       <ul class="dropdown-menu dropdown-menu-left">
         <?php foreach($tasks_filter_assignees as $as){ ?>
         <li>
             <a href="#" data-cview="task_assigned_<?php echo $as['assigneeid']; ?>" onclick="dt_custom_view(<?php echo $as['assigneeid']; ?>,'<?php echo $view_table_name; ?>','task_assigned_<?php echo $as['assigneeid']; ?>'); return false;"><?php echo get_staff_full_name($as['assigneeid']); ?></a>
