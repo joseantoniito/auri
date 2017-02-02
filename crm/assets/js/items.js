@@ -1039,9 +1039,9 @@ $(function() {
     //reservaciones asesores
     function pre_load_reservation_assessor(){
         $(".dataTable").bind('example',function (evt,ret) { 
-            console.log($(".dataTable [href='#']"));
+            console.log($(".dataTable [href*='admin/leads/index']"));
             //$("[href='#lead_reservations']")
-            $(".dataTable [href='#']")
+            $(".dataTable [href*='admin/leads/index']")
                 .on("click", function(event){
                     var id_lead = $("[name='leadid']").val()
                     str_on_click = $(event.currentTarget).attr("onclick")

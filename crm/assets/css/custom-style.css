@@ -33,7 +33,7 @@
 
 aside .metis-menu{
     background-image: url(/crm/uploads/side-bar-menu-bgr.jpg) !important;
-    height:795px;
+    min-height: 1300px;
 }
 aside .metis-menu li{
     /* background-color: rgba(0, 126, 186, 0.5); */
