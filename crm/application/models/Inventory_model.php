@@ -423,6 +423,14 @@ class Inventory_model extends CRM_Model
         return $this->db->get()->result_array();
     }
     
+    public function get_development_of_assessor($staff_id){
+         $this->db->select('id_development, id_staff, staffid, email, firstname, lastname, phonenumber, profile_image');
+        $this->db->from('tbldevelopmentassessors');
+        $this->db->join('tblstaff', 'tbldevelopmentassessors.id_staff = tblstaff.staffid', 'inner');
+        $this->db->where('tblstaff.staffid', $staff_id);
+        return $this->db->get()->row();
+    }
+    
     public function add_development_assessor($data)
     {
         $this->db->insert('tbldevelopmentassessors', [
@@ -508,33 +516,45 @@ class Inventory_model extends CRM_Model
     
     public function update_unity_reservation($data){
         $id = $data['id'];
+        $status = $data['status'];
         unset($data['id']);
         unset($data['files']);
-        $this->db->where('id', $id);
-        $this->db->update('tblreservations', $data);
-        if ($this->db->affected_rows() > 0) {
+        
+        if(!$id){
+            unset($data['id']);
+            $this->db->insert('tblreservations', $data);
+            $insert_id = $this->db->insert_id();
+            if ($insert_id) {
+                return $insert_id;
+            }
+        }
+        else{
+            $this->db->where('id', $id);
+            $this->db->update('tblreservations', $data);
+
+
             $this->db->where('id', $data['id_unity']);
             $this->db->update('tblunities', [
                 'status' => $data['status']
             ]);
-            
-            $status = $data['status'];
-            $status_lead = 1;
+
+            $status_lead = '1';
             if($status == '2')//en validación
                 $status_lead = '4';// > recorrido
             else if($status == '3')//reservado
                 $status_lead = '5';// > reservación
             else if($status == '4')//vendido
                 $status_lead = '6';// > cierre
-            
+
             $this->db->where('id', $data['id_lead']);  
             $this->db->update('tblleads', [
-                'status' => $status_lead
+                'status' => $status_lead,
+                'assigned' => $data['id_assessor']
             ]);
-            //todo: if ($this->db->affected_rows() > 0)
+
             return true;
         }
-        return false;
+        
     }
     
     //no se ocupa

@@ -14,6 +14,11 @@
             <div class="panel_s">
                 <div class="panel-body">
                     <div class="clearfix"></div>
+                    <div class="panel-body _buttons ">
+                        <span class="btn btn-info pull-left" 
+                            _id="0" id="btn_add_reservation">Nueva Propiedad de Interés</span>
+                    </div>
+                    
                     <input id="hdn_has_permission_edit" type="hidden" 
                            value="<?php echo has_permission('items','','edit') ?>"  />
                     <div id="grid_reservations"></div>
@@ -39,14 +44,14 @@
                     <span id="development_name"></span>
                 </div>
             </div>
-            <div id="reservation_avaiable" class="row reservation_item">
-                <div class="row">
-                    <div class="col-md-12">
-                        <label for="dropdown_unities" class="control-label">Unidad</label>
-                        <!--<input type="hidden" name="id_unity" />-->
-                        <input id="dropdown_unities" value='' />
-                    </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <label for="dropdown_unities" class="control-label">Unidad</label>
+                    <!--<input type="hidden" name="id_unity" />-->
+                    <input id="dropdown_unities" value='' />
                 </div>
+            </div>
+            <div id="reservation_avaiable" class="row reservation_item">
                 <div class="row padTop32">
                     <div class="panel-heading">
                         <h4 class="customer-heading-profile bold margin-b-grey">Docs</h4>

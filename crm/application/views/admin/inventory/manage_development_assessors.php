@@ -6,6 +6,14 @@
             <div class="panel_s">
                 <div class="panel-body">
                     <div class="clearfix"></div>
+                    
+                    <div class="row">
+                        <h4 class="lbl_grey"> Asignación de asesores a desarrollos</h4>
+                    </div>
+                    <div class="row padBottom10">
+                        <h5 class="lbl_grey"> Asesores</h5>
+                    </div>
+                    
                     <input id="hdn_has_permission_edit" type="hidden" 
                            value="<?php echo has_permission('items','','edit') ?>"  />
                     <div id="list_view_assessors" class="list_view_assessors"></div>
@@ -29,6 +37,35 @@
             <div class="panel_s">
                 <div class="panel-body">
                     <div class="clearfix"></div>
+                         <div class="row">
+                            <div class="col-md-8">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h5 class="lbl_grey">Selección de fechas:</h5>
+                                    </div>
+                                </div>
+                                <div class="row padBottom32">
+                                    <div class="col-md-6">
+                                        <input id="date_picker_fecha_desde" value="desde..." />
+                                    </div>
+                                    <div class="col-md-6">
+                                        <input id="date_picker_fecha_hasta" value="hasta..." />
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-3">
+                                <div class="row padBottom10">
+                                    <button type="submit" class="btn btn-info green pull-right"> Publicar </button>
+                                </div>
+                                <div class="row">
+                                    <button type="submit" class="btn btn-info blue pull-right"> Generar </button>
+                                </div>
+                            </div>
+                             <div class="col-md-1">
+                             </div>
+                        </div>
+                    
                     <input id="hdn_has_permission_edit" type="hidden" 
                            value="<?php echo has_permission('items','','edit') ?>"  />
                     

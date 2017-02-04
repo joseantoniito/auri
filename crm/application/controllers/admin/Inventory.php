@@ -558,17 +558,34 @@ class Inventory extends Admin_controller
     
     public function get_reservation($id)
     {
+        
+        
         if ($this->input->is_ajax_request()) {
-            $item = $this->inventory_model->get_reservation($id);
             
-            /*$unidades_desarrollo = null;
-            if($item.id_unity == 0) */
-                //$unidades_desarrollo = $this->inventory_model->get_unities($item->id_development);
+            
+            
+            if(!$id){
+                $development = $this->inventory_model->get_development_of_assessor(get_staff_user_id());
+                
+                echo json_encode(array(
+                    'item' => null,
+                    'item_docs' => array(),
+                    'id_development' => $development->id_development,
+                    'item_unidades_desarrollo' => $this->inventory_model->get_unities($development->id_development),
+                    'item_assessors' => array(),
+                    'staff_id' => get_staff_user_id()
+                ));
+                return;
+            } 
+            
+            $item = $this->inventory_model->get_reservation($id);
+            $id_development = $item->id_development;
+            
             echo json_encode(array(
                 'item' => $item,
                 'item_docs' => $this->inventory_model->get_reservation_docs($id),
                 'id_development' => $item->id_development,
-                'item_unidades_desarrollo' => $this->inventory_model->get_unities($item->id_development),
+                'item_unidades_desarrollo' => $this->inventory_model->get_unities($id_development),
                 'item_assessors' => $this->inventory_model->get_assessors(),
                 'staff_id' => get_staff_user_id()
             ));
@@ -615,6 +632,10 @@ class Inventory extends Admin_controller
                   die;
                 }
                 $success = $this->inventory_model->update_unity_reservation($data);
+                $id = $data["id"];
+                if($data["id"] == "0")
+                    $data["id"] = $success;
+                
                 $message = '';
                 if ($success) {
                     $message = _l('updated_successfuly', "Propiedad reservada");
@@ -622,7 +643,7 @@ class Inventory extends Admin_controller
                 echo json_encode(array(
                     'success' => $success,
                     'message' => $message,
-                    'item' => $this->inventory_model->get_reservation($data["id"])
+                    'item' => $this->inventory_model->get_reservation($id)
                     ));
                 
             }
@@ -640,6 +661,10 @@ class Inventory extends Admin_controller
                   die;
                 }
                 $success = $this->inventory_model->update_unity_reservation($data);
+                $id = $data["id"];
+                if($data["id"] == "0")
+                    $data["id"] = $success;
+                
                 $message = '';
                 if ($success) {
                     $message = _l('updated_successfuly', "Propiedad reservada");
@@ -647,7 +672,7 @@ class Inventory extends Admin_controller
                 echo json_encode(array(
                     'success' => $success,
                     'message' => $message,
-                    'item' => $this->inventory_model->get_reservation($data["id"])
+                    'item' => $this->inventory_model->get_reservation($id)
                     ));
                 
             }

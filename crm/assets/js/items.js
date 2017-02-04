@@ -80,8 +80,9 @@ $(function() {
         parent = $("[href='" + admin_url + "invoice_items']").parent().parent();
         parent.append(
             '<li><a href="'+admin_url+'inventory/reservations">Propiedades de Interés</a></li>');
-        parent.append(
-            '<li><a href="'+admin_url+'inventory/development_assessors">Asignar Asesores</a></li>');
+        parent.parent().before(
+            '<li class="menu-item-sales"><a href="{0}inventory/development_assessors" aria-expanded="true"><i class="fa fa-user-plus menu-icon"></i>Roll</a></li>'.format(admin_url));
+            //'<li><a href="'+admin_url+'inventory/development_assessors">Asignar Asesores</a></li>');
             
         $("[href='" + admin_url + "invoice_items']").attr("href", admin_url + "inventory/");
         $("[href='" + admin_url + "projects']").hide();
@@ -774,15 +775,25 @@ $(function() {
 
     //development assessors
     function load_development_assessors(){
+        $("#date_picker_fecha_desde").kendoDatePicker({});
+        $("#date_picker_fecha_hasta").kendoDatePicker({});
         
         $.get(admin_url + 'inventory/get_assessors/', function(response) {
             $("#list_view_assessors").kendoListView({
                 dataSource: response,
                 template: kendo.template($("#assessors_template").html()),
                 dataBound: function(e) {
+                    var has_permission_edit = $("#hdn_has_permission_edit").val() == "1";
+                    
                     $.each(e.sender.items(), function(index, item){
                         item = $(item);
-                        item[0].addEventListener('dragstart', on_drag_start_assessor, false);
+                        
+                        if(has_permission_edit)
+                            item[0].addEventListener('dragstart', on_drag_start_assessor, false);
+                        else{
+                            item.attr("draggable", "false");
+                            item.find(".draganddrop").css("cursor", "inherit")
+                        }
                         item.find("#descripcion").text();
                         
                         
@@ -825,8 +836,8 @@ $(function() {
                 dataBound: function(e) {
                     $.each(e.sender.items(), function(index, item){
                         item = $(item);
-                        item[0].addEventListener('drop', on_drop_assessor, false);
-                        item[0].addEventListener('dragover', on_drag_over_assessor, false);
+                        item.find('.drop_container')[0].addEventListener('drop', on_drop_assessor, false);
+                        item.find('.drop_container')[0].addEventListener('dragover', on_drag_over_assessor, false);
                         item.find("#descripcion").text();
                         
                         var id_development = item.attr("_id");
@@ -842,9 +853,18 @@ $(function() {
                             <span class='draganddrop'></span><img _src='#: profile_image #' src='#:'/crm/uploads/staff_profile_images/' + staffid + '/small_' + profile_image #' class='img_radius' >\
                             <h4 id='assessor_name'>#:firstname#</h4></div>",
                             dataBound: function(e) {
+                                var has_permission_edit = $("#hdn_has_permission_edit").val() == "1";
+                            
                                  $.each(e.sender.items(), function(index, item){
                                     item = $(item);
-                                    item[0].addEventListener('dragstart', on_drag_start_assessor_1, false);
+                                
+                                    if(has_permission_edit)
+                                        item[0].addEventListener('dragstart', on_drag_start_assessor_1, false);
+                                    else{
+                                        item.attr("draggable", "false");
+                                        item.find(".draganddrop").css("cursor", "inherit")
+                                    }
+                                        
                                 });
                             }
                         });
@@ -944,12 +964,25 @@ $(function() {
     //reservaciones admins
     function load_reservations_admin(){
         var data = "status=&id_lead=&top=";
-        create_grid_reservations(data, data_bound_reservations_admin);
+        //create_grid_reservations(data, data_bound_reservations_admin);
+        item_str = "reservation";
+        item_str_plural = "reservations";
+        var columns = [
+            {field: "unidad", title: "Unidad"},                            
+            {field: "nombre", title: "Nombre"},
+            {field: "precio", title: "precio"},
+            {field: "firstname", title: "Asesor"},
+            {field: "status", title: "Status", template: "<span id='nombre_estatus'>#: status #</span>"},
+            {field:"id", title:"Acciones", width:"100px", 
+            template: "<span _id='#:id#' id='btn_manage' href='' class='qodef-icon-shortcode normal qodef-icon-little'><i class='qodef-icon-font-awesome fa fa-cog qodef-icon-element'></i></span>"}
+        ];
+        var fns_grid = {
+            columns: columns,
+            fn_data_bound: data_bound_reservations_admin
+        };
+        load_items(data, item_str, item_str_plural, close_window_clear_controls_reservation, fns_grid, edit_reservation_admin);
         
-        _validate_form($('#reservation_form'), {
-            address: 'required'
-        }, manage_reservation);
-        
+        //load extras
         var status_items = [
             {id: 1, nombre: "Disponible"},
             {id: 2, nombre: "En validación"},
@@ -976,13 +1009,30 @@ $(function() {
         var has_permission_edit = $("#hdn_has_permission_edit").val() == "1";
 
         $.each(e.sender.items(), function(index, item){
+            $(item).find("#nombre_estatus").text(
+                get_nombre_status($(item).find("#nombre_estatus").text())
+            );
+            
             $(item).find("#btn_manage")
                 .on("click", { index:index }, edit_reservation_admin);
 
         });
     }
 
-    function edit_reservation_admin(){
+    function get_nombre_status(status){
+        var str = "";
+        if(status == "1")
+            str = "Disponible";
+        else if(status == "2")
+            str = "En Validacion";
+        else if(status == "3")
+            str = "Reservado";
+        else if(status == "4")
+            str = "Vendido";
+        return str;
+    }
+
+    function edit_reservation_admin(event){
         var sender = $(event.currentTarget);
         var id = sender.attr("_id");
         $.get(admin_url + 'inventory/get_reservation/' + id, function(response) {
@@ -1036,6 +1086,26 @@ $(function() {
         }, 'json');
     }
 
+    function close_window_clear_controls_reservation(){
+        $("[name='id']").val("");
+        $("[name='id_development']").val("");
+        $("[name='id_unity']").val("");
+        $("[name='id_lead']").val("");
+        $("[name='status']").val("");
+        $("[name='id_assessor']").val("");
+        $("#development_name").text("");
+        $("#unity_name").text("");
+        
+        $("#dropdown_unities").data("kendoDropDownList").value(null);
+        
+        if($("#upload_docs").data("kendoUpload")){
+             $("#upload_docs").data("kendoUpload").clearAllFiles();
+             $("#upload_docs").data("kendoUpload").destroy();
+        }
+        $(".k-dropzone em").remove();
+    }
+
+
     //reservaciones asesores
     function pre_load_reservation_assessor(){
         $(".dataTable").bind('example',function (evt,ret) { 
@@ -1066,12 +1136,25 @@ $(function() {
     
     function load_reservation_assessor(id_lead){
         setTimeout(function() {
+            $("[name='id_lead']").val(id_lead);
             var data = "status=&id_lead="+id_lead+"&top=";
-            create_grid_reservations(data, data_bound_reservations_assessor);
+            item_str = "reservation";
+            item_str_plural = "reservations";
+            var columns = [
+                {field: "unidad", title: "Unidad"},                            
+                {field: "nombre", title: "Nombre"},
+                {field: "precio", title: "precio"},
+                {field: "firstname", title: "Asesor"},
+                {field: "status", title: "Status", template: "<span id='nombre_estatus'>#: status #</span>"},
+                {field:"id", title:"Acciones", width:"100px", 
+                template: "<span _id='#:id#' id='btn_manage' href='' class='qodef-icon-shortcode normal qodef-icon-little'><i class='qodef-icon-font-awesome fa fa-cog qodef-icon-element'></i></span>"}
+            ];
+            var fns_grid = {
+                columns: columns,
+                fn_data_bound: data_bound_reservations_assessor
+            };
+            load_items(data, item_str, item_str_plural, close_window_clear_controls_reservation, fns_grid, edit_reservation_assessor);
             
-            _validate_form($('#reservation_form'), {
-                address: 'required'
-            }, manage_reservation);
         }, 3000);
     }
     
@@ -1095,6 +1178,7 @@ $(function() {
         
         $.get(admin_url + 'inventory/get_reservation/' + id, function(response) {
             var item = response.item;
+            if(!item ) item = {};
             var item_docs = response.item_docs;
             var item_unidades_desarrollo = response.item_unidades_desarrollo;
             
@@ -1107,23 +1191,32 @@ $(function() {
             $("#development_name").text(item.nombre);
             $("#unity_name").text(item.unidad);
             
+            $("#dropdown_unities").kendoDropDownList({
+                dataTextField: "unidad",
+                dataValueField: "id",
+                dataSource: item_unidades_desarrollo,
+                optionLabel: "Seleccione.. ",
+                value: item.id_unity,
+                change: function(e) {
+                    var id = this.value();
+                    $("[name='id_unity']").val(id);
+                }
+            }).data("kendoDropDownList");
+            
             $(".reservation_item").hide();
             $("#window_reservation [type='submit']").hide();
+            if(id == "0"){
+                $("[name='id_lead']").val(
+                    $("[name='leadid']").val());
+                $("[name='status']").val("1");
+                $("[name='id_development']").val(response.id_development);
+                
+                $("#window_reservation [type='submit']").show();
+            }
             if(item.status == "1"){
                 $("[name='status']").val("2");
                 $("#reservation_avaiable").show();
                 $("#window_reservation [type='submit']").show();
-                $("#dropdown_unities").kendoDropDownList({
-                    dataTextField: "unidad",
-                    dataValueField: "id",
-                    dataSource: item_unidades_desarrollo,
-                    optionLabel: "Seleccione.. ",
-                    value: item.id_unity,
-                    change: function(e) {
-                        var id = this.value();
-                        $("[name='id_unity']").val(id);
-                    }
-                }).data("kendoDropDownList");
 
                 $.each(item_docs, function(index, item){
                     item.extension = "." + item.name.split('.')[1];
@@ -1162,7 +1255,7 @@ $(function() {
                     }
                 }).data("kendoUpload");
             }
-            $("#window_reservation").data("kendoWindow").center().open();
+            $("#window_{0}".format(item_str)).data("kendoWindow").center().open();
             
         }, 'json');
     }
@@ -1192,11 +1285,126 @@ $(function() {
         }, 'json');
     }
 
-    
-    
-    //utilerías desarrollos de interés y otros
-    function create_grid_reservations(data, fn_data_bound){
+
+    //***** add reservation item *****
+    var item_str, item_str_plural;
+    function load_items(data, item_str, item_str_plural, fn_close_window_clear_controls, fns_grid, fn_edit_item){
+        create_grid_items(data, item_str, item_str_plural, fns_grid);
         
+        $("#window_{0}".format(item_str)).kendoWindow({
+            width: "600px",
+            title: "{0}".format(item_str),
+            visible: false,
+            modal: true,
+            resizable: false,
+            scrollable: false,
+            close: fn_close_window_clear_controls
+        });
+        
+        $("#btn_add_{0}".format(item_str)).on("click", function(sender){
+            fn_edit_item(sender);
+            /*$("#window_{0}".format(item_str))
+                .data("kendoWindow")
+                .center().open();*/
+        });
+        
+        $("#btn_close_window_{0}".format(item_str)).on("click", function(){
+            
+             $("#window_{0}".format(item_str))
+                 .data("kendoWindow")
+                 .close();
+        });
+        
+        _validate_form($('#{0}_form'.format(item_str)), {
+            address: 'required'
+        }, manage_reservation);//todo
+        
+        //save media items with trigger saving item (bind)
+        $('#{0}_form'.format(item_str))
+            .bind('add_{0}_media_item'.format(item_str),
+            function (evt,ret) { 
+                id_media_item = ret.id_media_item;
+                var id_item = $("[name='{0}_id']".format(item_str)).val();
+                var data = "id_{0}={1}&id_media_item={2}".format(item_str, id_item, id_media_item);
+
+                $.post(admin_url + 'inventory/add_{0}_media_item'.format(item_str), data).done(function(response) {
+                    response = JSON.parse(response);
+                    if (response.success == true) {
+                        alert_float('success', response.message);
+                    }
+                }).fail(function(data) {
+                    alert_float('danger', data.responseText);
+                });
+
+            });
+    }
+    
+    function create_grid_items(data, item_str, item_str_plural, fns_grid){        
+        $.post(admin_url + 'inventory/get_{0}'.format(item_str_plural), data).done(function(response) {
+            response = JSON.parse(response);
+            console.log(response);
+            /*$.each(response, function(index, item){
+               item.nombre_status = get_nombre_status(item.status); 
+            });*/
+            $("#grid_{0}".format(item_str_plural)).kendoGrid({
+                dataSource: response,
+                columns: fns_grid.columns,
+                dataBound: fns_grid.fn_data_bound
+            });
+            
+        }).fail(function(data) {
+            alert_float('danger', data.responseText);
+        }); 
+        
+    }
+
+    //todo: cambiar nombre, esta es la función general
+    function manage_reservation(form) {
+        var data = $(form).serialize();
+        //data = data.replace("item_id", "id_item");
+        var url = form.action;
+        $.post(url, data).done(function(response) {
+            response = JSON.parse(response);
+            if (response.success == true) {
+                refresh_grid_reservations(response);
+                alert_float('success', response.message);
+            }
+        }).fail(function(data) {
+            alert_float('danger', data.responseText);
+        });
+        return false;
+    }
+    
+    //cambiar nombre, función reutilizable
+    function refresh_grid_reservations(response, delete_item){
+        grid = $("#grid_{0}".format(item_str_plural)).data("kendoGrid");
+        var data = grid.dataSource.data();
+        var indexItem = null;
+        var itemInGrid = $.grep(data, function(item, index){ 
+            var ok = item.id == response.item.id;
+            if(ok) indexItem = index;
+            return ok;
+        });
+        
+        if(indexItem == null){
+            data.push(response.item);
+        }
+        else{
+            if(!delete_item)
+                data.splice(indexItem, 1, response.item);
+            else
+                data.splice(indexItem, 1);
+        }
+        grid.dataSource.data(data);
+        $("#window_{0}".format(item_str)).data("kendoWindow").close();
+    }  
+
+    //***** end add reservation item *****
+
+    
+
+    //queda obsoleto ya al integrar
+    function create_grid_reservations(data, fn_data_bound){
         
         $.post(admin_url + 'inventory/get_reservations',data).done(function(response) {
             response = JSON.parse(response);
@@ -1236,7 +1444,8 @@ $(function() {
         }); 
 
     }
-
+    
+    //sacar a funciones publicas o inyectadas
     function create_grid_reservations_home(data){        
         $.post(admin_url + 'inventory/get_reservations',data).done(function(response) {
             response = JSON.parse(response);
@@ -1261,56 +1470,13 @@ $(function() {
         }); 
 
     }
-    
-    function manage_reservation(form) {
-        var data = $(form).serialize();
-        //data = data.replace("item_id", "id_item");
-        var url = form.action;
-        $.post(url, data).done(function(response) {
-            response = JSON.parse(response);
-            if (response.success == true) {
-                refresh_grid_reservations(response);
-                alert_float('success', response.message);
-            }
-        }).fail(function(data) {
-            alert_float('danger', data.responseText);
-        });
-        return false;
-    }
-    
-    function refresh_grid_reservations(response, delete_item){
-        grid = $("#grid_reservations").data("kendoGrid");
-        var data = grid.dataSource.data();
-        var indexItem = null;
-        var itemInGrid = $.grep(data, function(item, index){ 
-            var ok = item.id == response.item.id;
-            if(ok) indexItem = index;
-            return ok;
-        });
-        
-        if(indexItem == null){
-            data.push(response.item);
-        }
-        else{
-            if(!delete_item)
-                data.splice(indexItem, 1, response.item);
-            else
-                data.splice(indexItem, 1);
-        }
-        grid.dataSource.data(data);
-        $("#window_reservation").data("kendoWindow").close();
-    }    
-    
-    function get_nombre_status(status){
-        var str = "";
-        if(status == "1")
-            str = "Disponible";
-        else if(status == "2")
-            str = "En Validacion";
-        else if(status == "3")
-            str = "Reservado";
-        else if(status == "4")
-            str = "Vendido";
-        return str;
+
+    String.prototype.format = function() {
+      var str = this;
+      for (var i = 0; i < arguments.length; i++) {       
+        var reg = new RegExp("\\{" + i + "\\}", "gm");             
+        str = str.replace(reg, arguments[i]);
+      }
+      return str;
     }
 });

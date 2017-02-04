@@ -36,7 +36,7 @@
   <?php } ?>
 </ul>
 </div>
-<?php
+<!--<?php
 $client = false;
 $convert_to_client_tooltip_email_exists = '';
 if(total_rows('tblcontacts',array('email'=>$lead->email)) > 0 && total_rows('tblclients',array('leadid'=>$lead->id)) == 0){
@@ -58,7 +58,7 @@ if(total_rows('tblcontacts',array('email'=>$lead->email)) > 0 && total_rows('tbl
  <?php echo $text; ?>
 </a>
 <?php } ?>
-<?php } ?>
+<?php } ?>-->
 <div class="clearfix no-margin"></div>
 <hr class="no-margin" />
 <?php
@@ -172,7 +172,7 @@ foreach ($custom_fields as $field) {
 </div>
 <div class="clearfix">  </div>
 <div class="lead-edit<?php if(isset($lead)){echo ' hide';} ?>">
- <div class="col-md-4">
+ <!--<div class="col-md-4">
   <?php
   $selected = '';
   if(isset($lead)){
@@ -194,7 +194,7 @@ foreach ($custom_fields as $field) {
    $assigned_attrs['disabled'] = true;
  }
  echo render_select('assigned',$members,array('staffid',array('firstname','lastname')),'lead_add_edit_assigned',$selected,$assigned_attrs); ?>
-</div>
+</div>-->
 <div class="clearfix"></div>
 <hr class="no-mtop" />
 <div class="col-md-6">
